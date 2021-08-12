@@ -223,7 +223,7 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser):
                                             effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"))
         historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Adjustment Form")
         status = Status.get(Status.statusName == "Pending")
-        formHistories = FormHistory.create(formID       = lsf.laborStatusFormID,
+        adjustedFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,
                                            historyType  = historyType.historyTypeName,
                                            adjustedForm = adjustedforms.adjustedFormID,
                                            createdBy    = currentUser,
@@ -231,8 +231,8 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser):
                                            status       = status.statusName)
         if fieldName == "weeklyHours":
             newWeeklyHours = fieldsChanged[fieldName]['newValue']
-            createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, formHistories)
-        return formHistories.formHistoryID
+            createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory)
+        return adjustedFormHistory.formHistoryID
 
 def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None):
     allTermForms = LaborStatusForm.select() \
@@ -242,6 +242,8 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                          (LaborStatusForm.studentSupervisee.ID == lsf.studentSupervisee.ID) &
                          (FormHistory.status != "Denied") &
                          (FormHistory.historyType == "Labor Status Form"))
+
+
     previousTotalHours = 0
     if allTermForms:
         for statusForm in allTermForms:
@@ -267,7 +269,10 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                 formHistories.save()
                 overloadEmail = emailHandler(formHistories.formHistoryID)
             else:
-                modifiedFormHistory = FormHistory.select().join_from(FormHistory, HistoryType).where(FormHistory.formID == lsf.laborStatusFormID, FormHistory.historyType.historyTypeName == "Labor Status Form").get()
+                modifiedFormHistory = FormHistory.select() \
+                                    .join_from(FormHistory, HistoryType) \
+                                    .where(FormHistory.formID == lsf.laborStatusFormID, FormHistory.historyType.historyTypeName == "Labor Status Form") \
+                                    .get()
                 modifiedFormHistory.status = "Pre-Student Approval"
                 modifiedFormHistory.save()
                 overloadEmail = emailHandler(newFormHistory.formHistoryID)

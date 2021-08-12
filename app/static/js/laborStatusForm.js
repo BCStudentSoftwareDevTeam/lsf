@@ -262,13 +262,18 @@ function getDepartment(object, stopSelectRefresh="") { // get department from se
  function fillHoursPerWeek(fillhours=""){ // prefill hours per week select picker
   var selectedHoursPerWeek = $("#selectedHoursPerWeek");
   var jobType = $("#jobType").val();
+  var position = $("#position").val();
+
   if (selectedHoursPerWeek){
     $("#selectedHoursPerWeek").empty();
     if (fillhours == ""){
       $(".selectpicker").selectpicker("refresh");
     }
     var list = ["10", "12", "15", "20"];
-    if (jobType == "Secondary"){
+    if (position.toLowerCase() == "no labor"){
+      list = ["0"];
+    }
+    else if (jobType == "Secondary"){
        list = ["5", "10"];
     }
     $(list).each(function(i,hours) {
@@ -661,8 +666,12 @@ function isOneLaborStatusForm(studentDict){
 function checkTotalHours(studentDict) {
   var termCode = $("#selectedTerm").val()
   var isBreak = $("#selectedTerm").find("option:selected").data("termbreak");
+  var hours = studentDict.stuWeeklyHours
+  if (isBreak) {
+    hours = studentDict.stuContractHours
+  }
   $.ajax({
-    url: "/laborstatusform/checktotalhours/" + termCode +"/"+ studentDict.stuBNumber +"/"+ studentDict.stuWeeklyHours +"/"+ studentDict.stuContractHours,
+    url: "/laborstatusform/checktotalhours/" + termCode +"/"+ studentDict.stuBNumber +"/"+ hours,
     dataType: "json",
     success: function (response){
       if (response > (15) && !isBreak) {

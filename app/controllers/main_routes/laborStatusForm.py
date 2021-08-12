@@ -142,10 +142,12 @@ def checkCompliance(department):
         deptDict['Department'] = {'Department Compliance': dept.departmentCompliance}
     return json.dumps(deptDict)
 
-@main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<weeklyHours>/<contractHours>", methods=["GET"])
-def checkTotalHours(termCode, student, weeklyHours, contractHours):
+@main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<hours>", methods=["GET"])
+def checkTotalHours(termCode, student, hours):
     """ Counts the total number of hours for the student after the new lsf is filled. """
-    ayTermCode = termCode[:-2] + '00'
+    shortCode, spring, fall, ayTermCode = termCode[-2:], '12', '11', None
+    if shortCode == spring or shortCode == fall: # Count the AY hours only for Fall and Spring, not break terms.
+        ayTermCode = termCode[:-2] + '00'
     positions = FormHistory.select()\
                            .join_from(FormHistory, LaborStatusForm)\
                            .where(((FormHistory.formID.termCode == termCode) | (FormHistory.formID.termCode == ayTermCode)),
@@ -163,10 +165,7 @@ def checkTotalHours(termCode, student, weeklyHours, contractHours):
                 totalHours = totalHours + item.formID.contractHours
             else:
                 totalHours = totalHours + item.formID.weeklyHours
-    if term.isBreak:
-        totalHours = totalHours + int(contractHours)
-    else:
-        totalHours = totalHours + int(weeklyHours)
+    totalHours = totalHours + int(hours)
     return json.dumps(totalHours)
 
 @main_bp.route("/laborStatusForm/modal/releaseAndRehire", methods=['POST'])
