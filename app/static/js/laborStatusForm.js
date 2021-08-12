@@ -262,13 +262,18 @@ function getDepartment(object, stopSelectRefresh="") { // get department from se
  function fillHoursPerWeek(fillhours=""){ // prefill hours per week select picker
   var selectedHoursPerWeek = $("#selectedHoursPerWeek");
   var jobType = $("#jobType").val();
+  var position = $("#position").val();
+
   if (selectedHoursPerWeek){
     $("#selectedHoursPerWeek").empty();
     if (fillhours == ""){
       $(".selectpicker").selectpicker("refresh");
     }
     var list = ["10", "12", "15", "20"];
-    if (jobType == "Secondary"){
+    if (position.toLowerCase() == "no labor"){
+      list = ["0"];
+    }
+    else if (jobType == "Secondary"){
        list = ["5", "10"];
     }
     $(list).each(function(i,hours) {
