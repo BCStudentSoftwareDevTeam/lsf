@@ -905,5 +905,49 @@ label:this.label,title:this.title,cls:this.className||"",titleJs:c.gecko&&!c.hc?
 d._.on=1;d.editorFocus&&!a.focusManager.hasFocus&&a.focus();if(d.onOpen)d.onOpen()};e.onHide=function(b){this.element.removeClass(k);d.setState(d.modes&&d.modes[a.mode]?CKEDITOR.TRISTATE_OFF:CKEDITOR.TRISTATE_DISABLED);d._.on=0;if(!b&&d.onClose)d.onClose()};e.onEscape=function(){e.hide(1)};b.onClick=function(a,b){d.onClick&&d.onClick.call(d,a,b);e.hide()};this._.panel=e;this._.list=b;e.getBlock(this.id).onHide=function(){d._.on=0;d.setState(CKEDITOR.TRISTATE_OFF)};this.init&&this.init()}},setValue:function(a,
 b){this._.value=a;var c=this.document.getById("cke_"+this.id+"_text");c&&(a||b?c.removeClass("cke_combo_inlinelabel"):(b=this.label,c.addClass("cke_combo_inlinelabel")),c.setText("undefined"!=typeof b?b:a))},getValue:function(){return this._.value||""},unmarkAll:function(){this._.list.unmarkAll()},mark:function(a){this._.list.mark(a)},hideItem:function(a){this._.list.hideItem(a)},hideGroup:function(a){this._.list.hideGroup(a)},showAll:function(){this._.list.showAll()},add:function(a,b,c){this._.items[a]=
 c||a;this._.list.add(a,b,c)},startGroup:function(a){this._.list.startGroup(a)},commit:function(){this._.committed||(this._.list.commit(),this._.committed=1,CKEDITOR.ui.fire("ready",this));this._.committed=1},setState:function(a){if(this._.state!=a){var b=this.document.getById("cke_"+this.id);b.setState(a,"cke_combo");a==CKEDITOR.TRISTATE_DISABLED?b.setAttribute("aria-disabled",!0):b.removeAttribute("aria-disabled");this._.state=a}},getState:function(){return this._.state},enable:function(){this._.state==
-CKEDITOR.TRISTATE_DISABLED&&this.setState(this._.lastState)},disable:function(){this._.state!=CKEDITOR.TRISTATE_DISABLED&&(this._.lastState=this._.state,this.setState(CKEDITOR.TRISTATE_DISABLED))},destroy:function(){CKEDITOR.tools.array.forEach(this._.listeners,function(a){a.removeListener()});this._.listeners=[]}},statics:{handler:{create:function(a){return new CKEDITOR.ui.richCombo(a)}}}});CKEDITOR.ui.prototype.addRichCombo=function(a,b){this.add(a,CKEDITOR.UI_RICHCOMBO,b)}})();CKEDITOR.plugins.add("strinsert",{requires:["richcombo"],init:function(a){var b=[];b.push(["<strong>@@Creator@@</strong>","Creator","Creator of the labor form"]);b.push(["<strong>@@Supervisor@@</strong>","Supervisor","Supervisor of the current labor form"]);b.push(["<strong>@@PrimarySupervisor@@</strong>","Primary Supervisor","Primary Supervisor of the student if form is for a seconday position"]);b.push(["<strong>@@PreviousSupervisor(s)@@</strong>","Previous Supervisor(s)","Supervisors already working with Student"]);b.push(["<strong>@@StudB@@</strong>","B-Number","Student B-Number"]);b.push(["<strong>@@Student@@</strong>","Student","Student full name"]);b.push(["<strong>@@Position@@</strong>","Position","Student position title and code"]);b.push(["<strong>@@Department@@</strong>","Department","Department"]);b.push(["<strong>@@Term@@</strong>","Term","Term Name"]);b.push(["<strong>@@WLS@@</strong>","WLS","WLS"]);b.push(["<strong>@@Hours@@</strong>","Hours","Weekly or total contract hours"]);b.push(["<strong>@@Date@@</strong>","Date","Start Date of the labor form"]);b.push(["<strong>@@ReleaseReason@@</strong>","Release Reason","Reason why student was released"]);b.push(["<strong>@@ReleaseDate@@</strong>","Release Date","Date when student will be released from labor position"]);b.push(["<strong>@@link@@</strong>","Link","Link to form request"]);b.push(["<strong>@@RejectReason@@</strong>","Reject Reason","Reason why student was rejected"]);a.ui.addRichCombo("strinsert",{label:"Insert Placeholder",title:"Insert Content",voiceLabel:"Insert Placeholder",className:"cke_format",multiSelect:!1,panel:{css:[a.config.contentsCss,
-CKEDITOR.skin.getPath("editor")],voiceLabel:a.lang.panelVoiceLabel},init:function(){this.startGroup("Insert Placeholder");for(var a in b)this.add(b[a][0],b[a][1],b[a][2])},onClick:function(b){a.focus();a.fire("saveSnapshot");a.insertHtml(b);a.fire("saveSnapshot")}})}});CKEDITOR.config.plugins='dialogui,dialog,about,basicstyles,notification,button,toolbar,clipboard,enterkey,entities,floatingspace,wysiwygarea,indent,indentlist,fakeobjects,link,list,undo,panel,floatpanel,listblock,richcombo,strinsert';CKEDITOR.config.skin='moono-lisa';(function() {var setIcons = function(icons, strip) {var path = CKEDITOR.getUrl( 'plugins/' + strip );icons = icons.split( ',' );for ( var i = 0; i < icons.length; i++ )CKEDITOR.skin.icons[ icons[ i ] ] = { path: path, offset: -icons[ ++i ], bgsize : icons[ ++i ] };};if (CKEDITOR.env.hidpi) setIcons('about,0,,bold,24,,italic,48,,strike,72,,subscript,96,,superscript,120,,underline,144,,copy-rtl,168,,copy,192,,cut-rtl,216,,cut,240,,paste-rtl,264,,paste,288,,indent-rtl,312,,indent,336,,outdent-rtl,360,,outdent,384,,anchor-rtl,408,,anchor,432,,link,456,,unlink,480,,bulletedlist-rtl,504,,bulletedlist,528,,numberedlist-rtl,552,,numberedlist,576,,redo-rtl,600,,redo,624,,undo-rtl,648,,undo,672,','icons_hidpi.png');else setIcons('about,0,auto,bold,24,auto,italic,48,auto,strike,72,auto,subscript,96,auto,superscript,120,auto,underline,144,auto,copy-rtl,168,auto,copy,192,auto,cut-rtl,216,auto,cut,240,auto,paste-rtl,264,auto,paste,288,auto,indent-rtl,312,auto,indent,336,auto,outdent-rtl,360,auto,outdent,384,auto,anchor-rtl,408,auto,anchor,432,auto,link,456,auto,unlink,480,auto,bulletedlist-rtl,504,auto,bulletedlist,528,auto,numberedlist-rtl,552,auto,numberedlist,576,auto,redo-rtl,600,auto,redo,624,auto,undo-rtl,648,auto,undo,672,auto','icons.png');})();CKEDITOR.lang.languages={"en":1};}());
+CKEDITOR.TRISTATE_DISABLED&&this.setState(this._.lastState)},disable:function(){this._.state!=CKEDITOR.TRISTATE_DISABLED&&(this._.lastState=this._.state,this.setState(CKEDITOR.TRISTATE_DISABLED))},destroy:function(){CKEDITOR.tools.array.forEach(this._.listeners,function(a){a.removeListener()});this._.listeners=[]}},statics:{handler:{create:function(a){return new CKEDITOR.ui.richCombo(a)}}}});
+CKEDITOR.ui.prototype.addRichCombo=function(a,b){
+  this.add(a,CKEDITOR.UI_RICHCOMBO,b)
+}
+})();
+CKEDITOR.plugins.add("strinsert",{
+  requires:["richcombo"],
+  init:function(a){
+    var b=[];
+    b.push(["<strong>@@Creator@@</strong>","Creator","Creator of the labor form"]);
+    b.push(["<strong>@@Supervisor@@</strong>","Supervisor","Supervisor of the current labor form"]);
+    b.push(["<strong>@@PrimarySupervisor@@</strong>","Primary Supervisor","Primary Supervisor of the student if form is for a seconday position"]);
+    b.push(["<strong>@@PreviousSupervisor(s)@@</strong>","Previous Supervisor(s)","Supervisors already working with Student"]);
+    b.push(["<strong>@@StudB@@</strong>","B-Number","Student B-Number"]);
+    b.push(["<strong>@@Student@@</strong>","Student","Student full name"]);
+    b.push(["<strong>@@Position@@</strong>","Position","Student position title and code"]);
+    b.push(["<strong>@@Department@@</strong>","Department","Department"]);
+    b.push(["<strong>@@WLS@@</strong>","WLS","WLS"]);
+    b.push(["<strong>@@Hours@@</strong>","Hours","Weekly or total contract hours"]);
+    b.push(["<strong>@@Date@@</strong>","Date","Start Date of the labor form"]);
+    b.push(["<strong>@@ReleaseReason@@</strong>","Release Reason","Reason why student was released"]);
+    b.push(["<strong>@@ReleaseDate@@</strong>","Release Date","Date when student will be released from labor position"]);
+    b.push(["<strong>@@link@@</strong>","Link","Link to form request"]);
+    a.ui.addRichCombo("strinsert",{
+      label:"Insert Placeholder",
+      title:"Insert Content",
+      voiceLabel:"Insert Placeholder",
+      className:"cke_format",
+      multiSelect:!1,
+      panel:{
+        css:[a.config.contentsCss,
+          CKEDITOR.skin.getPath("editor")],
+            voiceLabel:a.lang.panelVoiceLabel
+      },
+      init:function(){
+        this.startGroup("Insert Placeholder");
+        for(var a in b) this.add(b[a][0],b[a][1],b[a][2])
+      },
+      onClick:function(b){
+        a.focus();a.fire("saveSnapshot");
+        a.insertHtml(b);a.fire("saveSnapshot")
+      }
+    })
+  }
+});
+CKEDITOR.config.plugins='dialogui,dialog,about,basicstyles,notification,button,toolbar,clipboard,enterkey,entities,floatingspace,wysiwygarea,indent,indentlist,fakeobjects,link,list,undo,panel,floatpanel,listblock,richcombo,strinsert';CKEDITOR.config.skin='moono-lisa';(function() {var setIcons = function(icons, strip) {var path = CKEDITOR.getUrl( 'plugins/' + strip );icons = icons.split( ',' );for ( var i = 0; i < icons.length; i++ )CKEDITOR.skin.icons[ icons[ i ] ] = { path: path, offset: -icons[ ++i ], bgsize : icons[ ++i ] };};if (CKEDITOR.env.hidpi) setIcons('about,0,,bold,24,,italic,48,,strike,72,,subscript,96,,superscript,120,,underline,144,,copy-rtl,168,,copy,192,,cut-rtl,216,,cut,240,,paste-rtl,264,,paste,288,,indent-rtl,312,,indent,336,,outdent-rtl,360,,outdent,384,,anchor-rtl,408,,anchor,432,,link,456,,unlink,480,,bulletedlist-rtl,504,,bulletedlist,528,,numberedlist-rtl,552,,numberedlist,576,,redo-rtl,600,,redo,624,,undo-rtl,648,,undo,672,','icons_hidpi.png');else setIcons('about,0,auto,bold,24,auto,italic,48,auto,strike,72,auto,subscript,96,auto,superscript,120,auto,underline,144,auto,copy-rtl,168,auto,copy,192,auto,cut-rtl,216,auto,cut,240,auto,paste-rtl,264,auto,paste,288,auto,indent-rtl,312,auto,indent,336,auto,outdent-rtl,360,auto,outdent,384,auto,anchor-rtl,408,auto,anchor,432,auto,link,456,auto,unlink,480,auto,bulletedlist-rtl,504,auto,bulletedlist,528,auto,numberedlist-rtl,552,auto,numberedlist,576,auto,redo-rtl,600,auto,redo,624,auto,undo-rtl,648,auto,undo,672,auto','icons.png');})();CKEDITOR.lang.languages={"en":1};}());

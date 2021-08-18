@@ -138,7 +138,7 @@
         <!--datePicker for start date-->
         <label for="dateTimePicker1" id="datePickerStart"><span class="tooltip-right" data-tooltip="Required">Start Date<span class="required-mark">*</span></span></label>
           <div class='input-group date'>
-            <input type='text' class="form-control disable" id='dateTimePicker1' name="startDate" placeholder="Start Date" data-width="320px" onchange="updateDate(this)" readonly/>
+            <input type='text' class="form-control disable datePicker" id='dateTimePicker1' name="startDate" placeholder="Start Date" data-width="320px" onchange="updateDate(this)" readonly/>
             <span class="input-group-addon" id="calendarIcon1">
               <span class="glyphicon glyphicon-calendar"></span>
             </span>
@@ -148,7 +148,7 @@
         <!--datePicker for End date-->
       <label for="dateTimePicker2" id="datePickerEnd"><span class="tooltip-right" data-tooltip="Required">End Date<span class="required-mark">*</span></span></label>
         <div class='input-group date'>
-            <input type='text' class="form-control disable" id='dateTimePicker2' name="endDate" placeholder="End Date" data-width="320px" onchange="updateDate(this)" readonly/>
+            <input type='text' class="form-control disable datePicker" id='dateTimePicker2' name="endDate" placeholder="End Date" data-width="320px" onchange="updateDate(this)" readonly/>
             <span class="input-group-addon" id="calendarIcon2">
               <span class="glyphicon glyphicon-calendar"></span>
             </span>
@@ -222,13 +222,13 @@
     </div>
     <div id="contractHours" class= "form-group ">
     <!-- Contract hours for breaks -->
-       <label for="selectedContractHours"><span class="tooltip-right" data-tooltip="Required">Contract Hours<span class="required-mark">*</span></span></label>
+       <label for="selectedContractHours"><span class="tooltip-right" data-tooltip="Required">Total Contract Hours<span class="required-mark">*</span></span></label>
          <input class="form-control quantity disable"
                  type = "number"
                  name='contractHours'
                  id='selectedContractHours'
                  title="Contract Hours"
-                 placeholder="Contract Hours"
+                 placeholder="Total Contract Hours"
                  min = "1"
                  oninput="this.value = Math.abs(this.value); this.value = parseInt(this.value)||0" >
          </input>

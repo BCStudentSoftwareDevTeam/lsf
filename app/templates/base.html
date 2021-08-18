@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{url_for('static', filename ='css/base.css') }}?u={{lastStaticUpdate}}">
     <link rel="stylesheet" href="/static/css/tooltip.css?u={{lastStaticUpdate}}" type="text/css"/>
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/sidebar.css') }}?u={{lastStaticUpdate}}">
+
 {% endblock %}
 
 {% block scripts %}
@@ -17,6 +19,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/base.js') }}?u={{lastStaticUpdate}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+   <script type="text/javascript" src="{{url_for('static', filename='js/sidebar.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block title %}

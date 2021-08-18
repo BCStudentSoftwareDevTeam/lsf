@@ -1,6 +1,16 @@
 $(document).ready(function(){
+  $( "#dateTimePicker1, #dateTimePicker2").datepicker();
   fillHoursPerWeek();
   jobPositionDisable();
+  preFilledDate($("#Term").data("termcode"));
+ });
+
+ $("#calendarIcon1").click(function() {
+     $("#dateTimePicker1").datepicker('show') // Shows the start date datepicker when glyphicon is clicked
+ });
+
+ $("#calendarIcon2").click(function() {
+     $("#dateTimePicker2").datepicker('show') // Shows the end date datepicker when glyphicon is clicked
  });
 
 $("#contractHoursDiv").hide();
@@ -137,6 +147,10 @@ function checkForChange(){
   var newContractHours = $("#contractHours").val();
   var oldWeeklyHours = $("#oldWeeklyHours").val();
   var newWeeklyHours = $("#weeklyHours").val();
+  var oldStartDate = $("#oldStartDate").val();
+  var newStartDate = $("#dateTimePicker1").val();
+  var oldEndDate = $("#oldEndDate").val();
+  var newEndDate = $("#dateTimePicker2").val();
 
   if(oldSupervisor != newSupervisor){
     finalDict["supervisor"] = {"oldValue": oldSupervisor, "newValue": newSupervisor, "date": date}
@@ -152,6 +166,12 @@ function checkForChange(){
   }
   if(oldWeeklyHours != newWeeklyHours && newContractHours == ""){
     finalDict["weeklyHours"] = {"oldValue": oldWeeklyHours, "newValue": newWeeklyHours, "date": date}
+  }
+  if(oldStartDate != newStartDate){
+    finalDict["startDate"] = {"oldValue": oldStartDate, "newValue": newStartDate, "date": date}
+  }
+  if(oldEndDate != newEndDate){
+    finalDict["endDate"] = {"oldValue": oldEndDate, "newValue": newEndDate, "date": date}
   }
 
   if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")){
@@ -172,6 +192,9 @@ function checkForChange(){
 
 function buttonListener(laborStatusKey) {
   event.preventDefault();
+  $('#modal').html('Processing');
+  $('#modal').prop('disabled', 'True');
+  $('#adjustmentClose').prop('disabled', 'True');
   $.ajax({
     url: "/alterLSF/submitAlteredLSF/" + laborStatusKey,
     method: "POST",
@@ -181,4 +204,66 @@ function buttonListener(laborStatusKey) {
       window.location.href = document.referrer;
     }
   })
+}
+
+function preFilledDate(obj){ // get term start date and end date
+  $.ajax({
+    url: "/alterLSF/getDate/" + obj,
+    dataType: "json",
+    success: function (response){
+       fillDates(response);
+    }
+  });
+}
+
+function fillDates(response) { // prefill term start and term end
+
+  for (var key in response){
+    var start = response[key]["Start Date"];
+    var end = response[key]["End Date"];
+    var primaryCutOff = response[key]["Primary Cut Off"];
+    // disabling primary position if cut off date is before today's date
+    var today = new Date();
+    var date = ("0"+(today.getMonth()+1)).slice(-2)+"/"+("0"+today.getDate()).slice(-2)+"/"+today.getFullYear();
+
+    // Start Date
+    var startd = new Date(start);
+    var dayStart1 = startd.getDate();
+    var monthStart1 = startd.getMonth();
+    var yearStart = startd.getFullYear();
+    // End Date
+    var endd = new Date(end);
+    var dayEnd1 = endd.getDate();
+    var monthEnd1 = endd.getMonth();
+    var yearEnd = endd.getFullYear();
+    // Pre-populate values
+    $("#dateTimePicker1").val(start);
+    $("#dateTimePicker2").val(end);
+    // set the minimum and maximum Date for Term Start Date
+    $("#dateTimePicker1").datepicker({minDate: new Date(yearStart, monthStart1, dayStart1)});
+    $("#dateTimePicker1").datepicker({maxDate: new Date(yearEnd, monthEnd1, dayEnd1)});
+    $("#dateTimePicker1").datepicker("option", "minDate", new Date(yearStart, monthStart1, dayStart1));
+    $("#dateTimePicker1").datepicker("option", "maxDate", new Date(yearEnd, monthEnd1, dayEnd1));
+    // set the minimum and maximum Date for Term End Date
+    $("#dateTimePicker2").datepicker({maxDate: new Date(yearEnd, monthEnd1, dayEnd1)});
+    $("#dateTimePicker2").datepicker({minDate: new Date(yearStart, monthStart1, dayStart1)});
+    $("#dateTimePicker2").datepicker("option", "maxDate", new Date(yearEnd, monthEnd1, dayEnd1));
+    $("#dateTimePicker2").datepicker("option", "minDate", new Date(yearStart, monthStart1, dayStart1));
+  }
+}
+
+function updateDate(obj) { // updates max and min dates of the datepickers as the other datepicker changes
+  var dateToChange = new Date($(obj).val());
+  var newMonth = dateToChange.getMonth();
+  var newYear = dateToChange.getFullYear();
+  if(obj.id == "dateTimePicker2"){
+    var newDay = dateToChange.getDate() - 1;
+    $("#dateTimePicker1").datepicker({maxDate: new Date(newYear, newMonth, newDay)});
+    $("#dateTimePicker1").datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
+  }
+  if(obj.id == "dateTimePicker1"){
+    var newDay = dateToChange.getDate() + 1;
+    $("#dateTimePicker2").datepicker({minDate: new Date(newYear, newMonth, newDay)});
+    $("#dateTimePicker2").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
+  }
 }

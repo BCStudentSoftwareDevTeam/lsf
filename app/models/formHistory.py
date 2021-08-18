@@ -14,7 +14,7 @@ class FormHistory(baseModel):
     # overloadID          = ForeignKeyField(OverloadForm, on_delete = "cascade")
     historyType         = ForeignKeyField(HistoryType)                                        # foreign key to historytype
     releaseForm         = ForeignKeyField(LaborReleaseForm, null=True, on_delete="cascade")  # if its a release form
-    adjustedForm        = ForeignKeyField(AdjustedForm, null=True, on_delete="cascade")      # if its a form modification
+    adjustedForm        = ForeignKeyField(AdjustedForm, null=True,on_delete="cascade")      # if its a form modification
     overloadForm        = ForeignKeyField(OverloadForm, null=True, on_delete="cascade")      # if its an overload application
     createdBy           = ForeignKeyField(User, related_name="creator",  on_delete="cascade") # Foreign key to USERS
     createdDate         = DateField()

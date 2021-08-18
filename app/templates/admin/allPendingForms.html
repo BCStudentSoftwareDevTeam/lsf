@@ -20,27 +20,39 @@
 </div>
 
 <div class="container" id="wrapper">
-  <div id="pendingTabs" class="container" style='display: inline-block;;'>
+  <div id="pendingTabs" class="container" style='display: inline-block;'>
     <ul class="nav nav-tabs" style='text-align: center;'>
-      <li id='laborTab' {% if formType == "pendingLabor" %} class="active" {% endif %}>
-        <a id="pendingLabor" href="{{url_for('admin.allPendingForms', formType = 'pendingLabor')}}"> Pending Labor Status Forms <strong>({{ laborStatusFormCounter }})</strong></a>
-      </li>
-      <li id='adjustedTab' {% if formType == "pendingAdjustment" %} class="active" {% endif %}>
-        <a href="{{url_for('admin.allPendingForms', formType = 'pendingAdjustment')}}">Pending Adjustment Forms <strong>({{ adjustedFormCounter }})</strong></a>
-      </li>
-      <li id='overloadTab' {% if formType == "pendingOverload" %} class="active" {% endif %}>
-        <a href="{{url_for('admin.allPendingForms', formType = 'pendingOverload')}}">Pending Overload Forms <strong>({{ overloadFormCounter }})</strong></a>
-      </li>
-      <li id='releaseTab' {% if formType == "pendingRelease" %} class="active" {% endif %}>
-        <a href="{{url_for('admin.allPendingForms', formType = 'pendingRelease')}}">Pending Release Forms <strong>({{ releaseFormCounter }})</strong></a>
-      </li>
-      <ul class= "nav nav-tabs navbar-right" style='margin-right:0px;'>
-        <li id="download">
-          <form method="POST" action="/admin/pendingForms/download">
-            <button class="btn btn-success" id="download">Download</button>
-          </form>
+      {% if currentUser.isLaborAdmin %}
+        <li id='laborTab' {% if formType == "pendingLabor" %} class="active" {% endif %}>
+          <a id="pendingLabor" href="{{url_for('admin.allPendingForms', formType = 'pendingLabor')}}"> Pending Labor Status Forms <strong>({{ laborStatusFormCounter }})</strong></a>
         </li>
-      </ul>
+        <li id='adjustedTab' {% if formType == "pendingAdjustment" %} class="active" {% endif %}>
+          <a href="{{url_for('admin.allPendingForms', formType = 'pendingAdjustment')}}">Pending Adjustment Forms <strong>({{ adjustedFormCounter }})</strong></a>
+        </li>
+        {% endif %}
+        {% if currentUser.isFinancialAidAdmin or currentUser.isLaborAdmin  or currentUser.isSaasAdmin %}
+        <li id='overloadTab' {% if formType == "pendingOverload" %} class="active" {% endif %}>
+          <a href="{{url_for('admin.allPendingForms', formType = 'pendingOverload')}}">Pending Overload Forms <strong>({{ overloadFormCounter }})</strong></a>
+        </li>
+        {% endif %}
+        {% if (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin) and not currentUser.isLaborAdmin %}
+        <li id='completedOverloadTab' {% if formType == "completedOverload" %} class="active" {% endif %}>
+          <a href="{{url_for('admin.allPendingForms', formType = 'completedOverload')}}">Completed Overload Forms <strong>({{ completedOverloadFormCounter }})</strong></a>
+        </li>
+        {% endif %}
+        {% if currentUser.isLaborAdmin %}
+        <li id='releaseTab' {% if formType == "pendingRelease" %} class="active" {% endif %}>
+          <a href="{{url_for('admin.allPendingForms', formType = 'pendingRelease')}}">Pending Release Forms <strong>({{ releaseFormCounter }})</strong></a>
+        </li>
+
+        <ul class= "nav nav-tabs navbar-right" style='margin-right:0px;'>
+          <li id="download">
+            <form method="POST" action="/admin/pendingForms/download">
+              <button class="btn btn-success" id="download">Download</button>
+            </form>
+          </li>
+        </ul>
+      {% endif %}
     </ul>
   </div>
   <br> </br>
@@ -51,7 +63,7 @@
           <!-- Made empty header tags because we need to hide the header -->
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
               <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
               <th>Term</th>
@@ -69,9 +81,12 @@
             </tr>
           </thead>
           <tbody id="tablebody">
+            <!-- IF Financial aid is logged form type is overload then overload form set variable to finaidforms otherwise set the var to formlist  -->
+            <!-- IF financialAid is logged in and form type is approved overload then set variable to approved finaid forms  -->
+            <!--  -->
             {% for allForms in formList %}
             <tr id="tableData" class="tableData" align="center">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
                 {% if allForms.formHistoryID in pendingOverloadFormPairs %}
                   <td> {# REDIRECT #}
                     {% with modalTarget = modalTarget %}
@@ -160,7 +175,8 @@
                     {% if allForms.historyType.historyTypeName == 'Labor Overload Form' %}
                     <li role="presentation"><a role="menuitem" href="#"
                       <span id="{{allForms.formHistoryID}}"
-                            onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                            onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a>
+                    </li>
                     {% elif allForms.historyType.historyTypeName == 'Labor Release Form' %}
                     <li role="presentation"><a role="menuitem" href="#"
                       <span id="{{allForms.formHistoryID}}"
@@ -192,7 +208,7 @@
             {% endfor %}
           </tbody>
         </table>
-        {% if formType != 'pendingOverload' and formType != 'pendingRelease' %}
+        {% if formType != 'pendingOverload' and formType != 'pendingRelease' and formType != 'completedOverload'%}
         <div style='float:left'>
           <button
             id="approveSelected"

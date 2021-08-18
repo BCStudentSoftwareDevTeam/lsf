@@ -53,6 +53,7 @@ def test_createTerms(setup, cleanup):
     createTerms(2018)
     term = Term.get(Term.termCode == "201800")
     assert "AY 2018-2019"== term.termName
+    assert True == term.isAcademicYear
     assert termsPerYear == Term.select().where(Term.termCode.cast('char').contains("2018")).count()
 
     # A future year's terms

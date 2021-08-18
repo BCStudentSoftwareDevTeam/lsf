@@ -11,6 +11,7 @@ from app.models.user import*
 from app.models.status import*
 from datetime import datetime
 from app.models.emailTracker import *
+from app.logic.tracy import Tracy
 import string
 from app import app
 import os
@@ -24,6 +25,7 @@ class emailHandler():
             MAIL_PORT=secret_conf['MAIL_PORT'],
             MAIL_USERNAME= secret_conf['MAIL_USERNAME'],
             MAIL_PASSWORD= secret_conf['MAIL_PASSWORD'],
+            REPLY_TO_ADDRESS= secret_conf['REPLY_TO_ADDRESS'],
             MAIL_USE_TLS=secret_conf['MAIL_USE_TLS'],
             MAIL_USE_SSL=secret_conf['MAIL_USE_SSL'],
             MAIL_DEFAULT_SENDER=secret_conf['MAIL_DEFAULT_SENDER'],
@@ -51,13 +53,14 @@ class emailHandler():
 
         if not self.term.isBreak:
             try:
+                ayTermCode = str(self.laborStatusForm.termCode.termCode)[:-2] + '00'
                 self.primaryEmail = None
                 self.primaryForm = None
                 self.primaryForm = FormHistory.select().join_from(FormHistory, LaborStatusForm) \
                                               .join_from(FormHistory, HistoryType).join_from(FormHistory, Status) \
                                               .where((FormHistory.formID.jobType == "Primary") &
                                                      (FormHistory.formID.studentSupervisee == self.laborStatusForm.studentSupervisee) &
-                                                     (FormHistory.formID.termCode == self.laborStatusForm.termCode) &
+                                                     ((FormHistory.formID.termCode == self.laborStatusForm.termCode) | (FormHistory.formID.termCode == ayTermCode)) &
                                                      (FormHistory.historyType.historyTypeName == "Labor Status Form") &
                                                      (FormHistory.status.statusName != "Denied")).get()
                 self.primaryEmail = self.primaryForm.formID.supervisor.EMAIL
@@ -68,6 +71,23 @@ class emailHandler():
         self.link = ""
         self.releaseReason = ""
         self.releaseDate = ""
+        self.newAdjustmentField = ""
+        self.oldAdjustmentField = ""
+
+        if self.formHistory.adjustedForm:
+            if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
+                from app.logic.userInsertFunctions import createSupervisorFromTracy
+                newSupervisor = createSupervisorFromTracy(bnumber=self.formHistory.adjustedForm.newValue)
+                self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
+                self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
+            elif self.formHistory.adjustedForm.fieldAdjusted == "position":
+                currentPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.oldValue)
+                newPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.newValue)
+                self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
+                self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
+            else:
+                self.oldAdjustmentField = "Current Hours: {0}".format(self.formHistory.adjustedForm.oldValue)
+                self.newAdjustmentField = "Pending new Hours: {0}".format(self.formHistory.adjustedForm.newValue)
 
         try:
             self.releaseDate = self.formHistory.releaseForm.releaseDate.strftime("%m/%d/%Y")
@@ -88,6 +108,7 @@ class emailHandler():
                 message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
+            message.reply_to = app.config["REPLY_TO_ADDRESS"]
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':
@@ -329,7 +350,7 @@ class emailHandler():
         form = form.replace("@@Department@@", self.laborStatusForm.department.DEPT_NAME)
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
-        
+
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
         if self.laborStatusForm.weeklyHours != None:
@@ -345,6 +366,9 @@ class emailHandler():
         elif self.primaryForm:
             # 'Primary Supervisor' is the primary supervisor of the student who's laborStatusForm is passed in the initializer
             form = form.replace("@@PrimarySupervisor@@", self.primaryForm.formID.supervisor.FIRST_NAME + " " + self.primaryForm.formID.supervisor.LAST_NAME)
+        if self.formHistory.adjustedForm:
+            form = form.replace("@@NewAdjustmentField@@", self.newAdjustmentField)
+            form = form.replace("@@CurrentAdjustmentField@@", self.oldAdjustmentField)
         form = form.replace("@@SupervisorEmail@@", self.supervisorEmail)
         form = form.replace("@@Date@@", self.date)
         form = form.replace("@@ReleaseReason@@", self.releaseReason)

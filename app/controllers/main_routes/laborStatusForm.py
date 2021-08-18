@@ -81,47 +81,23 @@ def userInsert():
     rspFunctional = json.loads(rsp)
     all_forms = []
     for i in range(len(rspFunctional)):
-        tracyStudent = Tracy().getStudentFromBNumber(rspFunctional[i]['stuBNumber'])
 
-        # Tries to get a student with the following information from the database
-        # if the student doesn't exist, it tries to create a student with that same information
+        # Get a student record for the given bnumber
         try:
-            createStudentFromTracyObj(tracyStudent)
+            student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
+            supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
         except InvalidUserException as e:
             print(e)
             return "", 500
 
-        student = Student.get(ID = tracyStudent.ID)
-
-        # Updates the student database with any updated attributes from TRACY
-        student.FIRST_NAME = tracyStudent.FIRST_NAME            # FIRST_NAME
-        student.LAST_NAME = tracyStudent.LAST_NAME              # LAST_NAME
-        student.CLASS_LEVEL = tracyStudent.CLASS_LEVEL          # CLASS_LEVEL
-        student.ACADEMIC_FOCUS = tracyStudent.ACADEMIC_FOCUS    # ACADEMIC_FOCUS
-        student.MAJOR = tracyStudent.MAJOR                      # MAJOR
-        student.PROBATION = tracyStudent.PROBATION              # PROBATION
-        student.ADVISOR = tracyStudent.ADVISOR                  # ADVISOR
-        student.STU_EMAIL = tracyStudent.STU_EMAIL              # STU_EMAIL
-        student.STU_CPO = tracyStudent.STU_CPO                  # STU_CPO
-        student.LAST_POSN = tracyStudent.LAST_POSN              # LAST_POSN
-        student.LAST_SUP_PIDM = tracyStudent.LAST_SUP_PIDM      # LAST_SUP_PIDM
-
-        student.save()                                          #Saves to student database
-
-        studentID = student.ID
-        d = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
-        primarySupervisor = d.ID
-        d, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
-        department = d.departmentID
-        d, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
-        term = d
+        department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
+        term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
         try:
-            lsf = createLaborStatusForm(tracyStudent, studentID, primarySupervisor, department, term, rspFunctional[i])
+            lsf = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, rspFunctional[i])
             status = Status.get(Status.statusName == "Pending")
-            creatorID = currentUser
-            createOverloadFormAndFormHistory(rspFunctional[i], lsf, creatorID, status) # createOverloadFormAndFormHistory()
+            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, status) # createOverloadFormAndFormHistory()
             try:
-                emailDuringBreak(checkForSecondLSFBreak(term.termCode, studentID), term)
+                emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
             except Exception as e:
                 print("Error when sending emails during break: " + str(e))
 
@@ -151,10 +127,12 @@ def getDates(termcode):
 @main_bp.route("/laborstatusform/getPositions/<departmentOrg>/<departmentAcct>", methods=['GET'])
 def getPositions(departmentOrg, departmentAcct):
     """ Get all of the positions that are in the selected department """
+    currentUser = require_login()
     positions = Tracy().getPositionsFromDepartment(departmentOrg,departmentAcct)
     positionDict = {}
     for position in positions:
-        positionDict[position.POSN_CODE] = {"position": position.POSN_TITLE, "WLS":position.WLS, "positionCode":position.POSN_CODE}
+        if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
+            positionDict[position.POSN_CODE] = {"position": position.POSN_TITLE, "WLS":position.WLS, "positionCode":position.POSN_CODE}
     return json.dumps(positionDict)
 
 @main_bp.route("/laborstatusform/getstudents/<termCode>/<student>", methods=["POST"])
@@ -175,10 +153,19 @@ def checkCompliance(department):
         deptDict['Department'] = {'Department Compliance': dept.departmentCompliance}
     return json.dumps(deptDict)
 
-@main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<weeklyHours>/<contractHours>", methods=["GET"])
-def checkTotalHours(termCode, student, weeklyHours, contractHours):
+@main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<hours>", methods=["GET"])
+def checkTotalHours(termCode, student, hours):
     """ Counts the total number of hours for the student after the new lsf is filled. """
-    positions = FormHistory.select().join_from(FormHistory, LaborStatusForm).where(FormHistory.formID.termCode == termCode, FormHistory.formID.studentSupervisee == student, FormHistory.historyType == "Labor Status Form", (FormHistory.status == "Approved" or FormHistory.status == "Approved Reluctantly"))
+    shortCode, spring, fall, ayTermCode = termCode[-2:], '12', '11', None
+    if shortCode == spring or shortCode == fall: # Count the AY hours only for Fall and Spring, not break terms.
+        ayTermCode = termCode[:-2] + '00'
+    positions = FormHistory.select()\
+                           .join_from(FormHistory, LaborStatusForm)\
+                           .where(((FormHistory.formID.termCode == termCode) | (FormHistory.formID.termCode == ayTermCode)),
+                                  FormHistory.formID.studentSupervisee == student,
+                                  FormHistory.historyType == "Labor Status Form",
+                                  ((FormHistory.status == "Approved") | (FormHistory.status == "Approved Reluctantly") | (FormHistory.status == "Pending"))
+                                  )
     term = Term.get(Term.termCode == termCode)
     totalHours = 0
     for item in positions:
@@ -189,10 +176,7 @@ def checkTotalHours(termCode, student, weeklyHours, contractHours):
                 totalHours = totalHours + item.formID.contractHours
             else:
                 totalHours = totalHours + item.formID.weeklyHours
-    if term.isBreak:
-        totalHours = totalHours + int(contractHours)
-    else:
-        totalHours = totalHours + int(weeklyHours)
+    totalHours = totalHours + int(hours)
     return json.dumps(totalHours)
 
 @main_bp.route("/laborStatusForm/modal/releaseAndRehire", methods=['POST'])
@@ -210,18 +194,17 @@ def releaseAndRehire():
         todayDate = date.today()
         tomorrowDate = datetime.now()+timedelta(1)
         createLaborReleaseForm(currentUser, previousPrimaryPosition.formID, tomorrowDate, "Satisfactory", "Released by labor admin.", "Approved", todayDate, currentUser)
+
         # Create new labor status form
-        tracyStudent = Tracy().getStudentFromBNumber(studentDict['stuBNumber'])
-        studentID = Student.get(ID = tracyStudent.ID)
-        d = createSupervisorFromTracy(bnumber=studentDict['stuSupervisorID'])
-        primarySupervisor = d.ID
-        d, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
-        department = d.departmentID
-        d, created = Term.get_or_create(termCode = studentDict['stuTermCode'])
-        term = d
+        student = getOrCreateStudentRecord(bnumber=studentDict['stuBNumber'])
+        supervisor = createSupervisorFromTracy(bnumber=studentDict['stuSupervisorID'])
+        department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
+        term, created = Term.get_or_create(termCode = studentDict['stuTermCode'])
         status = Status.get(Status.statusName == "Pending")
-        newLaborStatusForm = createLaborStatusForm(tracyStudent, studentID, primarySupervisor, department, term, studentDict)
+
+        newLaborStatusForm = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, studentDict)
         formHistory = createOverloadFormAndFormHistory(studentDict, newLaborStatusForm, currentUser, status)
+
         # Mark the newly created labor status form as approved in both our system and Banner
         saveStatus("Approved", [str(formHistory.formHistoryID)], currentUser)
 

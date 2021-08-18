@@ -117,3 +117,7 @@ selectpicker, label {
 #resetConfirmButton {
     display: none;
 }
+
+.datePicker {
+  pointer-events:initial !important;
+}

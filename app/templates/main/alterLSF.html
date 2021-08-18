@@ -76,20 +76,47 @@
      <div class="form-group">
        <label for="Term">Term</label> <!--User CANNOT edit-->
        <div >
-         <input type="text" class="form-control" id="Term" value="{{prefillterm.termName}}"disabled> <!--User CANNOT edit-->
+         <input type="text" class="form-control" id="Term" value="{{prefillterm.termName}}" data-termCode = "{{prefillterm.termCode}}"disabled> <!--User CANNOT edit-->
          <input hidden id="termBreak" data-termBreak="{{prefillterm.isBreak|lower}}"> </input>
        </div>
      </div>
+     {% if title == "Labor Status Correction Form" and currentUser.isLaborAdmin %}
+     <div class="form-group col-xs-12" id="datePickerDiv">
+         <div  class="form-group col-xs-6" id="startDateStyle">
+           <!--datePicker for start date-->
+           <label for="dateTimePicker1" id="datePickerStart"><span class="tooltip-right" data-tooltip="Required">Start Date<span class="required-mark">*</span></span></label>
+             <div class='input-group date'>
+               <input type='text' class="form-control disable" id='dateTimePicker1' name="startDate" value="{{prefillstartdate}}" data-width="320px" onchange="updateDate(this)" />
+               <input hidden class="oldValue" id="prefillstartdate" value= {{prefillstartdate}}></input>
+               <span class="input-group-addon" id="calendarIcon1">
+                 <span class="glyphicon glyphicon-calendar"></span>
+               </span>
+             </div>
+         </div>
+         <div class="form-group col-xs-6" id ="endDateStyle">
+           <!--datePicker for End date-->
+         <label for="dateTimePicker2" id="datePickerEnd"><span class="tooltip-right" data-tooltip="Required">End Date<span class="required-mark">*</span></span></label>
+           <div class='input-group date'>
+               <input type='text' class="form-control disable" id='dateTimePicker2' name="endDate" value="{{prefillenddate}}" data-width="320px" onchange="updateDate(this)" />
+               <input hidden class="oldValue" id="prefillenddate" value= {{prefillenddate}}></input>
+               <span class="input-group-addon" id="calendarIcon2">
+                 <span class="glyphicon glyphicon-calendar"></span>
+               </span>
+           </div>
+         </div>​
+       </div>
+       {% endif %}
+
      <div id="contractHoursDiv" class="form-group newValue">
         <!-- Contract hours for breaks -->
-           <label for="contractHours"><span class="tooltip-right" data-tooltip="Required">Contract Hours<span class="required-mark"> *</span></span></label>
+           <label for="contractHours"><span class="tooltip-right" data-tooltip="Required">Total Contract Hours<span class="required-mark"> *</span></span></label>
            <div  class="change">
              <input class="form-control quantity newValue disable"
                      type = "number"
                      name='contractHours'
                      id='contractHours'
                      title= "{{prefillhours}}"
-                     placeholder="Contract Hours"
+                     placeholder="Total Contract Hours"
                      min = "1"
                      value = "{{prefillhours}}"
                      oninput="this.value = Math.abs(this.value); this.value = parseInt(this.value)||0">

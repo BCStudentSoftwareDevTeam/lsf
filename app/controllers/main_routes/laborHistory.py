@@ -21,6 +21,7 @@ from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
 from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import getOrCreateStudentRecord
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
 @main_bp.route('/laborHistory/<departmentName>/<id>', methods=['GET'])
@@ -29,7 +30,7 @@ def laborhistory(id, departmentName = None):
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
-        student = Student.get(Student.ID == id)
+        student = getOrCreateStudentRecord(bnumber=id)
         studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
          FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
         authorizedForms = set(studentForms)

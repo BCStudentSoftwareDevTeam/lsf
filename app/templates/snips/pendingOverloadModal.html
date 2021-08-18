@@ -3,7 +3,7 @@
   <h3 class="modal-title" id="overloadModalLabel" align="center"><b>Labor Overload Form</b></h3>
 </div>
 <div class="modal-body" id="overloadModalBody">
-  {% if pendingForm == true %}
+  {% if pendingForm == true and ((currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin)) %}
     <div class="row" style="margin-top:7px;">
       <div class="col-sm-1" style="padding:0px;">
         <span class="glyphicon glyphicon-info-sign" style="color:blue;"></span>
@@ -13,35 +13,51 @@
       </div>
     </div>
   {% endif %}
-  <table id="overloadStudentTable" class="table table-bordered">
-    <thead>
-      <tr>
-        <th scope="col">Student</th>
-        <th scope="col">Position</th>
-        <th scope="col">Hours</th>
-        <th scope="col">Supervisor</th>
-        <th scope="col">Department</th>
-      </tr>
-    </thead>
-    <tbody id="overloadStudentTableBody">
-      {% for form in historyForm %}
-        <td colspan="1">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}</td>
-        <td>{{form.formID.POSN_TITLE}}</td>
-        <td>{% if form.adjustedForm %}
-              {{form.adjustedForm.newValue}}
-            {%else%}
-              {{form.formID.weeklyHours}}
-            {%endif%}
-        </td>
-        <td>{{form.formID.supervisor.FIRST_NAME}} {{form.formID.supervisor.LAST_NAME}}</td>
-        <td>{{form.formID.department.DEPT_NAME}}</td>
-        <tr>
-          <td><strong>Overload Reason:</strong></td>
-          <td colspan="4">{{form.overloadForm.studentOverloadReason}}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-10">
+        {% for form in historyForm %}
+          <dl class="row" style="text-align:left;">
+            <dt class="col-sm-4">Student</dt>
+            <dd class="col-sm-8">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}</dd>
+
+            <dt class="col-sm-4">Position</dt>
+            <dd class="col-sm-8">{{form.formID.POSN_TITLE}}</dd>
+
+            <dt class="col-sm-4">Hours</dt>
+            <dd class="col-sm-8">{% if form.adjustedForm %}
+                                  {{form.adjustedForm.newValue}}
+                                {%else%}
+                                  {{form.formID.weeklyHours}}
+                                {%endif%}</dd>
+
+            <dt class="col-sm-4">Supervisor</dt>
+            <dd class="col-sm-8">{{form.formID.supervisor.FIRST_NAME}} {{form.formID.supervisor.LAST_NAME}}</dd>
+
+            <dt class="col-sm-4">Department</dt>
+            <dd class="col-sm-8">{{form.formID.department.DEPT_NAME}}</dd>
+
+            <dt class="col-sm-4">Overload Reason</dt>
+            <dd class="col-sm-8">{{form.overloadForm.studentOverloadReason}}</dd>
+          </dl>
+        {% endfor %}
+        </div>
+        <div class="row col-sm-2" id="notes" align="right">
+          <div id="viewNotesButton">
+            <button id="modalNote_{{formHistoryID}}" onclick="toggleNotesLog({{laborStatusFormID}}, {{formHistoryID}})" class='btn btn-sm btn-primary'>View Notes ({{noteTotal}})</button>
+          </div>
+        </div>
+    </div>
+    <div class="logNotesDiv row col-sm-12" style='display:none'>
+      <h4 class="supeNotesLabel control-label text-left" for="supervisor">Supervisor Notes: </h4>
+      <textarea class="notesText form-control" rows="2" cols="70" disabled> </textarea>
+      <h4 class=" control-label text-left" id="notesLogHeader" for="notesLog">Notes Log:</h4>
+      <div class="notesLogArea"></div>
+      <br>
+    </div>
+  </div>
+
+  {% if (currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin) %}
   <table id="overloadDepartmentTable" class="table table-bordered">
     <thead>
       <tr>
@@ -54,54 +70,74 @@
     <tbody id="overloadDepartmentTableBody">
       <tr>
         <td>SAAS</td>
-        <td id="statusSAAS">{{departmentStatusInfo['SAASStatus']}}</td>
+        <td id="statusSAAS"><strong>{{departmentStatusInfo['SAASStatus']}}</strong> {% if departmentStatusInfo['SAASApprover'] %}<br>{{departmentStatusInfo['SAASApprover']}} {% endif %}</td>
         <td id="emailDateSAAS">{{departmentStatusInfo['SAASEmail']}}</td>
         <td><button id="SAASEmail" value='{{formHistoryID}}' type="button" class ="btn btn-info col-sm-12" onclick="sendEmail(this.value, this.id)">Send Email</button></td>
       </tr>
       <tr>
         <td>Financial Aid</td>
-        <td id="statusFinancialAid">{{departmentStatusInfo['financialAidStatus']}}</td>
+        <td id="statusFinancialAid"><strong>{{departmentStatusInfo['financialAidStatus']}}</strong> {% if departmentStatusInfo['FinancialAidApprover'] %}<br>{{departmentStatusInfo['FinancialAidApprover']}} {% endif %} </td>
         <td id="emailDateFinancialAid">{{departmentStatusInfo['financialAidLastEmail']}}</td>
         <td><button id="financialAidEmail" value="{{formHistoryID}}" type="button" class ="btn btn-info col-sm-12" onclick="sendEmail(this.value, this.id)">Send Email</button></td>
       </tr>
     </tbody>
   </table>
-  <p class="status-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>A Status is required in order to submit</strong></p>
+  {% endif %}
+
+  {% if formType != "completedOverload" %}
+  <p class="status-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong> A Status is required in order to submit</strong></p>
   <div id='radioDiv'>
     <!-- Need to pass in the notes counter from the notes counter method -->
-    <p><span class="glyphicon glyphicon-exclamation-sign"></span> <b>Selection is required:</b></p>
-    <label for="approve" class="radio-inline">
-      <input type="radio" id="approve" name="decision" value="approve" onclick="displayModalTextArea(this.value)"><b>Approve</b></input>
-    </label>
-    <label for="approveRel" class="radio-inline">
-      <input type="radio" id="approveRel" name="decision" value="approveRel" onclick="displayModalTextArea(this.value)"><b>Approve Reluctantly</b></input>
-    </label>
-    <label for="deny" class="radio-inline">
-      <input type="radio" id="deny" name="decision" value="deny" onclick="displayModalTextArea(this.value)"><b>Deny</b></input>
-    </label>
-  </div>
-  <div id="viewNotesButton">
-    <button id="modalNote_{{formHistoryID}}" onclick="toggleNotesLog({{laborStatusFormID}}, {{formHistoryID}})" class='btn btn-sm btn-primary'>View Notes ({{noteTotal}})</button>
+    <div>
+      <p><span class="glyphicon glyphicon-exclamation-sign"></span> <b>Selection is required:</b></p>
+    </div>
+    <div>
+      <label for="approve" class="radio-inline">
+        <input type="radio" id="approve" name="decision" value="approve" onclick="displayModalTextArea(this.value)">
+        {% if (currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) %}
+          <b>Approve as Financial Aid admin</b>
+        {% elif (currentUser.isLaborAdmin and currentUser.isSaasAdmin and not departmentStatusInfo['SAASStatus']) %}
+          <b>Approve as SAAS admin</b>
+        {% else %}
+          <b>Approve</b>
+        {% endif %}
+      </label>
+      {% if (currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin) %}
+      <label for="approveRel" class="radio-inline">
+        <input type="radio" id="approveRel" name="decision" value="approveRel" onclick="displayModalTextArea(this.value)"><b>Approve Reluctantly</b>
+      </label>
+      {% endif %}
+      <label for="deny" class="radio-inline">
+        <input type="radio" id="deny" name="decision" value="deny" onclick="displayModalTextArea(this.value)"><b>Deny</b>
+      </label>
+    </div>
   </div>
   <div id="notesTextAreaOverload" class="notesTextArea">
-    <textarea id='overloadNotes' class="finalNote form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a note"></textarea>
+    <textarea id='overloadNotes' class="finalNote form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for approval"></textarea>
   </div>
   <div id="denyTextAreaOverload" class="denyTextArea" style="display:None">
     <textarea id='denyOverloadReason' class="finalDeny form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial"></textarea>
     <p id="required-error" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><b> This field is required</b></p>
   </div>
-  <div class="logNotesDiv" style='display:none'>
-    <h4 class="supeNotesLabel col-md-4 control-label text-left" for="supervisor">Supervisor Notes: </h4>
-    <textarea class="notesText form-control" rows="2" cols="70" disabled> </textarea>
-    <h4 class=" control-label text-left" id="notesLogHeader" for="notesLog">Notes Log:</h4>
-    <div class="notesLogArea"></div>
-  </div>
+    {% if (currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and not departmentStatusInfo['SAASStatus']) or ((not currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin) or (not currentUser.isLaborAdmin and currentUser.isSaasAdmin)) %}
+      <div align="left" style="margin-top:2%;">
+        <span class="tooltip-right" data-tooltip="Required">Mark approved by <strong>{{currentUser.supervisor.FIRST_NAME}} {{currentUser.supervisor.LAST_NAME}}: </strong><span class="required-mark">*</span>
+          <input type="text" id="initials" placeholder="Type initials here">
+        </span>
+      </div>
+    {% endif %}
+  {% endif %}
 </div>
+
 <div class="modal-footer">
-  <div class="col-sm-6" align="left">
+  {% if formType == "completedOverload" %}
     <button type="button" class="btn btn-secondary floatleft" id="close" data-dismiss="modal">Close</button>
-  </div>
-  <div class="col-sm-6" align="right">
-      <button type="button" class="btn btn-success floatright" class="submitOverload" onclick="submitOverload({{formHistoryID}})">Submit</button>
-  </div>
+  {% else %}
+    <div class="col-sm-6" align="left">
+      <button type="button" class="btn btn-secondary floatleft" id="close" data-dismiss="modal">Close</button>
+    </div>
+    <div class="col-sm-6" align="right">
+        <button type="submit" class="btn btn-success floatright" class="submitOverload" onclick="submitOverload({{formHistoryID}}, '{{currentUser.isLaborAdmin}}')">Submit</button>
+    </div>
+  {% endif %}
 </div>

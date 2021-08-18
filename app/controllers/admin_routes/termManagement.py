@@ -40,7 +40,7 @@ def createTerms(termYear):
     for i in range(8):
         try:
             if i == 0:
-                Term.create(termCode = code, termName = "AY {}-{}".format(termYear, termYear + 1))
+                Term.create(termCode = code, termName = "AY {}-{}".format(termYear, termYear + 1), isAcademicYear=True)
             elif i == 1:
                 Term.create(termCode = (code + 11), termName = "Fall {}".format(termYear))
             elif i == 7:

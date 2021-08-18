@@ -39,7 +39,7 @@
       <input type="checkbox" name="checkbox" id="checkbox5" onclick="checkBoxCheck(this,{{totalFormHours}})" /> The required 2.50 cumulative GPA may be waived if a 3.00 GPA is earned during the previous full term<span class="required-mark"> *</span>
     </ul>
   </div>
-  {% if totalFormHours >= 20 %}
+  {% if totalFormHours > 20 %}
 <div class="floatleft">
   <ul class="small">
     <h6><strong><span class="tooltip-right" data-tooltip="Required">Requests for over 20 hours* are subject to the following additional guidelines:</span></strong></h6>

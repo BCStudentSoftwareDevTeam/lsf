@@ -43,7 +43,7 @@ def validate_file(f, fields):
         except:
             print("Line {}:".format(reader.line_num), "Bad ID '{}'. Need quotes on previous line.".format(row['form_id']))
             success = False
-            
+
     f.seek(0)
 
     return success
@@ -77,7 +77,7 @@ def getTerm(raw_term, start_year, terms):
         termname += " {}".format(start_year)
 
     if start_year not in terms:
-        terms[start_year] = {} 
+        terms[start_year] = {}
     if termname not in terms[start_year]:
         terms[start_year][termname] = None
 
@@ -105,7 +105,7 @@ def handleSupervisor(raw_id, raw_name, department):
     id_text = raw_id.strip()
 
     try:
-        supervisor = (Supervisor.get_or_none(ID=id_text) or 
+        supervisor = (Supervisor.get_or_none(ID=id_text) or
                      createSupervisorFromTracy(bnumber=id_text))
         debug("Found {} as a supervisor".format(supervisor.FIRST_NAME + " " + supervisor.LAST_NAME))
     except InvalidUserException:
@@ -218,7 +218,7 @@ def importRecord(record, terms):
     # Ensure Supervisor record exists
     name = record['supervisorName'] if 'supervisorName' in record else ''
     supervisor = handleSupervisor(record['supervisor'], name, department)
-    
+
     # Ensure Student record exists
     name = record['superviseeName'] if 'superviseeName' in record else ''
     student = handleStudent(record['supervisee'], name)
@@ -241,12 +241,16 @@ def importRecord(record, terms):
 
     weekly_hours = record['hour']
     contract_hours = None
-    if weeks < 16:
-        contract_hours = int(record['hour']) * 5 * weeks
-        if term.termName == 'Summer 2020':
-            contract_hours = record['hour']
-        weekly_hours = None
 
+    if weeks < 16:
+        if int(record['hour']) <= 10:
+            contract_hours = int(record['hour']) * 5 * weeks
+        elif 10 < int(record['hour']) <= 20:
+            contract_hours = int(record['hour']) * weeks
+        else:
+            contract_hours = int(record['hour'])
+        weekly_hours = None
+    
     end_date = record['end'].strip()
     if end_date == '':
         end_date = dateutil.parser.isoparse(record['start']) + timedelta(weeks=weeks)
@@ -268,7 +272,7 @@ def importRecord(record, terms):
         startDate=record['start'],
         endDate=end_date,
         laborDepartmentNotes=record['note'])
-    
+
     creator = userFromUsername(record['creator'], department)
     status = Status.get(Status.statusName == "Pending")
 

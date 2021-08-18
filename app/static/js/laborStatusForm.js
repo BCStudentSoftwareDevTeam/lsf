@@ -3,8 +3,6 @@ var display_failed = [];
 var laborStatusFormNote = null;
 
 $(document).ready(function(){
-  $('[data-toggle="tooltip"]').tooltip();
-  $( "#dateTimePicker1, #dateTimePicker2").datepicker();
   if($("#selectedDepartment").val()){ // prepopulates position on redirect from rehire button and checks whether department is in compliance.
     checkCompliance($("#selectedDepartment"));
     getDepartment($("#selectedDepartment"));
@@ -197,16 +195,36 @@ function fillDates(response) { // prefill term start and term end
     // Pre-populate values
     $("#dateTimePicker1").val(start);
     $("#dateTimePicker2").val(end);
-    // set the minimum and maximum Date for Term Start Date
-    $("#dateTimePicker1").datepicker({minDate: new Date(yearStart, monthStart1, dayStart1)});
-    $("#dateTimePicker1").datepicker({maxDate: new Date(yearEnd, monthEnd1, dayEnd1)});
     $("#dateTimePicker1").datepicker("option", "minDate", new Date(yearStart, monthStart1, dayStart1));
     $("#dateTimePicker1").datepicker("option", "maxDate", new Date(yearEnd, monthEnd1, dayEnd1));
-    // set the minimum and maximum Date for Term End Date
-    $("#dateTimePicker2").datepicker({maxDate: new Date(yearEnd, monthEnd1, dayEnd1)});
-    $("#dateTimePicker2").datepicker({minDate: new Date(yearStart, monthStart1, dayStart1)});
     $("#dateTimePicker2").datepicker("option", "maxDate", new Date(yearEnd, monthEnd1, dayEnd1));
     $("#dateTimePicker2").datepicker("option", "minDate", new Date(yearStart, monthStart1, dayStart1));
+    $("#dateTimePicker1").datepicker({
+      beforeShowDay: function(d) {
+
+        if(d.getTime() < startd.getTime()){
+          return [false, 'datePicker', 'Before Term Start'];
+        }
+        else if (d.getTime() > endd.getTime()) {
+          return [false, 'datePicker', 'After Term End'];
+        }else{
+            return [true, '', 'Available'];
+        }
+    },
+  });
+    $("#dateTimePicker2").datepicker({
+    beforeShowDay: function(d) {
+
+        if(d.getTime() > endd.getTime()){
+          return [false, 'datePicker', 'After Term End'];
+        }
+        else if (d.getTime() < startd.getTime()) {
+          return [false, 'datePicker', 'Before Term Start'];
+        }else{
+            return [true, '', 'Available'];
+        }
+    },
+    });
   }
 }
 
@@ -284,13 +302,18 @@ function getDepartment(object, stopSelectRefresh="") { // get department from se
  function fillHoursPerWeek(fillhours=""){ // prefill hours per week select picker
   var selectedHoursPerWeek = $("#selectedHoursPerWeek");
   var jobType = $("#jobType").val();
+  var position = $("#position").val();
+
   if (selectedHoursPerWeek){
     $("#selectedHoursPerWeek").empty();
     if (fillhours == ""){
       $(".selectpicker").selectpicker("refresh");
     }
     var list = ["10", "12", "15", "20"];
-    if (jobType == "Secondary"){
+    if (position.toLowerCase() == "no labor"){
+      list = ["0"];
+    }
+    else if (jobType == "Secondary"){
        list = ["5", "10"];
     }
     $(list).each(function(i,hours) {
@@ -543,6 +566,7 @@ function checkDuplicate(studentDict) {// checks for duplicates in the table. Thi
 
 function checkPrimaryPositionToCreateTheTable(studentDict) {
   var term = $("#term").val();
+  var termName =  $("#term").attr('name');
   var url = "/laborstatusform/getstudents/" + term + "/" + studentDict.stuBNumber;
   var data = JSON.stringify(studentDict.stuJobType);
   $.ajax({
@@ -558,7 +582,7 @@ function checkPrimaryPositionToCreateTheTable(studentDict) {
           break
         case "noHireForSecondary":
           $("#warningModalTitle").html("Insert Rejected");
-          $("#warningModalText").html(studentDict.stuName + " needs an approved primary position before a secondary position can be added.");
+          $("#warningModalText").html(studentDict.stuName + " needs an approved primary position for " + termName + " before a secondary position can be added.");
           $("#warningModal").modal("show");
           break;
         default:
@@ -688,8 +712,12 @@ function isOneLaborStatusForm(studentDict){
 function checkTotalHours(studentDict) {
   var termCode = $("#term").val()
   var isBreak = $("#selectedTerm").find("option:selected").data("termbreak");
+  var hours = studentDict.stuWeeklyHours
+  if (isBreak) {
+    hours = studentDict.stuContractHours
+  }
   $.ajax({
-    url: "/laborstatusform/checktotalhours/" + termCode +"/"+ studentDict.stuBNumber +"/"+ studentDict.stuWeeklyHours +"/"+ studentDict.stuContractHours,
+    url: "/laborstatusform/checktotalhours/" + termCode +"/"+ studentDict.stuBNumber +"/"+ hours,
     dataType: "json",
     success: function (response){
       if (response > (15) && !isBreak) {

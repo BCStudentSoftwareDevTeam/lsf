@@ -20,7 +20,6 @@ def studentOverloadApp(formId):
         return render_template('errors/403.html'), 403
     if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
         return render_template('errors/403.html'), 403
-
     lsfForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == overloadForm.formID)
     prefillStudentName = lsfForm.studentSupervisee.FIRST_NAME + " "+ lsfForm.studentSupervisee.LAST_NAME
     prefillStudentBnum = lsfForm.studentSupervisee.ID

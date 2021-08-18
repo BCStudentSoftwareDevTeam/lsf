@@ -19,10 +19,10 @@ function checkBoxCheck(obj,totalFormHours){
   else if(obj.checked == false){
       checkboxCounter = checkboxCounter - 1;
   }
-  if(checkboxCounter >= 7 & totalFormHours >= 20){
+  if(checkboxCounter >= 7 & totalFormHours > 20){
     $("#notes").prop("disabled", false);
   }
-  else if (checkboxCounter >=5 & totalFormHours <20){
+  else if (checkboxCounter >=5 & totalFormHours <= 20){
       $("#notes").prop("disabled", false);
   }
   else{

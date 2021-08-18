@@ -4,13 +4,21 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick= "clearTextArea()"><span aria-hidden="true">&times;</span></button>
-        <h3 class="modal-title" id="notesModalLabel">Labor Office Notes </h3>
+        {% if currentUser.isLaborAdmin %}
+          <h3 class="modal-title" id="notesModalLabel">Labor Office Notes </h3>
+        {% elif currentUser.isFinancialAidAdmin %}
+          <h3 class="modal-title" id="notesModalLabel">Financial Aid Office Notes </h3>
+        {% endif %}
       </div>
       <div class="modal-body" id="noteModalBody">
         <div id="notesDiv">
            <h4 class="supeNotesLabel col-md-4 control-label text-left" for ="supervisor">Supervisor Notes: </h4>
               <textarea class="notesText" rows="2" cols="70" disabled> </textarea>
-          <h4 class="col-md-4 control-label text-left" for ="laboroffice" align = "left">Labor Office Notes: </h4>
+          {% if currentUser.isLaborAdmin %}
+            <h4 class="col-md-4 control-label text-left" for ="laboroffice" align = "left">Labor Office Notes: </h4>
+          {% elif currentUser.isFinancialAidAdmin %}
+            <h4 class="col-md-6 control-label text-left" for ="laboroffice" align = "left">Financial Aid Office Notes: </h4>
+          {% endif %}
               <textarea id="laborNotesText" rows="2" cols="70"></textarea>
           <h4 class=" control-label text-left" id="notesLogTitle" for="notesLog">Notes Log:</h4>
               <div class="notesLogArea"></div>
