@@ -19,7 +19,7 @@ $(document).ready(function(){
     for (i in parsedArrayOfStudentCookies) {
       createAndFillTable(parsedArrayOfStudentCookies[i]);
     }
-    $("#term").val(parsedArrayOfStudentCookies[0].stuTermCode).attr('name', parsedArrayOfStudentCookies[0].stuTermName)
+    $("#selectedTerm").val(parsedArrayOfStudentCookies[0].stuTermCode).attr('name', parsedArrayOfStudentCookies[0].stuTermName)
     $("#selectedTerm option[value=" + parsedArrayOfStudentCookies[0].selectedTerm + "]").attr('selected', 'selected');
     $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
     $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
@@ -494,7 +494,7 @@ function createStuDict(){
   var department = $("#selectedDepartment").find("option:selected").text();
   var departmentORG = $("#selectedDepartment").find("option:selected").val();
   var departmentAccount = $("#selectedDepartment").find("option:selected").data("account");
-  var termCodeSelected = $("#term").val();
+  var termCodeSelected = $("#selectedTerm").val();
   var termName = $("#term").attr('name')
   var selectedTerm = $("#selectedTerm").find("option:selected").val();
   var isBreak = $("#selectedTerm").find("option:selected").data("termbreak")
@@ -565,8 +565,8 @@ function checkDuplicate(studentDict) {// checks for duplicates in the table. Thi
 }
 
 function checkPrimaryPositionToCreateTheTable(studentDict) {
-  var term = $("#term").val();
-  var termName =  $("#term").attr('name');
+  var term = $("#selectedTerm").val();
+  var termName =  $('#selectedTerm').find('option:selected').text();
   var url = "/laborstatusform/getstudents/" + term + "/" + studentDict.stuBNumber;
   var data = JSON.stringify(studentDict.stuJobType);
   $.ajax({
@@ -684,7 +684,7 @@ function createAndFillTable(studentDict) {
 
 function isOneLaborStatusForm(studentDict){
   var isBreak = (studentDict).isTermBreak;
-  var term = $("#term").val();
+  var term = $("#selectedTerm").val();
   if(isBreak){
     url = "/laborstatusform/getstudents/" + term + "/"+ studentDict.stuBNumber+ "/"+ 'isOneLSF';
     // check whether student has multiple labor status forms over the break period.

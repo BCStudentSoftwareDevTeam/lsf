@@ -39,15 +39,16 @@ def laborStatusForm(laborStatusKey = None):
     staffs = Tracy().getSupervisors()
     departments = Tracy().getDepartments()
 
+
+
+
+
+
+
     springFallOnlyTerms = {}
     terms = []
-    for term in allTerms:
-        if str(term.termCode)[-2:] in ["11", "12"] and str(term.termCode)[:4] in springFallOnlyTerms:
-            springFallOnlyTerms[str(term.termCode)[:4]].append(term)
-        elif str(term.termCode)[-2:] in ["11", "12"]:
-            springFallOnlyTerms[str(term.termCode)[:4]]= [term]
-        else:
-            terms.append(term)
+    [terms.append(term) if (term.isBreak or term.isAcademicYear) else springFallOnlyTerms[str(term.termCode)[:4]].append(term) if
+    str(term.termCode)[:4] in springFallOnlyTerms else springFallOnlyTerms.__setitem__(str(term.termCode)[:4], [term]) for term in allTerms]
 
     # Only prepopulate form if current user is the supervisor or creator of the form.
     if laborStatusKey != None:
