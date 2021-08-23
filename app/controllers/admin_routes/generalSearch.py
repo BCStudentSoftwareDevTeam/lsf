@@ -203,7 +203,14 @@ def getFormattedData(filteredSearchResults):
         # Form Status
         record.append(form.status.statusName)
         # Form Type
-        record.append(form.historyType.historyTypeName)
+        formTypeNameMapping = {
+            "Labor Status Form": "Original",
+            "Labor Adjustment Form": "Adjusted",
+            "Labor Overload Form": "Overload",
+            "Labor Release Form": "Release"}
+        originalFormTypeName = form.historyType.historyTypeName
+        mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
+        record.append(mappedFormTypeName)
 
         laborHistoryId = form.formHistoryID
         laborStatusFormId = form.formID.laborStatusFormID
