@@ -87,7 +87,7 @@ function withdrawform(formID){
              if (response["Success"]) {
                // Try and catch is used here to prevent Form Search page from reloading the entire the page.
                try {
-                 runGeneralSearchQuery();
+                 runformSearchQuery();
                  $('#modal').modal('hide');
                }
                catch(e){

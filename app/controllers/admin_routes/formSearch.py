@@ -17,10 +17,10 @@ from app.controllers.main_routes.download import ExcelMaker
 
 # Global variable that will store the query result.
 # It is made global to be used later in creating CSV file.
-generalSearchResults = None
+formSearchResults = None
 
-@admin.route('/admin/generalSearch', methods=['GET', 'POST'])
-def generalSearch():
+@admin.route('/admin/formSearch', methods=['GET', 'POST'])
+def formSearch():
     '''
     When the request is GET the function populates the General Search interface dropdown menus with their corresponding values.
     If the request is POST it also populates the datatable with data based on user input.
@@ -37,8 +37,8 @@ def generalSearch():
     if request.method == 'POST':
         return getDatatableData(request)
 
-    return render_template('admin/generalSearch.html',
-                            title = "General Search",
+    return render_template('admin/formSearch.html',
+                            title = "Form Search",
                             terms = terms,
                             supervisors = supervisors,
                             students = students,
@@ -48,7 +48,7 @@ def generalSearch():
 def getDatatableData(request):
     '''
     This function runs a query based on selected options in the front-end and retrieves the appropriate forms.
-    Then, it puts all the retrieved data in appropriate form to be send to the ajax call in the generalSearch.js file.
+    Then, it puts all the retrieved data in appropriate form to be send to the ajax call in the formSearch.js file.
     '''
 
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
@@ -104,8 +104,8 @@ def getDatatableData(request):
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
     expression = reduce(operator.and_, clauses)
 
-    global generalSearchResults
-    generalSearchResults = (FormHistory.select().join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+    global formSearchResults
+    formSearchResults = (FormHistory.select().join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
                         .join(Department, on=(LaborStatusForm.department == Department.departmentID))
                         .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
                         .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
@@ -113,15 +113,15 @@ def getDatatableData(request):
                         .join(User, on=(FormHistory.createdBy == User.userID))
                         .where(expression))
 
-    recordsTotal = generalSearchResults.count()
+    recordsTotal = formSearchResults.count()
 
     # Sorting a column in descending order when a specific column is chosen
-    # Initially, it sorts by the Term column as specified in generalSearch.js
+    # Initially, it sorts by the Term column as specified in formSearch.js
     if order == "desc":
-        filteredSearchResults = generalSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
     else:
-        filteredSearchResults = generalSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
 
     formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
@@ -265,16 +265,16 @@ def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
     return actionsButton
 
 
-@admin.route('/admin/generalSearch/download', methods=['POST'])
-def downloadGeneralSearchResults():
+@admin.route('/admin/formSearch/download', methods=['POST'])
+def downloadFormSearchResults():
     '''
     This function uses the general search results, stored in a global variable, to
     generate a CSV file of datatable data.
     '''
 
-    global generalSearchResults
-    generalSearchResults = generalSearchResults.order_by(-FormHistory.createdDate)
+    global formSearchResults
+    formSearchResults = formSearchResults.order_by(-FormHistory.createdDate)
     excel = ExcelMaker()
-    completePath = excel.makeExcelAllPendingForms(generalSearchResults)
+    completePath = excel.makeExcelAllPendingForms(formSearchResults)
     filename = completePath.split('/').pop()
     return send_file(completePath, as_attachment=True, attachment_filename=filename)

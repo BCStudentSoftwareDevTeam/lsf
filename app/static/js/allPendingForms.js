@@ -53,7 +53,7 @@ function insertApprovals(laborHistoryId = null) {
   var getChecked = table.$('.approveCheckbox:checked').each(function() {
     labor_details_ids.push(this.value);
   });
-  // This 'if' statement is used on the generalSearch table where we can approve forms one-by-one only
+  // This 'if' statement is used on the formSearch table where we can approve forms one-by-one only
   if (laborHistoryId) {labor_details_ids.push(laborHistoryId)}
   //this checks wether the checkbox is checked or not and if does not it disable the approve selected button
   var atLeastOneIsChecked = $('input[name="check[]"]:checked').length > 0;
@@ -132,7 +132,7 @@ function finalApproval() { //this method changes the status of the lsf from pend
 
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runGeneralSearchQuery();
+            runformSearchQuery();
             $('#approvalModal').modal('hide');
           }
           catch(e){
@@ -206,7 +206,7 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
         if (response.success) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runGeneralSearchQuery();
+            runformSearchQuery();
             $('.denialModal').modal('hide');
           }
           catch(e){
@@ -275,7 +275,7 @@ function notesInsert(textareaID, buttonID) {
       // Try and catch is used here to prevent General Search page from reloading the entire the page.
       try {
         clearTextArea();
-        runGeneralSearchQuery();
+        runformSearchQuery();
         $('#NotesModal').modal('hide');
       }
       catch(e){
@@ -436,7 +436,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
         success: function(response) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runGeneralSearchQuery();
+            runformSearchQuery();
             $('#overloadModal').modal('hide');
           }
           catch(e){
@@ -496,7 +496,7 @@ function submitRelease(formHistoryID) {
         success: function(response) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runGeneralSearchQuery();
+            runformSearchQuery();
             $('#modalRelease').modal('hide');
           }
           catch(e){

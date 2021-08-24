@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  $('#generalSearchTable').hide();
+  $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
 });
 
@@ -7,8 +7,8 @@ $('a.hover_indicator').click(function(e){
   e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
 });
 
-$('#generalSearchButton').on('click', function(){
-  runGeneralSearchQuery();
+$('#formSearchButton').on('click', function(){
+  runformSearchQuery();
 });
 
 $('#clearSelectionsButton').on('click', function(){
@@ -19,7 +19,7 @@ $('#clearSelectionsButton').on('click', function(){
   });
 });
 
-function runGeneralSearchQuery() {
+function runformSearchQuery() {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -52,8 +52,8 @@ function runGeneralSearchQuery() {
   }
   else {
     $("#download").prop('disabled', false);
-    $('#generalSearchTable').show();
-    $('#generalSearchTable').DataTable({
+    $('#formSearchTable').show();
+    $('#formSearchTable').DataTable({
           responsive: true,
           destroy: true,
           searching: false,
@@ -68,7 +68,7 @@ function runGeneralSearchQuery() {
             orderable: false,
           }],
           ajax: {
-              url: "/admin/generalSearch",
+              url: "/admin/formSearch",
               type: "POST",
               data: {'data': data},
               dataSrc: "data",
