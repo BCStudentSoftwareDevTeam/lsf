@@ -4,6 +4,7 @@ from app.controllers.main_routes.laborHistory import *
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.adjustedForm import AdjustedForm
 from app import cfg
 from app.logic.emailHandler import *
@@ -48,7 +49,7 @@ def alterLSF(laborStatusKey):
     prefillsupervisor = form.supervisor.FIRST_NAME +" "+ form.supervisor.LAST_NAME
     prefillsupervisorPIDM = form.supervisor.PIDM
     superviser_id = form.supervisor.ID
-    prefilldepartment = form.department.DEPT_NAME
+    prefilldepartment = form.department.ORG
     prefillposition = form.POSN_CODE
     prefilljobtype = form.jobType
     prefillterm = form.termCode
@@ -67,6 +68,7 @@ def alterLSF(laborStatusKey):
     #These are the data fields to populate our dropdowns(Supervisor. Position)
     supervisors = Tracy().getSupervisors()
     positions = Tracy().getPositionsFromDepartment(form.department.ORG, form.department.ACCOUNT)
+    departments = Tracy().getDepartments()
 
     # supervisors from the old system WILL have a Supervisor record, but might not have a Tracy record
     oldSupervisor = Supervisor.get_or_none(ID = form.supervisor.ID)
@@ -95,6 +97,7 @@ def alterLSF(laborStatusKey):
                             prefillhours = prefillhours,
                             supervisors = supervisors,
                             positions = positions,
+                            departments=departments,
                             form = form,
                             oldSupervisor = oldSupervisor,
                             totalHours = totalHours,
@@ -179,6 +182,12 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
     if fieldName == "supervisor":
         supervisor = createSupervisorFromTracy(bnumber=fieldsChanged[fieldName]["newValue"])
         lsf.supervisor = supervisor.ID
+        lsf.save()
+
+    # TODO: when department is changed, position needs to be changed too. 
+    if fieldName == "department":
+        department = Department.get(ORG=fieldsChanged[fieldName]['newValue'])
+        lsf.department = department.departmentID
         lsf.save()
 
     if fieldName == "position":

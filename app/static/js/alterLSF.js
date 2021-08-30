@@ -122,6 +122,8 @@ function checkSupervisor() {
     $('#contractHours').val(oldContractHours);
     $("#contractHours").prop('disabled', true);
     $('#contractHours').selectpicker('refresh');
+    $("#department").prop('disabled', true);
+    $('#department').selectpicker('refresh');
     category = "info"
     msg = "Changes to Hours and Position are unavailable when Supervisor is changed. (Select Original Supervisor to change Position or Hours)";
     $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
@@ -133,6 +135,8 @@ function checkSupervisor() {
     $('#weeklyHours').selectpicker('refresh');
     $("#contractHours").prop('disabled', false);
     $('#contractHours').selectpicker('refresh');
+    $("#department").prop('disabled', false);
+    $('#department').selectpicker('refresh');
   }
 }
 
@@ -151,6 +155,8 @@ function checkForChange(){
   var newStartDate = $("#dateTimePicker1").val();
   var oldEndDate = $("#oldEndDate").val();
   var newEndDate = $("#dateTimePicker2").val();
+  var oldDepartment = $('#prefilldepartment').val();
+  var newDepartment = $('#department').val();
 
   if(oldSupervisor != newSupervisor){
     finalDict["supervisor"] = {"oldValue": oldSupervisor, "newValue": newSupervisor, "date": date}
@@ -172,6 +178,10 @@ function checkForChange(){
   }
   if(oldEndDate != newEndDate){
     finalDict["endDate"] = {"oldValue": oldEndDate, "newValue": newEndDate, "date": date}
+  }
+  if(oldDepartment != newDepartment){
+    console.log(oldDepartment, newDepartment)
+    finalDict["department"] = {"oldValue": oldDepartment, "newValue": newDepartment, "date": date}
   }
 
   if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")){

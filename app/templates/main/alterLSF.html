@@ -43,12 +43,23 @@
             <input hidden class = "oldValue"  id= "prefillsupervisor"value="{{oldSupervisor.ID}}" > </input> <!-- stores value of original-->
          </div>
        </div>
+
        <div class="form-group">
-         <label for="Department">Department</label> <!--User CANNOT edit-->
-         <div>
-           <input type="text" class="form-control" id="Department" value="{{prefilldepartment}}" disabled> <!--User CANNOT edit-->
+         <label for="department" class="field"><span class="tooltip-right" data-tooltip="Required">Department<span class="required-mark"> *</span></span></label>
+         <div class="change">
+           <select required
+                class="selectpicker form-control newValue"
+                id="department"
+                data-live-search="true"
+                onchange="">
+                {% for department in departments %}
+                  <option value="{{department.ORG}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
+                {% endfor %}
+           </select>
+           <input hidden class="oldValue" id="prefilldepartment" value="{{prefilldepartment}}" />
          </div>
        </div>
+
        <div class="form-group">
          <label for="position" class="field"><span class="tooltip-right" data-tooltip="Required">Position<span class="required-mark"> *</span></span></label>
          <div  class="change">
