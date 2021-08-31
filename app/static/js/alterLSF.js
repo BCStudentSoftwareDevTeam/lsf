@@ -180,7 +180,6 @@ function checkForChange(){
     finalDict["endDate"] = {"oldValue": oldEndDate, "newValue": newEndDate, "date": date}
   }
   if(oldDepartment != newDepartment){
-    console.log(oldDepartment, newDepartment)
     finalDict["department"] = {"oldValue": oldDepartment, "newValue": newDepartment, "date": date}
   }
 
@@ -276,4 +275,8 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
     $("#dateTimePicker2").datepicker({minDate: new Date(newYear, newMonth, newDay)});
     $("#dateTimePicker2").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
   }
+}
+
+function updatePositions() {
+  
 }

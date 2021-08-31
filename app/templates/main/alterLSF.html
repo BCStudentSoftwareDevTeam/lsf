@@ -51,7 +51,7 @@
                 class="selectpicker form-control newValue"
                 id="department"
                 data-live-search="true"
-                onchange="">
+                onchange="updatePositions()">
                 {% for department in departments %}
                   <option value="{{department.ORG}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
                 {% endfor %}

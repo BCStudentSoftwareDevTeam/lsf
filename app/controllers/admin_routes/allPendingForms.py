@@ -20,6 +20,7 @@ from datetime import datetime, date
 from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.controllers.main_routes.download import ExcelMaker
 
 
@@ -269,7 +270,7 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
     This function checks whether an Adjustment Form is approved. If yes, it overrides the information
     in the original Labor Status Form with the new information coming from approved Adjustment Form.
 
-    The only fields that will ever be changed in an adjustment form are: supervisor, position, and hours.
+    The only fields that will ever be changed in an adjustment form are: supervisor, department, position, and hours.
     """
     currentUser = require_login()
     if not currentUser:        # Not logged in
@@ -290,6 +291,11 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
         position = Tracy().getPositionFromCode(form.adjustedForm.newValue)
         LSF.POSN_TITLE = position.POSN_TITLE
         LSF.WLS = position.WLS
+        LSF.save()
+
+    if form.adjustedForm.fieldAdjusted == "department":
+        department = Department.get(Department.ORG==form.adjustedForm.newValue)
+        LSF.department = department.departmentID
         LSF.save()
 
     if form.adjustedForm.fieldAdjusted == "contractHours":
