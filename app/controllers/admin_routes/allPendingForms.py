@@ -148,6 +148,11 @@ def allPendingForms(formType):
                     # because we want to show these information in the hmtl template.
                     allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
                     allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
+
+                if allForms.adjustedForm.fieldAdjusted == "department":
+                    newDepartment = Department.get(Department.ORG==allForms.adjustedForm.newValue)
+                    allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
+                    allForms.adjustedForm.oldValue = newDepartment.ORG + "-" + newDepartment.ACCOUNT
         users = Supervisor.select()
         return render_template( 'admin/allPendingForms.html',
                                 title=pageTitle,
@@ -323,6 +328,7 @@ def modal_approval_and_denial_data(approval_ids):
         supervisor_name = str(supervisor_firstname) + " " + str(supervisor_lastname)
         student_hours = student_details.weeklyHours
         student_hours_ch = student_details.contractHours
+        student_dept = student_details.department.DEPT_NAME
 
         if formHistory.adjustedForm:
             if formHistory.adjustedForm.fieldAdjusted == "position":
@@ -336,13 +342,17 @@ def modal_approval_and_denial_data(approval_ids):
                 student_hours = formHistory.adjustedForm.newValue
             if formHistory.adjustedForm.fieldAdjusted == "contractHours":
                 student_hours_ch = formHistory.adjustedForm.newValue
+            if formHistory.adjustedForm.fieldAdjusted == "department":
+                department = Department.get(Department.ORG==formHistory.adjustedForm.newValue)
+                student_dept = department.DEPT_NAME
 
         tempList = []
         tempList.append(student_name)
+        tempList.append(student_dept)
         tempList.append(student_pos)
-        tempList.append(supervisor_name)
         tempList.append(str(student_hours))
         tempList.append(str(student_hours_ch))
+        tempList.append(supervisor_name)
         id_list.append(tempList)
     return(id_list)
 

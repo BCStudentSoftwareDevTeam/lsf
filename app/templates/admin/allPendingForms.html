@@ -107,7 +107,13 @@
                 {{allForms.formID.termCode.termName}}
               </td>
               <td> {# DEPARTMENT #}
-                <a href="#" aria-label="{{allForms.formID.department.ORG}}-{{allForms.formID.department.ACCOUNT}}" class="hover_indicator"> {{allForms.formID.department.DEPT_NAME}} </a>
+                {% if allForms.adjustedForm.fieldAdjusted == "department" %}
+                  <a href="#" aria-label="{{allForms.formID.department.ORG}}-{{allForms.formID.department.ACCOUNT}}" class="hover_indicator"><s aria-hidden="true">{{allForms.formID.department.DEPT_NAME}}</s></a>
+                  <br />
+                  <a href="#" aria-label="{{allForms.adjustedForm.oldValue}}" class="hover_indicator"> {{allForms.adjustedForm.newValue}} </a>
+                {% else %}
+                  <a href="#" aria-label="{{allForms.formID.department.ORG}}-{{allForms.formID.department.ACCOUNT}}" class="hover_indicator"> {{allForms.formID.department.DEPT_NAME}} </a>
+                {% endif %}
               </td>
               <td> {# SUPERVISOR #}
                 {% if allForms.adjustedForm.fieldAdjusted == "supervisor" %}
