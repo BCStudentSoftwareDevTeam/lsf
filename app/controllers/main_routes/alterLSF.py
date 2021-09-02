@@ -120,6 +120,13 @@ def getDate(termcode):
             datesDict[date.termCode] = {"Start Date":datetime.strftime(start, "%m/%d/%Y")  , "End Date": datetime.strftime(end, "%m/%d/%Y"), "Primary Cut Off": datetime.strftime(primaryCutOff, "%m/%d/%Y"), "isBreak": date.isBreak, "isSummer": date.isSummer}
     return json.dumps(datesDict)
 
+@main_bp.route("/alterLSF/fetchPositions/<departmentOrg>/<departmentAccount>", methods=['GET'])
+def fetchPositions(departmentOrg, departmentAccount):
+    positions = Tracy().getPositionsFromDepartment(departmentOrg, departmentAccount)
+    positionDict = {}
+    for position in positions:
+        positionDict[position.POSN_CODE] = {"POSN_TITLE": position.POSN_TITLE, "WLS": position.WLS, "POSN_CODE": position.POSN_CODE}
+    return json.dumps(positionDict)
 
 @main_bp.route("/alterLSF/submitAlteredLSF/<laborStatusKey>", methods=["POST"])
 def submitAlteredLSF(laborStatusKey):

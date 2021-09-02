@@ -51,9 +51,9 @@
                 class="selectpicker form-control newValue"
                 id="department"
                 data-live-search="true"
-                onchange="updatePositions()">
+                onchange="fetchPositions()">
                 {% for department in departments %}
-                  <option value="{{department.ORG}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
+                  <option value="{{department.ORG}}" data-account="{{department.ACCOUNT}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
                 {% endfor %}
            </select>
            <input hidden class="oldValue" id="prefilldepartment" value="{{prefilldepartment}}" />
@@ -69,7 +69,7 @@
                 data-live-search="true"
                 onchange="fillHoursPerWeek()">
                 {% for position in positions %}
-                <option value="{{position.POSN_CODE}}" data-wls={{position.WLS}} {% if position.POSN_CODE == prefillposition %} selected {% endif %} >{{position.POSN_TITLE}} ({{position.WLS}})</option>
+                  <option value="{{position.POSN_CODE}}" data-wls={{position.WLS}} {% if position.POSN_CODE == prefillposition %} selected {% endif %} >{{position.POSN_TITLE}} ({{position.WLS}})</option>
                 {% endfor %}
            </select>
            <input hidden class = "oldValue"  id= "prefillposition" value="{{prefillposition}}"></input>

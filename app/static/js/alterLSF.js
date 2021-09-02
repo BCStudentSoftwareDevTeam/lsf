@@ -277,6 +277,25 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
   }
 }
 
-function updatePositions() {
-  
+function fetchPositions() {
+  departmentOrg = $('#department').val();
+  departmentAccount = $("#department option:selected").attr("data-account");
+  positionsSelectpicker = $("#position");
+  $("#position").empty();
+  $("#position").selectpicker("refresh");
+  $.ajax({
+    url: `/alterLSF/fetchPositions/${departmentOrg}/${departmentAccount}`,
+    dataType: "json",
+    success: function(positions) {
+      for (var position in positions) {
+        positionsSelectpicker.append(
+          $("<option />")
+             .attr("data-content", `${positions[position].POSN_TITLE} (${positions[position].WLS})`)
+             .attr("value", positions[position].POSN_CODE)
+             .attr("data-wls",positions[position].WLS)
+        );
+      }
+     $(".selectpicker").selectpicker("refresh");
+    }
+  });
 }
