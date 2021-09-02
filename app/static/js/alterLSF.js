@@ -3,6 +3,7 @@ $(document).ready(function(){
   fillHoursPerWeek();
   jobPositionDisable();
   preFilledDate($("#Term").data("termcode"));
+  fetchPositions();
  });
 
  $("#calendarIcon1").click(function() {
@@ -281,8 +282,6 @@ function fetchPositions() {
   departmentOrg = $('#department').val();
   departmentAccount = $("#department option:selected").attr("data-account");
   positionsSelectpicker = $("#position");
-  $("#position").empty();
-  $("#position").selectpicker("refresh");
   $.ajax({
     url: `/alterLSF/fetchPositions/${departmentOrg}/${departmentAccount}`,
     dataType: "json",
@@ -299,3 +298,9 @@ function fetchPositions() {
     }
   });
 }
+
+$('#department').on('change',function() {
+  $("#position").empty();
+  $("#position").selectpicker("refresh");
+  fetchPositions();
+});
