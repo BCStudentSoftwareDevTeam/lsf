@@ -122,10 +122,12 @@ def getDate(termcode):
 
 @main_bp.route("/alterLSF/fetchPositions/<departmentOrg>/<departmentAccount>", methods=['GET'])
 def fetchPositions(departmentOrg, departmentAccount):
+    currentUser = require_login()
     positions = Tracy().getPositionsFromDepartment(departmentOrg, departmentAccount)
     positionDict = {}
     for position in positions:
-        positionDict[position.POSN_CODE] = {"POSN_TITLE": position.POSN_TITLE, "WLS": position.WLS, "POSN_CODE": position.POSN_CODE}
+        if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
+            positionDict[position.POSN_CODE] = {"POSN_TITLE": position.POSN_TITLE, "WLS": position.WLS, "POSN_CODE": position.POSN_CODE}
     return json.dumps(positionDict)
 
 @main_bp.route("/alterLSF/submitAlteredLSF/<laborStatusKey>", methods=["POST"])
