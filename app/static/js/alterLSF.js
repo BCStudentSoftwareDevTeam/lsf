@@ -126,7 +126,7 @@ function checkSupervisor() {
     $("#department").prop('disabled', true);
     $('#department').selectpicker('refresh');
     category = "info"
-    msg = "Changes to Hours and Position are unavailable when Supervisor is changed. (Select Original Supervisor to change Position or Hours)";
+    msg = "Changes to Department, Position, and Hours are unavailable when Supervisor is changed. (Select Original Supervisor to change Department, Position or Hours)";
     $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
     $("#flasher").delay(3000).fadeOut()
   } else {
@@ -294,7 +294,7 @@ function fetchPositions() {
              .attr("data-wls",positions[position].WLS)
         );
       }
-     $(".selectpicker").selectpicker("refresh");
+     $("#position").selectpicker("refresh");
     }
   });
 }

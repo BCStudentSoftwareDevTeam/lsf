@@ -50,7 +50,7 @@ def alterLSF(laborStatusKey):
     prefillsupervisorPIDM = form.supervisor.PIDM
     superviser_id = form.supervisor.ID
     prefilldepartment = form.department.ORG
-    prefillposition = Tracy().getPositionFromCode(form.POSN_CODE)
+    prefillposition = form
     prefilljobtype = form.jobType
     prefillterm = form.termCode
     prefillstartdate = form.startDate
