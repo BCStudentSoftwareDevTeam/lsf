@@ -193,7 +193,6 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
         lsf.supervisor = supervisor.ID
         lsf.save()
 
-    # TODO: when department is changed, position needs to be changed too.
     if fieldName == "department":
         department = Department.get(Department.ORG==fieldsChanged[fieldName]['newValue'])
         lsf.department = department.departmentID
