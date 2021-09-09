@@ -295,6 +295,7 @@ function fetchPositions() {
         );
       }
      $("#position").selectpicker("refresh");
+     $("#position").selectpicker("refresh");
     }
   });
 }
