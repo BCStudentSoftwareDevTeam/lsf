@@ -58,14 +58,15 @@
                 <div id="admin" {% if request.path[:6] == "/admin"%} class="panel-collapse" {% endif %} class = "panel-collapse collapse">
                   {% if currentUser.isLaborAdmin %}
                   <ul id="admindropdown" class="panel panel-default">
-                    <a href="/admin/search"><li {% if request.path == "/admin/search"%} class = "panel-heading active" {% endif %}class="panel-heading"><h4>Student Search</h4></li></a>
-                    <a href="/admin/pendingForms/pendingLabor"><li {% if request.path == "/admin/pendingForms/pendingLabor" or request.path == "/admin/pendingForms/pendingAdjustment" or request.path == "/admin/pendingForms/pendingOverload" or request.path == "/admin/pendingForms/pendingRelease" %} class="panel-heading active" {% endif %} class="panel-heading" tabindex={{dict["pending"]}}><h4>Pending Forms</h4></li></a>
-                    {#  <a href="/admin/adminOverload"><li {% if request.path =="/admin/adminOverload" %} class="panel-heading active"{% endif %}class="panel-heading" tabindex="7"><h4>Overload Forms</h4></li></a> #}
-                    {#  <a href="/"><li {% if request.path =="/" %} class="panel-heading active"{% endif %}class="panel-heading" tabindex="8"><h4>Past Forms</h4></li></a> #}
-                    <a href="/admin/termManagement"><li{% if request.path =="/admin/termManagement" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="9"><h4>Manage Terms</h4></li></a>
-                    <a href="/admin/manageDepartments"><li {% if request.path =="/admin/manageDepartments" %} class="panel-heading active"{% endif %}class="panel-heading" tabindex="10"><h4>Manage Departments</h4></li></a>
-                    <a href="/admin/adminManagement"><li {% if request.path =="/admin/adminManagement" %} class="panel-heading active"{% endif %}class="panel-heading" tabindex="11"><h4>Manage Administrators</h4></li></a>
-                    <a href="/admin/emailTemplates"><li {% if request.path =="/admin/emailTemplates" %} class="panel-heading active"{% endif %}class="panel-heading" tabindex="12"><h4>Manage Email Templates</h4></li></a>
+                    <a href="/admin/formSearch"><li class="panel-heading  {% if request.path == "/admin/formSearch"%} active {% endif %}" tabindex="7"><h4>Form Search</h4></li></a>
+                    <a href="/admin/search"><li class="panel-heading {% if request.path == "/admin/search"%} active {% endif %}" tabindex="8"><h4>Student Search</h4></li></a>
+                    <a href="/admin/pendingForms/pendingLabor"><li class="panel-heading {% if request.path == "/admin/pendingForms/pendingLabor" or request.path == "/admin/pendingForms/pendingAdjustment" or request.path == "/admin/pendingForms/pendingOverload" or request.path == "/admin/pendingForms/pendingRelease" %} active {% endif %}" tabindex="9"><h4>Pending Forms</h4></li></a>
+                    {#  <a href="/admin/adminOverload"><li class="panel-heading {% if request.path =="/admin/adminOverload" %} active{% endif %}" tabindex="10"><h4>Overload Forms</h4></li></a> #}
+                    {#  <a href="/"><li class="panel-heading {% if request.path =="/" %} active{% endif %}" tabindex="11"><h4>Past Forms</h4></li></a> #}
+                    <a href="/admin/termManagement"><li class="panel-heading {% if request.path =="/admin/termManagement" %} active{% endif %}" tabindex="12"><h4>Manage Terms</h4></li></a>
+                    <a href="/admin/manageDepartments"><li class="panel-heading {% if request.path =="/admin/manageDepartments" %} active{% endif %}" tabindex="13"><h4>Manage Departments</h4></li></a>
+                    <a href="/admin/adminManagement"><li class="panel-heading {% if request.path =="/admin/adminManagement" %} active{% endif %}" tabindex="14"><h4>Manage Administrators</h4></li></a>
+                    <a href="/admin/emailTemplates"><li class="panel-heading {% if request.path =="/admin/emailTemplates" %} active{% endif %}" tabindex="15"><h4>Manage Email Templates</h4></li></a>
                   </ul>
                   {% endif %}
                   {% if (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin) and not currentUser.isLaborAdmin %}

@@ -14,11 +14,15 @@ $('#positionTable tbody tr td').on('click',function(){
    $("#flasher").delay(3000).fadeOut();
  }
  else {
-   $("#modal").modal("show");
-   $("#modal").find('.modal-content').load('/laborHistory/modal/' + this.id);
-   setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
+   loadLaborHistoryModal(this.id)
  }
 });
+
+function loadLaborHistoryModal(formHistory) {
+  $("#modal").modal("show");
+  $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory);
+  setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
+}
 
 function redirection(laborStatusKey){
   /*
@@ -81,7 +85,14 @@ function withdrawform(formID){
          contentType: 'application/json',
          success: function(response) {
              if (response["Success"]) {
-               window.location.href = response["url"]
+               // Try and catch is used here to prevent Form Search page from reloading the entire the page.
+               try {
+                 runformSearchQuery();
+                 $('#modal').modal('hide');
+               }
+               catch(e){
+                 window.location.href = response["url"]
+               }
              }
            }
          });

@@ -18,7 +18,6 @@
   <a class="skipContent" href="#pendingLabor" tabindex="1">Click to Skip</a>
   <h1>{{title}}</h1>
 </div>
-
 <div class="container" id="wrapper">
   <div id="pendingTabs" class="container" style='display: inline-block;'>
     <ul class="nav nav-tabs" style='text-align: center;'>
@@ -190,7 +189,7 @@
                       <span id="reject_{{allForms.formHistoryID}}"
                             onclick="insertDenial({{allForms.formHistoryID}})"
                             data-toggle="modal"
-                            data-target="#{{modalTarget}}">Deny</span></a></li>
+                            data-target="#denyModal">Deny</span></a></li>
                     {% endif %}
                     {% if allForms.historyType.historyTypeName == 'Labor Status Form' %}
                     <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
@@ -227,7 +226,5 @@
       </div>
     </div>
   </div>
-
 </div>
-
 {% endblock %}

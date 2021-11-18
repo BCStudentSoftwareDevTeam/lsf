@@ -5,7 +5,7 @@
 <div class="modal-body" id="overloadModalBody">
   {% if pendingForm == true and ((currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin)) %}
     <div class="row" style="margin-top:7px;">
-      <div class="col-sm-1" style="padding:0px;">
+      <div class="col-sm-1">
         <span class="glyphicon glyphicon-info-sign" style="color:blue;"></span>
       </div>
       <div class="col-sm-11" align="left" style="padding:0px;">
