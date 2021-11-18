@@ -197,7 +197,7 @@ def getFormattedData(filteredSearchResults):
         record.append(supervisorStudentHTML.format(
               form.createdBy.supervisor.ID if form.createdBy.supervisor else form.createdBy.student.ID,
               form.createdBy.username,
-              form.createdBy.supervisor.EMAIL if form.createdBy.supervisor else form.createdBy.student.EMAIL,
+              form.createdBy.supervisor.EMAIL if form.createdBy.supervisor else form.createdBy.student.STU_EMAIL,
               form.createdDate.strftime('%m/%d/%y')))
 
         # Form Status
