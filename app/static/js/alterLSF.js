@@ -3,6 +3,7 @@ $(document).ready(function(){
   fillHoursPerWeek();
   jobPositionDisable();
   preFilledDate($("#Term").data("termcode"));
+  fetchPositions();
  });
 
  $("#calendarIcon1").click(function() {
@@ -122,8 +123,10 @@ function checkSupervisor() {
     $('#contractHours').val(oldContractHours);
     $("#contractHours").prop('disabled', true);
     $('#contractHours').selectpicker('refresh');
+    $("#department").prop('disabled', true);
+    $('#department').selectpicker('refresh');
     category = "info"
-    msg = "Changes to Hours and Position are unavailable when Supervisor is changed. (Select Original Supervisor to change Position or Hours)";
+    msg = "Changes to Department, Position, and Hours are unavailable when Supervisor is changed. (Select Original Supervisor to change Department, Position or Hours)";
     $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
     $("#flasher").delay(3000).fadeOut()
   } else {
@@ -133,6 +136,8 @@ function checkSupervisor() {
     $('#weeklyHours').selectpicker('refresh');
     $("#contractHours").prop('disabled', false);
     $('#contractHours').selectpicker('refresh');
+    $("#department").prop('disabled', false);
+    $('#department').selectpicker('refresh');
   }
 }
 
@@ -151,6 +156,8 @@ function checkForChange(){
   var newStartDate = $("#dateTimePicker1").val();
   var oldEndDate = $("#oldEndDate").val();
   var newEndDate = $("#dateTimePicker2").val();
+  var oldDepartment = $('#prefilldepartment').val();
+  var newDepartment = $('#department').val();
 
   if(oldSupervisor != newSupervisor){
     finalDict["supervisor"] = {"oldValue": oldSupervisor, "newValue": newSupervisor, "date": date}
@@ -172,6 +179,9 @@ function checkForChange(){
   }
   if(oldEndDate != newEndDate){
     finalDict["endDate"] = {"oldValue": oldEndDate, "newValue": newEndDate, "date": date}
+  }
+  if(oldDepartment != newDepartment){
+    finalDict["department"] = {"oldValue": oldDepartment, "newValue": newDepartment, "date": date}
   }
 
   if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")){
@@ -267,3 +277,31 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
     $("#dateTimePicker2").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
   }
 }
+
+function fetchPositions() {
+  departmentOrg = $('#department').val();
+  departmentAccount = $("#department option:selected").attr("data-account");
+  positionsSelectpicker = $("#position");
+  $.ajax({
+    url: `/alterLSF/fetchPositions/${departmentOrg}/${departmentAccount}`,
+    dataType: "json",
+    success: function(positions) {
+      for (var position in positions) {
+        positionsSelectpicker.append(
+          $("<option />")
+             .attr("data-content", `${positions[position].POSN_TITLE} (${positions[position].WLS})`)
+             .attr("value", positions[position].POSN_CODE)
+             .attr("data-wls",positions[position].WLS)
+        );
+      }
+     $("#position").selectpicker("refresh");
+     $("#position").selectpicker("refresh");
+    }
+  });
+}
+
+$('#department').on('change',function() {
+  $("#position").empty();
+  $("#position").selectpicker("refresh");
+  fetchPositions();
+});
