@@ -1,5 +1,3 @@
-#from flask import render_template  #, redirect, url_for, request, g, jsonify, current_app
-#from flask_login import current_user, login_required
 from flask import flash, send_file, json, jsonify, redirect, url_for
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -130,23 +128,8 @@ def allPendingForms(formType):
                     pass
                 except Exception as e:
                     print(e)
-            if allForms.adjustedForm: # If a form has been adjusted then we want to retrieve supervisor and position information using the new values stored in adjusted table
-                # We check if there is a pending overload form using the key of the modifed forms
-                if allForms.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
-                    newSupervisorID = allForms.adjustedForm.newValue    # use the supervisor id in the field adjusted to find supervisor in User table.
-                    newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
-                    # we are temporarily storing the supervisor name in new value,
-                    # because we want to show the supervisor name in the hmtl template.
-                    allForms.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
-                    allForms.adjustedForm.oldValue = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
+            checkAdjustment(allForms)
 
-                if allForms.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                    newPositionCode = allForms.adjustedForm.newValue
-                    newPosition = Tracy().getPositionFromCode(newPositionCode)
-                    # temporarily storing the position code and wls in new value, and position name in old value
-                    # because we want to show these information in the hmtl template.
-                    allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
-                    allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
         users = Supervisor.select()
         return render_template( 'admin/allPendingForms.html',
                                 title=pageTitle,
@@ -165,6 +148,25 @@ def allPendingForms(formType):
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
+
+def checkAdjustment(allForms):
+    if allForms.adjustedForm: # If a form has been adjusted then we want to retrieve supervisor and position information using the new values stored in adjusted table
+        # We check if there is a pending overload form using the key of the modifed forms
+        if allForms.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
+            newSupervisorID = allForms.adjustedForm.newValue    # use the supervisor id in the field adjusted to find supervisor in User table.
+            newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
+            # we are temporarily storing the supervisor name in new value,
+            # because we want to show the supervisor name in the hmtl template.
+            allForms.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
+            allForms.adjustedForm.oldValue = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
+
+        if allForms.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
+            newPositionCode = allForms.adjustedForm.newValue
+            newPosition = Tracy().getPositionFromCode(newPositionCode)
+            # temporarily storing the position code and wls in new value, and position name in old value
+            # because we want to show these information in the hmtl template.
+            allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
+            allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
