@@ -4,6 +4,7 @@ from app.controllers.main_routes.laborHistory import *
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.adjustedForm import AdjustedForm
 from app import cfg
 from app.logic.emailHandler import *
@@ -48,8 +49,8 @@ def alterLSF(laborStatusKey):
     prefillsupervisor = form.supervisor.FIRST_NAME +" "+ form.supervisor.LAST_NAME
     prefillsupervisorPIDM = form.supervisor.PIDM
     superviser_id = form.supervisor.ID
-    prefilldepartment = form.department.DEPT_NAME
-    prefillposition = form.POSN_CODE
+    prefilldepartment = form.department.ORG
+    prefillposition = form
     prefilljobtype = form.jobType
     prefillterm = form.termCode
     prefillstartdate = form.startDate
@@ -67,6 +68,7 @@ def alterLSF(laborStatusKey):
     #These are the data fields to populate our dropdowns(Supervisor. Position)
     supervisors = Tracy().getSupervisors()
     positions = Tracy().getPositionsFromDepartment(form.department.ORG, form.department.ACCOUNT)
+    departments = Tracy().getDepartments()
 
     # supervisors from the old system WILL have a Supervisor record, but might not have a Tracy record
     oldSupervisor = Supervisor.get_or_none(ID = form.supervisor.ID)
@@ -95,6 +97,7 @@ def alterLSF(laborStatusKey):
                             prefillhours = prefillhours,
                             supervisors = supervisors,
                             positions = positions,
+                            departments=departments,
                             form = form,
                             oldSupervisor = oldSupervisor,
                             totalHours = totalHours,
@@ -117,6 +120,15 @@ def getDate(termcode):
             datesDict[date.termCode] = {"Start Date":datetime.strftime(start, "%m/%d/%Y")  , "End Date": datetime.strftime(end, "%m/%d/%Y"), "Primary Cut Off": datetime.strftime(primaryCutOff, "%m/%d/%Y"), "isBreak": date.isBreak, "isSummer": date.isSummer}
     return json.dumps(datesDict)
 
+@main_bp.route("/alterLSF/fetchPositions/<departmentOrg>/<departmentAccount>", methods=['GET'])
+def fetchPositions(departmentOrg, departmentAccount):
+    currentUser = require_login()
+    positions = Tracy().getPositionsFromDepartment(departmentOrg, departmentAccount)
+    positionDict = {}
+    for position in positions:
+        if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
+            positionDict[position.POSN_CODE] = {"POSN_TITLE": position.POSN_TITLE, "WLS": position.WLS, "POSN_CODE": position.POSN_CODE}
+    return json.dumps(positionDict)
 
 @main_bp.route("/alterLSF/submitAlteredLSF/<laborStatusKey>", methods=["POST"])
 def submitAlteredLSF(laborStatusKey):
@@ -179,6 +191,11 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
     if fieldName == "supervisor":
         supervisor = createSupervisorFromTracy(bnumber=fieldsChanged[fieldName]["newValue"])
         lsf.supervisor = supervisor.ID
+        lsf.save()
+
+    if fieldName == "department":
+        department = Department.get(Department.ORG==fieldsChanged[fieldName]['newValue'])
+        lsf.department = department.departmentID
         lsf.save()
 
     if fieldName == "position":

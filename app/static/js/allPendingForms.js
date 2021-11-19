@@ -85,17 +85,18 @@ function insertApprovals(laborHistoryId = null) {
 function updateApproveTableData(returned_details) {
   for (var i = 0; i < returned_details.length; i++) {
     var student = returned_details[i][0];
-    var position = returned_details[i][1];
+    var department = returned_details[i][1];
+    var position = returned_details[i][2];
     var r_hour = returned_details[i][3];
     var c_Hours = returned_details[i][4];
-    var supervisor = returned_details[i][2];
+    var supervisor = returned_details[i][5];
     var hours = " ";
     if (r_hour.length == 4) {
       hours = c_Hours;
     } else {
       hours = r_hour;
     }
-    $('#classTableBody').append('<tr><td>' + student + '</td><td>' + position + '</td><td> ' + hours + '</td> <td> ' + supervisor + '</td></tr>');
+    $('#classTableBody').append('<tr><td>' + student + '</td><td>' + department + '</td><td>' + position + '</td><td> ' + hours + '</td> <td> ' + supervisor + '</td></tr>');
   }
 }
 
@@ -168,17 +169,18 @@ function insertDenial(val) {
 function finalDenial_data(returned_details) {
   for (var i = 0; i < returned_details.length; i++) {
     var student = returned_details[i][0];
-    var position = returned_details[i][1];
+    var department = returned_details[i][1]
+    var position = returned_details[i][2];
     var r_hour = returned_details[i][3];
     var c_Hours = returned_details[i][4];
-    var supervisor = returned_details[i][2];
+    var supervisor = returned_details[i][5];
     var hours = " ";
     if (r_hour.length == 4) {
       hours = c_Hours;
     } else {
       hours = r_hour;
     }
-    $('#denialPendingFormsBody').append('<tr><td>' + student + '</td><td>' + position + '</td><td> ' + supervisor + '</td> <td> ' + hours + '</td></tr>'); //populate the denial modal for all pending forms
+    $('#denialPendingFormsBody').append('<tr><td>' + student + '</td><td>' + department + '</td><td>' + position + '</td><td> ' + supervisor + '</td> <td> ' + hours + '</td></tr>'); //populate the denial modal for all pending forms
   }
 }
 
