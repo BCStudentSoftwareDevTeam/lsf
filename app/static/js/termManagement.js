@@ -1,7 +1,7 @@
 // Opens collapse menu for this page
 $("#admin").collapse("show");
 
-$('[data-onload]').each(function(){
+$('[data-onload]').each(function() {
   eval($(this).data('onload'));
 });
 
@@ -13,7 +13,7 @@ $('.glyphicon-calendar').click(function() {  // gets the calender glyphicon
    $(".datepicker").focus();
  });
 
-var date = new Date();
+let date = new Date();
 date.setDate(date.getDate());
 $(".form-control").datepicker({
 });
@@ -21,20 +21,20 @@ $(".form-control").datepicker({
 function getDate(obj, termCode) {
   /* this function makes a dictionary with term code being the keys, and the dates being the values
   then this will trigger the ajax call and send the dictionary to termManagement.py */
-  var termStart = obj.value; // You need to get the value of this object otherwise it will show "object Object"
-  var termID = obj.id.split("_")[1] // This is how we format the term code
-  var dateType = obj.id.split("_")[0] // This variable stores whether the value is a start date or an end date
-  var tabledata_dict = {};
-  var id = "#" + String(obj.id)
+  let termStart = obj.value; // You need to get the value of this object otherwise it will show "object Object"
+  let termID = obj.id.split("_")[1] // This is how we format the term code
+  let dateType = obj.id.split("_")[0] // This variable stores whether the value is a start date or an end date
+  let tabledataDict = {};
+  let id = "#" + String(obj.id)
   if (obj.value === "") {
     $(id).css('border', '1px solid red')
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Empty date fields are invalid. The previous date has not been deleted.</div>');
     $("#flasher").delay(5000).fadeOut();
   } else {
     $(id).css('border', '')
-    tabledata_dict[dateType] = obj.value;
-    tabledata_dict["termCode"] = termID;
-    data = JSON.stringify(tabledata_dict); // need to do this in order for the python to recognize it
+    tabledataDict[dateType] = obj.value;
+    tabledataDict["termCode"] = termID;
+    data = JSON.stringify(tabledataDict); // need to do this in order for the python to recognize it
       $.ajax({
         type: "POST",
         url: "/termManagement/setDate/",
@@ -58,17 +58,16 @@ function getDate(obj, termCode) {
           $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The '+ dateChanged +' for '+ termchanged +' was changed to '+ newDate +'</div>');
           $("#flasher").delay(5000).fadeOut();
         }
-
       });
   }
 }
 
-function updateStart(obj, termCode){
+function updateStart(obj, termCode) {
   /* This function disables any dates that come after the selected end date */
-  var newEnd = new Date(obj.value)
-  var dayNewEnd = newEnd.getDate() - 1;
-  var monthNewEnd = newEnd.getMonth();
-  var yearNewEnd = newEnd.getFullYear();
+  let newEnd = new Date(obj.value)
+  let dayNewEnd = newEnd.getDate() - 1;
+  let monthNewEnd = newEnd.getMonth();
+  let yearNewEnd = newEnd.getFullYear();
   $('#start_' + termCode).datepicker({maxDate: new Date(yearNewEnd, monthNewEnd, dayNewEnd)});
   $('#start_' + termCode).datepicker( "option", "maxDate", new Date(yearNewEnd, monthNewEnd, dayNewEnd));
   $('#primaryCutOff_' + termCode).datepicker({maxDate: new Date(yearNewEnd, monthNewEnd, dayNewEnd)});
@@ -78,12 +77,12 @@ function updateStart(obj, termCode){
 
 }
 
-function updateEnd(obj, termCode){
+function updateEnd(obj, termCode) {
   /* This function disables any dates that come after the selected start date */
-  var newStart = new Date(obj.value)
-  var dayNewStart = newStart.getDate() + 1;
-  var monthNewStart = newStart.getMonth();
-  var yearNewStart = newStart.getFullYear();
+  let newStart = new Date(obj.value)
+  let dayNewStart = newStart.getDate() + 1;
+  let monthNewStart = newStart.getMonth();
+  let yearNewStart = newStart.getFullYear();
   $('#end_' + termCode).datepicker({minDate: new Date(yearNewStart, monthNewStart, dayNewStart)});
   $("#end_" + termCode).datepicker( "option", "minDate", new Date(yearNewStart, monthNewStart, dayNewStart));
   $('#primaryCutOff_' + termCode).datepicker({minDate: new Date(yearNewStart, monthNewStart, dayNewStart)});
@@ -94,11 +93,11 @@ function updateEnd(obj, termCode){
 
 function termStatus(term) {
   /* this function changes the buttons from close and open whenever they are clicked */
-  var startID = $("#start_" + term); // This is how we get the unique ID, term is the term code
-  var endID = $("#end_" + term);
-  var primaryCutOffID = $("#primaryCutOff_" + term);
-  var termBtnID = $("#term_btn_" + term);
-  var inactiveBtnID = $("#inactive_btn_" + term);
+  let startID = $("#start_" + term); // This is how we get the unique ID, term is the term code
+  let endID = $("#end_" + term);
+  let primaryCutOffID = $("#primaryCutOff_" + term);
+  let termBtnID = $("#term_btn_" + term);
+  let inactiveBtnID = $("#inactive_btn_" + term);
     $.ajax({
       method: "POST",
       url: "/termManagement/manageStatus ",
@@ -114,8 +113,7 @@ function termStatus(term) {
           $(termBtnID).text("Closed");
           category = "danger";
           state = "'Closed'.";
-          }
-        else {
+          } else {
           $(termBtnID).removeClass("btn-danger");
           $(termBtnID).addClass("btn-success");
           $(termBtnID).text("Open");
