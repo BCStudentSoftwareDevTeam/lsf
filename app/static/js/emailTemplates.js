@@ -1,13 +1,13 @@
 // Opens collapse menu for this page
 $("#admin").collapse("show");
 
-var emailTemplateArray;
+let emailTemplateArray;
 
 $(document).ready(function() {
   getEmailArray();
 });
 
-function getEmailArray(){
+function getEmailArray() {
   $.ajax({
     url: "/admin/emailTemplates/getEmailArray/",
     dataType: "json",
@@ -17,17 +17,17 @@ function getEmailArray(){
   })
 }
 
-function populateFormType(){
+function populateFormType() {
   // populates Form Type only when Recipient is selected
   $("#formType").prop("disabled", false);
   $("#formType").empty();
   $("#action").empty();
   $("#subject").val("");
-  var recipient = $("#recipient").val();
-  var appendedItems = [];
-  for (var dict in emailTemplateArray){
-    var value = emailTemplateArray[dict]["formType"];
-    if(recipient == emailTemplateArray[dict]["audience"] && !appendedItems.includes(value)){
+  let recipient = $("#recipient").val();
+  let appendedItems = [];
+  for (let dict in emailTemplateArray) {
+    let value = emailTemplateArray[dict]["formType"];
+    if(recipient == emailTemplateArray[dict]["audience"] && !appendedItems.includes(value)) {
       appendedItems.push(value);
       $("#formType").append('<option value="' + value + '">' + value + '</option>');
     }
@@ -39,17 +39,17 @@ function populateFormType(){
   $("#subject").prop("disabled", true);
 }
 
-function populateAction(){
+function populateAction() {
   // populates Action only when Form Type is selected
   $("#action").prop("disabled", false);
   $("#action").empty();
   $("#subject").val("");
-  var recipient = $("#recipient").val();
-  var formType = $("#formType").val();
-  var appendedItems = [];
-  for (var dict in emailTemplateArray){
-    var value = emailTemplateArray[dict]["action"];
-    if(recipient == emailTemplateArray[dict]["audience"] && formType == emailTemplateArray[dict]["formType"] && !appendedItems.includes(value)){
+  let recipient = $("#recipient").val();
+  let formType = $("#formType").val();
+  let appendedItems = [];
+  for (let dict in emailTemplateArray){
+    let value = emailTemplateArray[dict]["action"];
+    if(recipient == emailTemplateArray[dict]["audience"] && formType == emailTemplateArray[dict]["formType"] && !appendedItems.includes(value)) {
       appendedItems.push(value);
       $("#action").append('<option value="' + value + '">' + value + '</option>');
     }
@@ -58,7 +58,7 @@ function populateAction(){
   $("#subject").prop("disabled", true);
 }
 
-function populatePurpose(){
+function populatePurpose() {
   // This function will begin by refreshing the 'Purpose' select picker everytime,
   // in order to correctly update it everytime. The function then checks what
   // recipient was choosen from the select picker, and queries all the purposes from
@@ -69,9 +69,9 @@ function populatePurpose(){
   $("#subject").selectpicker("refresh")
   $("#subject").val("Subject")
   CKEDITOR.instances["editor1"].setData('')
-  var recipient = $("#recipient").val()
-  var formType = $("#formType").val()
-  var action = $("#action").val()
+  let recipient = $("#recipient").val()
+  let formType = $("#formType").val()
+  let action = $("#action").val()
   fieldsDict = {recipient: recipient,
                 formType: formType,
                 action: action};
@@ -81,7 +81,7 @@ function populatePurpose(){
     url: "/admin/emailTemplates/getPurpose/" + fieldsDictSTR,
     dataType: "json",
     success: function(response){
-      var value;
+      let value;
       value = response[0]["Subject"]
       $("#subject").selectpicker("refresh");
       $('#subject').val(value);
@@ -91,13 +91,13 @@ function populatePurpose(){
 
 }
 
-function populateEmailTemplate(){
+function populateEmailTemplate() {
   // This method starts by clearing the subject and the body on the UI. Once that
   // is completed, this method will call the purpose. The purpose is used to pull
   // the subject and body from the appropriate template in the database and
   // fill them in the purpose selectpicker and the CKEditor body.
   CKEDITOR.instances["editor1"].setData('');
-  var purpose = $("#purpose").val();
+  let purpose = $("#purpose").val();
   fieldsDict = {"action": $("#action").val(),
                 "formType":$("#formType").val(),
                 "recipient":$("#recipient").val()
@@ -107,24 +107,24 @@ function populateEmailTemplate(){
     url: "/admin/emailTemplates/getEmail/" + fieldsDictSTR,
     dataType: "json",
     success: function(response){
-      var body = response["emailBody"]
-      var subject = response["emailSubject"]
+      let body = response["emailBody"]
+      let subject = response["emailSubject"]
       CKEDITOR.instances["editor1"].insertHtml(body);
       // $("#subject").val(subject)
     }
   })
 }
 
-function postEmailTemplate(){
+function postEmailTemplate() {
   // This method will check what purpose is selected and what is currently
   // selected in the CKEditor body. Then on an AJAX call we send that to the
   // database to override the current body of the email template that was
   // selected. On success, we reload the page and give a python success flash message.
-  var body = CKEDITOR.instances.editor1.getData();
-  var purpose = $("#subject").val();
-  var action = $("#action").val();
-  var formType = $("#formType").val();
-  var recipient = $("#recipient").val();
+  let body = CKEDITOR.instances.editor1.getData();
+  let purpose = $("#subject").val();
+  let action = $("#action").val();
+  let formType = $("#formType").val();
+  let recipient = $("#recipient").val();
   $.ajax({
     url: "/admin/emailTemplates/postEmail",
     data: { 'body': body, 'purpose': purpose, 'action': action, 'formType': formType, 'recipient': recipient},
@@ -136,7 +136,7 @@ function postEmailTemplate(){
   })
 }
 
-function discard(){
+function discard() {
   // This method first checks to see if a purpose was selected or not. If no
   // purpose was selected, it will flash an error message saying there were no
   // changes to be discarded. If a purpose was selected, the method will clear all
@@ -144,8 +144,7 @@ function discard(){
   if ( !$("#subject").val() && !$("#editor1").val() ) {
     msg = "There are no changes to be discarded.";
     category = "danger";
-  }
-  else {
+  } else {
     $("#recipient").val('default').selectpicker("refresh")
     $("#formType").empty()
     $("#formType").val('default').selectpicker("refresh")
@@ -172,8 +171,7 @@ function saveChanges() {
     category = "danger";
     $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>');
     $("#flasher").delay(3000).fadeOut();
-  }
-  else{
+  } else{
     $("#modal").modal("show");
   }
 }
