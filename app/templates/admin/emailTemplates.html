@@ -29,18 +29,17 @@
       </span>
     </label>
     <select class="selectpicker"
-      name='recipient'
-      id='recipient'
-      data-live-search='false'
-      title="Select Recipient"
-      data-width="100%"
-      onchange="populateFormType()">
+            name='recipient'
+            id='recipient'
+            data-live-search='false'
+            title="Select Recipient"
+            data-width="100%"
+            onchange="populateFormType()">
       {% for value in recipient %}
         <option value="{{value.audience}}">{{value.audience}}</option>
       {% endfor %}
    </select>
   </div>
-
   <div class="form-group col-md-12">
     <label for="Form Type">
       <span class="tooltip-right" data-tooltip="Required">Form Type
@@ -49,16 +48,15 @@
       </span>
     </label>
       <select class="selectpicker"
-        name='formType'
-        id='formType'
-        data-live-search='false'
-        title="Select Form Type"
-        data-width="100%"
-        onchange="populateAction()"
-        disabled
+              name='formType'
+              id='formType'
+              data-live-search='false'
+              title="Select Form Type"
+              data-width="100%"
+              onchange="populateAction()"
+              disabled
      </select>
   </div>
-
   <div class="form-group col-md-12">
     <label for="Action">
       <span class="tooltip-right" data-tooltip="Required">Action
@@ -66,35 +64,33 @@
         </span>
       </span>
     </label>
-      <select class="selectpicker"
-        name='action'
-        id='action'
-        data-live-search='false'
-        title="Select Action"
-        data-width="100%"
-        onchange="populatePurpose()"
-        disabled>
-     </select>
+    <select class="selectpicker"
+            name='action'
+            id='action'
+            data-live-search='false'
+            title="Select Action"
+            data-width="100%"
+            onchange="populatePurpose()"
+            disabled>
+    </select>
   </div>
-
   <div class="form-group col-md-12">
-  <label for="Subject">
-    <span class="tooltip-right" data-tooltip="Required">Subject
-      <span class="required-mark">*
+    <label for="Subject">
+      <span class="tooltip-right" data-tooltip="Required">Subject
+        <span class="required-mark">*
+        </span>
       </span>
-    </span>
-  </label>
+    </label>
     <input class="form-control"
-      type="text"
-      name='subject'
-      id='subject'
-      placeholder="Subject of Email"
-      data-width="100%"
-      onchange=""
-      disabled>
+          type="text"
+          name='subject'
+          id='subject'
+          placeholder="Subject of Email"
+          data-width="100%"
+          onchange=""
+          disabled>
    </input>
   </div>
-
   <div class="form-group col-md-12">
     <label for="Body">
       <span class="tooltip-right" data-tooltip="Required">Body
@@ -107,13 +103,19 @@
       CKEDITOR.replace('editor1');
     </script>
   </div>
-
   <div class="col-md-6">
-    <button type="button" class="btn btn-danger" align="right" onclick="discard()">Discard Changes</button>
+    <button type="button"
+            class="btn btn-danger"
+            align="right"
+            onclick="discard()">Discard Changes
+    </button>
   </div>
-
   <div class="col-md-6" style="text-align:right;">
-    <button type="button" id="submit" class="btn btn-success" onclick="saveChanges()">Save Changes</button>
+    <button type="button"
+            id="submit"
+            class="btn btn-success"
+            onclick="saveChanges()">Save Changes
+    </button>
   </div>
   <!-- Modal that will be rendered on the click of the submit button -->
   {% include "snips/emailTemplatesModal.html" %}
