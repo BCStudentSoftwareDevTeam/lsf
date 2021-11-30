@@ -160,7 +160,7 @@
                      type="button"
                      class="btn btn-med {% if term.termState == True %} btn-success {% elif term.termState == False %} btn-danger {% endif %}"
                      onclick="termStatus({{term.termCode}})"
-                     value="{{term.termState}} {% if term.termState == True %} Open {% elif term.termState == False %} Closed {% endif %}"
+                     value="{{term.termState}}">{% if term.termState == True %} Open {% elif term.termState == False %} Closed {% endif %}
                    </button>
                  </td>
                 </tr>
