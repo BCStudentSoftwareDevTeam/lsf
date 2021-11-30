@@ -20,12 +20,14 @@
   <p class ="subHeader">
     You can then click on Term State in each panel to open or close the term. </p>
 
-  <div class="accordion" id="accordionExample">
+  <div class="accordion"
+      id="accordionExample">
     <!-- This loop creates the panels for the accordion,
     they contain "Academic Year: year-year" -->
     {% for year,terms in listOfTerms.items() %}
       <div class="card">
-        <div class="card-header" id="heading_{{year}}">
+        <div class="card-header"
+            id="heading_{{year}}">
           <button class="btn btn-link"
                   type="button"
                   id="academicYear_{{year}}"
@@ -43,7 +45,9 @@
               class="collapse"
               aria-labelledby="heading_{{year}}"
               data-parent="#accordionExample">
-          <table class="table table-condensed" class="card-body" id="myTable">
+          <table class="table table-condensed"
+                class="card-body"
+                id="myTable">
           <!-- This is the start of the table -->
             <thead>
               <tr id="tableHeaders">
@@ -106,11 +110,14 @@
                   <td>
                     <div class="input-group date">
                       <input id="end_{{term.termCode}}"
-                            onchange="getDate(this, {{term.termCode}}); updateStart(this, {{term.termCode}});"
+                            onchange="getDate(this, {{term.termCode}});
+                                      updateStart(this, {{term.termCode}});"
                             type="text"
                             class="form-control datepicker emptyEnd"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.termEnd != None %}{{term.termEnd.strftime('%m/%d/%Y')}}{% endif %}"
+                            value="{% if term.termEnd != None %}
+                                    {{term.termEnd.strftime('%m/%d/%Y')}}
+                                    {% endif %}"
                             {% if term.termEnd != None %}
                               data-onload= "updateStart(this, {{term.termCode}})"
                             {% endif %}/>

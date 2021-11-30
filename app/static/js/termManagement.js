@@ -5,7 +5,7 @@ $('[data-onload]').each(function() {
   eval($(this).data('onload'));
 });
 
-$(function () {
+$(function() {
   $('[data-toggle="tooltip"]').tooltip()
 });
 
@@ -53,9 +53,9 @@ function getDate(obj, termCode) {
           }
           category = "info"
           dateChanged = response['dateChanged']
-          termchanged = response['changedTerm']
+          termChanged = response['changedTerm']
           newDate = response['newDate']
-          $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The '+ dateChanged +' for '+ termchanged +' was changed to '+ newDate +'</div>');
+          $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The '+ dateChanged +' for '+ termChanged +' was changed to '+ newDate +'</div>');
           $("#flasher").delay(5000).fadeOut();
         }
       });
@@ -98,31 +98,31 @@ function termStatus(term) {
   let primaryCutOffID = $("#primaryCutOff_" + term);
   let termBtnID = $("#term_btn_" + term);
   let inactiveBtnID = $("#inactive_btn_" + term);
-    $.ajax({
-      method: "POST",
-      url: "/termManagement/manageStatus ",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify({"termBtn": term}),
-      processData: false,
-      success: function(response) {
-        //category = "info"
-        if($(termBtnID).hasClass("btn-success")) {
-          $(termBtnID).removeClass("btn-success");
-          $(termBtnID).addClass("btn-danger");
-          $(termBtnID).text("Closed");
-          category = "danger";
-          state = "'Closed'.";
-          } else {
-          $(termBtnID).removeClass("btn-danger");
-          $(termBtnID).addClass("btn-success");
-          $(termBtnID).text("Open");
-          category = "success";
-          state = "'Open'.";
-        }
-        term = response['termChanged']
-        $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The state for '+ term +' is set to '+ state +'</div>');
-        $("#flasher").delay(5000).fadeOut();
-     }
+  $.ajax({
+    method: "POST",
+    url: "/termManagement/manageStatus ",
+    dataType: "json",
+    contentType: "application/json",
+    data: JSON.stringify({"termBtn": term}),
+    processData: false,
+    success: function(response) {
+      //category = "info"
+      if($(termBtnID).hasClass("btn-success")) {
+        $(termBtnID).removeClass("btn-success");
+        $(termBtnID).addClass("btn-danger");
+        $(termBtnID).text("Closed");
+        category = "danger";
+        state = "'Closed'.";
+        } else {
+        $(termBtnID).removeClass("btn-danger");
+        $(termBtnID).addClass("btn-success");
+        $(termBtnID).text("Open");
+        category = "success";
+        state = "'Open'.";
+      }
+      term = response['termChanged']
+      $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The state for '+ term +' is set to '+ state +'</div>');
+      $("#flasher").delay(5000).fadeOut();
+    }
   })
 };
