@@ -11,7 +11,7 @@ function getEmailArray() {
   $.ajax({
     url: "/admin/emailTemplates/getEmailArray/",
     dataType: "json",
-    success: function(response){
+    success: function(response) {
       emailTemplateArray = response;
     }
   })
@@ -27,7 +27,7 @@ function populateFormType() {
   let appendedItems = [];
   for (let dict in emailTemplateArray) {
     let value = emailTemplateArray[dict]["formType"];
-    if(recipient == emailTemplateArray[dict]["audience"] && !appendedItems.includes(value)) {
+    if (recipient == emailTemplateArray[dict]["audience"] && !appendedItems.includes(value)) {
       appendedItems.push(value);
       $("#formType").append('<option value="' + value + '">' + value + '</option>');
     }
@@ -49,7 +49,7 @@ function populateAction() {
   let appendedItems = [];
   for (let dict in emailTemplateArray){
     let value = emailTemplateArray[dict]["action"];
-    if(recipient == emailTemplateArray[dict]["audience"] && formType == emailTemplateArray[dict]["formType"] && !appendedItems.includes(value)) {
+    if (recipient == emailTemplateArray[dict]["audience"] && formType == emailTemplateArray[dict]["formType"] && !appendedItems.includes(value)) {
       appendedItems.push(value);
       $("#action").append('<option value="' + value + '">' + value + '</option>');
     }
@@ -75,7 +75,6 @@ function populatePurpose() {
   fieldsDict = {recipient: recipient,
                 formType: formType,
                 action: action};
-
   fieldsDictSTR = JSON.stringify(fieldsDict);
   $.ajax({
     url: "/admin/emailTemplates/getPurpose/" + fieldsDictSTR,
@@ -88,7 +87,6 @@ function populatePurpose() {
       populateEmailTemplate();
     }
   })
-
 }
 
 function populateEmailTemplate() {
@@ -171,7 +169,7 @@ function saveChanges() {
     category = "danger";
     $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>');
     $("#flasher").delay(3000).fadeOut();
-  } else{
+  } else {
     $("#modal").modal("show");
   }
 }
