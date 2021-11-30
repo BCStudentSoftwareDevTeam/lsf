@@ -94,11 +94,14 @@
                   <td>
                     <div class="input-group date">
                       <input id="start_{{term.termCode}}"
-                            onchange="getDate(this, {{term.termCode}}); updateEnd(this, {{term.termCode}});"
+                            onchange="getDate(this, {{term.termCode}});
+                                      updateEnd(this, {{term.termCode}});"
                             type="text"
                             class="form-control datepicker start"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.termStart != None %}{{term.termStart.strftime('%m/%d/%Y')}}{% endif %}"
+                            value="{% if term.termStart != None %}
+                                  {{term.termStart.strftime('%m/%d/%Y')}}
+                                  {% endif %}"
                             {% if term.termStart != None %}
                               data-onload= "updateEnd(this, {{term.termCode}})"
                             {% endif %}/>
@@ -133,7 +136,9 @@
                             type="text"
                             class="form-control datepicker primaryCutOff"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.primaryCutOff != None %}{{term.primaryCutOff.strftime('%m/%d/%Y')}}{% endif %}"/>
+                            value="{% if term.primaryCutOff != None %}
+                                  {{term.primaryCutOff.strftime('%m/%d/%Y')}}
+                                  {% endif %}"/>
                       <label class="input-group-addon" for="primaryCutOff_{{term.termCode}}">
                         <i class="glyphicon glyphicon-calendar"></i>
                       </label>
@@ -146,7 +151,9 @@
                             type="text"
                             class="form-control datepicker adjustmentCutOff"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.adjustmentCutOff != None %}{{term.adjustmentCutOff.strftime('%m/%d/%Y')}}{% endif %}"/>
+                            value="{% if term.adjustmentCutOff != None %}
+                                  {{term.adjustmentCutOff.strftime('%m/%d/%Y')}}
+                                  {% endif %}"/>
                       <label class="input-group-addon" for="adjustmentCutOff_{{term.termCode}}">
                         <i class="glyphicon glyphicon-calendar"></i>
                       </label>
@@ -154,13 +161,21 @@
                   </td>
                   <td style='width:10%'>
                    <button
-                     {% if term.termStart == None or term.termEnd == None or term.primaryCutOff == None or term.adjustmentCutOff == None or term.termState == None %} disabled {% endif %}
+                     {% if term.termStart == None or
+                        term.termEnd == None or
+                        term.primaryCutOff == None or
+                        term.adjustmentCutOff == None or
+                        term.termState == None %} disabled {% endif %}
                      id="term_btn_{{term.termCode}}"
                      name="termBtn"
                      type="button"
-                     class="btn btn-med {% if term.termState == True %} btn-success {% elif term.termState == False %} btn-danger {% endif %}"
+                     class="btn btn-med {% if term.termState == True %} btn-success
+                                        {% elif term.termState == False %} btn-danger
+                                        {% endif %}"
                      onclick="termStatus({{term.termCode}})"
-                     value="{{term.termState}}">{% if term.termState == True %} Open {% elif term.termState == False %} Closed {% endif %}
+                     value="{{term.termState}}">
+                            {% if term.termState == True %} Open
+                            {% elif term.termState == False %} Closed {% endif %}
                    </button>
                  </td>
                 </tr>
