@@ -2,7 +2,7 @@ let table;
 $(document).ready(function() {
   let url = document.location.href
   createButtons();
-  if (url.endsWith('/')){
+  if (url.endsWith('/')) {
     changeButtonColor("#myCurrentStudents")
     $("#userDepartments").hide()
     $("#placeholder").show()
@@ -14,12 +14,10 @@ $(document).ready(function() {
     $('#portalTitle').text("Current Students");
     $("#myCurrentStudents").removeClass("btn-light");
     $("#myCurrentStudents").addClass("btn-primary");
-
     table
       .columns( 1 )
       .search("My Current Students")
       .draw();
-
     $(".currentStu").show();
     $(".allDeptStu").hide();
     $(".currentDeptStu").hide();
@@ -44,12 +42,10 @@ $(document).ready(function() {
     $('#portalTitle').text("Current Department Students");
     $("#currentDepartmentStudents").removeClass("btn-light");
     $("#currentDepartmentStudents").addClass("btn-primary");
-
     table
       .columns( 1 )
       .search("Current Department Students")
       .draw();
-
     $("#currentDepartmentStudents").show()
     $("#allDepartmentStudents").show()
     $("#myCurrentStudents").hide()
@@ -69,7 +65,6 @@ $(document).ready(function() {
 });
 
 function createButtons() {
-
   table = $("#studentList").DataTable({
     "drawCallback": function( settings ) {
       $("#studentList thead").remove(); } , // Used to hide the data table header
@@ -109,7 +104,7 @@ function createButtons() {
         },
         {
           text: 'Past Only',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#myPastStudents")
@@ -132,7 +127,7 @@ function createButtons() {
         },
         {
           text: 'All',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#allMyStudents")
@@ -155,7 +150,7 @@ function createButtons() {
         },
         {
           text: 'Current Only',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#currentDepartmentStudents")
@@ -178,7 +173,7 @@ function createButtons() {
         },
         {
           text: 'Current and Past',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#allDepartmentStudents")
@@ -206,7 +201,7 @@ function createButtons() {
       let btns = $('.dt-button');
       btns.addClass('btn btn-light');
       btns.removeClass('dt-button');
-      }
+    }
   })
 }
 
@@ -279,7 +274,7 @@ function populateTable(){
       // when we append the new data into the data table.
       // Before we append the new department data into the data table, this section will
       // first delete all of the current department data that we have in the data table.
-      if($("#currentDepartmentStudents").hasClass('btn-primary')) {
+      if ($("#currentDepartmentStudents").hasClass('btn-primary')) {
         table
         .columns( 1 )
         .search("All Department Students")
@@ -316,7 +311,7 @@ function populateTable(){
       // This section will iterate through the JSON data, and access the values
       // from the key-value pairs that we will need to populate both the modal and the
       // data table
-      for(let key in response) {
+      for (let key in response) {
         let bNumber = response[key]["BNumber"]
         let student = response[key]["Student"]
         let term = response[key]["Term"]
@@ -330,11 +325,11 @@ function populateTable(){
 
         inactive_tag = ""
         el_id = "#allDepartmentStudentsDiv"
-        if(activeStatus == "False") {
+        if (activeStatus == "False") {
             formStatus = "No longer a student"
             inactive_tag = " <strong>(No longer a student.)</strong>"
         } else {
-            if (divClass == "currentDepartmentModal"){
+            if (divClass == "currentDepartmentModal") {
                 el_id = "#currentDepartmentStudentsDiv"
             }
         }

@@ -16,7 +16,6 @@
 {% endblock %}
 
 {% block app_content %}
-
 <!-- header -->
 <a class="skipContent" href="#download" tabindex="1">Click to Skip</a>
 <div align="center">
@@ -38,9 +37,13 @@ and hide the department select picker. -->
     {% for formHistory in currentUserDepartments %}
         <!-- We want to either select the first option, or the option that matches the department -->
         {% if loop.index == 1 or formHistory.formID.department.DEPT_NAME == department %}
-          <option value="{{formHistory.formID.department.DEPT_NAME}}" selected>{{formHistory.formID.department.DEPT_NAME}}</option>
+          <option value="{{formHistory.formID.department.DEPT_NAME}}"
+                  selected>{{formHistory.formID.department.DEPT_NAME}}
+          </option>
         {% else %}
-          <option value="{{formHistory.formID.department.DEPT_NAME}}">{{formHistory.formID.department.DEPT_NAME}}</option>
+          <option value="{{formHistory.formID.department.DEPT_NAME}}">
+                        {{formHistory.formID.department.DEPT_NAME}}
+          </option>
         {% endif %}
     {% endfor %}
   </select>
@@ -74,8 +77,13 @@ and hide the department select picker. -->
           <div class="currentStu">
             {% for form in currentSupervisees %}
               <label class="container">
-                <input class="currentStudentModal" type="checkbox" id ='{{form.formID.laborStatusFormID}}' name='{{form.formID.laborStatusFormID}}' value='{{form.formID.laborStatusFormID}}'>
-                  {{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}
+                <input class="currentStudentModal"
+                      type="checkbox"
+                      id ='{{form.formID.laborStatusFormID}}'
+                      name='{{form.formID.laborStatusFormID}}'
+                      value='{{form.formID.laborStatusFormID}}'>
+                  {{form.formID.studentSupervisee.FIRST_NAME}}
+                  {{form.formID.studentSupervisee.LAST_NAME}}
               </label>
             {% endfor %}
           </div>
@@ -84,8 +92,14 @@ and hide the department select picker. -->
           <div class="pastStu" style="display:none">
             {% for form in pastSupervisees %}
               <label class="container">
-                <input class="pastStudentModal" type="checkbox" id= '{{form.formID.laborStatusFormID}}' name='{{form.formID.laborStatusFormID}}' value='{{form.formID.laborStatusFormID}}' disabled>
-                  {{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}
+                <input class="pastStudentModal"
+                      type="checkbox"
+                      id= '{{form.formID.laborStatusFormID}}'
+                      name='{{form.formID.laborStatusFormID}}'
+                      value='{{form.formID.laborStatusFormID}}'
+                      disabled>
+                  {{form.formID.studentSupervisee.FIRST_NAME}}
+                  {{form.formID.studentSupervisee.LAST_NAME}}
               </label>
             {% endfor %}
           </div>
@@ -94,16 +108,25 @@ and hide the department select picker. -->
           <div class="pastStu" style="display:none">
             {% for form in inactiveSupervisees %}
               <label class="container">
-                <input class="pastStudentModal" type="checkbox" id= '{{form.formID.laborStatusFormID}}' name='{{form.formID.laborStatusFormID}}' value='{{form.formID.laborStatusFormID}}' disabled>
-                  {{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}} <strong>(No longer a student)</strong>
+                <input class="pastStudentModal"
+                      type="checkbox"
+                      id= '{{form.formID.laborStatusFormID}}'
+                      name='{{form.formID.laborStatusFormID}}'
+                      value='{{form.formID.laborStatusFormID}}'
+                      disabled>
+                  {{form.formID.studentSupervisee.FIRST_NAME}}
+                  {{form.formID.studentSupervisee.LAST_NAME}}
+                  <strong>(No longer a student)</strong>
               </label>
             {% endfor %}
           </div>
-          <!-- Leaving this Div empty because it will be populated dynamically in the JS file -->
+          <!-- Leaving this Div empty because it will be populated
+          dynamically in the JS file -->
           <div id="allDepartmentStudentsDiv"
                 class="allDeptStu">
           </div>
-          <!-- Leaving this Div empty because it will be populated dynamically in the JS file -->
+          <!-- Leaving this Div empty because it will be populated
+          dynamically in the JS file -->
           <div id="currentDepartmentStudentsDiv"
                 class="currentDeptStu">
           </div>
@@ -129,7 +152,9 @@ and hide the department select picker. -->
 <!-- Start of data-table that will display the supervisee -->
 <div class="col-md-3"></div>
 <div class="col-md-7" align="center" >
-  <table id="studentList" class="table table-striped studentTable" style="display:none">
+  <table id="studentList"
+        class="table table-striped studentTable"
+        style="display:none">
     <!-- Made empty header tags because we need to hide the header -->
     <thead>
       <tr>
@@ -140,8 +165,13 @@ and hide the department select picker. -->
     <!-- Display all the current students by going through currentSupervisees list from main_route.py -->
     {% for form in currentSupervisees %}
       <tr>
-        <td><a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-          <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}} ({{form.formID.studentSupervisee.ID}})</span></a>
+        <td>
+          <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
+            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                            {{form.formID.studentSupervisee.LAST_NAME}}
+                            ({{form.formID.studentSupervisee.ID}})
+            </span>
+          </a>
           <span class="pushRight h5">{{form.status}}</span>
           <br>
           <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
@@ -152,8 +182,13 @@ and hide the department select picker. -->
     <!-- Display all the past students by going through pastSupervisees list from main_route.py -->
     {% for form in pastSupervisees %}
       <tr>
-        <td><a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-          <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}} ({{form.formID.studentSupervisee.ID}})</span></a>
+        <td>
+          <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
+            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                            {{form.formID.studentSupervisee.LAST_NAME}}
+                            ({{form.formID.studentSupervisee.ID}})
+            </span>
+          </a>
           <span class="pushRight h5">Past Student</span>
           <br/>
           <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
@@ -164,9 +199,14 @@ and hide the department select picker. -->
     <!-- Display all the past and inactive students by going through inactiveSupervisees list from main_route.py -->
     {% for form in inactiveSupervisees %}
     <tr>
-      <td><a href="/laborHistory/{{form.formID.studentSupervisee.ID}}">
-        <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}} ({{form.formID.studentSupervisee.ID}})</span></a>
-        <br />
+      <td>
+        <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}">
+          <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                          {{form.formID.studentSupervisee.LAST_NAME}}
+                          ({{form.formID.studentSupervisee.ID}})
+          </span>
+        </a>
+        <br/>
         <span class="pushRight h5">No longer a student</span>
         <br/>
         <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
