@@ -1,20 +1,20 @@
-.floatleft {
+.float_left {
   float: left;
   width: 47%;
 }
-.floatright {
+.float_right {
   float: right;
   width: 47%;
 }
-.modal-content{
+.modal-content {
   margin-top: 250px;
 }
-.filter-option-inner-inner{
+.filter-option-inner-inner {
   /* Makes titles black instead of gray */
   color: #000000 !important;
 }
 
-.textarea-required{
+.textarea-required {
   height: 100%;
   width: 100%;
 }
@@ -23,11 +23,11 @@ h3 {
   margin-bottom: 20px;
 }
 
-#buttonContainer{
+#buttonContainer {
   margin-top: 15px;
 }
 
-#titleGlyphicon{
+#titleGlyphicon {
       font-size: 29px;
 }
 

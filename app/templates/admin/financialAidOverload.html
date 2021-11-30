@@ -14,9 +14,9 @@
 <div align="center">
   <h2 id="finAidTitle">Financial Aid (SAAS) Overload Approval
     <span class="glyphicon glyphicon-bookmark"
-       data-toggle="tooltip" data-tooltip="true"
-       title="The Financial Aid (SAAS) interface is for approving or denying overload forms."
-       data-placement = "right" id="titleGlyphicon">
+          data-toggle="tooltip" data-tooltip="true"
+          title="The Financial Aid (SAAS) interface is for approving or denying overload forms."
+          data-placement = "right" id="titleGlyphicon">
     </span>
   </h2>
   <h3 id = "student"> {{studentName}} ({{studentBnum}})</h3>
@@ -29,24 +29,50 @@
              <h3> Current Position </h3>
            </div>
            <label for="Student">Student Name:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="student" value="{{studentName}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="student"
+                  value="{{studentName}}"
+                  disabled> <!--User CANNOT edit-->
          </div>
          <div class="form-group">
-           <label for="primaryPosition" class="field">Primary Position:</label>
-           <input type="text" class="form-control" id= "primaryPosition"value="{{position}}" disabled> </input> <!-- stores value of original-->
+           <label for="primaryPosition"
+                  class="field">Primary Position:
+           </label>
+           <input type="text"
+                  class="form-control"
+                  id= "primaryPosition"
+                  value="{{position}}"
+                  disabled>
+           </input> <!-- stores value of original-->
          </div>
          <div class="form-group">
            <label for="primaryPosHours">Total Primary Position Hours:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryPositionHours}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="primaryPosHours"
+                  value="{{primaryPositionHours}}"
+                  disabled> <!--User CANNOT edit-->
          </div>
          <div class="form-group">
-           <label for="primarySupervisor" class="field">Primary Supervisor:</label>
-           <input  type="text" class="form-control" id= "primarySupervisor"value="{{supervisor}}" disabled> </input> <!-- stores value of original-->
+           <label for="primarySupervisor"
+                  class="field">Primary Supervisor:
+           </label>
+           <input  type="text"
+                  class="form-control"
+                  id= "primarySupervisor"
+                  value="{{supervisor}}"
+                  disabled>
+           </input> <!-- stores value of original-->
          </div>
          <!-- This selectpicker will be disabled if term is for a break, since jobtype is always Secondary-->
          <div class="form-group">
            <label for="department">Department:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="department" value="{{department}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="department"
+                  value="{{department}}"
+                  disabled> <!--User CANNOT edit-->
          </div>
      </div>
 
@@ -56,36 +82,64 @@
            <h3> Overload Request Info </h3>
          </div>
          <label for="overloadPosition">Position:</label> <!--User CANNOT edit-->
-         <input type="text" class="form-control" id="overloadPosition" value="{{overloadPosition}}" disabled> <!--User CANNOT edit-->
+         <input type="text"
+                class="form-control"
+                id="overloadPosition"
+                value="{{overloadPosition}}"
+                disabled> <!--User CANNOT edit-->
        </div>
        <div class="form-group">
          <label for="overloadHours">Total hours with overload:</label> <!--User CANNOT edit-->
-         <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled> <!--User CANNOT edit-->
+         <input type="text"
+                class="form-control"
+                id="overloadHours"
+                value= "{{totalOverloadHours}}"
+                disabled> <!--User CANNOT edit-->
        </div>
        <div class="form-group">
          <label for="dates">Contract Date:</label> <!--User CANNOT edit--> <!--- TODO Is connected to Labor Status form Start Date -->
-           <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="dates"
+                  value= "{{contractDate}}"
+                  disabled> <!--User CANNOT edit-->
        </div>
        <div class="form-group">
          <label>Student's Overload Reason:</label>
-         <textarea type="text" class="form-control" id="overloadReason" value="{{studentOverloadReason}}" disabled>{{studentOverloadReason}}</textarea>
+         <textarea type="text"
+                  class="form-control"
+                  id="overloadReason"
+                  value="{{studentOverloadReason}}"
+                  disabled>{{studentOverloadReason}}
+         </textarea>
        </div>
        <div class="form-group">
          <label>Labor Office Notes:</label>
-         <textarea type="text" class="form-control" id="laborNotes" value="{{laborOfficeNotes}}" disabled>{{laborOfficeNotes}}</textarea>
+         <textarea type="text"
+                  class="form-control"
+                  id="laborNotes"
+                  value="{{laborOfficeNotes}}"
+                  disabled>{{laborOfficeNotes}}
+         </textarea>
        </div>
     </div>
   </div>
   <div class="container" align="center" id="buttonContainer">
     <div class="col-md-6" align="right">
-      <button type="button" id = "approve" class="btn btn-success" value="approved" onclick="openApproveDenyModal(this.value)">Approve</button>
+      <button type="button"
+              id = "approve"
+              class="btn btn-success"
+              value="approved"
+              onclick="openApproveDenyModal(this.value)">Approve
+      </button>
     </div>
     <div class="col-md-6" align="left" >
       <button id="deny_{{overload.formHistoryID}}"
-       type="button" class="btn btn-danger"
-       value = "denied"
-       onclick="openApproveDenyModal(this.value)"
-       >Deny</button>
+              type="button"
+              class="btn btn-danger"
+              value = "denied"
+              onclick="openApproveDenyModal(this.value)">Deny
+      </button>
     </div>
     {% with overload = overload %}
       {% include "snips/financialAidOverloadModals.html" %}

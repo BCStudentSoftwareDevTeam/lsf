@@ -1,17 +1,16 @@
-function overloadSubmission(formHistoryKey){
+function overloadSubmission(formHistoryKey) {
   // this function will update the notes and status in the db
-  var notesContent = $("#denyReason_"+formHistoryKey).val()
+  let notesContent = $("#denyReason_"+formHistoryKey).val()
   denialInfoDict = {}
   denialInfoDict["formHistoryID"] = formHistoryKey
   denialInfoDict["denialNote"] = notesContent
   data = JSON.stringify(denialInfoDict)
 
-  if($(".textarea-required").prop("required") == true && notesContent == " "){
+  if ($(".textarea-required").prop("required") == true && notesContent == " ") {
     $("#finOverloadSubmit").removeAttr("data-dismiss")
     $(".textarea-required").focus();
     $("#required-error").show();
-  }
-  else{
+  } else {
     $("#required-error").hide();
     $("#finOverloadSubmit").attr("data-dismiss", "modal")
     $.ajax({
@@ -24,7 +23,7 @@ function overloadSubmission(formHistoryKey){
         msgFlash("Your changes have been saved successfuly.(You will be redirected shortly.)", "success")
         setTimeout(function() { // executed after 1 second
            window.location.replace('http://berea.edu'); // redirects to a new website
-         }, 5000);
+        }, 5000);
       },
       error:function(response){
         console.log("error", response);
@@ -34,23 +33,22 @@ function overloadSubmission(formHistoryKey){
 }
 
 // for showing different messages with flash
-function msgFlash(flash_message, status){
+function msgFlash(flash_message, status) {
     if (status === "success") {
         category = "success";
         $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
         $("#flasher").delay(5000).fadeOut();
-    }
-    else {
+    } else {
         category = "danger";
         $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
         $("#flasher").delay(5000).fadeOut();
     }
 
 }
-var statusName = null
-function openApproveDenyModal(status){
+let statusName = null
+function openApproveDenyModal(status) {
   statusName = status
-  if (status == "approved"){
+  if (status == "approved") {
     $("#required-error").hide();
     $("#finOverloadSubmit").attr("data-dismiss", "modal")
     $("#finOverloadModal .modal-title").text("Reason for Approval")
@@ -58,8 +56,7 @@ function openApproveDenyModal(status){
                                   "<br><br><b>Please indicate in the notes if the overload form is being approved for a different term.</b>");
     $(".textarea-required").prop('required', false);
     $("#finOverloadModal").modal("show");
-  }
-  else{
+  } else {
     $("#finOverloadModal .modal-title").text("Reason for Denial");
     $("#modal-body-content").html("You have selected 'Deny' for this student's Overload Request. Please indicate a reasoning for this decision <b>(Required)</b>.");
     $(".textarea-required").prop('required', true);
