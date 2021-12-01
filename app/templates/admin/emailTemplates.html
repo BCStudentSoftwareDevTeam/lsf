@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block app_content %}
+
 <head>
   <script src="/static/js/ckeditor/ckeditor.js"></script>
 </head>
@@ -14,52 +15,54 @@
 <h1 class="col-md-12" style="text-align:center">Email Templates</h1>
 
 <div class="form-group col-md-3">
-<!-- This is a blank div so our select pickers would move to the right -->
+  <!-- This is a blank div so our select pickers would move to the right -->
 </div>
-
 <div class="form-group col-md-6" margin-left="500px">
   <div class="form-group col-md-12">
     <div>
       <p class="required-mark">* Marked fields are required</p>
     </div>
-    <label for="Recipient">
-      <span class="tooltip-right" data-tooltip="Required">Recipient
+  <label for="Recipient">
+    <span class="tooltip-right"
+          data-tooltip="Required">Recipient
+      <span class="required-mark">*
+      </span>
+    </span>
+  </label>
+  <select class="selectpicker"
+          name='recipient'
+          id='recipient'
+          data-live-search='false'
+          title="Select Recipient"
+          data-width="100%"
+          onchange="populateFormType()">
+      {% for value in recipient %}
+         <option value="{{value.audience}}">{{value.audience}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group col-md-12">
+    <label for="Form Type">
+      <span class="tooltip-right"
+            data-tooltip="Required">Form Type
         <span class="required-mark">*
         </span>
       </span>
     </label>
     <select class="selectpicker"
-            name='recipient'
-            id='recipient'
+            name='formType'
+            id='formType'
             data-live-search='false'
-            title="Select Recipient"
+            title="Select Form Type"
             data-width="100%"
-            onchange="populateFormType()">
-      {% for value in recipient %}
-        <option value="{{value.audience}}">{{value.audience}}</option>
-      {% endfor %}
-   </select>
+            onchange="populateAction()"
+            disabled>
+    </select>
   </div>
   <div class="form-group col-md-12">
-    <label for="Form Type">
-      <span class="tooltip-right" data-tooltip="Required">Form Type
-        <span class="required-mark">*
-        </span>
-      </span>
-    </label>
-      <select class="selectpicker"
-              name='formType'
-              id='formType'
-              data-live-search='false'
-              title="Select Form Type"
-              data-width="100%"
-              onchange="populateAction()"
-              disabled
-     </select>
-  </div>
-  <div class="form-group col-md-12">
-    <label for="Action">
-      <span class="tooltip-right" data-tooltip="Required">Action
+   <label for="Action">
+     <span class="tooltip-right"
+          data-tooltip="Required">Action
         <span class="required-mark">*
         </span>
       </span>
@@ -76,7 +79,8 @@
   </div>
   <div class="form-group col-md-12">
     <label for="Subject">
-      <span class="tooltip-right" data-tooltip="Required">Subject
+      <span class="tooltip-right"
+            data-tooltip="Required">Subject
         <span class="required-mark">*
         </span>
       </span>
@@ -89,19 +93,22 @@
           data-width="100%"
           onchange=""
           disabled>
-   </input>
+    </input>
   </div>
   <div class="form-group col-md-12">
     <label for="Body">
-      <span class="tooltip-right" data-tooltip="Required">Body
+      <span class="tooltip-right"
+            data-tooltip="Required">Body
         <span class="required-mark">*
         </span>
       </span>
     </label>
-    <textarea name="editor1" id="editor1"></textarea>
-    <script>
-      CKEDITOR.replace('editor1');
-    </script>
+    <textarea name="editor1"
+              id="editor1">
+    </textarea>
+      <script>
+        CKEDITOR.replace('editor1');
+      </script>
   </div>
   <div class="col-md-6">
     <button type="button"
@@ -117,7 +124,7 @@
             onclick="saveChanges()">Save Changes
     </button>
   </div>
-  <!-- Modal that will be rendered on the click of the submit button -->
+    <!-- Modal that will be rendered on the click of the submit button -->
   {% include "snips/emailTemplatesModal.html" %}
 </div>
 {% endblock %}

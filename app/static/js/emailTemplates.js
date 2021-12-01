@@ -125,11 +125,7 @@ function postEmailTemplate() {
   let recipient = $("#recipient").val();
   $.ajax({
     url: "/admin/emailTemplates/postEmail",
-    data: { 'body': body,
-            'purpose': purpose,
-            'action': action,
-            'formType': formType,
-            'recipient': recipient},
+    data: { 'body': body, 'purpose': purpose, 'action': action, 'formType': formType, 'recipient': recipient},
     dataType: 'json',
     type: 'POST',
     success: function(response){
