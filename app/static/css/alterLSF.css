@@ -1,12 +1,12 @@
-.floatleft {
+.float_left {
   float: left;
   width: 47%;
 }
-.floatright {
+.float_right {
   float: right;
   width: 47%;
 }
-.submitbutton {
+.submit_button {
   float: right;
 }
 .modal-content{

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
   $( "#dateTimePicker1, #dateTimePicker2").datepicker();
   fillHoursPerWeek();
   jobPositionDisable();
@@ -17,7 +17,7 @@ $(document).ready(function(){
 $("#contractHoursDiv").hide();
 $("#weeklyHoursDiv").hide();
 //adds a contstraint that does not allow user to set date before today's date
-var date = new Date();
+let date = new Date();
 date.setDate(date.getDate());
 $("#datetimepicker0").datepicker({
   minDate: date
@@ -28,31 +28,30 @@ $(".glyphicon-calendar").click(function() {
     $("#datetimepicker0").focus();
 });
 
-function jobPositionDisable(){
-  var isBreak = $("#termBreak").data("termbreak");
-  if (isBreak){
+function jobPositionDisable() {
+  let isBreak = $("#termBreak").data("termbreak");
+  if (isBreak) {
     $("#jobType").prop("disabled", true);
     $("#jobType").val("Secondary");
     $("#contractHoursDiv").show();
     $("#weeklyHours").val("");
-  }
-  else{
+  } else {
     $("#weeklyHoursDiv").show();
     $("#contractHours").val("");
   }
 }
 
-function fillHoursPerWeek(){ // prefill hours per week select picker
-  var defaultValue = $("#oldWeeklyHours").val();
-  var selectedHoursPerWeek = $("#weeklyHours");
-  var jobType = $("#jobType").val();
-  var wls = $("#position option:selected").attr("data-wls");
-  if (selectedHoursPerWeek){
-    var list = ["10", "12", "15", "20"];
+function fillHoursPerWeek() { // prefill hours per week select picker
+  let defaultValue = $("#oldWeeklyHours").val();
+  let selectedHoursPerWeek = $("#weeklyHours");
+  let jobType = $("#jobType").val();
+  let wls = $("#position option:selected").attr("data-wls");
+  if (selectedHoursPerWeek) {
+    let list = ["10", "12", "15", "20"];
     if (jobType == "Secondary") {
       list = ["5","10"]
     }
-    if(wls >= 5) {
+    if (wls >= 5) {
       list = ["15", "20"]
       // Here we need to pop open the modal that says they need atleast 15 hours
     }
@@ -61,7 +60,7 @@ function fillHoursPerWeek(){ // prefill hours per week select picker
       selectedHoursPerWeek.append($("<option />").text(hours).val(hours));
     });
     if (wls >= 5){
-      if (Number(defaultValue) >= 15){
+      if (Number(defaultValue) >= 15) {
         $("#weeklyHours").val(defaultValue);
         $("#weeklyHours").selectpicker("render");
         $("#weeklyHours").selectpicker("refresh");
@@ -87,31 +86,30 @@ function fillHoursPerWeek(){ // prefill hours per week select picker
   }
 }
 
-var effectiveDate = $("#datetimepicker0").datepicker("getDate");
-var finalDict = {};
+let effectiveDate = $("#datetimepicker0").datepicker("getDate");
+let finalDict = {};
 
-function checkWLS20(){
+function checkWLS20() {
   totalhours = $("#totalHours").val();
   weeklyHours = $("#weeklyHours").val();
-  if(weeklyHours == "20"){
+  if (weeklyHours == "20") {
     $("#OverloadModal").modal("show");
     $("#overloadModalButton").attr("data-target", "") // prevent a Primary Modal from showing up
-  }
-  else if(Number(totalhours) + Number(weeklyHours) > 15) {
+  } else if (Number(totalhours) + Number(weeklyHours) > 15) {
     $("#OverloadModal").modal("show");
     $("#overloadModalButton").attr("data-target", "") // prevent a Primary Modal from showing up
   }
 }
 
 function checkSupervisor() {
-  var oldSupervisor = $('#prefillsupervisor').val();
-  var supervisor = $('#supervisor').val()
-  var position = $('#position').val()
-  var oldPostition = $('#prefillposition').val()
-  var weeklyHours = $('#weeklyHours').val()
-  var oldWeeklyHours = $('#oldWeeklyHours').val()
-  var contractHours = $('#contractHours').val()
-  var oldContractHours = $('#oldContractHours').val()
+  let oldSupervisor = $('#prefillsupervisor').val();
+  let supervisor = $('#supervisor').val()
+  let position = $('#position').val()
+  let oldPostition = $('#prefillposition').val()
+  let weeklyHours = $('#weeklyHours').val()
+  let oldWeeklyHours = $('#oldWeeklyHours').val()
+  let contractHours = $('#contractHours').val()
+  let oldContractHours = $('#oldContractHours').val()
 
   if (supervisor != oldSupervisor) {
     $('#position').val(oldPostition);
@@ -141,63 +139,60 @@ function checkSupervisor() {
   }
 }
 
-function checkForChange(){
-  var oldSupervisor = $("#prefillsupervisor").val();
-  var newSupervisor = $("#supervisor").val();
-  var oldPostition = $("#prefillposition").val();
-  var newPosition = $("#position").val();
-  var date = $("#datetimepicker0").val();
-  var newNotes = $("#supervisorNotes").val();
-  var oldContractHours = $("#oldContractHours").val();
-  var newContractHours = $("#contractHours").val();
-  var oldWeeklyHours = $("#oldWeeklyHours").val();
-  var newWeeklyHours = $("#weeklyHours").val();
-  var oldStartDate = $("#oldStartDate").val();
-  var newStartDate = $("#dateTimePicker1").val();
-  var oldEndDate = $("#oldEndDate").val();
-  var newEndDate = $("#dateTimePicker2").val();
-  var oldDepartment = $('#prefilldepartment').val();
-  var newDepartment = $('#department').val();
+function checkForChange() {
+  let oldSupervisor = $("#prefillsupervisor").val();
+  let newSupervisor = $("#supervisor").val();
+  let oldPostition = $("#prefillposition").val();
+  let newPosition = $("#position").val();
+  let date = $("#datetimepicker0").val();
+  let newNotes = $("#supervisorNotes").val();
+  let oldContractHours = $("#oldContractHours").val();
+  let newContractHours = $("#contractHours").val();
+  let oldWeeklyHours = $("#oldWeeklyHours").val();
+  let newWeeklyHours = $("#weeklyHours").val();
+  let oldStartDate = $("#oldStartDate").val();
+  let newStartDate = $("#dateTimePicker1").val();
+  let oldEndDate = $("#oldEndDate").val();
+  let newEndDate = $("#dateTimePicker2").val();
+  let oldDepartment = $('#prefilldepartment').val();
+  let newDepartment = $('#department').val();
 
-  if(oldSupervisor != newSupervisor){
+  if (oldSupervisor != newSupervisor) {
     finalDict["supervisor"] = {"oldValue": oldSupervisor, "newValue": newSupervisor, "date": date}
   }
-  if(oldPostition != newPosition){
+  if (oldPostition != newPosition) {
     finalDict["position"] = {"oldValue": oldPostition, "newValue": newPosition, "date": date}
   }
-  if(newNotes){
+  if (newNotes) {
     finalDict["supervisorNotes"] = {"newValue": newNotes, "date": date}
   }
-  if(oldContractHours != newContractHours && newWeeklyHours == ""){
+  if (oldContractHours != newContractHours && newWeeklyHours == "") {
     finalDict["contractHours"] = {"oldValue": oldContractHours, "newValue": newContractHours, "date": date}
   }
-  if(oldWeeklyHours != newWeeklyHours && newContractHours == ""){
+  if (oldWeeklyHours != newWeeklyHours && newContractHours == "") {
     finalDict["weeklyHours"] = {"oldValue": oldWeeklyHours, "newValue": newWeeklyHours, "date": date}
   }
-  if(oldStartDate != newStartDate){
+  if (oldStartDate != newStartDate) {
     finalDict["startDate"] = {"oldValue": oldStartDate, "newValue": newStartDate, "date": date}
   }
-  if(oldEndDate != newEndDate){
+  if (oldEndDate != newEndDate) {
     finalDict["endDate"] = {"oldValue": oldEndDate, "newValue": newEndDate, "date": date}
   }
-  if(oldDepartment != newDepartment){
+  if (oldDepartment != newDepartment) {
     finalDict["department"] = {"oldValue": oldDepartment, "newValue": newDepartment, "date": date}
   }
 
-  if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")){
+  if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")) {
     $("#NochangeModal").modal("show");
-  }
-  else if (newNotes == '') {
+  } else if (newNotes == '') {
     category = "danger"
     msg = "Please make sure Notes is filled out.";
     $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
     $("#flasher").delay(3000).fadeOut()
-  }
-  else if (JSON.stringify(finalDict) !== "{}"){
+  } else if (JSON.stringify(finalDict) !== "{}") {
     $("#submitModal").modal("show");
     return finalDict
   }
-
 }
 
 function buttonListener(laborStatusKey) {
@@ -216,7 +211,7 @@ function buttonListener(laborStatusKey) {
   })
 }
 
-function preFilledDate(obj){ // get term start date and end date
+function preFilledDate(obj) { // get term start date and end date
   $.ajax({
     url: "/alterLSF/getDate/" + obj,
     dataType: "json",
@@ -227,25 +222,24 @@ function preFilledDate(obj){ // get term start date and end date
 }
 
 function fillDates(response) { // prefill term start and term end
-
-  for (var key in response){
-    var start = response[key]["Start Date"];
-    var end = response[key]["End Date"];
-    var primaryCutOff = response[key]["Primary Cut Off"];
+  for (let key in response) {
+    let start = response[key]["Start Date"];
+    let end = response[key]["End Date"];
+    let primaryCutOff = response[key]["Primary Cut Off"];
     // disabling primary position if cut off date is before today's date
-    var today = new Date();
-    var date = ("0"+(today.getMonth()+1)).slice(-2)+"/"+("0"+today.getDate()).slice(-2)+"/"+today.getFullYear();
+    let today = new Date();
+    let date = ("0"+(today.getMonth()+1)).slice(-2)+"/"+("0"+today.getDate()).slice(-2)+"/"+today.getFullYear();
 
     // Start Date
-    var startd = new Date(start);
-    var dayStart1 = startd.getDate();
-    var monthStart1 = startd.getMonth();
-    var yearStart = startd.getFullYear();
+    let startd = new Date(start);
+    let dayStart1 = startd.getDate();
+    let monthStart1 = startd.getMonth();
+    let yearStart = startd.getFullYear();
     // End Date
-    var endd = new Date(end);
-    var dayEnd1 = endd.getDate();
-    var monthEnd1 = endd.getMonth();
-    var yearEnd = endd.getFullYear();
+    let endd = new Date(end);
+    let dayEnd1 = endd.getDate();
+    let monthEnd1 = endd.getMonth();
+    let yearEnd = endd.getFullYear();
     // Pre-populate values
     $("#dateTimePicker1").val(start);
     $("#dateTimePicker2").val(end);
@@ -263,16 +257,16 @@ function fillDates(response) { // prefill term start and term end
 }
 
 function updateDate(obj) { // updates max and min dates of the datepickers as the other datepicker changes
-  var dateToChange = new Date($(obj).val());
-  var newMonth = dateToChange.getMonth();
-  var newYear = dateToChange.getFullYear();
-  if(obj.id == "dateTimePicker2"){
-    var newDay = dateToChange.getDate() - 1;
+  let dateToChange = new Date($(obj).val());
+  let newMonth = dateToChange.getMonth();
+  let newYear = dateToChange.getFullYear();
+  if (obj.id == "dateTimePicker2") {
+    let newDay = dateToChange.getDate() - 1;
     $("#dateTimePicker1").datepicker({maxDate: new Date(newYear, newMonth, newDay)});
     $("#dateTimePicker1").datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
-  if(obj.id == "dateTimePicker1"){
-    var newDay = dateToChange.getDate() + 1;
+  if (obj.id == "dateTimePicker1") {
+    let newDay = dateToChange.getDate() + 1;
     $("#dateTimePicker2").datepicker({minDate: new Date(newYear, newMonth, newDay)});
     $("#dateTimePicker2").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
   }

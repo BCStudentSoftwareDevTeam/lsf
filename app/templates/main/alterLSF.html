@@ -25,11 +25,21 @@
        <div class="form-group">
          <label for="Student">Student</label> <!--User CANNOT edit-->
          <div>
-           <input type="text" class="form-control" id="Student" value="{{prefillstudent}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="Student"
+                  value="{{prefillstudent}}"
+                  disabled> <!--User CANNOT edit-->
          </div>
        </div>
        <div class="form-group">
-         <label for="supervisor" class="field"><span class="tooltip-right" data-tooltip="Required">Supervisor<span class="required-mark"> *</span></span></label>
+         <label for="supervisor"
+                class="field">
+                <span class="tooltip-right"
+                      data-tooltip="Required">Supervisor
+                      <span class="required-mark"> *</span>
+                </span>
+         </label>
          <div class="change">
            <select required
                 class="selectpicker form-control newValue"
@@ -37,46 +47,80 @@
                 onchange="checkSupervisor()"
                 data-live-search="true">
                 {% for sup in supervisors %}
-                    <option title="{{sup.FIRST_NAME}} {{sup.LAST_NAME}}" value="{{sup.ID}}" {% if form.supervisor.ID == sup.ID %} selected {% endif %}>{{sup.FIRST_NAME}} {{sup.LAST_NAME}}</option>
+                    <option title="{{sup.FIRST_NAME}} {{sup.LAST_NAME}}"
+                            value="{{sup.ID}}"
+                            {% if form.supervisor.ID == sup.ID %} selected {% endif %}>
+                            {{sup.FIRST_NAME}} {{sup.LAST_NAME}}
+                    </option>
                 {% endfor %}
            </select>
-            <input hidden class = "oldValue"  id= "prefillsupervisor"value="{{oldSupervisor.ID}}" > </input> <!-- stores value of original-->
+            <input hidden class = "oldValue"
+                    id= "prefillsupervisor"
+                    value="{{oldSupervisor.ID}}" >
+            </input> <!-- stores value of original-->
          </div>
        </div>
-
        <div class="form-group">
-         <label for="department" class="field"><span class="tooltip-right" data-tooltip="Required">Department<span class="required-mark"> *</span></span></label>
+         <label for="department"
+                class="field">
+                <span class="tooltip-right"
+                      data-tooltip="Required">Department
+                      <span class="required-mark"> *</span>
+                </span>
+         </label>
          <div class="change">
            <select required
                 class="selectpicker form-control newValue"
                 id="department"
                 data-live-search="true">
                 {% for department in departments %}
-                  <option value="{{department.ORG}}" data-account="{{department.ACCOUNT}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
+                  <option value="{{department.ORG}}"
+                          data-account="{{department.ACCOUNT}}"
+                          {% if department.ORG == prefilldepartment %} selected {% endif %}>
+                          {{department.DEPT_NAME}}
+                  </option>
                 {% endfor %}
            </select>
-           <input hidden class="oldValue" id="prefilldepartment" value="{{prefilldepartment}}" />
+           <input hidden class="oldValue"
+                  id="prefilldepartment"
+                  value="{{prefilldepartment}}" />
          </div>
        </div>
-
        <div class="form-group">
-         <label for="position" class="field"><span class="tooltip-right" data-tooltip="Required">Position<span class="required-mark"> *</span></span></label>
+         <label for="position"
+                class="field">
+                <span class="tooltip-right"
+                      data-tooltip="Required">Position
+                      <span class="required-mark"> *</span>
+                </span>
+         </label>
          <div  class="change">
            <select required
                 class="selectpicker form-control newValue"
                 id="position"
                 data-live-search="true"
                 onchange="fillHoursPerWeek()">
-                <option value="{{prefillposition.POSN_CODE}}" data-wls={{prefillposition.WLS}} selected>{{prefillposition.POSN_TITLE}} ({{prefillposition.WLS}})</option>
+                <option value="{{prefillposition.POSN_CODE}}"
+                        data-wls={{prefillposition.WLS}} selected>
+                        {{prefillposition.POSN_TITLE}} ({{prefillposition.WLS}})
+                </option>
            </select>
-           <input hidden class = "oldValue"  id= "prefillposition" value="{{prefillposition.POSN_CODE}}"></input>
+           <input hidden class = "oldValue"
+                  id= "prefillposition"
+                  value="{{prefillposition.POSN_CODE}}">
+           </input>
          </div>
        </div>
-       <!-- This selectpicker will be disabled if term is for a break, since jobtype is always Secondary-->
+       <!-- This selectpicker will be disabled if term is for a break,
+            since jobtype is always Secondary-->
        <div class="form-group">
          <label for="jobType">Job Type</label> <!--User CANNOT edit-->
          <div>
-           <input type="text" class="form-control" id="jobType" value="{{prefilljobtype}}" disabled> <!--User CANNOT edit-->
+           <input type="text"
+                  class="form-control"
+                  id="jobType"
+                  value="{{prefilljobtype}}"
+                  disabled> <!--User CANNOT edit-->
          </div>
        </div>
    </div>
@@ -84,30 +128,72 @@
      <div class="form-group">
        <label for="Term">Term</label> <!--User CANNOT edit-->
        <div >
-         <input type="text" class="form-control" id="Term" value="{{prefillterm.termName}}" data-termCode = "{{prefillterm.termCode}}"disabled> <!--User CANNOT edit-->
-         <input hidden id="termBreak" data-termBreak="{{prefillterm.isBreak|lower}}"> </input>
+         <input type="text"
+                class="form-control"
+                id="Term"
+                value="{{prefillterm.termName}}"
+                data-termCode = "{{prefillterm.termCode}}"
+                disabled> <!--User CANNOT edit-->
+         <input hidden id="termBreak"
+                data-termBreak="{{prefillterm.isBreak|lower}}">
+         </input>
        </div>
      </div>
      {% if title == "Labor Status Correction Form" and currentUser.isLaborAdmin %}
-     <div class="form-group col-xs-12" id="datePickerDiv">
-         <div  class="form-group col-xs-6" id="startDateStyle">
+     <div class="form-group col-xs-12"
+          id="datePickerDiv">
+         <div  class="form-group col-xs-6"
+                id="startDateStyle">
            <!--datePicker for start date-->
-           <label for="dateTimePicker1" id="datePickerStart"><span class="tooltip-right" data-tooltip="Required">Start Date<span class="required-mark">*</span></span></label>
-             <div class='input-group date'>
-               <input type='text' class="form-control disable" id='dateTimePicker1' name="startDate" value="{{prefillstartdate}}" data-width="320px" onchange="updateDate(this)" />
-               <input hidden class="oldValue" id="prefillstartdate" value= {{prefillstartdate}}></input>
-               <span class="input-group-addon" id="calendarIcon1">
+           <label for="dateTimePicker1"
+                  id="datePickerStart">
+                  <span class="tooltip-right"
+                        data-tooltip="Required">Start Date
+                        <span class="required-mark">*</span>
+                  </span>
+            </label>
+            <div class='input-group date'>
+               <input type='text'
+                      class="form-control disable"
+                      id='dateTimePicker1'
+                      name="startDate"
+                      value="{{prefillstartdate}}"
+                      data-width="320px"
+                      onchange="updateDate(this)" />
+               <input hidden class="oldValue"
+                      id="prefillstartdate"
+                      value= {{prefillstartdate}}>
+               </input>
+               <span class="input-group-addon"
+                      id="calendarIcon1">
                  <span class="glyphicon glyphicon-calendar"></span>
                </span>
              </div>
          </div>
-         <div class="form-group col-xs-6" id ="endDateStyle">
+         <div class="form-group col-xs-6"
+              id ="endDateStyle">
            <!--datePicker for End date-->
-         <label for="dateTimePicker2" id="datePickerEnd"><span class="tooltip-right" data-tooltip="Required">End Date<span class="required-mark">*</span></span></label>
-           <div class='input-group date'>
-               <input type='text' class="form-control disable" id='dateTimePicker2' name="endDate" value="{{prefillenddate}}" data-width="320px" onchange="updateDate(this)" />
-               <input hidden class="oldValue" id="prefillenddate" value= {{prefillenddate}}></input>
-               <span class="input-group-addon" id="calendarIcon2">
+         <label for="dateTimePicker2"
+                id="datePickerEnd">
+                <span class="tooltip-right"
+                      data-tooltip="Required">End Date
+                      <span class="required-mark">*</span>
+                </span>
+          </label>
+          <div class='input-group date'>
+               <input type='text'
+                      class="form-control disable"
+                      id='dateTimePicker2'
+                      name="endDate"
+                      value="{{prefillenddate}}"
+                      data-width="320px"
+                      onchange="updateDate(this)" />
+               <input hidden class="oldValue"
+                      id="prefillenddate"
+                      value= {{prefillenddate}}>
+               </input>
+               <span class="input-group-addon"
+                      id="calendarIcon2">
                  <span class="glyphicon glyphicon-calendar"></span>
                </span>
            </div>
@@ -115,9 +201,15 @@
        </div>
        {% endif %}
 
-     <div id="contractHoursDiv" class="form-group newValue">
+     <div id="contractHoursDiv"
+          class="form-group newValue">
         <!-- Contract hours for breaks -->
-           <label for="contractHours"><span class="tooltip-right" data-tooltip="Required">Total Contract Hours<span class="required-mark"> *</span></span></label>
+           <label for="contractHours">
+                  <span class="tooltip-right"
+                        data-tooltip="Required">Total Contract Hours
+                        <span class="required-mark"> *</span>
+                  </span>
+           </label>
            <div  class="change">
              <input class="form-control quantity newValue disable"
                      type = "number"
@@ -127,13 +219,23 @@
                      placeholder="Total Contract Hours"
                      min = "1"
                      value = "{{prefillhours}}"
-                     oninput="this.value = Math.abs(this.value); this.value = parseInt(this.value)||0">
+                     oninput="this.value = Math.abs(this.value);
+                              this.value = parseInt(this.value)||0">
              </input>
-             <input hidden class = "oldValue"  id= "oldContractHours" value="{{prefillhours}}"></input>
+             <input hidden class = "oldValue"
+                    id= "oldContractHours"
+                    value="{{prefillhours}}">
+             </input>
           </div>
         </div>
-        <div id="weeklyHoursDiv" class="form-group">
-            <label for="weeklyHours"><span class="tooltip-right" data-tooltip="Required">Hours Per Week<span class="required-mark"> *</span></span></label>
+        <div id="weeklyHoursDiv"
+            class="form-group">
+            <label for="weeklyHours">
+                  <span class="tooltip-right"
+                        data-tooltip="Required">Hours Per Week
+                        <span class="required-mark"> *</span>
+                  </span>
+            </label>
             <div  class="change">
                 <select  type="number"
                          class="selectpicker form-control newValue"
@@ -143,17 +245,37 @@
                          title = "{{prefillhours}}"
                          onchange="checkWLS20()">
                 </select>
-                <input hidden class = "oldValue"  id= "oldWeeklyHours" value="{{prefillhours}}">  </input>
-                <input hidden class = "totalHours"  id= "totalHours" value="{{totalHours}}"></input>
+                <input hidden class = "oldValue"
+                       id= "oldWeeklyHours"
+                       value="{{prefillhours}}">
+                </input>
+                <input hidden class = "totalHours"
+                       id= "totalHours"
+                       value="{{totalHours}}">
+                </input>
             </div>
         </div>
 
     <!-- This conditional will add the datetime picker for Adjust LSF instances -->
     {% if title == "Adjust Labor Status Form" %}
-    <div class="form-group" id= "dateDiv">
-    <label for="datetimepicker" class="required-asterisk"><span class="tooltip-right" data-tooltip="Required">Date Needed<span class="required-mark"> *</span></span></label>
-      <div class="input-group date"  class="change">
-        <input type="text" class="form-control effectiveDate" id="datetimepicker0" placeholder="MM/DD/YYYY" required readonly> <!--Should prefill with todays date though// effective date does not have old/new value comparison-->
+    <div class="form-group"
+         id= "dateDiv">
+    <label for="datetimepicker"
+           class="required-asterisk">
+           <span class="tooltip-right"
+                 data-tooltip="Required">Date Needed
+                 <span class="required-mark"> *</span>
+           </span>
+    </label>
+    <div class="input-group date"
+         class="change">
+        <input type="text"
+               class="form-control effectiveDate"
+               id="datetimepicker0"
+               placeholder="MM/DD/YYYY"
+               required readonly>
+               <!--Should prefill with todays date though//
+                  effective date does not have old/new value comparison-->
         <span class="input-group-addon">
           <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -162,15 +284,31 @@
      {% endif %}
 
      <div class="form-group" >
-       <label for="supervisorNotes"><span class="tooltip-right" data-tooltip="Required">Notes<span class="required-mark"> *</span></span></label>
+       <label for="supervisorNotes">
+              <span class="tooltip-right"
+                    data-tooltip="Required">Notes
+                    <span class="required-mark"> *</span>
+              </span>
+       </label>
        <div class ="change">
-         <textarea required name="supervisorNotes" rows="8" cols="65" id="supervisorNotes" class = "newValue"></textarea>
+         <textarea required name="supervisorNotes"
+                   rows="8"
+                   cols="65"
+                   id="supervisorNotes"
+                   class = "newValue">
+         </textarea>
        </div>
      </div>
      <div class="logNotesDiv">
-       <h4 class=" control-label text-left" id="notesLogHeader" for="notesLog">Notes Log:</h4>
+       <h4 class=" control-label text-left"
+           id="notesLogHeader"
+           for="notesLog">Notes Log:</h4>
         {% for note in notes %}
-          <dl class='dl-horizontal text-left'><strong>{{note.date.strftime('%m/%d/%Y')}} | <i>{{note.createdBy.supervisor.FIRST_NAME[0]}}. {{note.createdBy.supervisor.LAST_NAME}}</i> | </strong>{{note.notesContents}}</dl>
+          <dl class='dl-horizontal text-left'>
+            <strong>{{note.date.strftime('%m/%d/%Y')}} |
+              <i>{{note.createdBy.supervisor.FIRST_NAME[0]}}.
+                 {{note.createdBy.supervisor.LAST_NAME}}</i> |
+            </strong>{{note.notesContents}}</dl>
         {% endfor %}
      </div>
   </div>
@@ -178,16 +316,20 @@
 
     <div class="container">
       <div class="floatleft">
-        <button type="button" class="btn btn-danger" onclick="window.history.go(-1); return false;">Cancel</button>
+        <button type="button"
+                class="btn btn-danger"
+                onclick="window.history.go(-1); return false;">Cancel</button>
       </div>
       <div class="submitbutton">
-        <button id="submit" type="button" class="btn btn-success" onclick="checkForChange()">Submit Changes</button>
+        <button id="submit"
+                type="button"
+                class="btn btn-success"
+                onclick="checkForChange()">Submit Changes</button>
       </div>
     </div>
     {% include "snips/adjustLSFNoChange.html" %}
     {% include "snips/adjustLSFSubmit.html" %}
     {% include "snips/LSFModals.html" %}
-
  </form>
-
+ 
 {% endblock %}
