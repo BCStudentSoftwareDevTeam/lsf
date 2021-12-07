@@ -19,7 +19,7 @@ function overloadSubmission(formHistoryKey) {
       datatype: "json",
       data: data,
       contentType: "application/json",
-      success:function(){
+      success:function() {
         msgFlash("Your changes have been saved successfuly.(You will be redirected shortly.)", "success")
         setTimeout(function() { // executed after 1 second
            window.location.replace('http://berea.edu'); // redirects to a new website
@@ -43,8 +43,8 @@ function msgFlash(flash_message, status) {
         $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
         $("#flasher").delay(5000).fadeOut();
     }
-
 }
+
 let statusName = null
 function openApproveDenyModal(status) {
   statusName = status
