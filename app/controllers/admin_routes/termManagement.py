@@ -115,3 +115,17 @@ def termStatusCheck():
     except Exception as e:
         print(e)
         return jsonify({"Success": False})
+
+@admin.route('/termManagement/manageEval', methods=['POST'])
+def manageEval():
+    try:
+        rsp = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
+        if rsp:
+            term = Term.get(rsp['evalBtn'])
+            term.isEvaluationOpen = not term.isEvaluationOpen
+            term.save()
+            flasherInfo = {'termChanged': term.termName}
+            return jsonify(flasherInfo)
+    except Exception as e:
+        print(e)
+        return jsonify({"Success": False})
