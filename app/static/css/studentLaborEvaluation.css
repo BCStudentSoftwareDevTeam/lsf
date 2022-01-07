@@ -1,0 +1,9 @@
+.score_bordered {
+  margin-top: 26px;
+  padding-left: 37px;
+  border: 1px solid #ccc;
+}
+
+.alert {
+  margin-bottom: 0px;
+}

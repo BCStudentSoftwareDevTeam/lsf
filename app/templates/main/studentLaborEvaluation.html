@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block scripts %}
+  {{super()}}
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="/static/js/studentLaborEvaluation.js?u={{lastStaticUpdate}}"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel='stylesheet' type="text/css" href='/static/css/studentLaborEvaluation.css?u={{lastStaticUpdate}}' />
+{% endblock %}
+
+{% block app_content %}
+
+<div align="center" style="margin-bottom: 50px;">
+
+  <a class="skipContent" href="#condition" tabindex="1">Click to Skip</a>
+{#  <div role="alert" id="flash-message" style="color:red;" {% if not form.supervisorName.errors %} hidden {% endif %}>
+    {{ error }}
+  </div> #}
+  <h1> Student Labor Evaluation - {{laborHistoryForm.formID.studentName}} </h1>
+</div>
+
+<div class="container col-10">
+  <form method="POST">
+    <div class="container form-group">
+      {{ form.csrf_token }}
+      <div class="row">
+        <div class="col-sm-6">
+          <dl>
+            <dt>Department: </dt>
+            <dd>{{laborHistoryForm.formID.department.DEPT_NAME}}</dd>
+            <dt>Supervisor: </dt>
+            <dd>{{laborHistoryForm.formID.supervisor.FIRST_NAME}} {{laborHistoryForm.formID.supervisor.LAST_NAME}}</dd>
+            <dt>Student: </dt>
+            <dd>{{laborHistoryForm.formID.studentName}}</dd>
+          </dl>
+        </div>
+        <div class="col-sm-6">
+          <dl>
+            <dt>Term: </dt>
+            <dd>{{laborHistoryForm.formID.termCode.termName}}</dd>
+            <dt>Job Type (hours): </dt>
+            <dd>{{laborHistoryForm.formID.jobType}} ({{laborHistoryForm.formID.weeklyHours}})</dd>
+            <dt>Position (WLS): </dt>
+            <dd>{{laborHistoryForm.formID.POSN_TITLE}} ({{laborHistoryForm.formID.WLS}})</dd>
+          </dl>
+        </div>
+      </div>
+      <hr />
+      <h3>{{ form.attendance.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+            <div class="col-xs-6">
+              {{ form.attendance(**{"min":1, "max":20, "value": 15})}}
+            </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.attendance.id}}_value">{% if not existing_evaluation %}15{%else%}{{existing_evaluation.attendance_score}}/20{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.attendanceComments.label}}{% if not existing_evaluation %}{{form.attendanceComments}}{%else%}<p>{{existing_evaluation.attendance_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="attendance_help" hidden>The student has met your attendance expectations.</div>
+      </div>
+
+      <hr />
+
+      <h3>{{ form.accountability.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+          <div class="col-xs-6">
+            {{ form.accountability(**{"min":1, "max":10, "value": 7})}}
+          </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.accountability.id}}_value">{% if not existing_evaluation %}7{%else%}{{existing_evaluation.accountability_score}}/10{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.accountabilityComments.label}}{% if not existing_evaluation %}{{form.accountabilityComments}}{%else%}<p>{{existing_evaluation.accountability_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="accountability_help" hidden>The student has met your accountability expectations.</div>
+      </div>
+
+      <hr />
+      <h3>{{ form.teamwork.label }}</h3>
+      <div class="row form-check">
+      {% if not existing_evaluation %}
+        <div class="col-xs-6">
+          {{ form.teamwork(**{"min":1, "max":10, "value": 7})}}
+        </div>
+      {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.teamwork.id}}_value">{% if not existing_evaluation %}7{%else%}{{existing_evaluation.teamwork_score}}/10{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.teamworkComments.label}}{% if not existing_evaluation %}{{form.teamworkComments}}{%else%}<p>{{existing_evaluation.teamwork_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="teamwork_help" hidden>The student has met your teamwork expectations.</div>
+      </div>
+
+      <hr />
+
+      <h3>{{ form.initiative.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+          <div class="col-xs-6">
+            {{ form.initiative(**{"min":1, "max":10, "value": 7})}}
+          </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.initiative.id}}_value">{% if not existing_evaluation %}7{%else%}{{existing_evaluation.initiative_score}}/10{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.initiativeComments.label}}{% if not existing_evaluation %}{{form.initiativeComments}}{%else%}<p>{{existing_evaluation.initiative_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="initiative_help" hidden>The student has met your initiative expectations.</div>
+      </div>
+
+      <hr />
+
+      <h3>{{ form.respect.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+          <div class="col-xs-6">
+            {{ form.respect(**{"min":1, "max":10, "value": 7})}}
+          </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.respect.id}}_value">{% if not existing_evaluation %}7{%else%}{{existing_evaluation.respect_score}}/10{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.respectComments.label}}{% if not existing_evaluation %}{{form.respectComments}}{%else%}<p>{{existing_evaluation.respect_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="respect_help" hidden>The student has met your respect expectations.</div>
+      </div>
+
+      <hr />
+
+      <h3>{{ form.learning.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+          <div class="col-xs-6">
+            {{ form.learning(**{"min":1, "max":20, "value": 15})}}
+          </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.learning.id}}_value">{% if not existing_evaluation %}15{%else%}{{existing_evaluation.learning_score}}/20{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.learningComments.label}}{% if not existing_evaluation %}{{form.learningComments}}{%else%}<p>{{existing_evaluation.learning_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="learning_help" hidden>The student has met your learning expectations.</div>
+      </div>
+
+      <hr />
+
+      <h3>{{ form.jobSpecific.label }}</h3>
+      <div class="row form-check">
+        {% if not existing_evaluation %}
+        <div class="col-xs-6">
+          {{ form.jobSpecific(**{"min":1, "max":20, "value": 15})}}
+        </div>
+        {% endif %}
+        <div class="col-xs-1 score_bordered">
+          <p class="h4 values" style = "padding-top:10%;" id = "{{form.jobSpecific.id}}_value">{% if not existing_evaluation %}15{%else%}{{existing_evaluation.jobSpecific_score}}/20{% endif %}</p>
+        </div>
+        <div class="col-xs-5">
+          {{form.jobSpecificComments.label}}{% if not existing_evaluation %}{{form.jobSpecificComments}}{%else%}<p>{{existing_evaluation.jobSpecific_comment}}</p>{% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="alert alert-info" id="jobSpecific_help" hidden>The student has met your job specific expectations.</div>
+      </div>
+
+      <hr />
+
+      <div class="col-xs-5">
+      </div>
+      <div class="col-xs-3 score_bordered">
+        <p class="h4">{{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s Overall Score: <span id="total_value">{{overall_score}}</span></p><p id="score_text"></p>
+      </div>
+      {% if not existing_evaluation %}
+        <div class="pull-right col-xs-4" style="margin-top: 30px;">
+          <input class="pull-right btn-lg btn-success" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s Evaluation">
+        </div>
+      {% endif %}
+    </div>
+  </form>
+</div>
+<div class="col-2">
+</div>
+
+{% endblock %}
