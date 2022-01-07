@@ -93,6 +93,7 @@
                   {% endfor %}
             </select></div>
           </div>
+          <br><br>
           <button type="button" class="btn btn-primary" id="formSearchButton">Search</button>
           <button type="button" class="btn btn-danger" id="clearSelectionsButton">Clear Selections</button>
           <br><br>
@@ -124,6 +125,15 @@
             </div>
             <div class="radio">
               <label><input type="radio" value="Labor Overload Form" id="overload" name="formType"> Overload</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="">Limit Evaluation Status</label>
+            <div class="radio">
+              <label><input type="radio" value="evalMissing" id="missingEvaluations" name="evaluations">Missing Evaluations</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" value="evalComplete" id="completedEvaluations" name="evaluations">Completed Evaluations</label>
             </div>
           </div>
         </div>

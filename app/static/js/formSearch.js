@@ -27,6 +27,7 @@ function runformSearchQuery() {
   var studentID = $("#studentSelect").val();
   var formStatusList = [];
   var formTypeList = [];
+  var evaluationList = [];
 
   $("input:radio[name='formStatus']:checked").each(function(){
       formStatusList.push($(this).val());
@@ -36,18 +37,26 @@ function runformSearchQuery() {
       formTypeList.push($(this).val());
   });
 
+  $("input:radio[name='evaluations']:checked").each(function(){
+      evaluationList.push($(this).val());
+  });
   queryDict = {'termCode': termCode,
                'departmentID': departmentID,
                'supervisorID': supervisorID,
                'studentID': studentID,
                'formStatus': formStatusList,
-               'formType': formTypeList
+               'formType': formTypeList,
+               'evaluations': evaluationList
              };
 
   data = JSON.stringify(queryDict)
 
-  if (termCode + departmentID + supervisorID + studentID == "" && formStatusList.length + formTypeList.length == 0) {
+  if (termCode + departmentID + supervisorID + studentID == "" && formStatusList.length + formTypeList.length) {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
+    $("#flasher").delay(5000).fadeOut();
+  }
+  else if (evaluationList.length > 0 && termCode == "") {
+    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
   else {
@@ -83,6 +92,7 @@ function runformSearchQuery() {
                 {"data":"Created"},
                 {"data":"Form Staus"},
                 {"data": "Form Type"},
+                {"data": "Evaluation Status"},
                 {"data":""}
               ]
         }
