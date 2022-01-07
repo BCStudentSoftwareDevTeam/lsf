@@ -152,13 +152,13 @@ def allPendingForms(formType):
         return render_template('errors/500.html'), 500
 
 def checkAdjustment(allForms):
-    """ 
-        Retrieve supervisor and position information for adjusted forms using the new values 
+    """
+        Retrieve supervisor and position information for adjusted forms using the new values
         stored in adjusted table and update allForms
     """
-    if allForms.adjustedForm: 
+    if allForms.adjustedForm:
 
-        if allForms.adjustedForm.fieldAdjusted == "supervisor": 
+        if allForms.adjustedForm.fieldAdjusted == "supervisor":
             # use the supervisor id in the field adjusted to find supervisor in User table.
             newSupervisorID = allForms.adjustedForm.newValue
             newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
@@ -230,7 +230,6 @@ def saveStatus(new_status, form_ids, currentUser):
             # item before the iteration
             denyReason = form_ids[1]
             form_ids = form_ids[:1]
-
         for id in form_ids:
             history_type_data = FormHistory.get(FormHistory.formHistoryID == int(id))
             history_type = str(history_type_data.historyType)
