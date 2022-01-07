@@ -10,10 +10,12 @@ from app.models.formHistory import FormHistory
 from app.models.historyType import HistoryType
 from app.models.status import Status
 from app.models.user import User
+from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 import operator
 from functools import reduce
 from app.controllers.main_routes.download import ExcelMaker
+from peewee import JOIN, prefetch
 
 # Global variable that will store the query result.
 # It is made global to be used later in creating CSV file.
@@ -71,23 +73,28 @@ def getDatatableData(request):
                             6: LaborStatusForm.startDate,
                             7: User.username,
                             8: FormHistory.status,
-                            9: FormHistory.historyType}
+                            9: FormHistory.historyType,
+                            10: StudentLaborEvaluation.ID}
 
     termCode = queryFilterDict.get('termCode', "")
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
     studentId = queryFilterDict.get('studentID', "")
-    formStatusList = queryFilterDict.get('formStatus', "") # form status checkboxes
-    formTypeList = queryFilterDict.get('formType', "") # form type checkboxes
+    formStatusList = queryFilterDict.get('formStatus', "") # form status radios
+    formTypeList = queryFilterDict.get('formType', "") # form type radios
+    evaluationStatus = queryFilterDict.get('evaluations', "") # evaluation radios
 
     fieldValueMap = {Term.termCode: termCode,
                      Department.departmentID: departmentId,
                      Student.ID: studentId,
                      Supervisor.ID: supervisorId,
                      FormHistory.status: formStatusList,
-                     FormHistory.historyType: formTypeList}
+                     FormHistory.historyType: formTypeList,
+                     StudentLaborEvaluation.ID: evaluationStatus}
 
     clauses = []
+    sleJoin = None # Used for evaluation status filtering
+
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
@@ -98,6 +105,8 @@ def getDatatableData(request):
             elif field is FormHistory.status:
                 for val in value:
                     clauses.append(field == val)
+            elif field is StudentLaborEvaluation.ID:
+                sleJoin = value[0]       # LSF exists but SLE does not (LOJ)
             else:
                 clauses.append(field == value)
 
@@ -105,15 +114,29 @@ def getDatatableData(request):
     expression = reduce(operator.and_, clauses)
 
     global formSearchResults
-    formSearchResults = (FormHistory.select().join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+    formSearchResults = (FormHistory.select()
+                        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
                         .join(Department, on=(LaborStatusForm.department == Department.departmentID))
                         .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
                         .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
                         .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
                         .join(User, on=(FormHistory.createdBy == User.userID))
+
                         .where(expression))
 
+    if sleJoin:
+        evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode)
+        if sleJoin == "evalMissing":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+        elif sleJoin == "evalComplete":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+
     recordsTotal = formSearchResults.count()
+
+    # formsPlusEvals = formSearchResults.select(FormHistory.formHistoryID) + evalResults.select(StudentLaborEvaluation.formHistoryID)
+    # print(formsPlusEvals)
+    # for fhpe in formsPlusEvals:
+    #     print(fhpe)
 
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in formSearch.js
