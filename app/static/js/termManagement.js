@@ -128,3 +128,34 @@ function termStatus(term) {
      }
   })
 };
+
+function toggleEval(term) {
+  var evalBtnID = $("#eval_btn_" + term);
+  $.ajax({
+    method: "POST",
+    url: "/termManagement/manageEval",
+    dataType: "json",
+    contentType: "application/json",
+    data: JSON.stringify({"evalBtn": term}),
+    processData: false,
+    success: function(response) {
+      if($(evalBtnID).hasClass("btn-success")) {
+        $(evalBtnID).removeClass("btn-success");
+        $(evalBtnID).addClass("btn-danger");
+        $(evalBtnID).text("Closed");
+        category = "danger";
+        state = "'Closed'.";
+        }
+      else {
+        $(evalBtnID).removeClass("btn-danger");
+        $(evalBtnID).addClass("btn-success");
+        $(evalBtnID).text("Open");
+        category = "success";
+        state = "'Open'.";
+      }
+      term = response['termChanged']
+      $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The evaluations for '+ term +' is set to '+ state +'</div>');
+      $("#flasher").delay(5000).fadeOut();
+    }
+  });
+}
