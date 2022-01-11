@@ -36,11 +36,11 @@ class SLEForm(FlaskForm):
 
 @main_bp.route('/sle/<statusKey>', methods=['GET', 'POST'])
 def sle(statusKey):
-    # NOTE: statusKey is the LSF id. Everything after this (template and controller) uses the associated laborHistory object/ID for this LSF id. 
+    # NOTE: statusKey is the LSF id. Everything after this (template and controller) uses the associated laborHistory object/ID for this LSF id.
     currentUser = require_login()
     # print("Status key: ", statusKey)
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
-    print(laborHistoryForm)
+
     if currentUser.supervisor != laborHistoryForm.formID.supervisor:
         # current user is not the supervisor
         return render_template('errors/403.html'), 403
@@ -82,7 +82,7 @@ def sle(statusKey):
         return redirect("/")
 
     if laborHistoryForm.status.statusName != "Approved":
-        print("Form not approved, no evaluations")  #FIXME
+        # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
     return render_template("main/studentLaborEvaluation.html",
