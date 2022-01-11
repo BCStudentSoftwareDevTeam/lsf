@@ -128,4 +128,4 @@ def manageEval():
             return jsonify(flasherInfo)
     except Exception as e:
         print(e)
-        return jsonify({"Success": False})
+        return jsonify({}, 500)
