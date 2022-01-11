@@ -133,11 +133,6 @@ def getDatatableData(request):
 
     recordsTotal = formSearchResults.count()
 
-    # formsPlusEvals = formSearchResults.select(FormHistory.formHistoryID) + evalResults.select(StudentLaborEvaluation.formHistoryID)
-    # print(formsPlusEvals)
-    # for fhpe in formsPlusEvals:
-    #     print(fhpe)
-
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in formSearch.js
     if order == "desc":
