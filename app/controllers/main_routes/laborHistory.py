@@ -86,63 +86,63 @@ def populateModal(statusKey):
     to create the modal, and append all of the data gathered here form the database to the modal.  It also sets a button state which decides which buttons
     to put on the modal depending on what form is in the history.
     """
-    # try:
-    currentUser = require_login()
-    if not currentUser:                    # Not logged in
-        return render_template('errors/403.html'), 403
-    forms = FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc())
-    statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
-    student = Student.get(Student.ID == statusForm.studentSupervisee)
-    currentDate = datetime.date.today()
-    pendingformType = None
-    first = True  # temp variable to determine if this is the newest form
-    for form in forms:
-        if first:
-            buttonState = ButtonStatus()
-            buttonState.set_button_states(form, currentUser)
-            first = not first
-        if form.adjustedForm != None:  # If a form has been adjusted then we want to retrieve supervisors names using the new and old values stored in adjusted table
-            newValue = form.adjustedForm.newValue
-            oldValue = form.adjustedForm.oldValue
-            if form.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
-                newSupervisor = Supervisor.get(Supervisor.ID == newValue)
-                oldSupervisor = Supervisor.get(Supervisor.ID == oldValue)
-                # we are temporarily storing the supervisor name in new value,
-                # because we want to show the supervisor name in the hmtl template.
-                form.adjustedForm.oldValue = oldSupervisor.FIRST_NAME + " " + oldSupervisor.LAST_NAME # old supervisor name
-                form.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
+    try:
+        currentUser = require_login()
+        if not currentUser:                    # Not logged in
+            return render_template('errors/403.html'), 403
+        forms = FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc())
+        statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
+        student = Student.get(Student.ID == statusForm.studentSupervisee)
+        currentDate = datetime.date.today()
+        pendingformType = None
+        first = True  # temp variable to determine if this is the newest form
+        for form in forms:
+            if first:
+                buttonState = ButtonStatus()
+                buttonState.set_button_states(form, currentUser)
+                first = not first
+            if form.adjustedForm != None:  # If a form has been adjusted then we want to retrieve supervisors names using the new and old values stored in adjusted table
+                newValue = form.adjustedForm.newValue
+                oldValue = form.adjustedForm.oldValue
+                if form.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
+                    newSupervisor = Supervisor.get(Supervisor.ID == newValue)
+                    oldSupervisor = Supervisor.get(Supervisor.ID == oldValue)
+                    # we are temporarily storing the supervisor name in new value,
+                    # because we want to show the supervisor name in the hmtl template.
+                    form.adjustedForm.oldValue = oldSupervisor.FIRST_NAME + " " + oldSupervisor.LAST_NAME # old supervisor name
+                    form.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
 
-            if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                newPosition = Tracy().getPositionFromCode(newValue)
-                oldPosition = Tracy().getPositionFromCode(oldValue)
-                # temporarily storing the new position name in new value, and old position name in old value
-                # because we want to show these information in the hmtl template.
-                form.adjustedForm.newValue = newPosition.POSN_TITLE + " (" + newPosition.WLS+")"
-                form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
+                if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
+                    newPosition = Tracy().getPositionFromCode(newValue)
+                    oldPosition = Tracy().getPositionFromCode(oldValue)
+                    # temporarily storing the new position name in new value, and old position name in old value
+                    # because we want to show these information in the hmtl template.
+                    form.adjustedForm.newValue = newPosition.POSN_TITLE + " (" + newPosition.WLS+")"
+                    form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
 
-            if form.adjustedForm.fieldAdjusted == "department":
-                newDepartment = Department.get(Department.ORG == newValue)
-                oldDepartment = Department.get(Department.ORG == oldValue)
-                form.adjustedForm.newValue = newDepartment.DEPT_NAME
-                form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
-            # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
-            form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
+                if form.adjustedForm.fieldAdjusted == "department":
+                    newDepartment = Department.get(Department.ORG == newValue)
+                    oldDepartment = Department.get(Department.ORG == oldValue)
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
+                # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
+                form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
-        # Pending release or adjustment forms need the historyType known
-        if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
-            pendingformType = form.historyType.historyTypeName
+            # Pending release or adjustment forms need the historyType known
+            if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
+                pendingformType = form.historyType.historyTypeName
 
-    resp = make_response(render_template('snips/studentHistoryModal.html',
-                                        forms = forms,
-                                        statusForm = statusForm,
-                                        currentDate = currentDate,
-                                        pendingformType = pendingformType,
-                                        buttonState = buttonState
-                                        ))
-    return (resp)
-    # except Exception as e:
-        # print("Error on button state: ", e)
-        # return (jsonify({"Success": False}))
+        resp = make_response(render_template('snips/studentHistoryModal.html',
+                                            forms = forms,
+                                            statusForm = statusForm,
+                                            currentDate = currentDate,
+                                            pendingformType = pendingformType,
+                                            buttonState = buttonState
+                                            ))
+        return (resp)
+    except Exception as e:
+        print("Error on button state: ", e)
+        return (jsonify({"Success": False}))
 
 @main_bp.route('/laborHistory/modal/printPdf/<statusKey>', methods=['GET'])
 def ConvertToPDF(statusKey):
