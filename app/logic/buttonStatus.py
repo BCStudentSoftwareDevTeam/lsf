@@ -72,7 +72,7 @@ class ButtonStatus:
                 self.rehire = True
                 self.release = True
                 self.adjust = True
-                print(historyForm.formID.supervisor.ID, currentUser.supervisor.ID)
+                
                 if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                     self.set_evaluation_button(historyForm, currentUser)
                 self.num_buttons += 4

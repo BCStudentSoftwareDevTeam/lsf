@@ -1,13 +1,7 @@
-// function update_score(el) {
-//   slider_value = $(el).slider("value")
-//   console.log(slider_value)
-//   $(el.id+"_value").text = $(el.id).slider("value")
-// }
-
 $('.slider').on('input', function() {
 	let val = $(this).val();
   let max_value = $(this).prop("max");
-  console.log(max_value)
+
   $("#" + this.id + "_value").html(val);
   help_text = "";
   help_class = "";
@@ -55,5 +49,5 @@ function update_sum() {
   } else {
     message = "Exceptional labor performance"
   }
-  $("#score_text").html(message);  
+  $("#score_text").html(message);
   }
