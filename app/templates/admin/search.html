@@ -10,26 +10,26 @@
 mark { padding: 0px; }
 </style>
 <div class="container-fluid">
-    <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
-    <form id="titleBlock" action="" method="POST">
-        <div align="center" >
-          <h1>Student Search</h1>
-          <span id="ManageAdminInfo">Quickly jump to a student's labor history.</span>
+  <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
+  <form id="titleBlock" action="" method="POST">
+    <div align="center" >
+      <h1>Student Search</h1>
+      <span id="ManageAdminInfo">Quickly jump to a student's labor history.</span>
+    </div>
+    <div class="row text-center">
+      <br/>
+      <div id="borders">
+        <div class="form-group">
+          <select id="search"
+                  class="form-control selectpicker"
+                  title="Search by bnumber or name"
+                  data-width="258px"
+                  data-show-subtext="true"
+                  data-live-search="true">
+          </select>
         </div>
-        <div class="row text-center">
-            <br />
-            <div id="borders">
-                <div class="form-group">
-                  <select id="search"
-                          class="form-control selectpicker"
-                          title="Search by bnumber or name"
-                          data-width="258px"
-                          data-show-subtext="true"
-                          data-live-search="true">
-                  </select>
-                </div>
-            </div>
-        </div>
-    </form>
+      </div>
+    </div>
+  </form>
 </div>
 {% endblock %}
