@@ -18,7 +18,6 @@
 <form id="titleBlock"
       action="/adminManagement/userInsert"
       method="POST">
-
     <div align="center" >
       <h1>Manage Administrators</h1>
       <span id="ManageAdminInfo">Add or Remove administrators here</span>
@@ -46,41 +45,41 @@
                   type="button">Add
           </button>
         </div>
-  <div class = "form-group">
-    <select id="removelaborAdmin"
-            class = "form-control selectpicker"
-            title="Current Labor Admins"
-            data-width="258px"
-            data-show-subtext="true"
-            data-live-search="true"
-            name="removeAdmin">
-      {% for user in users %}
-        {% if user.isLaborAdmin %}
-          {% if user.student %}
-            <option value="{{user.username}}"
-                    data-subtext="{{user.username}} (Student)">
-                    {{user.student.FIRST_NAME}}
-                    {{user.student.LAST_NAME}}
-            </option>
-          {% elif user.supervisor %}
-            <option value="{{user.username}}"
-                    data-subtext="{{user.username}}">
-                    {{user.supervisor.FIRST_NAME}}
-                    {{user.supervisor.LAST_NAME}}
-            </option>
+        <div class = "form-group">
+          <select id="removelaborAdmin"
+                  class = "form-control selectpicker"
+                  title="Current Labor Admins"
+                  data-width="258px"
+                  data-show-subtext="true"
+                  data-live-search="true"
+                  name="removeAdmin">
+        {% for user in users %}
+          {% if user.isLaborAdmin %}
+            {% if user.student %}
+              <option value="{{user.username}}"
+                      data-subtext="{{user.username}} (Student)">
+                      {{user.student.FIRST_NAME}}
+                      {{user.student.LAST_NAME}}
+              </option>
+            {% elif user.supervisor %}
+              <option value="{{user.username}}"
+                      data-subtext="{{user.username}}">
+                      {{user.supervisor.FIRST_NAME}}
+                      {{user.supervisor.LAST_NAME}}
+              </option>
+            {% endif %}
           {% endif %}
-        {% endif %}
-      {% endfor %}
-    </select>
-          <button id="remove"
-                  onclick="modal('remove')"
-                  value="remove"
-                  name="remove"
-                  class="btn btn-danger "
-                  type="button">Remove
-          </button>
-        </div>
-      </div>
+        {% endfor %}
+      </select>
+      <button id="remove"
+              onclick="modal('remove')"
+              value="remove"
+              name="remove"
+              class="btn btn-danger "
+              type="button">Remove
+      </button>
+    </div>
+  </div>
 
 {# Financial Aid Admins #}
 
@@ -184,7 +183,7 @@
   </div>
 <!-- Modal that will be rendered on the click of the submit button -->
 {% include "snips/adminManagementModal.html" %}
-    </form>
+  </form>
 </div>
 
 {% endblock %}
