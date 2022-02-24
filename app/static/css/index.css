@@ -14,25 +14,25 @@
   right: 0;
 }
 
-.pushLeft {
+.push_left {
   padding-left: 10px;
 }
 
-.pushRight {
+.push_right {
   float: right;
 }
 
-.studentTable th, .studentTable td {
+.student_table th, .student_table td {
   text-align: left; /* Left-align text */
   padding: 12px; /* Add padding */
 }
 
-.studentTable tr {
+.student_table tr {
   /* Add a bottom border to all table rows */
   border-bottom: 1px solid #ddd;
 }
 
-.studentTable tr.header, .studentTable tr:hover {
+.student_table tr.header, .student_table tr:hover {
   /* Add a grey background color to the table header and on hover */
   background-color: #f1f1f1;
 }

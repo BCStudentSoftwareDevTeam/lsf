@@ -1,8 +1,8 @@
-var table;
+let table;
 $(document).ready(function() {
-  var url = document.location.href
+  let url = document.location.href
   createButtons();
-  if (url.endsWith('/')){
+  if (url.endsWith('/')) {
     changeButtonColor("#myCurrentStudents")
     $("#userDepartments").hide()
     $("#placeholder").show()
@@ -14,13 +14,10 @@ $(document).ready(function() {
     $('#portalTitle').text("Current Students");
     $("#myCurrentStudents").removeClass("btn-light");
     $("#myCurrentStudents").addClass("btn-primary");
-
-
     table
       .columns( 1 )
       .search("My Current Students")
       .draw();
-
     $(".currentStu").show();
     $(".allDeptStu").hide();
     $(".currentDeptStu").hide();
@@ -45,12 +42,10 @@ $(document).ready(function() {
     $('#portalTitle').text("Current Department Students");
     $("#currentDepartmentStudents").removeClass("btn-light");
     $("#currentDepartmentStudents").addClass("btn-primary");
-
     table
       .columns( 1 )
       .search("Current Department Students")
       .draw();
-
     $("#currentDepartmentStudents").show()
     $("#allDepartmentStudents").show()
     $("#myCurrentStudents").hide()
@@ -59,8 +54,8 @@ $(document).ready(function() {
 
     // If the select picker already has a department selected when the page is loaded,
     // then we want to populate the data table with the selected department
-    var departmentDropDown = $("#departmentDropDown");
-    var departmentSelected = $('option:selected', departmentDropDown).attr('value');
+    let departmentDropDown = $("#departmentDropDown");
+    let departmentSelected = $('option:selected', departmentDropDown).attr('value');
     if (departmentSelected) {
       populateTable();
     }
@@ -69,8 +64,7 @@ $(document).ready(function() {
   $('#download').show();
 });
 
-function createButtons(){
-
+function createButtons() {
   table = $("#studentList").DataTable({
     "drawCallback": function( settings ) {
       $("#studentList thead").remove(); } , // Used to hide the data table header
@@ -110,7 +104,7 @@ function createButtons(){
         },
         {
           text: 'Past Only',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#myPastStudents")
@@ -133,7 +127,7 @@ function createButtons(){
         },
         {
           text: 'All',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#allMyStudents")
@@ -156,7 +150,7 @@ function createButtons(){
         },
         {
           text: 'Current Only',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#currentDepartmentStudents")
@@ -179,7 +173,7 @@ function createButtons(){
         },
         {
           text: 'Current and Past',
-          action: function ( e, dt, node, config ) {
+          action: function( e, dt, node, config ) {
             // Used to enable and disable the correct checkboxes inside the modal
             // depending on the button pressed
             changeButtonColor("#allDepartmentStudents")
@@ -201,28 +195,24 @@ function createButtons(){
           attr: { id: "allDepartmentStudents"}
         }
       ],
-    initComplete: function () {
+    initComplete: function() {
       // Function used to remove the default class given to datatable buttons, and
       // give buttons bootstrap classes instead
-      var btns = $('.dt-button');
+      let btns = $('.dt-button');
       btns.addClass('btn btn-light');
       btns.removeClass('dt-button');
-
-      }
-
+    }
   })
 }
 
-
 function changeButtonColor(ID) {
-  var buttonID = ID
-  var buttonIDList = ["#myPastStudents", "#myCurrentStudents", "#allMyStudents",
+  let buttonID = ID
+  let buttonIDList = ["#myPastStudents", "#myCurrentStudents", "#allMyStudents",
     "#currentDepartmentStudents", "#allDepartmentStudents"]
-  for (i = 0; i < buttonIDList.length; i++){
+  for (i = 0; i < buttonIDList.length; i++) {
     $(buttonIDList[i]).removeClass("btn btn-primary");
     $(buttonIDList[i]).addClass("btn btn-light");
   }
-
   $(buttonID).removeClass('btn btn-light');
   $(buttonID).addClass('btn btn-primary');
 }
@@ -245,18 +235,18 @@ $('#select-all').click(function(event) {
 });
 
 // Shows the modal
-$('.openBtn').on('click',function(){
-    $('.modal-body').load('index.html',function(){
+$('.openBtn').on('click',function() {
+    $('.modal-body').load('index.html',function() {
         $('#downloadModal').modal({show:true});
     });
 
 });
 
-function downloadHistory(){
+function downloadHistory() {
   $('input[type="checkbox"]:checked').prop('checked',false);
 }
 // variable to check if another ajax call is in progress
-var currentRequest = null;
+let currentRequest = null;
 function populateTable(){
   // if a second department is selected while the first department is loading
   // the previous ajax call will be aborted and the last ajax call will continue
@@ -268,8 +258,8 @@ function populateTable(){
   // and the modal with the correct data from that department
 
   // This grabs the department selected from the select picker
-  var departmentDropDown = $("#departmentDropDown");
-  var departmentSelected = $('option:selected', departmentDropDown).attr('value');
+  let departmentDropDown = $("#departmentDropDown");
+  let departmentSelected = $('option:selected', departmentDropDown).attr('value');
 
   // AJAX call sends our controller the department choosen, and the controller
   // should send back the data we need as JSON
@@ -284,29 +274,26 @@ function populateTable(){
       // when we append the new data into the data table.
       // Before we append the new department data into the data table, this section will
       // first delete all of the current department data that we have in the data table.
-      if ($("#currentDepartmentStudents").hasClass('btn-primary')){
+      if ($("#currentDepartmentStudents").hasClass('btn-primary')) {
         table
         .columns( 1 )
         .search("All Department Students")
         .draw();
         table
         .rows({ filter : 'applied'}).remove().draw();
-
         table
         .columns( 1 )
         .search("Current Department Students")
         .draw();
         table
         .rows({ filter : 'applied'}).remove().draw();
-      }
-      else{
+      } else {
         table
         .columns( 1 )
         .search("Current Department Students")
         .draw();
         table
         .rows({ filter : 'applied'}).remove().draw();
-
         table
         .columns( 1 )
         .search("All Department Students")
@@ -314,7 +301,6 @@ function populateTable(){
         table
         .rows({ filter : 'applied'}).remove().draw();
       }
-
       // This section will clear any data currently in the Div's because we will
       // be repopulating them with new department data
       $("#currentDepartmentStudentsDiv").empty()
@@ -325,17 +311,17 @@ function populateTable(){
       // This section will iterate through the JSON data, and access the values
       // from the key-value pairs that we will need to populate both the modal and the
       // data table
-      for (var key in response){
-        var bNumber = response[key]["BNumber"]
-        var student = response[key]["Student"]
-        var term = response[key]["Term"]
-        var position = response[key]["Position"]
-        var department = response[key]["Department"]
-        var status = response[key]["Status"]
-        var divClass = response[key]["checkboxModalClass"]
-        var formID = response[key]["formID"]
-        var activeStatus = response[key]["activeStatus"]
-        var formStatus = response[key]["formStatus"]
+      for (let key in response) {
+        let bNumber = response[key]["BNumber"]
+        let student = response[key]["Student"]
+        let term = response[key]["Term"]
+        let position = response[key]["Position"]
+        let department = response[key]["Department"]
+        let status = response[key]["Status"]
+        let divClass = response[key]["checkboxModalClass"]
+        let formID = response[key]["formID"]
+        let activeStatus = response[key]["activeStatus"]
+        let formStatus = response[key]["formStatus"]
 
         inactive_tag = ""
         el_id = "#allDepartmentStudentsDiv"
@@ -343,7 +329,7 @@ function populateTable(){
             formStatus = "No longer a student"
             inactive_tag = " <strong>(No longer a student.)</strong>"
         } else {
-            if (divClass == "currentDepartmentModal"){
+            if (divClass == "currentDepartmentModal") {
                 el_id = "#currentDepartmentStudentsDiv"
             }
         }
@@ -352,7 +338,6 @@ function populateTable(){
           "<span style='display:none'>" + status + "</span>"]).draw()
 
         $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
-
       }
     }
   })
