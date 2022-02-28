@@ -41,7 +41,7 @@ class ButtonStatus:
             if StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == ogHistoryForm):
                 # If a labor evaluation has been completed
                 self.evaluation_exists = True
-            elif historyForm.formID.termCode.isEvaluationOpen:
+            elif historyForm.formID.termCode.isFinalEvaluationOpen:
                 self.evaluate = True
 
     def set_button_states(self, historyForm, currentUser):
@@ -72,7 +72,7 @@ class ButtonStatus:
                 self.rehire = True
                 self.release = True
                 self.adjust = True
-                
+
                 if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                     self.set_evaluation_button(historyForm, currentUser)
                 self.num_buttons += 4

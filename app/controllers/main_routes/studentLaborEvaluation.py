@@ -45,7 +45,7 @@ def sle(statusKey):
         # current user is not the supervisor
         return render_template('errors/403.html'), 403
     existing_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm)
-    if not laborHistoryForm.formID.termCode.isEvaluationOpen and not existing_evaluation:
+    if not laborHistoryForm.formID.termCode.isFinalEvaluationOpen and not existing_evaluation:
         return render_template('errors/403.html'), 403
     if existing_evaluation:
         overall_score = (existing_evaluation.attendance_score +

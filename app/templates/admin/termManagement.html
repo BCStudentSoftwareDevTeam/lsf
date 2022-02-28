@@ -72,9 +72,9 @@
                     tabindex="0">
               </span>
             </th>
-            <th>Evaluation State
+            <th>Evaluations (Midyear | Final)
               <span data-toggle="tooltip"
-                    title="Toggle the button to open or close all student labor evaluations (SLE)."
+                    title="Toggle the midyear/final student labor evaluation (SLE) states."
                     data-placement="right"
                     class="glyphicon glyphicon-bookmark"
                     tabindex="0">
@@ -150,7 +150,7 @@
                           </label>
                         </div>
                       </td>
-                      <td style='width:10%'>
+                      <td>
                          <button
                            {% if term.termStart == None or term.termEnd == None or term.primaryCutOff == None or term.adjustmentCutOff == None or term.termState == None %} disabled {% endif %}
                            id="term_btn_{{term.termCode}}"
@@ -161,15 +161,27 @@
                            value="{{term.termState}}">{% if term.termState == True %} Open {% elif term.termState == False %} Closed {% endif %}
                          </button>
                        </td>
-                       <td style='width:10%'>
-                          <button
-                            id="eval_btn_{{term.termCode}}"
-                            name="evalBtn"
-                            type="button"
-                            class="btn btn-med {% if term.isEvaluationOpen == True %} btn-success {% elif term.isEvaluationOpen == False %} btn-danger {% endif %}"
-                            onclick="toggleEval({{term.termCode}})"
-                            value="{{term.isEvaluationOpen}}">{% if term.isEvaluationOpen == True %} Open {% elif term.isEvaluationOpen == False %} Closed {% endif %}
-                          </button>
+                       <td>
+                          <div class="btn-group" role="group" aria-label="button group for evaluations">
+                            <button
+                              id="midyear_eval_btn_{{term.termCode}}"
+                              name="midyearEvalBtn"
+                              style='width: 50%'
+                              type="button"
+                              class="btn btn-med {% if term.isMidyearEvaluationOpen == True %} btn-success {% elif term.isMidyearEvaluationOpen == False %} btn-danger {% endif %}"
+                              onclick="toggleEval({{term.termCode}}, 1)"
+                              value="{{term.isMidyearEvaluationOpen}}">{% if term.isMidyearEvaluationOpen == True %} Open {% elif term.isMidyearEvaluationOpen == False %} Closed {% endif %}
+                            </button>
+                            <button
+                              id="eval_btn_{{term.termCode}}"
+                              name="evalBtn"
+                              style='width: 50%'
+                              type="button"
+                              class="btn btn-med {% if term.isFinalEvaluationOpen == True %} btn-success {% elif term.isFinalEvaluationOpen == False %} btn-danger {% endif %}"
+                              onclick="toggleEval({{term.termCode}}, 0)"
+                              value="{{term.isFinalEvaluationOpen}}">{% if term.isFinalEvaluationOpen == True %} Open {% elif term.isFinalEvaluationOpen == False %} Closed {% endif %}
+                            </button>
+                          </div>
                         </td>
                   </tr>
           {% endfor %}
