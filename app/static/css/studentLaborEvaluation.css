@@ -1,7 +1,8 @@
 .score_bordered {
-  margin-top: 26px;
-  padding-left: 37px;
-  border: 1px solid #ccc;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  border: 1px gray solid;
+  text-align: center;
 }
 
 .alert {

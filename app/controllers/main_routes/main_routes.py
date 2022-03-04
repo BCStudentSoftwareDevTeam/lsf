@@ -1,6 +1,6 @@
 from flask import flash, send_file
 from app.controllers.main_routes import *
-from app.controllers.main_routes.download import ExcelMaker
+from app.controllers.main_routes.download import CSVMaker
 from app.login_manager import *
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
@@ -119,7 +119,7 @@ def index(department = None):
         print("Processed {} supervisor students in {:0.4f} seconds".format(len(formsBySupervisees), toc-tic))
 
         # On the click of the download button, 'POST' method will send all checked boxes from modal to excel maker
-        if request.method== 'POST':
+        if request.method == 'POST':
             value =[]
             # The "Try" and "Except" block here is needed because if the user tries to use the download button before they chose
             # a department from the Department dropdown, it will throw a NameError. The reason behind the error is because the vairbales
@@ -156,18 +156,11 @@ def index(department = None):
 
 
             # Prevents 'POST' method from sending the same value twice to excel maker
-            noDuplicateList = []
-            for i in value:
-                if i not in noDuplicateList:
-                    noDuplicateList.append(i)
-                else:
-                    pass
-            excel = ExcelMaker()
-            completePath = excel.makeList(noDuplicateList)
-            filename = completePath.split('/').pop()
 
+            excel = CSVMaker("studentList", value, includeEvals = True)
             # Returns the file path so the button will download the file
-            return send_file(completePath,as_attachment=True, attachment_filename=filename)
+            return send_file(excel.relativePath,as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+
         return render_template( 'main/index.html',
     				    title=('Home'),
                         currentSupervisees = currentSupervisees,

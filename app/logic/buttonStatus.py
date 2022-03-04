@@ -38,11 +38,18 @@ class ButtonStatus:
     def set_evaluation_button(self, historyForm, currentUser):
         ogHistoryForm = self.get_history_form_from_lsf(historyForm)
         if ogHistoryForm.formID.supervisor.ID == currentUser.supervisor.ID:
-            if StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == ogHistoryForm):
-                # If a labor evaluation has been completed
-                self.evaluation_exists = True
-            elif historyForm.formID.termCode.isFinalEvaluationOpen:
+            if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                 self.evaluate = True
+            evaluations = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == ogHistoryForm)
+            for evaluation in evaluations:
+                if evaluation.is_midyear_evaluation and not historyForm.formID.termCode.isFinalEvaluationOpen:
+                    # If a midyear evaluation has been completed
+                    self.evaluation_exists = True
+                    self.evaluate = False
+                elif not evaluation.is_midyear_evaluation:
+                    # If a final labor evaluation has been completed
+                    self.evaluation_exists = True
+                    self.evaluate = False
 
     def set_button_states(self, historyForm, currentUser):
         if currentUser.student and currentUser.student.ID == student.ID:

@@ -14,7 +14,7 @@ from flask import make_response
 import datetime
 import re
 from app import cfg
-from app.controllers.main_routes.download import ExcelMaker
+from app.controllers.main_routes.download import CSVMaker
 from fpdf import FPDF
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
@@ -72,10 +72,8 @@ def downloadFormHistory():
     try:
         data = request.form
         historyList = data["listOfForms"].split(',')
-        excel = ExcelMaker()
-        completePath = excel.makeExcelStudentHistory(historyList)
-        filename = completePath.split('/').pop()
-        return send_file(completePath, mimetype='text/csv', as_attachment=True, attachment_filename=filename)
+        excel = CSVMaker("studentHistory", historyList, includeEvals = True)        
+        return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
     except:
         return render_template('errors/500.html'), 500
 

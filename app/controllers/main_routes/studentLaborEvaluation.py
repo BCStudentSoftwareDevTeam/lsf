@@ -12,53 +12,94 @@ from app.models.studentLaborEvaluation import StudentLaborEvaluation
 
 class SLEForm(FlaskForm):
 
-    attendance = IntegerRangeField("Attendence", render_kw={'class':'form-control slider'})
+    attendance = IntegerRangeField("Attendence", default = 15, render_kw={'class':'form-control slider'})
     attendanceComments = TextAreaField("Comments about attendance:", render_kw={'class':'form-control'})
+    attendanceCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    accountability = IntegerRangeField("Accountability", render_kw={'class':'form-control slider'})
+    accountability = IntegerRangeField("Accountability", default = 7, render_kw={'class':'form-control slider'})
     accountabilityComments = TextAreaField("Comments about accountability:", render_kw={'class':'form-control'})
+    accountabilityCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    teamwork = IntegerRangeField("Teamwork", render_kw={'class':'form-control slider'})
+    teamwork = IntegerRangeField("Teamwork", default = 7, render_kw={'class':'form-control slider'})
     teamworkComments = TextAreaField("Comments about teamwork:", render_kw={'class':'form-control'})
+    teamworkCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    initiative = IntegerRangeField("Initiative", render_kw={'class':'form-control slider'})
+    initiative = IntegerRangeField("Initiative", default = 7, render_kw={'class':'form-control slider'})
     initiativeComments = TextAreaField("Comments about initiative:", render_kw={'class':'form-control'})
+    initiativeCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    respect  = IntegerRangeField("Respect", render_kw={'class':'form-control slider'})
+    respect  = IntegerRangeField("Respect", default = 7, render_kw={'class':'form-control slider'})
     respectComments = TextAreaField("Comments about respect:", render_kw={'class':'form-control'})
+    respectCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    learning = IntegerRangeField("Learning", render_kw={'class':'form-control slider'})
+    learning = IntegerRangeField("Learning", default = 15, render_kw={'class':'form-control slider'})
     learningComments = TextAreaField("Comments about learning:", render_kw={'class':'form-control'})
+    learningCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    jobSpecific = IntegerRangeField("Job Specific", render_kw={'class':'form-control slider'})
+    jobSpecific = IntegerRangeField("Job Specific", default = 15, render_kw={'class':'form-control slider'})
     jobSpecificComments = TextAreaField("Comments about this job, specifically:", render_kw={'class':'form-control'})
+    jobSpecificCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
 
 @main_bp.route('/sle/<statusKey>', methods=['GET', 'POST'])
 def sle(statusKey):
     # NOTE: statusKey is the LSF id. Everything after this (template and controller) uses the associated laborHistory object/ID for this LSF id.
     currentUser = require_login()
-    # print("Status key: ", statusKey)
+
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
 
     if currentUser.supervisor != laborHistoryForm.formID.supervisor:
         # current user is not the supervisor
+        # print("Current user is not the supervisor")
         return render_template('errors/403.html'), 403
-    existing_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm)
-    if not laborHistoryForm.formID.termCode.isFinalEvaluationOpen and not existing_evaluation:
-        return render_template('errors/403.html'), 403
-    if existing_evaluation:
-        overall_score = (existing_evaluation.attendance_score +
-                        existing_evaluation.accountability_score +
-                        existing_evaluation.teamwork_score +
-                        existing_evaluation.initiative_score +
-                        existing_evaluation.respect_score +
-                        existing_evaluation.learning_score +
-                        existing_evaluation.jobSpecific_score)
-    else:
-        overall_score = 73      # The default value
+
     sleForm = SLEForm()
+
+    existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False)
+    existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True)
+
+    if existing_midyear_evaluation:
+        if not request.method == "POST":        # Doesn't override submitted POST data!
+            sleForm.attendance.data = existing_midyear_evaluation.attendance_score
+            sleForm.accountability.data = existing_midyear_evaluation.accountability_score
+            sleForm.teamwork.data = existing_midyear_evaluation.teamwork_score
+            sleForm.initiative.data = existing_midyear_evaluation.initiative_score
+            sleForm.respect.data = existing_midyear_evaluation.respect_score
+            sleForm.learning.data = existing_midyear_evaluation.learning_score
+            sleForm.jobSpecific.data = existing_midyear_evaluation.jobSpecific_score
+
+            sleForm.attendanceCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.attendance_comment
+            sleForm.accountabilityCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.accountability_comment
+            sleForm.teamworkCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.teamwork_comment
+            sleForm.initiativeCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.initiative_comment
+            sleForm.respectCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.respect_comment
+            sleForm.learningCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.learning_comment
+            sleForm.jobSpecificCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.jobSpecific_comment
+
+    if not (laborHistoryForm.formID.termCode.isFinalEvaluationOpen or laborHistoryForm.formID.termCode.isMidyearEvaluationOpen) and not existing_final_evaluation and not existing_midyear_evaluation:
+        return render_template('errors/403.html'), 403
+
+    overall_score = 73      # The default value
+    if existing_final_evaluation:
+        overall_score = (existing_final_evaluation.attendance_score +
+                        existing_final_evaluation.accountability_score +
+                        existing_final_evaluation.teamwork_score +
+                        existing_final_evaluation.initiative_score +
+                        existing_final_evaluation.respect_score +
+                        existing_final_evaluation.learning_score +
+                        existing_final_evaluation.jobSpecific_score)
+    elif existing_midyear_evaluation:
+        overall_score = (existing_midyear_evaluation.attendance_score +
+                        existing_midyear_evaluation.accountability_score +
+                        existing_midyear_evaluation.teamwork_score +
+                        existing_midyear_evaluation.initiative_score +
+                        existing_midyear_evaluation.respect_score +
+                        existing_midyear_evaluation.learning_score +
+                        existing_midyear_evaluation.jobSpecific_score)
+
     if sleForm.validate_on_submit():
+        # FIXME Submit as midyears
+
         studentLaborEvaluation = StudentLaborEvaluation.create(
                                     formHistoryID = laborHistoryForm,
                                     attendance_score = sleForm.attendance.data,
@@ -76,6 +117,8 @@ def sle(statusKey):
                                     jobSpecific_score = sleForm.jobSpecific.data,
                                     jobSpecific_comment = sleForm.jobSpecificComments.data
                                 )
+        if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
+            studentLaborEvaluation.is_midyear_evaluation = True
         studentLaborEvaluation.save()
         msg = "Thank you for submitting a labor evaluation for " + laborHistoryForm.formID.studentName + "!"
         flash(msg, "success")
@@ -88,6 +131,8 @@ def sle(statusKey):
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
                             laborHistoryForm = laborHistoryForm,
-                            existing_evaluation = existing_evaluation,
-                            overall_score = overall_score
+                            existing_final_evaluation = existing_final_evaluation,
+                            existing_midyear_evaluation = existing_midyear_evaluation,
+                            overall_score = overall_score,
+                            isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen
                           )
