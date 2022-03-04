@@ -124,8 +124,10 @@ def manageEval():
             term = Term.get(rsp['evalBtn'])
             if rsp["isMidyear"]:
                 term.isMidyearEvaluationOpen = not term.isMidyearEvaluationOpen
+                term.isFinalEvaluationOpen = False
             else:
                 term.isFinalEvaluationOpen = not term.isFinalEvaluationOpen
+                term.isMidyearEvaluationOpen = False
             term.save()
             flasherInfo = {'termChanged': term.termName}
             return jsonify(flasherInfo)
