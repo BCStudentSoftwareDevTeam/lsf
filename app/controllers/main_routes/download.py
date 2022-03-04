@@ -161,7 +161,7 @@ class CSVMaker:
                     multipleRows.append(self.insertEvaluationData(evaluation, "Midyear" if evaluation.is_midyear_evaluation else "Final"))
         else:
             return []
-        print(multipleRows)
+        
         return multipleRows
 
     def insertEvaluationData(self, evaluation, evalType):
