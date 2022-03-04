@@ -14,12 +14,13 @@ from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 import operator
 from functools import reduce
-from app.controllers.main_routes.download import ExcelMaker
+from app.controllers.main_routes.download import CSVMaker
 from peewee import JOIN, prefetch
 
 # Global variable that will store the query result.
 # It is made global to be used later in creating CSV file.
 formSearchResults = None
+sleJoin = False
 
 @admin.route('/admin/formSearch', methods=['GET', 'POST'])
 def formSearch():
@@ -93,8 +94,8 @@ def getDatatableData(request):
                      StudentLaborEvaluation.ID: evaluationStatus}
 
     clauses = []
-    sleJoin = None # Used for evaluation status filtering
 
+    global sleJoin
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
@@ -125,8 +126,17 @@ def getDatatableData(request):
                         .where(expression))
 
     if sleJoin:
-        evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode)
-        if sleJoin == "evalMissing":
+        if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
+            #grab all the midyear evaluationStatus
+            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == 1)
+        else:
+            #grab all the final evaluationStatus
+            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == 0)
+        if sleJoin == "evalMidyearMissing":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+        elif sleJoin == "evalMidyearComplete":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+        elif sleJoin == "evalMissing":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
         elif sleJoin == "evalComplete":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
@@ -230,6 +240,9 @@ def getFormattedData(filteredSearchResults):
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
         record.append(mappedFormTypeName)
 
+        # Evaluation status
+        # TODO Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
+
         laborHistoryId = form.formHistoryID
         laborStatusFormId = form.formID.laborStatusFormID
         actionsButton = getActionButtonLogic(form, laborHistoryId, laborStatusFormId)
@@ -291,8 +304,14 @@ def downloadFormSearchResults():
     '''
 
     global formSearchResults
+    global sleJoin
+    if sleJoin == "evalComplete":
+        includeEvals = "Final"
+    elif sleJoin == "evalMidyearComplete":
+        includeEvals = "Midyear"
+    else:
+        includeEvals = False
+
     formSearchResults = formSearchResults.order_by(-FormHistory.createdDate)
-    excel = ExcelMaker()
-    completePath = excel.makeExcelAllPendingForms(formSearchResults)
-    filename = completePath.split('/').pop()
-    return send_file(completePath, as_attachment=True, attachment_filename=filename)
+    excel = CSVMaker("studentHistory", formSearchResults, includeEvals = includeEvals)
+    return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
