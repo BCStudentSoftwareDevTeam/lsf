@@ -131,10 +131,13 @@ function termStatus(term) {
 
 function toggleEval(term, isMidyear) {
   if (isMidyear) {
-      var evalBtnID = $("#midyear_eval_btn_" + term);
+      var clickedBtn = $("#midyear_eval_btn_" + term);
+      var otherBtn = $("#eval_btn_" + term);
   } else {
-    var evalBtnID = $("#eval_btn_" + term);
+    var clickedBtn = $("#eval_btn_" + term);
+    var otherBtn = $("#midyear_eval_btn_" + term);
   }
+
   $.ajax({
     method: "POST",
     url: "/termManagement/manageEval",
@@ -143,17 +146,18 @@ function toggleEval(term, isMidyear) {
     data: JSON.stringify({"evalBtn": term, "isMidyear": isMidyear}),
     processData: false,
     success: function(response) {
-      if($(evalBtnID).hasClass("btn-success")) {
-        $(evalBtnID).removeClass("btn-success");
-        $(evalBtnID).addClass("btn-danger");
-        $(evalBtnID).text("Closed");
+      otherBtn.removeClass("btn-success").addClass("btn-danger").text("Closed");
+      if($(clickedBtn).hasClass("btn-success")) {
+        $(clickedBtn).removeClass("btn-success");
+        $(clickedBtn).addClass("btn-danger");
+        $(clickedBtn).text("Closed");
         category = "danger";
         state = "'Closed'.";
         }
       else {
-        $(evalBtnID).removeClass("btn-danger");
-        $(evalBtnID).addClass("btn-success");
-        $(evalBtnID).text("Open");
+        $(clickedBtn).removeClass("btn-danger");
+        $(clickedBtn).addClass("btn-success");
+        $(clickedBtn).text("Open");
         category = "success";
         state = "'Open'.";
       }
