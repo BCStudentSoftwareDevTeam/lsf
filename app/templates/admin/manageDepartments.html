@@ -14,18 +14,32 @@
 
 {% block app_content %}
 <div align="center">
-  <a class="skipContent" href="#manageDep" tabindex="1">Click to Skip</a>
+  <a class="skipContent"
+     href="#manageDep"
+     tabindex="1">Click to Skip
+  </a>
 </div>
 <!-- <form action="/admin/complianceStatus" method="POST"> -->
 <div class="container-fluid">
     <div class="row">
-      <a class="skipContent" href="#departmentsTable_length" tabindex="1">Click to Skip</a>
+      <a class="skipContent"
+         href="#departmentsTable_length"
+         tabindex="1">Click to Skip
+      </a>
       <div class="col-md-1"></div>
       <div class="col-md-9">
         <h1>Manage Departments</h1>
 
-        <p class="text-center"><button class="btn btn-success btn-xs" id="exampleButton1" disabled>In Compliance</button> Position descriptions are up to date.</p>
-        <p class="text-center"><button class="btn btn-danger btn-xs" id="exampleButton2" disabled>Not in Compliance</button> Position descriptions are not up to date</p>
+        <p class="text-center">
+          <button class="btn btn-success btn-xs"
+                  id="exampleButton1" disabled>In Compliance
+          </button> Position descriptions are up to date.
+        </p>
+        <p class="text-center">
+          <button class="btn btn-danger btn-xs"
+                  id="exampleButton2" disabled>Not in Compliance
+          </button> Position descriptions are not up to date
+        </p>
 
         <br/>
       </div>
@@ -35,7 +49,8 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-          <table class="table table-striped table-bordered" id="departmentsTable">
+          <table class="table table-striped table-bordered"
+                 id="departmentsTable">
             <thead>
               <tr>
                 <th>Department</th>
@@ -45,21 +60,27 @@
             <tbody>
               {% for department in department %}
               <tr>
-                <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
-                <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
+                <td scope="row">{{department.DEPT_NAME}}
+                  <small>({{department.ORG}}, {{department.ACCOUNT}})</small>
+                </td>
+                <td id="dept_{{department.departmentID}}"
+                    scope="row"
+                    data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
                   <button type="button"
                           id="dept_btn_{{department.departmentID}}"
                           name="deptName"
                           class="{% if department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
                           onclick="status({{department.departmentID}}, '{{department.DEPT_NAME}}')"
-                          value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{% else %}Not in Compliance{% endif %}</button>
+                          value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{% else %}Not in Compliance{% endif %}
+                  </button>
                 </td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
-        <div class="col-md-2"></div>
+        <div class="col-md-2">
+      </div>
     </div>
 </div>
 {% endblock %}
