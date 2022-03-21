@@ -51,3 +51,8 @@ function update_sum() {
   }
   $("#score_text").html(message);
   }
+
+$("#finalSubmitButton").click(function() {
+  $("#isSubmitted").val("True");
+	console.log($("#isSubmitted").val())
+});

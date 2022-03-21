@@ -19,7 +19,8 @@ class StudentLaborEvaluation(baseModel):
     learning_comment        = CharField(null=False)
     jobSpecific_score       = IntegerField(null=False)
     jobSpecific_comment     = CharField(null=False)
-    is_midyear_evaluation  = BooleanField(default=False)
+    is_midyear_evaluation   = BooleanField(default=False)
+    is_submitted            = BooleanField(default=False)
 
     def __str__(self):
         return str(self.__dict__)

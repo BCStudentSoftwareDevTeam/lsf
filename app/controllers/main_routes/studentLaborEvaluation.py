@@ -3,7 +3,7 @@ from app.login_manager import *
 import app.login_manager as login_manager
 from flask import redirect, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, TextAreaField
+from wtforms import StringField, RadioField, TextAreaField, HiddenField
 from wtforms.fields.html5 import IntegerRangeField
 from wtforms.validators import DataRequired
 from app.models.formHistory import *
@@ -12,7 +12,7 @@ from app.models.studentLaborEvaluation import StudentLaborEvaluation
 
 class SLEForm(FlaskForm):
 
-    attendance = IntegerRangeField("Attendence", default = 15, render_kw={'class':'form-control slider'})
+    attendance = IntegerRangeField("Attendance", default = 15, render_kw={'class':'form-control slider'})
     attendanceComments = TextAreaField("Comments about attendance:", render_kw={'class':'form-control'})
     attendanceCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
@@ -40,6 +40,8 @@ class SLEForm(FlaskForm):
     jobSpecificComments = TextAreaField("Comments about this job, specifically:", render_kw={'class':'form-control'})
     jobSpecificCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
+    isSubmitted = HiddenField('Is this a final submission', default = False)
+
 
 @main_bp.route('/sle/<statusKey>', methods=['GET', 'POST'])
 def sle(statusKey):
@@ -47,19 +49,21 @@ def sle(statusKey):
     currentUser = require_login()
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
-
-    if currentUser.supervisor != laborHistoryForm.formID.supervisor:
+    if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the supervisor
-        # print("Current user is not the supervisor")
+        return render_template('errors/403.html'), 403
+    elif currentUser.student == None and currentUser.supervisor != laborHistoryForm.formID.supervisor:
+        # current user is not the supervisor
         return render_template('errors/403.html'), 403
 
     sleForm = SLEForm()
 
-    existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False)
-    existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True)
+    existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False, is_submitted = True)
+    existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True, is_submitted = True)
+    existing_saved_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_submitted = False)
 
-    if existing_midyear_evaluation:
-        if not request.method == "POST":        # Doesn't override submitted POST data!
+    if not request.method == "POST":        # Doesn't override submitted POST data!
+        if existing_midyear_evaluation:     # TODO Or there's savedforlater data
             sleForm.attendance.data = existing_midyear_evaluation.attendance_score
             sleForm.accountability.data = existing_midyear_evaluation.accountability_score
             sleForm.teamwork.data = existing_midyear_evaluation.teamwork_score
@@ -75,6 +79,25 @@ def sle(statusKey):
             sleForm.respectCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.respect_comment
             sleForm.learningCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.learning_comment
             sleForm.jobSpecificCommentsMidyear.data = "Midyear comments: \n" + existing_midyear_evaluation.jobSpecific_comment
+
+        if existing_saved_evaluation:
+            sleForm.attendance.data = existing_saved_evaluation.attendance_score
+            sleForm.accountability.data = existing_saved_evaluation.accountability_score
+            sleForm.teamwork.data = existing_saved_evaluation.teamwork_score
+            sleForm.initiative.data = existing_saved_evaluation.initiative_score
+            sleForm.respect.data = existing_saved_evaluation.respect_score
+            sleForm.learning.data = existing_saved_evaluation.learning_score
+            sleForm.jobSpecific.data = existing_saved_evaluation.jobSpecific_score
+
+            sleForm.attendanceComments.data = existing_saved_evaluation.attendance_comment
+            sleForm.accountabilityComments.data = existing_saved_evaluation.accountability_comment
+            sleForm.teamworkComments.data = existing_saved_evaluation.teamwork_comment
+            sleForm.initiativeComments.data = existing_saved_evaluation.initiative_comment
+            sleForm.respectComments.data = existing_saved_evaluation.respect_comment
+            sleForm.learningComments.data = existing_saved_evaluation.learning_comment
+            sleForm.jobSpecificComments.data = existing_saved_evaluation.jobSpecific_comment
+
+
 
     if not (laborHistoryForm.formID.termCode.isFinalEvaluationOpen or laborHistoryForm.formID.termCode.isMidyearEvaluationOpen) and not existing_final_evaluation and not existing_midyear_evaluation:
         return render_template('errors/403.html'), 403
@@ -98,8 +121,19 @@ def sle(statusKey):
                         existing_midyear_evaluation.jobSpecific_score)
 
     if sleForm.validate_on_submit():
-        # FIXME Submit as midyears
+        # First delete any temporarily saved data (is_submitted = False)
+        if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
+            try:
+                StudentLaborEvaluation.get(formHistoryID = laborHistoryForm, is_submitted = False, is_midyear_evaluation = True).delete_instance()
+            except DoesNotExist:
+                pass
+        else:
+            try:
+                StudentLaborEvaluation.get(formHistoryID = laborHistoryForm, is_submitted = False, is_midyear_evaluation = False).delete_instance()
+            except DoesNotExist:
+                pass
 
+        # Then, save the new record
         studentLaborEvaluation = StudentLaborEvaluation.create(
                                     formHistoryID = laborHistoryForm,
                                     attendance_score = sleForm.attendance.data,
@@ -115,7 +149,8 @@ def sle(statusKey):
                                     learning_score = sleForm.learning.data,
                                     learning_comment = sleForm.learningComments.data,
                                     jobSpecific_score = sleForm.jobSpecific.data,
-                                    jobSpecific_comment = sleForm.jobSpecificComments.data
+                                    jobSpecific_comment = sleForm.jobSpecificComments.data,
+                                    is_submitted = True if sleForm.isSubmitted.data == "True" else False
                                 )
         if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
             studentLaborEvaluation.is_midyear_evaluation = True

@@ -280,7 +280,7 @@
       {# end jobSpecific #}
 
       {# begin final #}
-      <div class="col-xs-5">
+      <div class="col-xs-3">
       </div>
       <div class="col-xs-3">
         <p class="text-center">
@@ -291,8 +291,11 @@
 
       </div>
       {% if not existing_final_evaluation and (not existing_midyear_evaluation or isFinalEvaluationOpen) %}
-        <div class="pull-right col-xs-4" style="margin-top: 30px;">
-          <input class="pull-right btn-lg btn-success" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
+        {{form.isSubmitted}}
+        {#<input type="text" hidden id="saveForLaterField" value="False" name="saveForLater">#}
+        <div class="btn-group pull-right col-xs-6" role="group" style="margin-top: 30px;">
+          <input class="btn btn-lg btn-primary" type="submit" value="Save for Later" id="saveForLater">
+          <input class="btn btn-lg btn-success" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
         </div>
       {% endif %}
     </div>
