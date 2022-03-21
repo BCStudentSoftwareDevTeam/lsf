@@ -147,21 +147,21 @@ class CSVMaker:
         '''
         multipleRows = []
         if self.includeEvals == "Final":
-            finalEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 0)
+            finalEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 0, StudentLaborEvaluation.is_submitted == True)
             if finalEvaluation:
                 multipleRows.append(self.insertEvaluationData(finalEvaluation, "Final"))
         elif self.includeEvals == "Midyear":
-            midyearEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 1)
+            midyearEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 1, StudentLaborEvaluation.is_submitted == True)
             if midyearEvaluation:
                 multipleRows.append(self.insertEvaluationData(midyearEvaluation, "Midyear"))
         elif self.includeEvals == True:
-            anyEvaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == formID)
+            anyEvaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_submitted == True)
             if anyEvaluation:
                 for evaluation in anyEvaluation:
                     multipleRows.append(self.insertEvaluationData(evaluation, "Midyear" if evaluation.is_midyear_evaluation else "Final"))
         else:
             return []
-        
+
         return multipleRows
 
     def insertEvaluationData(self, evaluation, evalType):

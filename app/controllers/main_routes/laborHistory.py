@@ -72,7 +72,7 @@ def downloadFormHistory():
     try:
         data = request.form
         historyList = data["listOfForms"].split(',')
-        excel = CSVMaker("studentHistory", historyList, includeEvals = True)        
+        excel = CSVMaker("studentHistory", historyList, includeEvals = True)
         return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
     except:
         return render_template('errors/500.html'), 500

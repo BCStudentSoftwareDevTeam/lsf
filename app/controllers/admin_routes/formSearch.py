@@ -128,10 +128,10 @@ def getDatatableData(request):
     if sleJoin:
         if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
             #grab all the midyear evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == 1)
+            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == True, StudentLaborEvaluation.is_submitted == True)
         else:
             #grab all the final evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == 0)
+            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == False, StudentLaborEvaluation.is_submitted == True)
         if sleJoin == "evalMidyearMissing":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
         elif sleJoin == "evalMidyearComplete":
@@ -304,6 +304,7 @@ def downloadFormSearchResults():
     '''
 
     global formSearchResults
+    print([f.formID for f in formSearchResults])
     global sleJoin
     if sleJoin == "evalComplete":
         includeEvals = "Final"
