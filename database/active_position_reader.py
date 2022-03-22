@@ -3,7 +3,7 @@ import csv
 from app.models.laborStatusForm import *
 import os.path
 from app.logic.tracy import Tracy
-from app.logic.userInsertFunctions import createStudentFromTracy
+from app.logic.userInsertFunctions import *
 
 if not os.path.exists("active_jobs_as_of_2-18-22_new.csv"):
     current_positions_file = pd.read_excel("active_jobs_as_of_2-18-22_new.xlsx")
@@ -30,19 +30,20 @@ labor_data = pd.read_csv("active_jobs_as_of_2-18-22_new.csv")
 position_name_list = labor_data["B#"].tolist()
 position_name_list.sort()
 
-production_names_list = []
+production_bnumbers_list = []
 # production_names = LaborStatusForm.select().join(Student).order_by(LaborStatusForm.studentSupervisee.LAST_NAME.asc())
-production_names = LaborStatusForm.select().order_by(LaborStatusForm.studentSupervisee.asc())
-for name in production_names:
-    production_names_list.append(name.studentSupervisee)
+production_forms = LaborStatusForm.select().order_by(LaborStatusForm.studentSupervisee.asc())
+for form in production_forms:
+    production_bnumbers_list.append(form.studentSupervisee)
 
 for row in range(len(labor_data)):
-    if labor_data.loc[row, "B#"] not in production_names_list:
-        createStudentFromTracy(None, labor_data.loc[row, "B#"])
+    if labor_data.loc[row, "B#"] not in production_bnumbers_list:
+        getOrCreateStudentRecord(None, labor_data.loc[row, "B#"])
+        createSupervisorFromTracy(None, labor_data.loc[row, "Supervisor B#"])
         LaborStatusForm.create(termCode_id = 201511,
                                 studentSupervisee_id = labor_data.loc[row, "B#"],
                                 supervisor_id = labor_data.loc[row, "Supervisor B#"],
-                                department_id  = 2,
+                                department_id = 2,
                                 jobType = labor_data.loc[row, "Contract Type"],
                                 WLS = labor_data.loc[row, "WLS"],
                                 POSN_TITLE = labor_data.loc[row, "Title"],
