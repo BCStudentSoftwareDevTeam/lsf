@@ -49,7 +49,19 @@
       <hr />
 
       {# begin attendance #}
-      <h3>{{ form.attendance.label }}</h3>
+      <h3>{{ form.attendance.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="attendance-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Attendance"
+              data-content="<ul>
+                              <li>Is punctual and arrives on time for work as scheduled and/or required.</li>
+                              <li>Gives advance notices of absences.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -82,7 +94,20 @@
       {# end attendance #}
 
       {# begin accountability #}
-      <h3>{{ form.accountability.label }}</h3>
+      <h3>{{ form.accountability.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="accountability-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Accountability"
+              data-content="<ul>
+                              <li>Manages time well and provides timely completion of position assignments.</li>
+                              <li>Supports workplace policies and procedures including dress and safety requirements.</li>
+                              <li>Ensures proper care of college equipment, facilities, materials, and work environment.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -115,7 +140,19 @@
       {# end accountability #}
 
       {# begin teamwork #}
-      <h3>{{ form.teamwork.label }}</h3>
+      <h3>{{ form.teamwork.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="teamwork-help-icon"
+              data-toggle="popover"
+              data-trigger='hover'
+              data-html="true"
+              title="Teamwork"
+              data-content="<ul>
+                              <li>Demonstrates a willingness to work, support, and collaborate with supervisors and co-workers while promoting a positive atmosphere in the workplace for all people.</li>
+                              <li>Demonstrates an understanding of the relationship of his/her work to the work of others within the department.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -148,7 +185,19 @@
       {# end teamwork #}
 
       {# begin initiative #}
-      <h3>{{ form.initiative.label }}</h3>
+      <h3>{{ form.initiative.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="initiative-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Initiative"
+              data-content="<ul>
+                              <li>Consistently completes position assignments without need for constant supervision.</li>
+                              <li>Is a self-starter with the ability to adjust and adapt to change as needed.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -181,7 +230,19 @@
       {# end initiative #}
 
       {# begin respect #}
-      <h3>{{ form.respect.label }}</h3>
+      <h3>{{ form.respect.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="respect-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Respect"
+              data-content="<ul>
+                              <li>Exhibits professional conduct in the workplace and interacts respectfully with all people including supervisors, co-workers and those being served.</li>
+                              <li>Respectfully deals with conflict and differing points of view.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -214,7 +275,20 @@
       {# end respect #}
 
       {# begin learning #}
-      <h3>{{ form.learning.label }}</h3>
+      <h3>{{ form.learning.label }}
+        <span class="glyphicon glyphicon-question-sign"
+              id="learning-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Learning"
+              data-content="<ul>
+                              <li>Enhances the effectiveness of co-workers and the department by sharing knowledge.</li>
+                              <li>Demonstrates an interest in acquiring new skills.</li>
+                              <li>Seeks to reflect and understand the value of the position and how it relates to personal development.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}
@@ -247,7 +321,18 @@
       {# end learning #}
 
       {# begin jobSpecific #}
-      <h3>{{ form.jobSpecific.label }}</h3>
+      <h3>{{ form.jobSpecific.label }}        
+        <span class="glyphicon glyphicon-question-sign"
+              id="jobSpecific-help-icon"
+              data-toggle="popover"
+              data-html="true"
+              data-trigger='hover'
+              title="Job Specific"
+              data-content="<ul>
+                              <li>The degree to which this student fulfills the basic labor requirements and objectives as set forth in his/her position description.</li>
+                            </ul>"
+        </span>
+      </h3>
       <div class="row form-check">
         <div class="col-xs-6">
           {% if not existing_final_evaluation and not (existing_midyear_evaluation and not isFinalEvaluationOpen) %}

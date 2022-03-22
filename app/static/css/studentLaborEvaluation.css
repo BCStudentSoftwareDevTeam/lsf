@@ -8,3 +8,7 @@
 .alert {
   margin-bottom: 0px;
 }
+
+.popover {
+  max-width: 75%;
+}

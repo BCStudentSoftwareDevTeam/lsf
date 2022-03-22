@@ -1,3 +1,7 @@
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+
 $('.slider').on('input', function() {
 	let val = $(this).val();
   let max_value = $(this).prop("max");
