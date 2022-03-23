@@ -321,7 +321,7 @@
       {# end learning #}
 
       {# begin jobSpecific #}
-      <h3>{{ form.jobSpecific.label }}        
+      <h3>{{ form.jobSpecific.label }}
         <span class="glyphicon glyphicon-question-sign"
               id="jobSpecific-help-icon"
               data-toggle="popover"
@@ -363,6 +363,36 @@
       </div>
       <hr />
       {# end jobSpecific #}
+
+      {# begin transcript #}
+      {% if isFinalEvaluationOpen or existing_final_evaluation %}  {# No transcript for midyears #}
+        <h3>{{ form.transcriptComments.label }}
+          <span class="glyphicon glyphicon-question-sign"
+                id="jobSpecific-help-icon"
+                data-toggle="popover"
+                data-html="true"
+                data-trigger='hover'
+                title="Labor Transcript Comments"
+                data-content="<ul>
+                                <li>Comments left here will be included on the student's labor transcript, which they might share with future employers.</li>
+                              </ul>"
+          </span>
+        </h3>
+        <div class="row form-check">
+          <div class="col-xs-6">
+          </div>
+          <div class="col-xs-6">
+            {{form.transcriptComments.label}}
+            {% if isFinalEvaluationOpen and not existing_final_evaluation %}
+              {{form.transcriptComments}}
+            {% elif not isFinalEvaluationOpen or existing_final_evaluation %}
+              <p>{{existing_final_evaluation.transcript_comment}}</p>
+            {% endif %}
+          </div>
+        </div>
+        <hr />
+      {% endif %}
+      {# end transcript #}
 
       {# begin final #}
       <div class="col-xs-3">

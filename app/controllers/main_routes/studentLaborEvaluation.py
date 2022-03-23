@@ -40,6 +40,8 @@ class SLEForm(FlaskForm):
     jobSpecificComments = TextAreaField("Comments about this job, specifically:", render_kw={'class':'form-control'})
     jobSpecificCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
+    transcriptComments = TextAreaField("Labor Transcript comments:", render_kw={'class':'form-control'})
+
     isSubmitted = HiddenField('Is this a final submission', default = False)
 
 
@@ -60,7 +62,9 @@ def sle(statusKey):
 
     existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False, is_submitted = True)
     existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True, is_submitted = True)
-    existing_saved_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_submitted = False)
+    existing_saved_evaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm, StudentLaborEvaluation.is_submitted == False)
+    if existing_saved_evaluation:
+        existing_saved_evaluation = existing_saved_evaluation[-1]
 
     if not request.method == "POST":        # Doesn't override submitted POST data!
         if existing_midyear_evaluation:     # TODO Or there's savedforlater data
@@ -96,7 +100,7 @@ def sle(statusKey):
             sleForm.respectComments.data = existing_saved_evaluation.respect_comment
             sleForm.learningComments.data = existing_saved_evaluation.learning_comment
             sleForm.jobSpecificComments.data = existing_saved_evaluation.jobSpecific_comment
-
+            sleForm.transcriptComments.data = existing_saved_evaluation.transcript_comment
 
 
     if not (laborHistoryForm.formID.termCode.isFinalEvaluationOpen or laborHistoryForm.formID.termCode.isMidyearEvaluationOpen) and not existing_final_evaluation and not existing_midyear_evaluation:
@@ -150,6 +154,7 @@ def sle(statusKey):
                                     learning_comment = sleForm.learningComments.data,
                                     jobSpecific_score = sleForm.jobSpecific.data,
                                     jobSpecific_comment = sleForm.jobSpecificComments.data,
+                                    transcript_comment = sleForm.transcriptComments.data,
                                     is_submitted = True if sleForm.isSubmitted.data == "True" else False
                                 )
         if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
