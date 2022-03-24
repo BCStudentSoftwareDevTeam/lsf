@@ -1,15 +1,17 @@
 import pandas as pd # Pandas library to allow for data manipulation and analysis in Python
 import csv
 from app.models.laborStatusForm import *
+from app.models.student import *
+from app.models.department import *
 import os.path
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import *
 
-if not os.path.exists("active_jobs_as_of_2-18-22_new.csv"):
-    current_positions_file = pd.read_excel("active_jobs_as_of_2-18-22_new.xlsx")
-    current_positions_file.to_csv("active_jobs_as_of_2-18-22_new.csv",
-                                  index = None,
-                                  header = True)
+# if not os.path.exists("active_jobs_as_of_2-18-22_new.csv"):
+#     current_positions_file = pd.read_excel("active_jobs_as_of_2-18-22_new.xlsx")
+#     current_positions_file.to_csv("active_jobs_as_of_2-18-22_new.csv",
+#                                   index = None,
+#                                   header = True)
 
 # labor_data = pd.read_csv("active_jobs_as_of_2-18-22_new.csv")
 # position_title_list = labor_data["Title"].tolist()
@@ -26,7 +28,16 @@ if not os.path.exists("active_jobs_as_of_2-18-22_new.csv"):
 #         POSN_TITLE_differences_list.append(title)
 # print(POSN_TITLE_differences_list)
 
-labor_data = pd.read_csv("active_jobs_as_of_2-18-22_new.csv")
+# def convert_dept_org_act_to_id(row_data):
+#     org_number, account_number = row_data.split("-")
+#     dept = Department.get(Department.ORG==org_number, Department.ACCOUNT==account_number)
+#     return dept.departmentID
+
+def convert_end_date_to_term_code(date):
+    term_code = date[4:]
+
+
+labor_data = pd.read_csv("active_jobs_as_of_3-24-22.csv")
 position_name_list = labor_data["B#"].tolist()
 position_name_list.sort()
 
@@ -38,42 +49,39 @@ for form in production_forms:
 
 for row in range(len(labor_data)):
     if labor_data.loc[row, "B#"] not in production_bnumbers_list:
-        getOrCreateStudentRecord(None, labor_data.loc[row, "B#"])
+        try:
+            getOrCreateStudentRecord(None, labor_data.loc[row, "B#"])
+        except:
+            print("creating student record from scratch")
+            Student.create(ID = labor_data.loc[row, "B#"],
+                            PIDM = None,
+                            FIRST_NAME = labor_data.loc[row, "First Name"],
+                            LAST_NAME = labor_data.loc[row, "Last Name"],
+                            CLASS_LEVEL = None,
+                            ACADEMIC_FOCUS = None,
+                            MAJOR = None,
+                            PROBATION = None,
+                            ADVISOR = None,
+                            STU_EMAIL = None,
+                            STU_CPO = None,
+                            LAST_POSN = None,
+                            LAST_SUP_PIDM = None
+                            )
         createSupervisorFromTracy(None, labor_data.loc[row, "Supervisor B#"])
+        dept_ID = convert_dept_org_act_to_id(labor_data.loc[row, "Dept Org and Account"])
         LaborStatusForm.create(termCode_id = 201511,
                                 studentSupervisee_id = labor_data.loc[row, "B#"],
                                 supervisor_id = labor_data.loc[row, "Supervisor B#"],
-                                department_id = 2,
+                                department_id = dept_ID,
                                 jobType = labor_data.loc[row, "Contract Type"],
                                 WLS = labor_data.loc[row, "WLS"],
                                 POSN_TITLE = labor_data.loc[row, "Title"],
                                 POSN_CODE = labor_data.loc[row, "Position"],
                                 contractHours = None,
                                 weeklyHours   = labor_data.loc[row, "Hours per Week"],
-                                startDate = labor_data.loc[row, "Begin Date"],
-                                endDate = labor_data.loc[row, "End Date"],
+                                startDate = None,
+                                endDate = None,
                                 supervisorNotes = None,
                                 laborDepartmentNotes = None,
-                                studentName = labor_data.loc[row, "First Name"] + labor_data.loc[row, "Last Name"]
+                                studentName = labor_data.loc[row, "First Name"] + " " + labor_data.loc[row, "Last Name"]
                                 )
-        print(labor_data.loc[row, "B#"])
-
-for row in range(len(labor_data)):
-    if labor_data.loc[row, "B#"] not in production_names_list:
-        print(labor_data.loc[row, "B#"])
-        # LaborStatusForm.delete().where(termCode_id = 201511,
-        #                                studentSupervisee_id = row["B#"],
-        #                                supervisor_id = row["Supervisor B#"],
-        #                                department_id  = 2,
-        #                                jobType = row["Contract Type"],
-        #                                WLS = row["WLS"],
-        #                                POSN_TITLE = row["Title"],
-        #                                POSN_CODE = row["Position"],
-        #                                contractHours = None,
-        #                                weeklyHours   = row["Hours per Week"],
-        #                                startDate = row["Begin Date"],
-        #                                endDate = row["End Date"],
-        #                                supervisorNotes = None,
-        #                                laborDepartmentNotes = None,
-        #                                studentName = row["First Name"] + row["Last Name"]
-        #                                )
