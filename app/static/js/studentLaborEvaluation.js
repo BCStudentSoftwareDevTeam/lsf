@@ -1,3 +1,5 @@
+
+
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
@@ -60,3 +62,12 @@ $("#finalSubmitButton").click(function() {
   $("#isSubmitted").val("True");
 	console.log($("#isSubmitted").val())
 });
+
+$('#submit_as_final').change(function() {
+  if (this.checked) {
+    $("#transcriptComments").attr("disabled", false);
+  } else {
+    $("#transcriptComments").attr("disabled", true);
+    $("#transcriptComments").val(null);
+  }
+})
