@@ -46,7 +46,7 @@ class ButtonStatus:
                 elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
                     self.evaluation_exists = True
         else:
-            if ogHistoryForm.formID.supervisor.ID == currentUser.supervisor.ID:
+            if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME:
                 if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                     self.evaluate = True
                 for evaluation in evaluations:
