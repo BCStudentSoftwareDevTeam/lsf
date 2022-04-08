@@ -2,6 +2,15 @@
 {% block scripts %}
   {{super()}}
   <script src="/static/js/studentLaborEvaluation.js?u={{lastStaticUpdate}}"></script>
+  <script>
+    $(document).ready(function() {
+      if ( "{{isFinalEvaluationOpen}}" == "True") {
+        $("#transcriptComments").attr("disabled", false);
+      } else {
+        $("#transcriptComments").attr("disabled", true);
+      }
+    });
+  </script>
 {% endblock %}
 
 {% block styles %}
@@ -14,9 +23,7 @@
 <div align="center" style="margin-bottom: 50px;">
 
   <a class="skipContent" href="#condition" tabindex="1">Click to Skip</a>
-{#  <div role="alert" id="flash-message" style="color:red;" {% if not form.supervisorName.errors %} hidden {% endif %}>
-    {{ error }}
-  </div> #}
+
   <h1> Student Labor Evaluation - {{laborHistoryForm.formID.studentName}} </h1>
 </div>
 
@@ -46,7 +53,14 @@
           </dl>
         </div>
       </div>
+      {% if laborHistoryForm.formID.supervisor != currentUser %}
+        <div class="alert alert-danger" id="not-supervisor" style="color:red;">
+          <strong>WARNING:</strong> According to the system, you are not this student's supervisor. Do not complete this evaluation unless you have {{laborHistoryForm.formID.supervisor.FIRST_NAME}} {{laborHistoryForm.formID.supervisor.LAST_NAME}}'s permission!
+        </div>
+      {% endif %}
       <hr />
+
+
 
       {# begin attendance #}
       <h3>{{ form.attendance.label }}
@@ -88,7 +102,17 @@
           {% else %}
             <p>{{existing_final_evaluation.attendance_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.attendanceComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.attendanceComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
+
       </div>
       <hr />
       {# end attendance #}
@@ -134,7 +158,17 @@
           {% else %}
             <p>{{existing_final_evaluation.accountability_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.accountabilityComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.accountabilityComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
+
       </div>
       <hr />
       {# end accountability #}
@@ -179,6 +213,15 @@
           {% else %}
             <p>{{existing_final_evaluation.teamwork_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.teamworkComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.teamworkComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />
@@ -224,6 +267,15 @@
           {% else %}
             <p>{{existing_final_evaluation.initiative_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.initiativeComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.initiativeComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />
@@ -269,6 +321,15 @@
           {% else %}
             <p>{{existing_final_evaluation.respect_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.respectComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.respectComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />
@@ -315,6 +376,15 @@
           {% else %}
             <p>{{existing_final_evaluation.learning_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.learningComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.learningComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />
@@ -359,13 +429,21 @@
           {% else %}
             <p>{{existing_final_evaluation.jobSpecific_comment}}</p>
           {% endif %}
+          <div class="row">
+            {% if form.jobSpecificComments.errors %}
+              <div role="alert" id="flash-message" style="color:red;">
+                {% for error in form.jobSpecificComments.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />
       {# end jobSpecific #}
 
       {# begin transcript #}
-      {% if isFinalEvaluationOpen or existing_final_evaluation %}  {# No transcript for midyears #}
         <h3>{{ form.transcriptComments.label }}
           <span class="glyphicon glyphicon-question-sign"
                 id="jobSpecific-help-icon"
@@ -383,15 +461,24 @@
           </div>
           <div class="col-xs-6">
             {{form.transcriptComments.label}}
-            {% if isFinalEvaluationOpen and not existing_final_evaluation %}
-              {{form.transcriptComments}}
-            {% elif not isFinalEvaluationOpen or existing_final_evaluation %}
+            {% if existing_final_evaluation %}
               <p>{{existing_final_evaluation.transcript_comment}}</p>
+            {% else %}
+              {{form.transcriptComments}}
             {% endif %}
+            <div class="row">
+              {% if form.transcriptComments.errors %}
+                <div role="alert" id="flash-message" style="color:red;">
+                  {% for error in form.transcriptComments.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
           </div>
         </div>
         <hr />
-      {% endif %}
+      {#{% endif %}#}
       {# end transcript #}
 
       {# begin final #}
@@ -407,10 +494,18 @@
       </div>
       {% if not existing_final_evaluation and (not existing_midyear_evaluation or isFinalEvaluationOpen) %}
         {{form.isSubmitted}}
-        {#<input type="text" hidden id="saveForLaterField" value="False" name="saveForLater">#}
-        <div class="btn-group pull-right col-xs-6" role="group" style="margin-top: 30px;">
-          <input class="btn btn-lg btn-primary" type="submit" value="Save for Later" id="saveForLater">
-          <input class="btn btn-lg btn-success" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
+        <div class="btn-group pull-right col-xs-6" role="group">
+          {% if not isFinalEvaluationOpen %}
+          <div class="row checkbox">
+            <label>
+               <input type="checkbox" id="submit_as_final" name="submit_as_final"> Submit as a final evaluation (instead of midyear)
+             </label>
+          </div>
+          {% endif %}
+          <div class="row">
+            <input class="btn btn-lg btn-primary" type="submit" value="Save for Later" id="saveForLater">
+            <input class="btn btn-lg btn-success" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
+          </div>
         </div>
       {% endif %}
     </div>
