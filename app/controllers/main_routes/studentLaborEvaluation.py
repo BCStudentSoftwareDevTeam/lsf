@@ -3,44 +3,44 @@ from app.login_manager import *
 import app.login_manager as login_manager
 from flask import redirect, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, TextAreaField, HiddenField
+from wtforms import StringField, RadioField, TextAreaField, HiddenField, BooleanField
 from wtforms.fields.html5 import IntegerRangeField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length
 from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
-
+from werkzeug.exceptions import BadRequestKeyError
 
 class SLEForm(FlaskForm):
 
     attendance = IntegerRangeField("Attendance", default = 15, render_kw={'class':'form-control slider'})
-    attendanceComments = TextAreaField("Comments about attendance:", render_kw={'class':'form-control'})
+    attendanceComments = TextAreaField("Comments about attendance:", [Length(max=65535)], render_kw={'class':'form-control'})
     attendanceCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     accountability = IntegerRangeField("Accountability", default = 7, render_kw={'class':'form-control slider'})
-    accountabilityComments = TextAreaField("Comments about accountability:", render_kw={'class':'form-control'})
+    accountabilityComments = TextAreaField("Comments about accountability:", [Length(max=65535)], render_kw={'class':'form-control'})
     accountabilityCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     teamwork = IntegerRangeField("Teamwork", default = 7, render_kw={'class':'form-control slider'})
-    teamworkComments = TextAreaField("Comments about teamwork:", render_kw={'class':'form-control'})
+    teamworkComments = TextAreaField("Comments about teamwork:", [Length(max=65535)], render_kw={'class':'form-control'})
     teamworkCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     initiative = IntegerRangeField("Initiative", default = 7, render_kw={'class':'form-control slider'})
-    initiativeComments = TextAreaField("Comments about initiative:", render_kw={'class':'form-control'})
+    initiativeComments = TextAreaField("Comments about initiative:", [Length(max=65535)], render_kw={'class':'form-control'})
     initiativeCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     respect  = IntegerRangeField("Respect", default = 7, render_kw={'class':'form-control slider'})
-    respectComments = TextAreaField("Comments about respect:", render_kw={'class':'form-control'})
+    respectComments = TextAreaField("Comments about respect:", [Length(max=65535)], render_kw={'class':'form-control'})
     respectCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     learning = IntegerRangeField("Learning", default = 15, render_kw={'class':'form-control slider'})
-    learningComments = TextAreaField("Comments about learning:", render_kw={'class':'form-control'})
+    learningComments = TextAreaField("Comments about learning:", [Length(max=65535)], render_kw={'class':'form-control'})
     learningCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
     jobSpecific = IntegerRangeField("Job Specific", default = 15, render_kw={'class':'form-control slider'})
-    jobSpecificComments = TextAreaField("Comments about this job, specifically:", render_kw={'class':'form-control'})
+    jobSpecificComments = TextAreaField("Comments about this job, specifically:", [Length(max=65535)], render_kw={'class':'form-control'})
     jobSpecificCommentsMidyear = TextAreaField("Attendance comments from Midyear :", render_kw={'class':'form-control', 'readonly': True})
 
-    transcriptComments = TextAreaField("Labor Transcript comments:", render_kw={'class':'form-control'})
+    transcriptComments = TextAreaField("Labor Transcript comments:", [Length(max=65535)], render_kw={'class':'form-control'})
 
     isSubmitted = HiddenField('Is this a final submission', default = False)
 
@@ -52,10 +52,10 @@ def sle(statusKey):
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
-        # current user is not the supervisor
+        # current user is not the student
         return render_template('errors/403.html'), 403
-    elif currentUser.student == None and currentUser.supervisor != laborHistoryForm.formID.supervisor:
-        # current user is not the supervisor
+    elif currentUser.student == None and currentUser.supervisor.DEPT_NAME != laborHistoryForm.formID.supervisor.DEPT_NAME:
+        # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
     sleForm = SLEForm()
@@ -125,17 +125,24 @@ def sle(statusKey):
                         existing_midyear_evaluation.jobSpecific_score)
 
     if sleForm.validate_on_submit():
+        # Handling Booleanfields are tricky...
+        try:
+            submitAsFinal = True if request.form["submit_as_final"] else False
+        except BadRequestKeyError:
+            submitAsFinal = False
+
         # First delete any temporarily saved data (is_submitted = False)
-        if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
-            try:
-                StudentLaborEvaluation.get(formHistoryID = laborHistoryForm, is_submitted = False, is_midyear_evaluation = True).delete_instance()
-            except DoesNotExist:
-                pass
-        else:
-            try:
-                StudentLaborEvaluation.get(formHistoryID = laborHistoryForm, is_submitted = False, is_midyear_evaluation = False).delete_instance()
-            except DoesNotExist:
-                pass
+        if not laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:    # Final eval
+            is_midyear_evaluation = False
+        elif submitAsFinal:                                                 # Midyear submitted as final
+            is_midyear_evaluation = False
+        else:                                                               # Midyear
+            is_midyear_evaluation = True
+        try:
+            sle = StudentLaborEvaluation.get(formHistoryID = laborHistoryForm, is_submitted = False, is_midyear_evaluation = is_midyear_evaluation)
+            sle.delete_instance()
+        except DoesNotExist:
+            pass
 
         # Then, save the new record
         studentLaborEvaluation = StudentLaborEvaluation.create(
@@ -155,9 +162,10 @@ def sle(statusKey):
                                     jobSpecific_score = sleForm.jobSpecific.data,
                                     jobSpecific_comment = sleForm.jobSpecificComments.data,
                                     transcript_comment = sleForm.transcriptComments.data,
-                                    is_submitted = True if sleForm.isSubmitted.data == "True" else False
+                                    is_submitted = True if sleForm.isSubmitted.data == "True" else False,
+                                    submitted_by = currentUser
                                 )
-        if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen:
+        if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen and not submitAsFinal:
             studentLaborEvaluation.is_midyear_evaluation = True
         studentLaborEvaluation.save()
         msg = "Thank you for submitting a labor evaluation for " + laborHistoryForm.formID.studentName + "!"
@@ -174,5 +182,6 @@ def sle(statusKey):
                             existing_final_evaluation = existing_final_evaluation,
                             existing_midyear_evaluation = existing_midyear_evaluation,
                             overall_score = overall_score,
-                            isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen
+                            isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen,
+                            currentUser = currentUser
                           )
