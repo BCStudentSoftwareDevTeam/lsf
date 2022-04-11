@@ -19,6 +19,7 @@ from fpdf import FPDF
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
@@ -45,7 +46,14 @@ def laborhistory(id, departmentName = None):
                                   .join_from(FormHistory, LaborStatusForm) \
                                   .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                   .distinct()
-                authorizedForms = set(studentForms).intersection(set(supervisorForms))
+                deptForms = FormHistory.select() \
+                                  .join(LaborStatusForm) \
+                                  .join( Department) \
+                                  .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
+                                  .distinct()
+                authorizedForms = set(studentForms).intersection(set(supervisorForms).union(set(deptForms)))
+
+
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
         authorizedForms = sorted(authorizedForms,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)

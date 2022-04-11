@@ -116,7 +116,7 @@ def index(department = None):
                     inactiveSupervisees.append(supervisee)
 
         toc = time.perf_counter()
-        print("Processed {} supervisor students in {:0.4f} seconds".format(len(formsBySupervisees), toc-tic))
+        # print("Processed {} supervisor students in {:0.4f} seconds".format(len(formsBySupervisees), toc-tic))
 
         # On the click of the download button, 'POST' method will send all checked boxes from modal to excel maker
         if request.method == 'POST':
