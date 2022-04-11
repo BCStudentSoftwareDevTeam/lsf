@@ -1,23 +1,25 @@
 $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
-});
 
-$('a.hover_indicator').click(function(e){
-  e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
-});
+  $('a.hover_indicator').click(function(e){
+    e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
+  });
 
-$('#formSearchButton').on('click', function(){
-  runformSearchQuery();
-});
+  $('#formSearchButton').on('click', function(){
+    runformSearchQuery();
+  });
 
-$('#clearSelectionsButton').on('click', function(){
-  $("input:radio:checked").removeAttr("checked");
-  $('select.selectpicker').each(function() {
-    $(`#${this.id} option:eq(0)`).prop("selected", true);
-    $(`#${this.id}`).selectpicker("refresh");
+  $('#clearSelectionsButton').on('click', function(){
+    $("input:radio:checked").removeAttr("checked");
+    $('select.selectpicker').each(function() {
+      $(`#${this.id} option:eq(0)`).prop("selected", true);
+      $(`#${this.id}`).selectpicker("refresh");
+    });
   });
 });
+
+
 
 function runformSearchQuery() {
 
