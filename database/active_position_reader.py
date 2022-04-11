@@ -1,5 +1,6 @@
 import pandas as pd # Pandas library to allow for data manipulation and analysis in Python
 import csv
+from datetime import datetime
 from app.models.laborStatusForm import *
 from app.models.student import *
 from app.models.department import *
@@ -7,50 +8,48 @@ import os.path
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import *
 
-# if not os.path.exists("active_jobs_as_of_2-18-22_new.csv"):
-#     current_positions_file = pd.read_excel("active_jobs_as_of_2-18-22_new.xlsx")
-#     current_positions_file.to_csv("active_jobs_as_of_2-18-22_new.csv",
-#                                   index = None,
-#                                   header = True)
+def convert_dept_org_act_to_id(row_data):
+    org_number, account_number = row_data.split("-")
+    try:
+        department = Department.get(Department.ACCOUNT == account_number, Department.ORG == org_number)
+    except:
+        tracy_departments = Tracy().getDepartments()
+        for dept in tracy_departments:
+            d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT = dept.ACCOUNT, ORG = dept.ORG)
+            d.save()
+        department = Department.get(Department.ACCOUNT == account_number, Department.ORG == org_number)
+    return department.departmentID
 
-# labor_data = pd.read_csv("active_jobs_as_of_2-18-22_new.csv")
-# position_title_list = labor_data["Title"].tolist()
-# position_title_list.sort()
-
-# production_position_titles = []
-# current_labor_forms = LaborStatusForm.select().order_by(LaborStatusForm.POSN_TITLE.asc())
-# for form in current_labor_forms:
-#     production_position_titles.append(form.POSN_TITLE)
-#
-# POSN_TITLE_differences_list = []
-# for title in position_title_list:
-#     if title not in production_position_titles:
-#         POSN_TITLE_differences_list.append(title)
-# print(POSN_TITLE_differences_list)
-
-# def convert_dept_org_act_to_id(row_data):
-#     org_number, account_number = row_data.split("-")
-#     dept = Department.get(Department.ORG==org_number, Department.ACCOUNT==account_number)
-#     return dept.departmentID
-
-def convert_end_date_to_term_code(date):
-    term_code = date[4:]
-
+def convert_dates_to_term_code(startDate, endDate):
+    startDate = datetime.strptime(startDate, "%m/%d/%Y")
+    endDate = datetime.strptime(endDate, "%m/%d/%Y")
+    if datetime(startDate.year, 8, 1) <= startDate <= datetime(endDate.year, 12, 31):
+        term_code = str(startDate.year) + "00"
+        int(term_code)
+    else:
+        term_code = str(startDate.year) + "12"
+        int(term_code) - 100
+    return startDate, endDate, term_code
 
 labor_data = pd.read_csv("active_jobs_as_of_3-24-22.csv")
-position_name_list = labor_data["B#"].tolist()
-position_name_list.sort()
 
 production_bnumbers_list = []
-# production_names = LaborStatusForm.select().join(Student).order_by(LaborStatusForm.studentSupervisee.LAST_NAME.asc())
 production_forms = LaborStatusForm.select().order_by(LaborStatusForm.studentSupervisee.asc())
 for form in production_forms:
-    production_bnumbers_list.append(form.studentSupervisee)
+    production_bnumbers_list.append(str(form.studentSupervisee.ID))
 
-for row in range(len(labor_data)):
-    if labor_data.loc[row, "B#"] not in production_bnumbers_list:
+created_forms = 0
+updated_primaries = 0
+updated_secondaries = 0
+updated_second_secondaries = 0
+
+for row in range(len(labor_data)): #Looping through the current forms
+    createSupervisorFromTracy(bnumber=labor_data.loc[row, "Supervisor B#"])
+    dept_ID = convert_dept_org_act_to_id(labor_data.loc[row, "Dept Org and Account"])
+    start_date, end_date, term_code = convert_dates_to_term_code(labor_data.loc[row, "Begin Date"], labor_data.loc[row, "End Date"])
+    if labor_data.loc[row, "B#"] not in production_bnumbers_list: #if bnumber doesn't exist try to get/create student record and then create a new form
         try:
-            getOrCreateStudentRecord(None, labor_data.loc[row, "B#"])
+            getOrCreateStudentRecord(bnumber = labor_data.loc[row, "B#"])
         except:
             print("creating student record from scratch")
             Student.create(ID = labor_data.loc[row, "B#"],
@@ -67,9 +66,7 @@ for row in range(len(labor_data)):
                             LAST_POSN = None,
                             LAST_SUP_PIDM = None
                             )
-        createSupervisorFromTracy(None, labor_data.loc[row, "Supervisor B#"])
-        dept_ID = convert_dept_org_act_to_id(labor_data.loc[row, "Dept Org and Account"])
-        LaborStatusForm.create(termCode_id = 201511,
+        LaborStatusForm.create(termCode_id = term_code,
                                 studentSupervisee_id = labor_data.loc[row, "B#"],
                                 supervisor_id = labor_data.loc[row, "Supervisor B#"],
                                 department_id = dept_ID,
@@ -79,9 +76,64 @@ for row in range(len(labor_data)):
                                 POSN_CODE = labor_data.loc[row, "Position"],
                                 contractHours = None,
                                 weeklyHours   = labor_data.loc[row, "Hours per Week"],
-                                startDate = None,
-                                endDate = None,
+                                startDate = start_date,
+                                endDate = end_date,
                                 supervisorNotes = None,
                                 laborDepartmentNotes = None,
                                 studentName = labor_data.loc[row, "First Name"] + " " + labor_data.loc[row, "Last Name"]
                                 )
+        created_forms += 1
+        print("Created labor status form for", labor_data.loc[row, "B#"])
+    elif labor_data.loc[row, "B#"] in production_bnumbers_list:
+        if labor_data.loc[row, "Contract Type"] == "Primary": #if form does exist, check if primary and update
+            LaborStatusForm.update(termCode_id = term_code,
+                                    supervisor_id = labor_data.loc[row, "Supervisor B#"],
+                                    department_id = dept_ID,
+                                    WLS = labor_data.loc[row, "WLS"],
+                                    POSN_TITLE = labor_data.loc[row, "Title"],
+                                    POSN_CODE = labor_data.loc[row, "Position"],
+                                    weeklyHours   = labor_data.loc[row, "Hours per Week"],
+                                    startDate = start_date,
+                                    endDate = end_date,
+                                    studentName = labor_data.loc[row, "First Name"] + " " + labor_data.loc[row, "Last Name"]
+                                    ).where((LaborStatusForm.studentSupervisee_id == labor_data.loc[row, "B#"]) and (LaborStatusForm.jobType == "Primary"))
+            updated_primaries += 1
+            print("Updating Existing Primary Form")
+        elif labor_data.loc[row, "Contract Type"] == "Secondary": #if form does exist, check if secondary and update
+            bnumber=labor_data.loc[row, "B#"]
+            title=labor_data.loc[row, "Title"]
+            print("Updating First Secondary")
+            LaborStatusForm.update(termCode_id = term_code,
+                                    supervisor_id = labor_data.loc[row, "Supervisor B#"],
+                                    department_id = dept_ID,
+                                    WLS = labor_data.loc[row, "WLS"],
+                                    POSN_TITLE = title,
+                                    POSN_CODE = labor_data.loc[row, "Position"],
+                                    weeklyHours   = labor_data.loc[row, "Hours per Week"],
+                                    startDate = start_date,
+                                    endDate = end_date,
+                                    studentName = labor_data.loc[row, "First Name"] + " " + labor_data.loc[row, "Last Name"]
+                                    ).where((LaborStatusForm.studentSupervisee_id == bnumber) and (LaborStatusForm.jobType == "Secondary") and (LaborStatusForm.POSN_TITLE == title))
+            updated_secondaries += 1
+            for new_row in range(len(labor_data)): #Loop through again looking for a second secondary and update if found
+                new_dept_ID = convert_dept_org_act_to_id(labor_data.loc[new_row, "Dept Org and Account"])
+                new_start_date, new_end_date, new_term_code = convert_dates_to_term_code(labor_data.loc[new_row, "Begin Date"], labor_data.loc[new_row, "End Date"])
+                if labor_data.loc[new_row, "Contract Type"] == "Secondary" and labor_data.loc[new_row, "B#"] == bnumber and labor_data.loc[new_row, "Title"] != title:
+                    print("Updating Second Secondary")
+                    LaborStatusForm.update(termCode_id = new_term_code,
+                                            supervisor_id = labor_data.loc[new_row, "Supervisor B#"],
+                                            department_id = new_dept_ID,
+                                            WLS = labor_data.loc[new_row, "WLS"],
+                                            POSN_TITLE = labor_data.loc[new_row, "Title"],
+                                            POSN_CODE = labor_data.loc[new_row, "Position"],
+                                            weeklyHours   = labor_data.loc[new_row, "Hours per Week"],
+                                            startDate = new_start_date,
+                                            endDate = new_end_date,
+                                            studentName = labor_data.loc[new_row, "First Name"] + " " + labor_data.loc[new_row, "Last Name"]
+                                            ).where((LaborStatusForm.studentSupervisee_id == labor_data.loc[new_row, "B#"]) and (LaborStatusForm.jobType == "Secondary") and (LaborStatusForm.POSN_TITLE == title))
+                    updated_second_secondaries += 1
+
+print("Number of New Forms:", created_forms)
+print("Number of Updated Primaries:", updated_primaries)
+print("Number of Updated Secondaries:", updated_secondaries)
+print("Number of Updated Second Secondaries:", updated_second_secondaries)
