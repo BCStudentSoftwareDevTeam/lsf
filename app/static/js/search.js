@@ -1,10 +1,10 @@
 // Creates a dom fragment from html, rather than having to add dom elements
 // https://love2dev.com/blog/inserting-html-using-createdocumentfragment-instead-of-using-jquery/
-function createFragment(htmlStr) { 
-    var frag = document.createDocumentFragment(), temp = document.createElement('div'); 
-    temp.innerHTML = htmlStr; 
-    while(temp.firstChild) { frag.appendChild(temp.firstChild); } 
-    return frag; 
+function createFragment(htmlStr) {
+    let frag = document.createDocumentFragment(), temp = document.createElement('div');
+    temp.innerHTML = htmlStr;
+    while(temp.firstChild) { frag.appendChild(temp.firstChild); }
+    return frag;
 }
 
 // highlight search string. doesn't actually check for last name and first name, just highlights what we find
@@ -17,7 +17,7 @@ function highlight(htmlStr, query) {
     return htmlStr;
 }
 
-var typeTimer;
+let typeTimer;
 
 $('#search').selectpicker('refresh');
 $('#search').on('change', function(e) {
@@ -48,13 +48,13 @@ function sendQuery(search_str) {
         url: "/admin/search/" + encodeURIComponent(search_str),
         contentType: 'application/json',
         success: function(response) {
-          var optionString = ""
-          for (var key = 0; key < response.length; key++) {
-            var username = response[key]['username'];
-            var bnumber = response[key]['bnumber'];
-            var firstName = response[key]['firstName'];
-            var lastName = response[key]['lastName'];
-            var type = response[key]['type'];
+          let optionString = ""
+          for (let key = 0; key < response.length; key++) {
+            let username = response[key]['username'];
+            let bnumber = response[key]['bnumber'];
+            let firstName = response[key]['firstName'];
+            let lastName = response[key]['lastName'];
+            let type = response[key]['type'];
             if (type == "Student") {
               choice_text = bnumber + ': ' + firstName + ' ' + lastName;
               highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;

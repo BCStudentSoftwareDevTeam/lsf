@@ -15,11 +15,11 @@ $("#saas .bs-searchbox input").on("keyup", function(e) {
   liveSearch("addSaasAdmin", e);
 });
 function liveSearch(selectPickerID, e) {
-    var searchData = e.target.value;
+    let searchData = e.target.value;
     $("#"+ selectPickerID).empty();
     if (searchData.length >= 3) {
       $("#"+ selectPickerID).empty();
-      var data = [selectPickerID, searchData]
+      let data = [selectPickerID, searchData]
       data = JSON.stringify(data)
       $.ajax({
         type: "POST",
@@ -28,11 +28,11 @@ function liveSearch(selectPickerID, e) {
         data: data,
         contentType: 'application/json',
         success: function(response) {
-          for (var key = 0; key < response.length; key++) {
-            var username = response[key]['username']
-            var firstName = response[key]['firstName']
-            var lastName = response[key]['lastName']
-            var type = response[key]['type']
+          for (let key = 0; key < response.length; key++) {
+            let username = response[key]['username']
+            let firstName = response[key]['firstName']
+            let lastName = response[key]['lastName']
+            let type = response[key]['type']
             if (type == "Student") {
               $("#"+ selectPickerID).append('<option value="' + username + '" data-subtext="' + username + ' (' + type + ')">' + firstName + ' ' + lastName + '</option>');
             } else {
@@ -54,35 +54,35 @@ function modal(button) {
     document.getElementById("submitModal").setAttribute("value", "add");
     $("#modal").modal("show");
   }
-  else if(button == "add1" && $("#addFinAidAdmin").val() != "") {
+  else if (button == "add1" && $("#addFinAidAdmin").val() != "") {
     $("h2").html("Financial Aid Administrators");
     $("p").html("Are you sure you want to add " + $("#addFinAidAdmin option:selected").text() + " as a Financial Aid Administrator?");
     document.getElementById("submitModal").setAttribute("name", "addAid");
     document.getElementById("submitModal").setAttribute("value", "addAid");
     $("#modal").modal("show");
   }
-  else if(button == "add2" && $("#addSaasAdmin").val() != "") {
+  else if (button == "add2" && $("#addSaasAdmin").val() != "") {
     $("h2").html("SAAS Administrators");
     $("p").html("Are you sure you want to add " + $("#addSaasAdmin option:selected").text() + " as a SAAS Administrator?");
     document.getElementById("submitModal").setAttribute("name", "addSaas");
     document.getElementById("submitModal").setAttribute("value", "addSaas");
     $("#modal").modal("show");
   }
-  else if(button == "remove" && $("#removelaborAdmin").val() != "") {
+  else if (button == "remove" && $("#removelaborAdmin").val() != "") {
     $("h2").html("Labor Administrators");
     $("p").html("Are you sure you want to remove " + $("#removelaborAdmin option:selected").text() + " as a Labor Administrator?");
     document.getElementById("submitModal").setAttribute("name", "remove");
     document.getElementById("submitModal").setAttribute("value", "remove");
     $("#modal").modal("show");
   }
-  else if(button == "remove1" && $("#removeFinAidAdmin").val() != "") {
+  else if (button == "remove1" && $("#removeFinAidAdmin").val() != "") {
     $("h2").html("Financial Aid Administrators");
     $("p").html("Are you sure you want to remove " + $("#removeFinAidAdmin option:selected").text() + " as a Financial Aid Administrator?");
     document.getElementById("submitModal").setAttribute("name", "removeAid");
     document.getElementById("submitModal").setAttribute("value", "removeAid");
     $("#modal").modal("show");
   }
-  else if(button == "remove2" && $("#removeSaasAdmin").val() != "") {
+  else if (button == "remove2" && $("#removeSaasAdmin").val() != "") {
     $("h2").html("SAAS Administrators");
     $("p").html("Are you sure you want to remove " + $("#removeSaasAdmin option:selected").text() + " as a SAAS Administrator?");
     document.getElementById("submitModal").setAttribute("name", "removeSaas");
@@ -94,5 +94,5 @@ function modal(button) {
     msg = "Please select a user.";
     $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
     $("#flasher").delay(3000).fadeOut()
-      }
+  }
 };
