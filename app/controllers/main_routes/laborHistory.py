@@ -97,25 +97,29 @@ def populateModal(statusKey):
         buttonState = None
         for form in forms:
             if form.adjustedForm != None:  # If a form has been adjusted then we want to retrieve supervisors names using the new and old values stored in adjusted table
+                newValue = form.adjustedForm.newValue
+                oldValue = form.adjustedForm.oldValue
                 if form.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
-                    newSupervisorID = form.adjustedForm.newValue    # use the supervisor pidm in the field adjusted to find supervisor in User table.
-                    oldSupervisorID = form.adjustedForm.oldValue
-                    newSupervisor = Supervisor.get(Supervisor.ID == newSupervisorID)
-                    oldSupervisor = Supervisor.get(Supervisor.ID == oldSupervisorID)
+                    newSupervisor = Supervisor.get(Supervisor.ID == newValue)
+                    oldSupervisor = Supervisor.get(Supervisor.ID == oldValue)
                     # we are temporarily storing the supervisor name in new value,
                     # because we want to show the supervisor name in the hmtl template.
                     form.adjustedForm.oldValue = oldSupervisor.FIRST_NAME + " " + oldSupervisor.LAST_NAME # old supervisor name
                     form.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
 
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                    newPositionCode = form.adjustedForm.newValue
-                    oldPositionCode = form.adjustedForm.oldValue
-                    newPosition = Tracy().getPositionFromCode(newPositionCode)
-                    oldPosition = Tracy().getPositionFromCode(oldPositionCode)
+                    newPosition = Tracy().getPositionFromCode(newValue)
+                    oldPosition = Tracy().getPositionFromCode(oldValue)
                     # temporarily storing the new position name in new value, and old position name in old value
                     # because we want to show these information in the hmtl template.
                     form.adjustedForm.newValue = newPosition.POSN_TITLE + " (" + newPosition.WLS+")"
                     form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
+
+                if form.adjustedForm.fieldAdjusted == "department":
+                    newDepartment = Department.get(Department.ORG == newValue)
+                    oldDepartment = Department.get(Department.ORG == oldValue)
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
                 # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 

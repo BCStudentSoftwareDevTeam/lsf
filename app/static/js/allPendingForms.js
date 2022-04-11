@@ -49,14 +49,15 @@ $(document).ready(function() {
 });
 
 var labor_details_ids = []; // for insertApprovals() and final_approval() only
-function insertApprovals() {
+function insertApprovals(laborHistoryId = null) {
   var getChecked = table.$('.approveCheckbox:checked').each(function() {
     labor_details_ids.push(this.value);
   });
-
+  // This 'if' statement is used on the formSearch table where we can approve forms one-by-one only
+  if (laborHistoryId) {labor_details_ids.push(laborHistoryId)}
   //this checks wether the checkbox is checked or not and if does not it disable the approve selected button
   var atLeastOneIsChecked = $('input[name="check[]"]:checked').length > 0;
-  if (!atLeastOneIsChecked) {
+  if (!atLeastOneIsChecked && !laborHistoryId) {
     $("#approveSelected").prop("disabled", true);
     $("#approvePendingForm").prop("disabled", true);
     $("#adjustedApproval").prop("disabled", true);
@@ -84,17 +85,18 @@ function insertApprovals() {
 function updateApproveTableData(returned_details) {
   for (var i = 0; i < returned_details.length; i++) {
     var student = returned_details[i][0];
-    var position = returned_details[i][1];
+    var department = returned_details[i][1];
+    var position = returned_details[i][2];
     var r_hour = returned_details[i][3];
     var c_Hours = returned_details[i][4];
-    var supervisor = returned_details[i][2];
+    var supervisor = returned_details[i][5];
     var hours = " ";
     if (r_hour.length == 4) {
       hours = c_Hours;
     } else {
       hours = r_hour;
     }
-    $('#classTableBody').append('<tr><td>' + student + '</td><td>' + position + '</td><td> ' + hours + '</td> <td> ' + supervisor + '</td></tr>');
+    $('#classTableBody').append('<tr><td>' + student + '</td><td>' + department + '</td><td>' + position + '</td><td> ' + hours + '</td> <td> ' + supervisor + '</td></tr>');
   }
 }
 
@@ -128,7 +130,15 @@ function finalApproval() { //this method changes the status of the lsf from pend
           $("#approveModalButton").text("Approve");
           $("#approvalModal").data("bs.modal").options.backdrop = true;
           $("#approvalModal").data("bs.modal").options.keyboard = true;
-          location.reload(true);
+
+          // Try and catch is used here to prevent General Search page from reloading the entire the page.
+          try {
+            runformSearchQuery();
+            $('#approvalModal').modal('hide');
+          }
+          catch(e){
+            location.reload(true);
+          }
         }
       }
     }
@@ -159,17 +169,18 @@ function insertDenial(val) {
 function finalDenial_data(returned_details) {
   for (var i = 0; i < returned_details.length; i++) {
     var student = returned_details[i][0];
-    var position = returned_details[i][1];
+    var department = returned_details[i][1]
+    var position = returned_details[i][2];
     var r_hour = returned_details[i][3];
     var c_Hours = returned_details[i][4];
-    var supervisor = returned_details[i][2];
+    var supervisor = returned_details[i][5];
     var hours = " ";
     if (r_hour.length == 4) {
       hours = c_Hours;
     } else {
       hours = r_hour;
     }
-    $('#denialPendingFormsBody').append('<tr><td>' + student + '</td><td>' + position + '</td><td> ' + supervisor + '</td> <td> ' + hours + '</td></tr>'); //populate the denial modal for all pending forms
+    $('#denialPendingFormsBody').append('<tr><td>' + student + '</td><td>' + department + '</td><td>' + position + '</td><td> ' + supervisor + '</td> <td> ' + hours + '</td></tr>'); //populate the denial modal for all pending forms
   }
 }
 
@@ -195,7 +206,14 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
     success: function(response) {
       if (response) {
         if (response.success) {
-          location.reload(true);
+          // Try and catch is used here to prevent General Search page from reloading the entire the page.
+          try {
+            runformSearchQuery();
+            $('.denialModal').modal('hide');
+          }
+          catch(e){
+            location.reload(true);
+          }
         }
       }
     }
@@ -256,7 +274,15 @@ function notesInsert(textareaID, buttonID) {
     data: data,
     contentType: 'application/json',
     success: function(response) {
-        window.location.reload(true);
+      // Try and catch is used here to prevent General Search page from reloading the entire the page.
+      try {
+        clearTextArea();
+        runformSearchQuery();
+        $('#NotesModal').modal('hide');
+      }
+      catch(e){
+        location.reload(true);
+      }
       }
   });
 }
@@ -279,8 +305,8 @@ function finalDeny() {
 }
 
 function clearTextArea() { //makes sure that it empties text areas and p tags when modal is closed
-  $("#notesText").empty();
-  $("#laborNotesText").empty();
+  $("#notesText").val("");
+  $("#laborNotesText").val("");
 }
 
 
@@ -410,7 +436,14 @@ function submitOverload(formHistoryID, isLaborAdmin) {
         data: data,
         contentType: 'application/json',
         success: function(response) {
-          location.reload();
+          // Try and catch is used here to prevent General Search page from reloading the entire the page.
+          try {
+            runformSearchQuery();
+            $('#overloadModal').modal('hide');
+          }
+          catch(e){
+            location.reload(true);
+          }
         },
         error: function(request, status, error) {
           console.log(request.responseText);
@@ -463,7 +496,14 @@ function submitRelease(formHistoryID) {
         data: data,
         contentType: 'application/json',
         success: function(response) {
-          location.reload();
+          // Try and catch is used here to prevent General Search page from reloading the entire the page.
+          try {
+            runformSearchQuery();
+            $('#modalRelease').modal('hide');
+          }
+          catch(e){
+            location.reload(true);
+          }
         },
         error: function(request, status, error) {
           console.log(request.responseText);

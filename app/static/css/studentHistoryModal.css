@@ -1,8 +1,10 @@
 #modalid {
   overflow: auto;
+  height:350px;
+  overflow:auto;
 }
 
-textarea {
+.rejectReasonTextArea {
   align: left;
   padding-left: 0;
   resize: none;
@@ -10,20 +12,11 @@ textarea {
   margin-bottom: 0px;
 }
 
-.form-group {
-  overflow: auto;
-}
-
-.modal-body {
-  height:350px;
-  overflow:auto;
-}
-
-.modal-footer{
+ #modalFooter {
   text-align: center;
 }
 
-p {
+#pTag {
    margin:0;
    padding-left: 0px;
   }

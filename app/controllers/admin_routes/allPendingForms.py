@@ -1,5 +1,3 @@
-#from flask import render_template  #, redirect, url_for, request, g, jsonify, current_app
-#from flask_login import current_user, login_required
 from flask import flash, send_file, json, jsonify, redirect, url_for
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -20,6 +18,7 @@ from datetime import datetime, date
 from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.controllers.main_routes.download import ExcelMaker
 
 
@@ -130,23 +129,9 @@ def allPendingForms(formType):
                     pass
                 except Exception as e:
                     print(e)
-            if allForms.adjustedForm: # If a form has been adjusted then we want to retrieve supervisor and position information using the new values stored in adjusted table
-                # We check if there is a pending overload form using the key of the modifed forms
-                if allForms.adjustedForm.fieldAdjusted == "supervisor": # if supervisor field in adjust forms has been changed,
-                    newSupervisorID = allForms.adjustedForm.newValue    # use the supervisor id in the field adjusted to find supervisor in User table.
-                    newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
-                    # we are temporarily storing the supervisor name in new value,
-                    # because we want to show the supervisor name in the hmtl template.
-                    allForms.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
-                    allForms.adjustedForm.oldValue = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
 
-                if allForms.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                    newPositionCode = allForms.adjustedForm.newValue
-                    newPosition = Tracy().getPositionFromCode(newPositionCode)
-                    # temporarily storing the position code and wls in new value, and position name in old value
-                    # because we want to show these information in the hmtl template.
-                    allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
-                    allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
+            checkAdjustment(allForms)
+
         users = Supervisor.select()
         return render_template( 'admin/allPendingForms.html',
                                 title=pageTitle,
@@ -165,6 +150,36 @@ def allPendingForms(formType):
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
+
+def checkAdjustment(allForms):
+    """ 
+        Retrieve supervisor and position information for adjusted forms using the new values 
+        stored in adjusted table and update allForms
+    """
+    if allForms.adjustedForm: 
+
+        if allForms.adjustedForm.fieldAdjusted == "supervisor": 
+            # use the supervisor id in the field adjusted to find supervisor in User table.
+            newSupervisorID = allForms.adjustedForm.newValue
+            newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
+
+            # we are temporarily storing the supervisor name in new value,
+            # because we want to show the supervisor name in the hmtl template.
+            allForms.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
+            allForms.adjustedForm.oldValue = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
+
+        if allForms.adjustedForm.fieldAdjusted == "position":
+            newPositionCode = allForms.adjustedForm.newValue
+            newPosition = Tracy().getPositionFromCode(newPositionCode)
+            # temporarily storing the position code and wls in new value, and position name in old value
+            # because we want to show these information in the hmtl template.
+            allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
+            allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
+
+        if allForms.adjustedForm.fieldAdjusted == "department":
+            newDepartment = Department.get(Department.ORG==allForms.adjustedForm.newValue)
+            allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
+            allForms.adjustedForm.oldValue = newDepartment.ORG + "-" + newDepartment.ACCOUNT
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
@@ -269,7 +284,7 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
     This function checks whether an Adjustment Form is approved. If yes, it overrides the information
     in the original Labor Status Form with the new information coming from approved Adjustment Form.
 
-    The only fields that will ever be changed in an adjustment form are: supervisor, position, and hours.
+    The only fields that will ever be changed in an adjustment form are: supervisor, department, position, and hours.
     """
     currentUser = require_login()
     if not currentUser:        # Not logged in
@@ -290,6 +305,11 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
         position = Tracy().getPositionFromCode(form.adjustedForm.newValue)
         LSF.POSN_TITLE = position.POSN_TITLE
         LSF.WLS = position.WLS
+        LSF.save()
+
+    if form.adjustedForm.fieldAdjusted == "department":
+        department = Department.get(Department.ORG==form.adjustedForm.newValue)
+        LSF.department = department.departmentID
         LSF.save()
 
     if form.adjustedForm.fieldAdjusted == "contractHours":
@@ -317,6 +337,7 @@ def modal_approval_and_denial_data(approval_ids):
         supervisor_name = str(supervisor_firstname) + " " + str(supervisor_lastname)
         student_hours = student_details.weeklyHours
         student_hours_ch = student_details.contractHours
+        student_dept = student_details.department.DEPT_NAME
 
         if formHistory.adjustedForm:
             if formHistory.adjustedForm.fieldAdjusted == "position":
@@ -330,13 +351,17 @@ def modal_approval_and_denial_data(approval_ids):
                 student_hours = formHistory.adjustedForm.newValue
             if formHistory.adjustedForm.fieldAdjusted == "contractHours":
                 student_hours_ch = formHistory.adjustedForm.newValue
+            if formHistory.adjustedForm.fieldAdjusted == "department":
+                department = Department.get(Department.ORG==formHistory.adjustedForm.newValue)
+                student_dept = department.DEPT_NAME
 
         tempList = []
         tempList.append(student_name)
+        tempList.append(student_dept)
         tempList.append(student_pos)
-        tempList.append(supervisor_name)
         tempList.append(str(student_hours))
         tempList.append(str(student_hours_ch))
+        tempList.append(supervisor_name)
         id_list.append(tempList)
     return(id_list)
 
