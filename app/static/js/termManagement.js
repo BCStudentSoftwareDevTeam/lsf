@@ -126,3 +126,43 @@ function termStatus(term) {
     }
   })
 };
+
+function toggleEval(term, isMidyear) {
+  if (isMidyear) {
+      var clickedBtn = $("#midyear_eval_btn_" + term);
+      var otherBtn = $("#eval_btn_" + term);
+  } else {
+    var clickedBtn = $("#eval_btn_" + term);
+    var otherBtn = $("#midyear_eval_btn_" + term);
+  }
+
+  $.ajax({
+    method: "POST",
+    url: "/termManagement/manageEval",
+    dataType: "json",
+    contentType: "application/json",
+    data: JSON.stringify({"evalBtn": term, "isMidyear": isMidyear}),
+    processData: false,
+    success: function(response) {
+      otherBtn.removeClass("btn-success").addClass("btn-danger").text("Closed");
+      if($(clickedBtn).hasClass("btn-success")) {
+        $(clickedBtn).removeClass("btn-success");
+        $(clickedBtn).addClass("btn-danger");
+        $(clickedBtn).text("Closed");
+        category = "danger";
+        state = "'Closed'.";
+        }
+      else {
+        $(clickedBtn).removeClass("btn-danger");
+        $(clickedBtn).addClass("btn-success");
+        $(clickedBtn).text("Open");
+        category = "success";
+        state = "'Open'.";
+      }
+      term = response['termChanged']
+      message = "The "+ (isMidyear ? "midyear ":"final ") +"evaluations for "+ term +' is set to '+ state
+      $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">' + message + '</div>');
+      $("#flasher").delay(5000).fadeOut();
+    }
+  });
+}

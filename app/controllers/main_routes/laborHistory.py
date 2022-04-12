@@ -13,13 +13,15 @@ from flask import json
 from flask import make_response
 import datetime
 import re
-from datetime import date
 from app import cfg
-from app.controllers.main_routes.download import ExcelMaker
+from app.controllers.main_routes.download import CSVMaker
 from fpdf import FPDF
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
+from app.models.department import Department
+from app.models.studentLaborEvaluation import StudentLaborEvaluation
+from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
 
@@ -44,7 +46,14 @@ def laborhistory(id, departmentName = None):
                                   .join_from(FormHistory, LaborStatusForm) \
                                   .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                   .distinct()
-                authorizedForms = set(studentForms).intersection(set(supervisorForms))
+                deptForms = FormHistory.select() \
+                                  .join(LaborStatusForm) \
+                                  .join( Department) \
+                                  .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
+                                  .distinct()
+                authorizedForms = set(studentForms).intersection(set(supervisorForms).union(set(deptForms)))
+
+
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
         authorizedForms = sorted(authorizedForms,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
@@ -71,10 +80,8 @@ def downloadFormHistory():
     try:
         data = request.form
         historyList = data["listOfForms"].split(',')
-        excel = ExcelMaker()
-        completePath = excel.makeExcelStudentHistory(historyList)
-        filename = completePath.split('/').pop()
-        return send_file(completePath, mimetype='text/csv', as_attachment=True, attachment_filename=filename)
+        excel = CSVMaker("studentHistory", historyList, includeEvals = True)
+        return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
     except:
         return render_template('errors/500.html'), 500
 
@@ -90,12 +97,16 @@ def populateModal(statusKey):
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         forms = FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc())
-        statusForm = LaborStatusForm.select().where(LaborStatusForm.laborStatusFormID == statusKey)
-        student = Student.get(Student.ID == statusForm[0].studentSupervisee)
+        statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
+        student = Student.get(Student.ID == statusForm.studentSupervisee)
         currentDate = datetime.date.today()
         pendingformType = None
-        buttonState = None
+        first = True  # temp variable to determine if this is the newest form
         for form in forms:
+            if first:
+                buttonState = ButtonStatus()
+                buttonState.set_button_states(form, currentUser)
+                first = not first
             if form.adjustedForm != None:  # If a form has been adjusted then we want to retrieve supervisors names using the new and old values stored in adjusted table
                 newValue = form.adjustedForm.newValue
                 oldValue = form.adjustedForm.oldValue
@@ -123,53 +134,22 @@ def populateModal(statusKey):
                 # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
-        for form in forms:
-            if currentUser.student and currentUser.student.ID == student.ID:
-                buttonState = ButtonStatus.show_student_view
-                break
-            else:
-                if form.releaseForm != None:
-                    if form.status.statusName == "Approved":
-                        buttonState = ButtonStatus.show_rehire_button
-                        break
-                    elif form.status.statusName == "Pending":
-                        buttonState = ButtonStatus.no_buttons_pending_forms
-                        pendingformType = form.historyType.historyTypeName
-                        break
-                if form.adjustedForm != None:
-                    if form.status.statusName == "Pending":
-                        buttonState = ButtonStatus.no_buttons_pending_forms
-                        pendingformType = form.historyType.historyTypeName
-                        break
-                if form.historyType.historyTypeName == "Labor Status Form":
-                    if form.status.statusName == "Pending":
-                        buttonState = ButtonStatus.show_withdraw_correction_buttons
-                        break
-                    elif form.status.statusName == "Denied":
-                        buttonState = ButtonStatus.show_rehire_button
-                        break
-                    elif form.status.statusName == "Approved":
-                        if currentDate <= form.formID.endDate:
-                            if currentDate > form.formID.termCode.adjustmentCutOff and not currentUser.isLaborAdmin:
-                                buttonState = ButtonStatus.show_release_rehire_buttons
-                                break
-                            else:
-                                buttonState = ButtonStatus.show_release_adjustment_rehire_buttons
-                                break
-                        else:
-                            buttonState = ButtonStatus.show_rehire_button
-                            break
+            # Pending release or adjustment forms need the historyType known
+            if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
+                pendingformType = form.historyType.historyTypeName
+
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             statusForm = statusForm,
                                             currentDate = currentDate,
-                                            buttonState = buttonState,
                                             pendingformType = pendingformType,
-                                            ButtonStatus = ButtonStatus
+                                            buttonState = buttonState
                                             ))
         return (resp)
     except Exception as e:
         print("Error on button state: ", e)
+        message = "An error occured. Contact support using the link at the bottom of the website."
+        flash(message, "danger")
         return (jsonify({"Success": False}))
 
 @main_bp.route('/laborHistory/modal/printPdf/<statusKey>', methods=['GET'])

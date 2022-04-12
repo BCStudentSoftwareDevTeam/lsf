@@ -5,38 +5,38 @@
 <div class="loader"></div>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal">&times;</button>
-  {% for form1 in statusForm %}
-  <span style="text-align: right;"><button type="button" class="btn btn-default btn col-sm-2" id="print" onclick="fillPDF({{form1.laborStatusFormID}})"><span class="glyphicon glyphicon-print"></span> Print</button></span>
+
+  <span style="text-align: right;"><button type="button" class="btn btn-default btn col-sm-2" id="print" onclick="fillPDF({{statusForm.laborStatusFormID}})"><span class="glyphicon glyphicon-print"></span> Print</button></span>
   <span class="h3 col-sm-9 modalHeader">
-      {{form1.studentSupervisee.FIRST_NAME}} {{form1.studentSupervisee.LAST_NAME}} <a href="mailto:{{form1.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
-      <br><span class="h4">{{form1.studentSupervisee.ID}}</span>
-      {% if form1.studentSupervisee.FIRST_NAME + " " + form1.studentSupervisee.LAST_NAME != form1.studentName %}
-      <div class="original-name">Originally filed under "{{form1.studentName}}"</div>
+      {{statusForm.studentSupervisee.FIRST_NAME}} {{statusForm.studentSupervisee.LAST_NAME}} <a href="mailto:{{statusForm.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+      <br><span class="h4">{{statusForm.studentSupervisee.ID}}</span>
+      {% if statusForm.studentSupervisee.FIRST_NAME + " " + statusForm.studentSupervisee.LAST_NAME != statusForm.studentName %}
+      <div class="original-name">Originally filed under "{{statusForm.studentName}}"</div>
       {% endif %}
   </span>
-  {% endfor %}
+
 </div>
 <div class="modal-body" id="modalid">
-  {% for form1 in statusForm %}
-    <dl class="row">
-      <dt class="col-sm-3">Term</dt>
-      <dd class="col-sm-9">{{form1.termCode.termName}}</dd>
 
-      <dt class="col-sm-3">Department</dt>
-      <dd class="col-sm-9">{{form1.department.DEPT_NAME}}</dd>
+  <dl class="row">
+    <dt class="col-sm-3">Term</dt>
+    <dd class="col-sm-9">{{statusForm.termCode.termName}}</dd>
 
-      <dt class="col-sm-3">Supervisor</dt>
-      <dd class="col-sm-9">{{form1.supervisor.FIRST_NAME}} {{form1.supervisor.LAST_NAME}} - {{form1.supervisor.ID}} <a href="mailto:{{form1.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a></dd>
+    <dt class="col-sm-3">Department</dt>
+    <dd class="col-sm-9">{{statusForm.department.DEPT_NAME}}</dd>
 
-      <dt class="col-sm-3">Job Type (Hours)</dt>
-      <dd class="col-sm-9">{{form1.jobType}}
-        ({% if form1.weeklyHours == None %}{{form1.contractHours}}{% else %}{{form1.weeklyHours}}{% endif %})
-      </dd>
+    <dt class="col-sm-3">Supervisor</dt>
+    <dd class="col-sm-9">{{statusForm.supervisor.FIRST_NAME}} {{statusForm.supervisor.LAST_NAME}} - {{statusForm.supervisor.ID}} <a href="mailto:{{statusForm.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a></dd>
 
-      <dt class="col-sm-3">Position (WLS)</dt>
-      <dd class="col-sm-9">{{form1.POSN_CODE}} - {{form1.POSN_TITLE}} ({{form1.WLS}})</dd>
-    </dl>
-  {% endfor %}
+    <dt class="col-sm-3">Job Type (Hours)</dt>
+    <dd class="col-sm-9">{{statusForm.jobType}}
+      ({% if statusForm.weeklyHours == None %}{{statusForm.contractHours}}{% else %}{{statusForm.weeklyHours}}{% endif %})
+    </dd>
+
+    <dt class="col-sm-3">Position (WLS)</dt>
+    <dd class="col-sm-9">{{statusForm.POSN_CODE}} - {{statusForm.POSN_TITLE}} ({{statusForm.WLS}})</dd>
+  </dl>
+
   <hr>
   {% for form in forms %}
     {% if form.adjustedForm == None and form.releaseForm == None and form.overloadForm == None %}
@@ -188,45 +188,44 @@
 </div>
 
 <div class="modal-footer" id="modalFooter">
-  {% for form1 in statusForm %}
-  {% if buttonState == ButtonStatus.show_rehire_button %}
-  <div class = "col-sm-12">
-  <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{form1.laborStatusFormID}})">Rehire</button></a>
-  </div>
-  {% elif buttonState == ButtonStatus.show_withdraw_button %}
-    <div class = "col-sm-12">
-    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick = "withdrawform({{form1.laborStatusFormID}})">Withdraw</button>
-    </div>
-  {% elif buttonState == ButtonStatus.show_withdraw_correction_buttons %}
-  <div class = "col-sm-6">
-  <button type="button" class="btn btn-danger" data-dismiss="modal" onclick = "withdrawform({{form1.laborStatusFormID}})">Withdraw</button>
-  </div>
-  <div class = "col-sm-6">
-  <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{form1.laborStatusFormID}})">Modify</button></a>
-  </div>
-  {% elif buttonState == ButtonStatus.show_release_adjustment_rehire_buttons %}
-  <div class = "col-sm-4" style="text-align: right">
-  <a id="release" href="#"><button type="button" class="btn btn-danger" onclick="redirection({{form1.laborStatusFormID}})">Release</button></a>
-  </div>
-  <div class = "col-sm-4">
-  <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{form1.laborStatusFormID}})">Adjustment Form</button></a>
-  </div>
-  <div class = "col-sm-4" style="text-align:left">
-  <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{form1.laborStatusFormID}})">Rehire</button></a>
-  </div>
-  {% elif buttonState == ButtonStatus.show_release_rehire_buttons %}
-  <div class = "col-sm-6">
-  <a id="release" href="#"><button type="button" class="btn btn-danger" onclick="redirection({{form1.laborStatusFormID}})">Release</button></a>
-  </div>
-  <div class = "col-sm-6">
-  <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{form1.laborStatusFormID}})">Rehire</button></a>
-  </div>
-  {% elif buttonState == ButtonStatus.no_buttons_pending_forms %}
-  <div class = "col-md-12">
-  <p style="color:blue;" class="pTag"><span class="glyphicon glyphicon-exclamation-sign"></span><strong> Changes to a form are unavailable when a {{pendingformType}} is 'Pending'.</strong></p>
-  </div>
-  {% elif buttonState == ButtonStatus.show_student_view %}
-  <div class = "col-md-12"></div>
-  {% endif %}
-  {% endfor %}
+    {% if buttonState.num_buttons == 0 %}
+    <div class = "col-sm-{{12}}">
+      <p style="color:blue;" class="pTag"><span class="glyphicon glyphicon-exclamation-sign"></span><strong> Changes to this form are unavailable currently. Contact the Labor Office if you feel this is an error.</strong></p>
+    {% else %}
+      <div class = "col-sm-{{12/buttonState.num_buttons}}">
+
+      {% if buttonState.rehire %}
+        <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{statusForm.laborStatusFormID}})">Rehire</button></a>
+      {% endif %}
+      {% if buttonState.withdraw %}
+        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick = "withdrawform({{statusForm.laborStatusFormID}})">Withdraw</button>
+      {% endif %}
+      {% if buttonState.correction %}
+        <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Modify</button></a>
+      {% endif %}
+      {% if buttonState.release %}
+        <a id="release" href="#"><button type="button" class="btn btn-danger" onclick="redirection({{statusForm.laborStatusFormID}})">Release</button></a>
+      {% endif %}
+      {% if buttonState.adjust %}
+        <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Adjustment Form</button></a>
+      {% endif %}
+      {% if buttonState.evaluate %}
+            <a id="sle" href="#">
+              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Evaluate
+              </button>
+            </a>
+          </div>
+      {% endif %}
+      {% if buttonState.evaluation_exists %}
+            <a id="sle" href="#">
+              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Show Evaluation
+              </button>
+            </a>
+          </div>
+      {% endif %}
+    {% endif %}
+
+
+
+
 </div>
