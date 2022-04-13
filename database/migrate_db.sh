@@ -27,5 +27,6 @@ pem add app.models.visitTracker.VisitTracker
 pem add app.models.emailTracker.EmailTracker
 pem add app.models.notes.Notes
 pem add app.models.supervisor.Supervisor
+pem add app.models.studentLaborEvaluation.StudentLaborEvaluation
 pem watch
 pem migrate

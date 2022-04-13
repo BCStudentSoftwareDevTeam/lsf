@@ -19,7 +19,7 @@ from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
 from app.models.department import Department
-from app.controllers.main_routes.download import ExcelMaker
+from app.controllers.main_routes.download import CSVMaker
 
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
@@ -152,13 +152,13 @@ def allPendingForms(formType):
         return render_template('errors/500.html'), 500
 
 def checkAdjustment(allForms):
-    """ 
-        Retrieve supervisor and position information for adjusted forms using the new values 
+    """
+        Retrieve supervisor and position information for adjusted forms using the new values
         stored in adjusted table and update allForms
     """
-    if allForms.adjustedForm: 
+    if allForms.adjustedForm:
 
-        if allForms.adjustedForm.fieldAdjusted == "supervisor": 
+        if allForms.adjustedForm.fieldAdjusted == "supervisor":
             # use the supervisor id in the field adjusted to find supervisor in User table.
             newSupervisorID = allForms.adjustedForm.newValue
             newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
@@ -184,10 +184,8 @@ def checkAdjustment(allForms):
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
     allPendingForms = FormHistory.select().where(FormHistory.status == "Pending").order_by(-FormHistory.createdDate).distinct()
-    excel = ExcelMaker()
-    completePath = excel.makeExcelAllPendingForms(allPendingForms)
-    filename = completePath.split('/').pop()
-    return send_file(completePath,as_attachment=True, attachment_filename=filename)
+    excel = CSVMaker("allPending", allPendingForms)    
+    return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
 def approved_and_denied_Forms():
@@ -230,7 +228,6 @@ def saveStatus(new_status, form_ids, currentUser):
             # item before the iteration
             denyReason = form_ids[1]
             form_ids = form_ids[:1]
-
         for id in form_ids:
             history_type_data = FormHistory.get(FormHistory.formHistoryID == int(id))
             history_type = str(history_type_data.historyType)
