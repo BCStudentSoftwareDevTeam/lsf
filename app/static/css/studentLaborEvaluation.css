@@ -1,0 +1,14 @@
+.score_bordered {
+  padding-top: 10%;
+  padding-bottom: 10%;
+  border: 1px gray solid;
+  text-align: center;
+}
+
+.alert {
+  margin-bottom: 0px;
+}
+
+.popover {
+  max-width: 75%;
+}
