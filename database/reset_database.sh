@@ -28,7 +28,7 @@ rm -rf migrations.json
 echo "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo "  from backup"
-    mysql -u root -proot lsf < prod.sql
+    mysql -u root -proot lsf < prod-backup.sql
 else
     echo "  empty"
     ./migrate_db.sh
