@@ -27,12 +27,12 @@ def convert_dates_to_term_code(startDate, endDate):
         a term code """
     startDate = datetime.strptime(startDate, "%m/%d/%Y")
     endDate = datetime.strptime(endDate, "%m/%d/%Y")
-    if datetime(startDate.year, 8, 1) <= startDate <= datetime(endDate.year, 12, 31):
-        term_code = str(startDate.year) + "00"
-        int(term_code)
+    if datetime(endDate.year, 1, 1) <= endDate <= datetime(endDate.year, 5, 8):
+        term_code = str(endDate.year) + "00"
+        term_code = int(term_code) - 100 #if end date is in spring then change the term code based on the date
     else:
-        term_code = str(startDate.year) + "12"
-        int(term_code) - 100
+        term_code = str(endDate.year) + "00"
+        term_code = int(term_code) #else make the term code with the year of the end date
     return startDate, endDate, term_code
 
 labor_data = pd.read_csv("active_jobs_as_of_3-24-22.csv") #replace this with future labor data csv
