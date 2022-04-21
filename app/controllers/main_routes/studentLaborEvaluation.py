@@ -4,7 +4,7 @@ import app.login_manager as login_manager
 from flask import redirect, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, RadioField, TextAreaField, HiddenField, BooleanField
-from wtforms.fields import IntegerRangeField
+from wtforms.fields.html5 import IntegerRangeField
 from wtforms.validators import DataRequired, Length
 from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation

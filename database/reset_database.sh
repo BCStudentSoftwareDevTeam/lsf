@@ -43,7 +43,7 @@ rm -rf tracy_migrations
 rm -rf migrations.json
 
 # Adding data we need in all environments, unless we are restoring from backup
-if [ $BACKUP -ne 1 ]; then 
+if [ $BACKUP -ne 1 ]; then
     python3 base_data.py
 else
     echo "You have imported the production DB backup. You probably want to enable real Tracy access as well. Set FLASK_ENV to staging or production."
@@ -52,6 +52,6 @@ fi
 # Adding fake data for non-prod, set up admins for prod
 if [ $PRODUCTION -eq 1 ]; then
 	FLASK_ENV=production python3 add_admins.py
-elif [ $BACKUP -ne 1 ]; then 
+elif [ $BACKUP -ne 1 ]; then
 	python3 demo_data.py
 fi
