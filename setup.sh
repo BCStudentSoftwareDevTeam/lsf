@@ -10,6 +10,8 @@ else
 	echo -e "You are using Python $VERSION"
 fi
 
+# unixodbc-dev libffi-dev
+
 # Create a virtual environment for dependencies
 if [ ! -d venv ]
 then
