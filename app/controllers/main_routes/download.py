@@ -52,7 +52,7 @@ class CSVMaker:
         Creates the CSV file
         '''
         with open(self.completePath, 'w') as csvfile:
-            self.filewriter = csv.writer(csvfile, delimiter=',',
+            self.filewriter = csv.writer(csvfile, delimiter=',', encoding='utf-8',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
             ## Create heading on csv ##
