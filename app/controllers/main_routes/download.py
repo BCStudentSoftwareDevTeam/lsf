@@ -51,8 +51,8 @@ class CSVMaker:
         '''
         Creates the CSV file
         '''
-        with open(self.completePath, 'w') as csvfile:
-            self.filewriter = csv.writer(csvfile, delimiter=',', encoding='utf-8',
+        with open(self.completePath, 'w', encoding="utf-8", errors="backslashreplace") as csvfile:
+            self.filewriter = csv.writer(csvfile, delimiter=',',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
             ## Create heading on csv ##
@@ -123,7 +123,7 @@ class CSVMaker:
         row = [ form.formID.termCode.termName,
                 form.status.statusName,
                 form.formID.studentSupervisee.ID,
-                form.formID.studentSupervisee.FIRST_NAME + " " + form.formID.studentSupervisee.LAST_NAME,
+                u' '.join((form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME)),
                 form.formID.studentSupervisee.STU_EMAIL,
                 form.formID.jobType,
                 form.formID.POSN_CODE,
@@ -134,7 +134,7 @@ class CSVMaker:
                 form.formID.startDate,
                 form.formID.endDate,
                 form.formID.department.DEPT_NAME,
-                form.formID.supervisor.FIRST_NAME + " " + form.formID.supervisor.LAST_NAME,
+                u' '.join((form.formID.supervisor.FIRST_NAME, form.formID.supervisor.LAST_NAME)),
                 form.formID.supervisor.EMAIL,
                 form.formID.supervisorNotes
               ]
