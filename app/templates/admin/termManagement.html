@@ -114,7 +114,7 @@
                               class="form-control datepicker start"
                               placeholder="MM/DD/YYYY"
                               value="{% if term.termStart != None %}
-                                    {{term.termStart.strftime('%m/%d/%Y')}}
+                                    {{-term.termStart.strftime('%m/%d/%Y')-}}
                                     {% endif %}"
                               {% if term.termStart != None %}
                                 data-onload= "updateEnd(this, {{term.termCode}})"
@@ -133,7 +133,7 @@
                               class="form-control datepicker emptyEnd"
                               placeholder="MM/DD/YYYY"
                               value="{% if term.termEnd != None %}
-                                      {{term.termEnd.strftime('%m/%d/%Y')}}
+                                      {{-term.termEnd.strftime('%m/%d/%Y')-}}
                                       {% endif %}"
                               {% if term.termEnd != None %}
                                 data-onload= "updateStart(this, {{term.termCode}})"
@@ -151,7 +151,7 @@
                               class="form-control datepicker primaryCutOff"
                               placeholder="MM/DD/YYYY"
                               value="{% if term.primaryCutOff != None %}
-                                    {{term.primaryCutOff.strftime('%m/%d/%Y')}}
+                                    {{-term.primaryCutOff.strftime('%m/%d/%Y')-}}
                                     {% endif %}"/>
                         <label class="input-group-addon" for="primaryCutOff_{{term.termCode}}">
                           <i class="glyphicon glyphicon-calendar"></i>
@@ -166,7 +166,7 @@
                               class="form-control datepicker adjustmentCutOff"
                               placeholder="MM/DD/YYYY"
                               value="{% if term.adjustmentCutOff != None %}
-                                    {{term.adjustmentCutOff.strftime('%m/%d/%Y')}}
+                                    {{-term.adjustmentCutOff.strftime('%m/%d/%Y')-}}
                                     {% endif %}"/>
                         <label class="input-group-addon" for="adjustmentCutOff_{{term.termCode}}">
                           <i class="glyphicon glyphicon-calendar"></i>
