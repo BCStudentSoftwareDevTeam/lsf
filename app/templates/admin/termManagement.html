@@ -12,7 +12,7 @@
 
 {% block app_content %}
 <div class="container" id="wrapper">
-  <a class="skipContent" href="#accordionExample" tabindex="1">Click to Skip</a>
+  <a class="skipContent" href="#termsAccordion" tabindex="1">Click to Skip</a>
   <h1 id="termHeader">Term Management</h1>
 
   <p class="subHeader">
@@ -21,7 +21,7 @@
     You can then click on Term State in each panel to open or close the term. </p>
 
   <div class="accordion"
-      id="accordionExample">
+      id="termsAccordion">
     {# This loop creates the panels for the accordion, they contain "Academic Year: year-year" #}
     {% for year,terms in listOfTerms.items() %}
       <div class="card">
@@ -43,7 +43,7 @@
         <div id="{{year}}"
               class="collapse"
               aria-labelledby="heading_{{year}}"
-              data-parent="#accordionExample">
+              data-parent="#termsAccordion">
           <table class="table table-condensed"
                 class="card-body"
                 id="myTable">
