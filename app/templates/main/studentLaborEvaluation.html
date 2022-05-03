@@ -53,7 +53,7 @@
           </dl>
         </div>
       </div>
-      {% if laborHistoryForm.formID.supervisor != currentUser %}
+      {% if laborHistoryForm.formID.supervisor != currentUser.supervisor %}
         <div class="alert alert-danger" id="not-supervisor" style="color:red;">
           <strong>WARNING:</strong> According to the system, you are not this student's supervisor. Do not complete this evaluation unless you have {{laborHistoryForm.formID.supervisor.FIRST_NAME}} {{laborHistoryForm.formID.supervisor.LAST_NAME}}'s permission!
         </div>
