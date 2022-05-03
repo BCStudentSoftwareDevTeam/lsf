@@ -128,51 +128,60 @@ function populateTable(){
     url: "/main/department/selection/" + departmentSelected,
     datatype: "json",
     success: function(response) {
-
       table.rows().clear();
-
       // Parse the JSON we get back from the controller
       response = JSON.parse(response)
+
       // This section will iterate through the JSON data, and access the values
       // from the key-value pairs that we will need to populate both the modal and the
       // data table
+      currentForms = true
       for (key in response) {
-        console.log(response[key])
-        let bNumber = response[key]["BNumber"]
-        let student = response[key]["Student"]
-        let term = response[key]["Term"]
-        let position = response[key]["Position"]
-        let department = response[key]["Department"]
-        let status = response[key]["Status"]
-        let divClass = response[key]["checkboxModalClass"]
-        let formID = response[key]["formID"]
-        let activeStatus = response[key]["activeStatus"]
-        let formStatus = response[key]["formStatus"]
-        let positionType = response[key]["PositionType"]
-
-        inactive_tag = ""
-        el_id = "#allDepartmentStudentsDiv"
-        if (activeStatus == "False") {
-            formStatus = "No longer a student"
-            inactive_tag = " <strong>(No longer a student.)</strong>"
-        } else {
-            if (divClass == "currentDepartmentModal") {
-                el_id = "#currentDepartmentStudentsDiv"
-            }
+        if (response[key] == "") {
+          currentForms = false
+          continue;
         }
+        if (currentForms == true) {
+          formStatus = response[key].status.statusName
+        } else {
+          formStatus = "Past Student"
+        }
+
+        let bNumber = response[key].formID.studentSupervisee.ID
+        let student = response[key].formID.studentName
+        let term = response[key].formID.termCode.termName
+        let position = response[key].formID.POSN_TITLE
+        let positionType = response[key].formID.jobType[0]
+        let department = response[key].formID.department.DEPT_NAME
+        // let status = response[key]["Status"]
+        // let divClass = response[key]["checkboxModalClass"]
+        // let formID = response[key]["formID"]
+        // let activeStatus = response[key]["activeStatus"]
+
+        // inactive_tag = ""
+        // el_id = "#allDepartmentStudentsDiv"
+        // if (activeStatus == "False") {
+        //     formStatus = "No longer a student"
+        //     inactive_tag = " <strong>(No longer a student.)</strong>"
+        // } else {
+        //     if (divClass == "currentDepartmentModal") {
+        //         el_id = "#currentDepartmentStudentsDiv"
+        //     }
+        // }
+
         table.row.add([`<div class="row">
                           <a href='/laborHistory/${departmentSelected}/${bNumber}' value=0>
                             <span class='h4'>${student} (${bNumber}) </span>
                             <span class="h6"> (${positionType}) ${position}</span>
-                          </a>` +
-                          `<span class='pushRight h5'>${formStatus}</span>
+                          </a>
+                          <span class='pushRight h5'>${formStatus}</span>
                         </div>
                         <div class="row">
                         <span class='pushLeft h6'>${term}</span>
                         <span class='pushRight h6'>${department}</span>`,
-                        "<span style='display:none'>" + formStatus + ", " + term + "</span>"])
+                        `<span style='display:none'>${formStatus}, ${term}</span>`])
 
-        $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
+        // $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
       }
       table.draw()
     }
