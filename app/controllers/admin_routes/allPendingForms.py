@@ -184,7 +184,7 @@ def checkAdjustment(allForms):
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
     allPendingForms = FormHistory.select().where(FormHistory.status == "Pending").order_by(-FormHistory.createdDate).distinct()
-    excel = CSVMaker("allPending", allPendingForms)    
+    excel = CSVMaker("allPending", allPendingForms)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
@@ -641,7 +641,12 @@ def modalFormUpdate():
                     historyForm.status = status.statusName
                     historyForm.reviewedDate = currentDate
                     historyForm.reviewedBy = currentUser
+                    if rsp["status"] == "Approved":
+                        # Modify the original LSF contract end date to a) the release date if in the future, or b) today if in the past
+                        historyForm.formID.endDate = historyForm.releaseForm.releaseDate
+                        historyForm.formID.save()   # NOTE: You have to save the LSF also
                     historyForm.save()
+
                     if rsp["status"] == "Denied" or "adminNotes" in rsp:
                         newNotes = Notes.create(formID = historyForm.formID,
                                                 createdBy = currentUser,
@@ -668,7 +673,7 @@ def modalFormUpdate():
 
     except Exception as e:
         print("Error Updating Release/Overload Forms:", e)
-        return jsonify({"Success": False}),500
+        return jsonify({"Success": False}), 500
 
 @admin.route('/admin/sendVerificationEmail', methods=['POST'])
 def sendEmail():
