@@ -37,11 +37,15 @@ $(document).ready(function() {
           bnums.push(hiddenBnum);
       }
     })
+
+    //FIXME: This is intended to close the Download modal after they get the file. It doesn't work because we use flask-bootstrap. Leaving here for the next person.
+    // $("#submitButton").on("click", function() {
+    //   $('#downloadModal').modal('hide');
+    // })
   });
 
   // Listen for click on toggle checkbox
   $('#downloadModalText').on('change', '#selectAll', function () {
-    console.log("Checking the boxes");
       if(this.checked) {
           // Iterate each checkbox
           $(':checkbox').not("[disabled]").each(function() {
@@ -104,22 +108,6 @@ function addButtons() {
 }
 
 
-
-// Shows the modal
-$('.openBtn').on('click',function() {
-  //FIXME: Load the modal with the checkboxes that are currently showing in the table.
-
-  $("#studentList tr").each(function () {
-    console.log(this)
-    })
-
-
-    $('.modal-body').load('index.html',function() {
-        $('#downloadModal').modal({show:true});
-    });
-
-});
-
 function downloadHistory() {
   $('input[type="checkbox"]:checked').prop('checked',false);
 }
@@ -172,21 +160,6 @@ function populateTable(){
         let position = response[key].formID.POSN_TITLE
         let positionType = response[key].formID.jobType[0]
         let department = response[key].formID.department.DEPT_NAME
-        // let status = response[key]["Status"]
-        // let divClass = response[key]["checkboxModalClass"]
-        // let formID = response[key]["formID"]
-        // let activeStatus = response[key]["activeStatus"]
-
-        // inactive_tag = ""
-        // el_id = "#allDepartmentStudentsDiv"
-        // if (activeStatus == "False") {
-        //     formStatus = "No longer a student"
-        //     inactive_tag = " <strong>(No longer a student.)</strong>"
-        // } else {
-        //     if (divClass == "currentDepartmentModal") {
-        //         el_id = "#currentDepartmentStudentsDiv"
-        //     }
-        // }
 
         table.row.add([`<div class="row">
                           <a href='/laborHistory/${departmentSelected}/${bNumber}' value=0>
@@ -198,11 +171,11 @@ function populateTable(){
                         <div class="row">
                         <span class='pushLeft h6'>${term}</span>
                         <span class='pushRight h6'>${department}</span>`,
-                        `<span style='display:none'>${formStatus}, ${term}</span>`])
-
-        // $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
+                        `<span style='display:none'>${formStatus}, ${term}</span>
+                        <span style='display:none' id="hiddenStudentName">${student}</span>
+                        <span style='display:none' id="hiddenBnumber">${bNumber}</span>`])
       }
-      table.draw()
+      table.draw();
     }
   })
 }
