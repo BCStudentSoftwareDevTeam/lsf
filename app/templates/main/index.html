@@ -70,53 +70,16 @@ and hide the department select picker. -->
        <div class="modal-header" align="center">
          <h4 class="modal-title">Please select what you would like to download.</h4>
        </div>
-       <div id="downloadModalText" class="modal-body">
-          <input type="checkbox"
-                name="student"
-                id="select-all">
-          <strong>Select all</strong>
-
-          <!-- Populate the modal with the current students of user -->
-          <div class="currentStu">
-            {% for form in currentSupervisees %}
-              <label class="container">
-                <input class="currentStudentModal"
-                      type="checkbox"
-                      id ='{{form.formID.laborStatusFormID}}'
-                      name='{{form.formID.laborStatusFormID}}'
-                      value='{{form.formID.laborStatusFormID}}'>
-                  {{form.formID.studentSupervisee.FIRST_NAME}}
-                  {{form.formID.studentSupervisee.LAST_NAME}}
-              </label>
-            {% endfor %}
-          </div>
-
-          <!-- Populate the modal with the past students -->
-          <div class="pastStu" style="display:none">
-            {% for form in pastSupervisees %}
-              <label class="container">
-                <input class="pastStudentModal"
-                      type="checkbox"
-                      id= '{{form.formID.laborStatusFormID}}'
-                      name='{{form.formID.laborStatusFormID}}'
-                      value='{{form.formID.laborStatusFormID}}'
-                      disabled>
-                  {{form.formID.studentSupervisee.FIRST_NAME}}
-                  {{form.formID.studentSupervisee.LAST_NAME}}
-              </label>
-            {% endfor %}
-          </div>
-
-          <!-- Leaving this Div empty because it will be populated
-          dynamically in the JS file -->
-          <div id="allDepartmentStudentsDiv"
-                class="allDeptStu">
-          </div>
-          <!-- Leaving this Div empty because it will be populated
-          dynamically in the JS file -->
-          <div id="currentDepartmentStudentsDiv"
-                class="currentDeptStu">
-          </div>
+       <div class="col-md-3"></div>
+       <div class="col-md-9 modal-body" align="left">
+         <div id="downloadModalText">
+           <label id = "selectAllLabel">
+              <input type="checkbox"
+                    name="student"
+                    id="selectAll">
+              <strong>Select all</strong>
+            </label>
+        </div>
        </div>
        <div class="modal-footer" align="center">
          <button  class="btn btn-danger"
@@ -150,13 +113,12 @@ and hide the department select picker. -->
       </tr>
     </thead>
 
-    {% for form in currentSupervisees %}
+    {%- for form in currentSupervisees %}
       <tr>
         <td>
           <div class="row">
             <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-              <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
-                              {{form.formID.studentSupervisee.LAST_NAME}}
+              <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}
                               ({{form.formID.studentSupervisee.ID}}) </span>
                               <span class="h6"> ({{form.formID.jobType[0]}}) {{form.formID.POSN_TITLE}}</span>
 
@@ -168,18 +130,21 @@ and hide the department select picker. -->
             <span class="pushRight h6">{{form.formID.department.DEPT_NAME}}</span>
           </div>
         </td>
-        <td><span style="display:none">{{form.status}}, {{form.formID.termCode.termName}}</span></td>
+        <td style="display:none">
+          <span>{{form.status}}, {{form.formID.termCode.termName}}</span>
+          <span id="hiddenStudentName">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}</span>
+          <span id="hiddenBnumber">{{form.formID.studentSupervisee.ID}}</span>
+        </td>
       </tr>
-    {% endfor %}
+    {% endfor -%}
 
     {# This populates the last tab (Past) #}
-    {% for form in pastSupervisees %}
+    {%- for form in pastSupervisees %}
       <tr>
         <td>
           <div class="row">
             <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-              <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
-                              {{form.formID.studentSupervisee.LAST_NAME}}
+              <span class="h4">{{-form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME-}}
                               ({{form.formID.studentSupervisee.ID}}) </span>
                               <span class="h6"> ({{form.formID.jobType[0]}}) {{form.formID.POSN_TITLE}}</span>
             </a>
@@ -191,9 +156,13 @@ and hide the department select picker. -->
             <span class="pushRight h6">{{form.formID.department.DEPT_NAME}}</span>
           </div>
         </td>
-        <td><span style="display:none">Past, {{form.formID.termCode.termName}}</span></td>
+        <td style="display:none">
+          <span>Past, {{form.formID.termCode.termName}}</span>
+          <span id="hiddenStudentName">{{form.formID.studentSupervisee.FIRST_NAME}} {{form.formID.studentSupervisee.LAST_NAME}}</span>
+          <span id="hiddenBnumber">{{form.formID.studentSupervisee.ID}}</span>
+        </td>
       </tr>
-    {% endfor %}
+    {% endfor -%}
   </table>
 </div>
 <div class="col-md-2"></div>

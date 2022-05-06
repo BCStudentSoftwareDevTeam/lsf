@@ -87,44 +87,14 @@ def index(department = None):
 
         # On the click of the download button, 'POST' method will send all checked boxes from modal to excel maker
         if request.method == 'POST':
-            value =[]
-            # The "Try" and "Except" block here is needed because if the user tries to use the download button before they chose
-            # a department from the Department dropdown, it will throw a NameError. The reason behind the error is because the vairbales
-            # "currentDepartmentStudents", "allDepartmentStudents", and "inactiveDepStudent" are empty until the user chooses a department, so
-            # trying to iterate through the empty variables causes the error. The "Try" and "Except" blocks will catch this error so that
-            # a user can use the download button before they chose a department.
-            try:
-                for form in currentDepartmentStudents:
-                    name = str(form.formID.laborStatusFormID)
-                    if request.form.get(name):
-                        value.append(request.form.get(name))
-                for form in allDepartmentStudents:
-                    name = str(form.formID.laborStatusFormID)
-                    if request.form.get(name):
-                        value.append(request.form.get(name))
-                for form in inactiveDepStudent:
-                    name = str(form.formID.laborStatusFormID)
-                    if request.form.get(name):
-                        value.append(request.form.get(name))
-            except NameError as e:
-                print("The runtime error happens because a department has not yet been selected.")
-            for form in currentSupervisees:
-                name = str(form.formID.laborStatusFormID)
-                if request.form.get(name):
-                    value.append( request.form.get(name))
-            for form in pastSupervisees:
-                name = str(form.formID.laborStatusFormID)
-                if request.form.get(name):
-                    value.append( request.form.get(name))
-            for form in inactiveSupervisees:
-                name = str(form.formID.laborStatusFormID)
-                if request.form.get(name):
-                    value.append( request.form.get(name))
+            formsToDownload =[]
 
+            for bnum in request.form:
+                lsfs = LaborStatusForm.select().where(LaborStatusForm.studentSupervisee == bnum)
+                #swank lil list comprehension to remove duplicates. From: https://www.geeksforgeeks.org/python-ways-to-remove-duplicates-from-list/
+                [formsToDownload.append(lsf) for lsf in lsfs if lsf not in formsToDownload]
 
-            # Prevents 'POST' method from sending the same value twice to excel maker
-
-            excel = CSVMaker("studentList", value, includeEvals = True)
+            excel = CSVMaker("studentList", formsToDownload, includeEvals = True)
             # Returns the file path so the button will download the file
             return send_file(excel.relativePath,as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
@@ -167,6 +137,7 @@ def populateDepartment(departmentSelected):
                               .where((FormHistory.historyType.historyTypeName == "Labor Status Form") & (FormHistory.formID.POSN_CODE << deptPositions) & (FormHistory.formID.endDate < todayDate))
                               .order_by(FormHistory.formID.endDate.desc()), LaborStatusForm.select().where(LaborStatusForm.POSN_CODE << deptPositions))
 
+    # Converts models to lists for easier use
     cfbd = list(model_to_dict(c) for c in currentFormsByDept)
     pfbd = list(model_to_dict(p) for p in pastFormsByDept)
 

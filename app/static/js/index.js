@@ -22,6 +22,37 @@ $(document).ready(function() {
 
   $('#studentList').show();
   $('#download').show();
+
+  $("#download").click(function() {
+    selectAll = $("#selectAllLabel");
+    $("#downloadModalText").empty();
+    $("#downloadModalText").append(selectAll);
+
+    var bnums = [];
+    $.each(table.rows({selected: true, filter: "applied"}).data(), function () {
+      hiddenName=$($.parseHTML($(this)[1])[2]).text()
+      hiddenBnum=$($.parseHTML($(this)[1])[4]).text()
+      if ($.inArray(hiddenBnum, bnums) == -1){
+          $("#downloadModalText").append(`<div class="checkbox"><label class="container"><input class="checkbox" type="checkbox" name="${hiddenBnum}" id="${hiddenBnum}" value="${hiddenBnum}"/>${hiddenName}</label></div>`)
+          bnums.push(hiddenBnum);
+      }
+    })
+  });
+
+  // Listen for click on toggle checkbox
+  $('#downloadModalText').on('change', '#selectAll', function () {
+    console.log("Checking the boxes");
+      if(this.checked) {
+          // Iterate each checkbox
+          $(':checkbox').not("[disabled]").each(function() {
+              this.checked = true;
+          });
+      } else {
+          $(':checkbox').not("[disabled]").each(function() {
+              this.checked = false;
+          });
+      }
+  });
 });
 
 function createButtons() {
@@ -72,19 +103,7 @@ function addButtons() {
  return tabs
 }
 
-// Listen for click on toggle checkbox
-$('#select-all').click(function(event) {
-    if(this.checked) {
-        // Iterate each checkbox
-        $(':checkbox').not("[disabled]").each(function() {
-            this.checked = true;
-        });
-    } else {
-        $(':checkbox').not("[disabled]").each(function() {
-            this.checked = false;
-        });
-    }
-});
+
 
 // Shows the modal
 $('.openBtn').on('click',function() {
