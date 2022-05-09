@@ -62,7 +62,6 @@ def index(department = None):
                                 .distinct()
         elif currentUser.isLaborAdmin:   # logged in as an admin
             # Grabs every single department that currently has at least one labor status form in it
-            # FIXME: Why not grab departments from the departments table?
             departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
                             .join_from(FormHistory, LaborStatusForm) \
                             .join_from(LaborStatusForm, Department) \
@@ -113,7 +112,6 @@ def index(department = None):
 
 @main_bp.route('/main/department/selection/<departmentSelected>', methods=['GET'])
 def populateDepartment(departmentSelected):
-    # try:
     currentUser = require_login()
     todayDate = date.today()
 
@@ -144,7 +142,3 @@ def populateDepartment(departmentSelected):
     allDepartmentStudents = cfbd + [""] + pfbd  # NOTE: The empty value is to separate current and past when processing in the JS
 
     return json.dumps(allDepartmentStudents)
-
-    # except Exception as e:
-    #     print('ERROR in Department Students:', e)
-    #     return jsonify({"Success": False})
