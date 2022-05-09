@@ -2,16 +2,9 @@ from enum import Enum
 from datetime import date
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
+from app.logic.tracy import Tracy, InvalidQueryException
 
 class ButtonStatus:
-    # show_rehire_button = 0
-    # show_withdraw_button = 1
-    # show_withdraw_correction_buttons = 2
-    # show_release_adjustment_rehire_buttons = 3
-    # show_release_rehire_buttons = 4
-    # no_buttons_pending_forms = 5
-    # show_student_view = 6
-
     def __init__(self):
         self.currentDate = date.today()
         self.rehire = False
@@ -35,32 +28,51 @@ class ButtonStatus:
         '''
         return FormHistory.get(FormHistory.formID == historyForm.formID, FormHistory.status == "Approved", FormHistory.historyType == "Labor Status Form")
 
-    def set_evaluation_button(self, historyForm, currentUser):
+    def set_evaluation_button(self, historyForm, currentUser, isActiveStudent = True):
         ogHistoryForm = self.get_history_form_from_lsf(historyForm)
-        evaluations = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == ogHistoryForm, StudentLaborEvaluation.is_submitted == True)
+        if not isActiveStudent:
+            # Only grab final evaluations for students no longer at the college
+            evaluations = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == ogHistoryForm, StudentLaborEvaluation.is_submitted == True, StudentLaborEvaluation.is_midyear_evaluation == False)
+        else:
+            evaluations = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == ogHistoryForm, StudentLaborEvaluation.is_submitted == True)
+
         if currentUser.student:
             for evaluation in evaluations:
-
                 if evaluation.is_midyear_evaluation and not historyForm.formID.termCode.isFinalEvaluationOpen:
                     self.evaluation_exists = True
+                    self.num_buttons += 1
                 elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
                     self.evaluation_exists = True
+                    self.num_buttons += 1
         else:
             if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME:
                 if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                     self.evaluate = True
+                    self.num_buttons += 1
                 for evaluation in evaluations:
                     if evaluation.is_midyear_evaluation and not historyForm.formID.termCode.isFinalEvaluationOpen:
                         # If a midyear evaluation has been completed
                         self.evaluation_exists = True
                         self.evaluate = False
+                        self.num_buttons += 1
                     elif not evaluation.is_midyear_evaluation:
                         # If a final labor evaluation has been completed
                         self.evaluation_exists = True
                         self.evaluate = False
+                        self.num_buttons += 1
 
     def set_button_states(self, historyForm, currentUser):
-        if currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
+        try:
+            tracyObj = Tracy()
+            isActiveStudent = True if tracyObj.getStudentFromBNumber(historyForm.formID.studentSupervisee.ID) else False
+        except InvalidQueryException:
+            isActiveStudent = False
+
+        if not isActiveStudent:     # Student on the form is no longer at the college
+            # TODO: No buttons except evaluation if it exists
+            self.set_evaluation_button( historyForm, currentUser, isActiveStudent = False)
+
+        elif currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
             # students get no buttons except "show evaluation"
             self.rehire = False
             self.release = False
@@ -70,6 +82,7 @@ class ButtonStatus:
             self.evaluate = False
             self.set_evaluation_button( historyForm, currentUser)
             self.num_buttons = 1
+
         else:
             if historyForm.releaseForm != None:     # If its a release form
                 if historyForm.status.statusName == "Approved":
@@ -88,20 +101,17 @@ class ButtonStatus:
                 elif historyForm.status.statusName == "Pending":
                     # Pending release forms get no buttons
                     pass
-                #FIXME: Add cases for approved and denied release forms
             elif historyForm.adjustedForm != None:    # If its an adjustment form
                 if historyForm.status.statusName == "Approved" or historyForm.status.statusName == "Denied":
                     self.rehire = True
                     self.release = True
                     self.adjust = True
-
                     if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                         self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 4
                 elif historyForm.status.statusName == "Pending":
                     # Pending adjustment forms get no buttons
                     pass
-                #FIXME: Add cases for approved and denied adjustment forms
             elif historyForm.historyType.historyTypeName == "Labor Status Form":
                 if historyForm.status.statusName == "Pending":
                     # Pending LSF can be withdrawn or corrected
