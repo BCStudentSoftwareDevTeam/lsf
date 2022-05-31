@@ -15,8 +15,7 @@ $('.glyphicon-calendar').click(function() {  // gets the calender glyphicon
 
 let date = new Date();
 date.setDate(date.getDate());
-$(".form-control").datepicker({
-});
+$(".form-control").datepicker({});
 
 function getDate(obj, termCode) {
   /* this function makes a dictionary with term code being the keys, and the dates being the values

@@ -26,7 +26,7 @@
                   </a>
                   <div id="supervisorNavBar" {% if request.path =="/main/students" or request.path =="/main/department"%} class="panel-collapse collapse in"{% endif %} class="panel-collapse collapse">
                       <ul id="supervisordropdown" class="panel panel-default">
-                        <a href="/main/students"><li {% if request.path =="/main/students"%} class="panel-heading active"{% endif %}class="panel-heading" tabindex="3"><h4>My Students</h4></li></a>
+                        <a href="/"><li {% if request.path =="/"%} class="panel-heading active"{% endif %}class="panel-heading" tabindex="3"><h4>My Students</h4></li></a>
                          <a href="/main/department"><li {% if request.path=="/main/department" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="4"><h4>Department Students</h4></li></a>
                       </ul>
 

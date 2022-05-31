@@ -20,6 +20,7 @@
 
 .pushRight {
   float: right;
+  margin-right: 15px;
 }
 
 .student_table th, .student_table td {
@@ -51,4 +52,14 @@ iframe{
 
 #studentList {
   display: none;
+}
+
+#studentList tbody tr td .row .h5{
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#studentList tbody tr td .row .h6{
+  margin-top: 0px;
+  margin-bottom: 0px;
 }

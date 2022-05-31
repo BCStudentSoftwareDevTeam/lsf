@@ -1,57 +1,13 @@
 let table;
-$(document).ready(function() {
-  let url = document.location.href
-  createButtons();
-  if (url.endsWith('/')) {
-    changeButtonColor("#myCurrentStudents")
-    $("#userDepartments").hide()
-    $("#placeholder").show()
-    $("#currentDepartmentStudents").hide()
-    $("#allDepartmentStudents").hide()
-    $("#myCurrentStudents").show()
-    $("#myPastStudents").show()
-    $("#allMyStudents").show()
-    $('#portalTitle').text("Current Students");
-    $("#myCurrentStudents").removeClass("btn-light");
-    $("#myCurrentStudents").addClass("btn-primary");
-    table
-      .columns( 1 )
-      .search("My Current Students")
-      .draw();
-    $(".currentStu").show();
-    $(".allDeptStu").hide();
-    $(".currentDeptStu").hide();
-    $(".pastStu").hide();
-    $(".pastStudentModal").attr("disabled", true);
-    $(".allDepartmentModal").attr("disabled", true);
-    $(".currentDepartmentModal").attr("disabled", true);
-    $(".currentStudentModal").removeAttr("disabled");
-    $('#portalTitle').text("Current Students");
-  } else {
-    changeButtonColor("#currentDepartmentStudents")
-    $("#userDepartments").show()
-    $("#placeholder").hide()
-    $(".currentStu").hide();
-    $(".allDeptStu").hide();
-    $(".currentDeptStu").show();
-    $(".pastStu").hide();
-    $(".currentStudentModal").attr("disabled", true);
-    $(".allDepartmentModal").attr("disabled", true);
-    $(".currentDepartmentModal").removeAttr("disabled");
-    $(".pastStudentModal").attr("disabled", true);
-    $('#portalTitle').text("Current Department Students");
-    $("#currentDepartmentStudents").removeClass("btn-light");
-    $("#currentDepartmentStudents").addClass("btn-primary");
-    table
-      .columns( 1 )
-      .search("Current Department Students")
-      .draw();
-    $("#currentDepartmentStudents").show()
-    $("#allDepartmentStudents").show()
-    $("#myCurrentStudents").hide()
-    $("#myPastStudents").hide()
-    $("#allMyStudents").hide()
 
+$(document).ready(function() {
+  createButtons();
+  if (document.location.href.endsWith('/')) {
+    // index page, loads current supervisees
+    $("#userDepartments").hide();
+  } else {
+    // departmental page, loads all departmental students
+    $("#placeholder").hide()
     // If the select picker already has a department selected when the page is loaded,
     // then we want to populate the data table with the selected department
     let departmentDropDown = $("#departmentDropDown");
@@ -60,8 +16,47 @@ $(document).ready(function() {
       populateTable();
     }
   }
+  table.columns(1)
+       .search("Pending")
+       .draw();
+
   $('#studentList').show();
   $('#download').show();
+
+  $("#download").click(function() {
+    selectAll = $("#selectAllLabel");
+    $("#downloadModalText").empty();
+    $("#downloadModalText").append(selectAll);
+
+    var bnums = [];
+    $.each(table.rows({selected: true, filter: "applied"}).data(), function () {
+      hiddenName=$($.parseHTML($(this)[1])[2]).text()
+      hiddenBnum=$($.parseHTML($(this)[1])[4]).text()
+      if ($.inArray(hiddenBnum, bnums) == -1){
+          $("#downloadModalText").append(`<div class="checkbox"><label class="container"><input class="checkbox" type="checkbox" name="${hiddenBnum}" id="${hiddenBnum}" value="${hiddenBnum}"/>${hiddenName}</label></div>`)
+          bnums.push(hiddenBnum);
+      }
+    })
+
+    //FIXME: This is intended to close the Download modal after they get the file. It doesn't work because we use flask-bootstrap. Leaving here for the next person.
+    // $("#submitButton").on("click", function() {
+    //   $('#downloadModal').modal('hide');
+    // })
+  });
+
+  // Listen for click on toggle checkbox
+  $('#downloadModalText').on('change', '#selectAll', function () {
+      if(this.checked) {
+          // Iterate each checkbox
+          $(':checkbox').not("[disabled]").each(function() {
+              this.checked = true;
+          });
+      } else {
+          $(':checkbox').not("[disabled]").each(function() {
+              this.checked = false;
+          });
+      }
+  });
 });
 
 function createButtons() {
@@ -77,174 +72,46 @@ function createButtons() {
      "info": false,
      "lengthChange": false,
      dom: 'Bfrtip',
+     initComplete: function() {
+       // Function used to remove the default class given to datatable buttons, and
+       // give buttons bootstrap classes instead
+       let btns = $('.dt-button');
+       btns.addClass('btn btn-light');
+       btns.removeClass('dt-button');
+       $("#Pending_id").removeClass("btn-light").addClass("btn-primary");
+     },
      // Used to created the buttons rendered by the data table
-     buttons: [
-        {
-          text: 'Current Only',
-          action: function ( e, dt, node, config ) {
-            // Used to enable and disable the correct checkboxes inside the modal
-            // depending on the button pressed
-            changeButtonColor("#myCurrentStudents")
-            $(".currentStu").show();
-            $(".allDeptStu").hide();
-            $(".currentDeptStu").hide();
-            $(".pastStu").hide();
-            $(".pastStudentModal").attr("disabled", true);
-            $(".allDepartmentModal").attr("disabled", true);
-            $(".currentDepartmentModal").attr("disabled", true);
-            $(".currentStudentModal").removeAttr("disabled");
-            $('#portalTitle').text("Current Students");
-            // Used to filter the datatable by the hidden column made in the HTML
-            table
-              .columns( 1 )
-              .search("My Current Students")
-              .draw();
-           },
-          attr: { id: "myCurrentStudents"}
-        },
-        {
-          text: 'Past Only',
-          action: function( e, dt, node, config ) {
-            // Used to enable and disable the correct checkboxes inside the modal
-            // depending on the button pressed
-            changeButtonColor("#myPastStudents")
-            $(".currentStu").hide();
-            $(".allDeptStu").hide();
-            $(".currentDeptStu").hide();
-            $(".pastStu").show();
-            $(".currentStudentModal").attr("disabled", true);
-            $(".allDepartmentModal").attr("disabled", true);
-            $(".currentDepartmentModal").attr("disabled", true);
-            $(".pastStudentModal").removeAttr("disabled");
-            $('#portalTitle').text("Past Students");
-            // Used to filter the datatable by the hidden column made in the HTML
-            table
-              .columns( 1 )
-              .search("My Past Students")
-              .draw();
-           },
-          attr: { id: "myPastStudents"}
-        },
-        {
-          text: 'All',
-          action: function( e, dt, node, config ) {
-            // Used to enable and disable the correct checkboxes inside the modal
-            // depending on the button pressed
-            changeButtonColor("#allMyStudents")
-            $(".currentStu").show();
-            $(".allDeptStu").hide();
-            $(".currentDeptStu").hide();
-            $(".pastStu").show();
-            $(".pastStudentModal").removeAttr("disabled");
-            $(".allDepartmentModal").attr("disabled", true);
-            $(".currentDepartmentModal").attr("disabled", true);
-            $(".currentStudentModal").removeAttr("disabled");
-            $('#portalTitle').text("All Students");
-            // Used to filter the datatable by the hidden column made in the HTML
-            table
-              .columns( 1 )
-              .search("My Current Students|My Past Students", true, false, true)
-              .draw();
-           },
-          attr: { id: "allMyStudents"}
-        },
-        {
-          text: 'Current Only',
-          action: function( e, dt, node, config ) {
-            // Used to enable and disable the correct checkboxes inside the modal
-            // depending on the button pressed
-            changeButtonColor("#currentDepartmentStudents")
-            $(".currentStu").hide();
-            $(".allDeptStu").hide();
-            $(".currentDeptStu").show();
-            $(".pastStu").hide();
-            $(".currentStudentModal").attr("disabled", true);
-            $(".allDepartmentModal").attr("disabled", true);
-            $(".currentDepartmentModal").removeAttr("disabled");
-            $(".pastStudentModal").attr("disabled", true);
-            $('#portalTitle').text("Current Department Students");
-            // Used to filter the datatable by the hidden column made in the HTML
-            table
-              .columns( 1 )
-              .search("Current Department Students")
-              .draw();
-           },
-          attr: { id: "currentDepartmentStudents"}
-        },
-        {
-          text: 'Current and Past',
-          action: function( e, dt, node, config ) {
-            // Used to enable and disable the correct checkboxes inside the modal
-            // depending on the button pressed
-            changeButtonColor("#allDepartmentStudents")
-            $(".currentStu").hide();
-            $(".allDeptStu").show();
-            $(".currentDeptStu").show();
-            $(".pastStu").hide();
-            $(".currentStudentModal").attr("disabled", true);
-            $(".allDepartmentModal").removeAttr("disabled");
-            $(".currentDepartmentModal").removeAttr("disabled");
-            $(".pastStudentModal").attr("disabled", true);
-            $('#portalTitle').text("Current and Past Department Students");
-            // Used to filter the datatable by the hidden column made in the HTML
-            table
-              .columns( 1 )
-              .search("All Department Students|Current Department Students", true, false, true)
-              .draw();
-           },
-          attr: { id: "allDepartmentStudents"}
-        }
-      ],
-    initComplete: function() {
-      // Function used to remove the default class given to datatable buttons, and
-      // give buttons bootstrap classes instead
-      let btns = $('.dt-button');
-      btns.addClass('btn btn-light');
-      btns.removeClass('dt-button');
-    }
-  })
+     buttons: addButtons()
+   }
+ )
+};
+
+function addButton(value, index) {
+  tabs.push({
+      text: value,
+      attr: {id: value + "_id",
+             class: "btn allButtons"},
+      action: function ( e, dt, node, config ) {
+        table.column(1)
+             .search(value)
+             .draw();
+        $(".allButtons").removeClass("btn-primary");
+        $(node).addClass("btn btn-primary").removeClass("btn-light");
+      }
+  });
+};
+
+function addButtons() {
+ tabs = [];
+ tableTabs.forEach(addButton);
+ return tabs
 }
 
-function changeButtonColor(ID) {
-  let buttonID = ID
-  let buttonIDList = ["#myPastStudents", "#myCurrentStudents", "#allMyStudents",
-    "#currentDepartmentStudents", "#allDepartmentStudents"]
-  for (i = 0; i < buttonIDList.length; i++) {
-    $(buttonIDList[i]).removeClass("btn btn-primary");
-    $(buttonIDList[i]).addClass("btn btn-light");
-  }
-  $(buttonID).removeClass('btn btn-light');
-  $(buttonID).addClass('btn btn-primary');
-}
-
-// show the sub-sidebar only on this page
-$("div.laborStudentChoice").show();
-
-// Listen for click on toggle checkbox
-$('#select-all').click(function(event) {
-    if(this.checked) {
-        // Iterate each checkbox
-        $(':checkbox').not("[disabled]").each(function() {
-            this.checked = true;
-        });
-    } else {
-        $(':checkbox').not("[disabled]").each(function() {
-            this.checked = false;
-        });
-    }
-});
-
-// Shows the modal
-$('.openBtn').on('click',function() {
-    $('.modal-body').load('index.html',function() {
-        $('#downloadModal').modal({show:true});
-    });
-
-});
 
 function downloadHistory() {
   $('input[type="checkbox"]:checked').prop('checked',false);
 }
+
 // variable to check if another ajax call is in progress
 let currentRequest = null;
 function populateTable(){
@@ -268,77 +135,47 @@ function populateTable(){
     url: "/main/department/selection/" + departmentSelected,
     datatype: "json",
     success: function(response) {
-
-      // This section checks to see which button is currently pressed, and filters
-      // the data table based off that button so that the data is filtered correctly
-      // when we append the new data into the data table.
-      // Before we append the new department data into the data table, this section will
-      // first delete all of the current department data that we have in the data table.
-      if ($("#currentDepartmentStudents").hasClass('btn-primary')) {
-        table
-        .columns( 1 )
-        .search("All Department Students")
-        .draw();
-        table
-        .rows({ filter : 'applied'}).remove().draw();
-        table
-        .columns( 1 )
-        .search("Current Department Students")
-        .draw();
-        table
-        .rows({ filter : 'applied'}).remove().draw();
-      } else {
-        table
-        .columns( 1 )
-        .search("Current Department Students")
-        .draw();
-        table
-        .rows({ filter : 'applied'}).remove().draw();
-        table
-        .columns( 1 )
-        .search("All Department Students")
-        .draw();
-        table
-        .rows({ filter : 'applied'}).remove().draw();
-      }
-      // This section will clear any data currently in the Div's because we will
-      // be repopulating them with new department data
-      $("#currentDepartmentStudentsDiv").empty()
-      $("#allDepartmentStudentsDiv").empty()
-
+      table.rows().clear();
       // Parse the JSON we get back from the controller
       response = JSON.parse(response)
+
       // This section will iterate through the JSON data, and access the values
       // from the key-value pairs that we will need to populate both the modal and the
       // data table
-      for (let key in response) {
-        let bNumber = response[key]["BNumber"]
-        let student = response[key]["Student"]
-        let term = response[key]["Term"]
-        let position = response[key]["Position"]
-        let department = response[key]["Department"]
-        let status = response[key]["Status"]
-        let divClass = response[key]["checkboxModalClass"]
-        let formID = response[key]["formID"]
-        let activeStatus = response[key]["activeStatus"]
-        let formStatus = response[key]["formStatus"]
-
-        inactive_tag = ""
-        el_id = "#allDepartmentStudentsDiv"
-        if (activeStatus == "False") {
-            formStatus = "No longer a student"
-            inactive_tag = " <strong>(No longer a student.)</strong>"
-        } else {
-            if (divClass == "currentDepartmentModal") {
-                el_id = "#currentDepartmentStudentsDiv"
-            }
+      currentForms = true
+      for (key in response) {
+        if (response[key] == "") {
+          currentForms = false
+          continue;
         }
-        table.row.add([`<a href='/laborHistory/${departmentSelected}/${bNumber}' value=0><span class='h4'>${student} (${bNumber})</a>` +
-          `<span class='pushRight h5'>${formStatus}</span><br /><span class='pushLeft h6'>${term} - ${position} - ${department}</span>`,
-          "<span style='display:none'>" + status + "</span>"]).draw()
+        if (currentForms == true) {
+          formStatus = response[key].status.statusName
+        } else {
+          formStatus = "Past Student"
+        }
 
-        $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
+        let bNumber = response[key].formID.studentSupervisee.ID
+        let student = response[key].formID.studentName
+        let term = response[key].formID.termCode.termName
+        let position = response[key].formID.POSN_TITLE
+        let positionType = response[key].formID.jobType[0]
+        let department = response[key].formID.department.DEPT_NAME
+
+        table.row.add([`<div class="row">
+                          <a href='/laborHistory/${departmentSelected}/${bNumber}' value=0>
+                            <span class='h4'>${student} (${bNumber}) </span>
+                            <span class="h6"> (${positionType}) ${position}</span>
+                          </a>
+                          <span class='pushRight h5'>${formStatus}</span>
+                        </div>
+                        <div class="row">
+                        <span class='pushLeft h6'>${term}</span>
+                        <span class='pushRight h6'>${department}</span>`,
+                        `<span style='display:none'>${formStatus}, ${term}</span>
+                        <span style='display:none' id="hiddenStudentName">${student}</span>
+                        <span style='display:none' id="hiddenBnumber">${bNumber}</span>`])
       }
+      table.draw();
     }
   })
 }
