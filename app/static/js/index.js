@@ -1,8 +1,8 @@
 let table;
 $(document).ready(function() {
-  let url = document.location.href
+  let url = document.location.href;
   createButtons();
-  if (url.endsWith('/')) {
+  if (url.endsWith('/') || url.endsWith('students')) {
     changeButtonColor("#myCurrentStudents")
     $("#userDepartments").hide()
     $("#placeholder").show()

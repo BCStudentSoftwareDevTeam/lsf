@@ -198,21 +198,20 @@ and hide the department select picker. -->
     {% endfor %}
     <!-- Display all the past and inactive students by going through inactiveSupervisees list from main_route.py -->
     {% for form in inactiveSupervisees %}
-    <tr>
-      <td>
-        <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}">
-          <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
-                          {{form.formID.studentSupervisee.LAST_NAME}}
-                          ({{form.formID.studentSupervisee.ID}})
-          </span>
-        </a>
-        <br/>
-        <span class="pushRight h5">No longer a student</span>
-        <br/>
-        <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
-      </td>
-      <td style="display:none">My Past Students</td>
-    </tr>
+      <tr>
+        <td>
+          <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}">
+            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                            {{form.formID.studentSupervisee.LAST_NAME}}
+                            ({{form.formID.studentSupervisee.ID}})
+            </span>
+          </a>
+          <span class="pushRight h5">No longer a student</span>
+          <br/>
+          <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
+        </td>
+        <td style="display:none">My Past Students</td>
+      </tr>
     {% endfor %}
   </table>
 </div>
