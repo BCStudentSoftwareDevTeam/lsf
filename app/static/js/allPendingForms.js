@@ -9,9 +9,11 @@ $(document).ready(function() {
   // If the overload tab has been selected, then we need to restrict the
   // ordering functionality on different headers
 
-  if ($('#overloadTab').hasClass('active') || $('#releaseTab').hasClass('active') || $('#completedOverloadTab').hasClass('active')) {
+  if  ($('#releaseTab').hasClass('active') || $('#completedOverloadTab').hasClass('active')) {
     targetsList = [8]
-  } else if ($('#adjustedTab').hasClass('active')) {
+  } else if ($('#overloadTab').hasClass('active')) {
+    targetsList = [9]
+  }else if ($('#adjustedTab').hasClass('active')) {
     targetsList = [0, 10]
   } else {
     targetsList = [0, 9]

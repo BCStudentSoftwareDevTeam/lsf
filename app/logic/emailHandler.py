@@ -198,6 +198,10 @@ class emailHandler():
         self.link = link
         self.checkRecipient("Labor Overload Form Submitted For Student",
                       "Labor Overload Form Submitted For Supervisor")
+    def laborOverloadFormStudentReminder(self,link):
+        self.link = link
+        self.checkRecipient("Labor Overload Form Submitted For Student")
+
     def LaborOverLoadFormSubmittedNotification(self):
         """
         Emails that will be sent after the student has submitted their

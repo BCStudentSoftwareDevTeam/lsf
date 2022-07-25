@@ -37,9 +37,14 @@
             <dt class="col-sm-4">Department</dt>
             <dd class="col-sm-8">{{form.formID.department.DEPT_NAME}}</dd>
 
+            {% if status == "Pending" %}
             <dt class="col-sm-4">Overload Reason</dt>
             <dd class="col-sm-8">{{form.overloadForm.studentOverloadReason}}</dd>
+            {% elif status == "Pre-Student Approval" %}
+            <dd style="text-align: left; color: red;"><strong> *The student has not completed their approval form*</strong></dd>
+            {% endif %}
           </dl>
+
         {% endfor %}
         </div>
         <div class="row col-sm-2" id="notes" align="right">
@@ -57,7 +62,7 @@
     </div>
   </div>
 
-  {% if (currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin) %}
+  {% if ((currentUser.isLaborAdmin and currentUser.isFinancialAidAdmin and departmentStatusInfo['financialAidStatus']) or (currentUser.isLaborAdmin and currentUser.isSaasAdmin and departmentStatusInfo['SAASStatus']) or (currentUser.isLaborAdmin and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin)) and status == "Pending" %}
   <table id="overloadDepartmentTable" class="table table-bordered">
     <thead>
       <tr>
@@ -84,7 +89,7 @@
   </table>
   {% endif %}
 
-  {% if formType != "completedOverload" %}
+  {% if formType != "completedOverload" and status != "Pre-Student Approval" %}
   <p class="status-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong> A Status is required in order to submit</strong></p>
   <div id='radioDiv'>
     <!-- Need to pass in the notes counter from the notes counter method -->
@@ -130,14 +135,18 @@
 </div>
 
 <div class="modal-footer">
-  {% if formType == "completedOverload" %}
+  {% if formType == "completedOverload"%}
     <button type="button" class="btn btn-secondary floatleft" id="close" data-dismiss="modal">Close</button>
   {% else %}
     <div class="col-sm-6" align="left">
       <button type="button" class="btn btn-secondary floatleft" id="close" data-dismiss="modal">Close</button>
     </div>
     <div class="col-sm-6" align="right">
+      {% if status == "Pre-Student Approval" %}
+        <button id="studentEmail" value='{{formHistoryID}}' type="button" class ="btn btn-info col-sm-12" onclick="sendEmail(this.value, this.id)" data-dismiss="modal">Send Student Reminder Email</button>
+      {% else %}
         <button type="submit" class="btn btn-success floatright" class="submitOverload" onclick="submitOverload({{formHistoryID}}, '{{currentUser.isLaborAdmin}}')">Submit</button>
+      {% endif %}
     </div>
   {% endif %}
 </div>
