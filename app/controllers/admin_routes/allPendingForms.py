@@ -40,12 +40,12 @@ def allPendingForms(formType):
         pageTitle = ""
         approvalTarget = ""
         completedOverloadFormCounter = 0
-        laborStatusFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Status Form')).count()
-        adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
+        laborStatusFormCounter = FormHistory.select().where(((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Status Form')).count()
+        adjustedFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
 
         if currentUser.isLaborAdmin:
-            overloadFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Overload Form')).count()
+            overloadFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
             overloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                              .where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Overload Form'))\
@@ -91,7 +91,7 @@ def allPendingForms(formType):
         if currentUser.isFinancialAidAdmin:
             if formType == "pendingOverload":
                 formList = FormHistory.select().join_from(FormHistory, OverloadForm)\
-                                      .where(FormHistory.status == 'Pending')\
+                                      .where((FormHistory.status == 'Pending'))\
                                       .where(FormHistory.historyType == "Labor Overload Form")\
                                       .where((FormHistory.overloadForm.financialAidApproved == 'Pending') | (FormHistory.overloadForm.financialAidApproved == None))\
                                       .order_by(-FormHistory.createdDate).distinct()
@@ -115,14 +115,14 @@ def allPendingForms(formType):
                                       .order_by(-FormHistory.createdDate).distinct()
 
         if currentUser.isLaborAdmin:
-            formList = FormHistory.select().where(FormHistory.status == "Pending").where(FormHistory.historyType == historyType).order_by(-FormHistory.createdDate).distinct()
+            formList = FormHistory.select().where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')).where(FormHistory.historyType == historyType).order_by(-FormHistory.createdDate).distinct()
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
         for allForms in formList:
             if allForms.historyType.historyTypeName == "Labor Status Form" or (allForms.historyType.historyTypeName == "Labor Adjustment Form" and allForms.adjustedForm.fieldAdjusted == "weeklyHours"):
                 try:
-                    overloadForm = FormHistory.select().where((FormHistory.formID == allForms.formID) & (FormHistory.historyType == "Labor Overload Form") & (FormHistory.status == "Pending")).get()
+                    overloadForm = FormHistory.select().where((FormHistory.formID == allForms.formID) & (FormHistory.historyType == "Labor Overload Form") & ((FormHistory.status == "Pending") | (FormHistory.status == "Pre-Student Approval"))).get()
                     if overloadForm:
                         pendingOverloadFormPairs[allForms.formHistoryID] = overloadForm.formHistoryID
                 except DoesNotExist:
@@ -449,10 +449,11 @@ def getOverloadModalData(formHistoryID):
             SAASApprover = None
 
         try:
-            currentPendingForm = FormHistory.select().where((FormHistory.formID == historyForm[0].formID) & (FormHistory.status == "Pending")).get()
+            currentPendingForm = FormHistory.select().where((FormHistory.formID == historyForm[0].formID) & ((FormHistory.status == "Pending") | (FormHistory.status == "Pre-Student Approval"))).get()
             if currentPendingForm:
                 pendingForm = True
                 pendingFormType = currentPendingForm.historyType.historyTypeName
+                status = currentPendingForm.status.statusName
         except (AttributeError, IndexError):
             pendingForm = False
             pendingFormType = False
@@ -474,7 +475,8 @@ def getOverloadModalData(formHistoryID):
                                             noteTotal = noteTotal,
                                             pendingForm = pendingForm,
                                             pendingFormType = pendingFormType,
-                                            formType = globalFormType
+                                            formType = globalFormType,
+                                            status = status
                                             )
     except Exception as e:
         print("Error Populating Overload Modal:", e)
@@ -673,7 +675,7 @@ def modalFormUpdate():
 @admin.route('/admin/sendVerificationEmail', methods=['POST'])
 def sendEmail():
     """
-    This method will send an email to either SAAS or Financial Aid
+    This method will send an email to either SAAS, Financial Aid or Student
     """
     try:
         rsp = eval(request.data.decode("utf-8"))
@@ -681,22 +683,28 @@ def sendEmail():
             historyForm = FormHistory.get(FormHistory.formHistoryID == rsp['formHistoryID'])
             overloadForm = OverloadForm.get(OverloadForm.overloadFormID == historyForm.overloadForm)
             status = Status.get(Status.statusName == 'Pending')
-            if rsp['emailRecipient'] == 'SAASEmail':
-                recipient = 'SAAS'
-                overloadForm.SAASApproved = status.statusName
-                overloadForm.save()
-            elif rsp['emailRecipient'] == 'financialAidEmail':
-                recipient = 'Financial Aid'
-                overloadForm.financialAidApproved = status.statusName
-                overloadForm.save()
-            link = 'http://{0}/'.format(request.host) + 'admin/financialAidOverloadApproval/' + str(rsp['formHistoryID'])
-            email = emailHandler(historyForm.formHistoryID)
-            email.overloadVerification(recipient, link)
+            if rsp['emailRecipient'] == 'studentEmail':
+                recipient ="Student"
+                email = emailHandler(historyForm.formHistoryID)
+                email.laborOverloadFormStudentReminder("http://{0}/".format(request.host) + "studentOverloadApp/" + str(rsp['formHistoryID']))
+
+            else:
+                if rsp['emailRecipient'] == 'SAASEmail':
+                    recipient = 'SAAS'
+                    overloadForm.SAASApproved = status.statusName
+                    overloadForm.save()
+                elif rsp['emailRecipient'] == 'financialAidEmail':
+                    recipient = 'Financial Aid'
+                    overloadForm.financialAidApproved = status.statusName
+                    overloadForm.save()
+                link = 'http://{0}/'.format(request.host) + 'admin/financialAidOverloadApproval/' + str(rsp['formHistoryID'])
+                email = emailHandler(historyForm.formHistoryID)
+                email.overloadVerification(recipient, link)
             currentDate = datetime.now().strftime('%m/%d/%y')
             newEmailInformation = {'recipient': recipient,
                                     'emailDate': currentDate,
                                     'status': 'Pending'
-            }
+                                    }
             return jsonify(newEmailInformation)
     except Exception as e:
         print("Error sending verification email to SASS/Financial Aid:", e)

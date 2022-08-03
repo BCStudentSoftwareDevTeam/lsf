@@ -65,6 +65,9 @@
               {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
               <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
+              {% if formType == "pendingOverload" %}
+              <th> Status </th>
+              {% endif %}
               <th>Term</th>
               <th>Department</th>
               <th>Supervisor</th>
@@ -101,6 +104,11 @@
                     <input class="approveCheckbox" type='checkbox' id='chk_{{allForms.formHistoryID}}' value="{{allForms.formHistoryID}}" name="check[]" autocomplete="off" />
                   </td>
                 {% endif %}
+              {% endif %}
+              {% if formType == "pendingOverload" %}
+              <td> {# Status #}
+                {{allForms.status}}
+              </td>
               {% endif %}
               <td> {# TERM #}
                 {{allForms.formID.termCode.termName}}

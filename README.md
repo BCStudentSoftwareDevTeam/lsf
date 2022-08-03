@@ -8,11 +8,12 @@ Python 3.6+
  * python3-pip
  * python3-venv
  * unixodbc-dev
+ * libffi-dev
 
 ## Developing on Labor Status Forms
 1. Pull down the repo: git clone <URL>
 2. Run ```source setup.sh```
-3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql```
+3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql```or ```sudo /etc/init.d/mysql start```.
 4. In the database directory, run ```./reset_database.sh```
 5. Run the app with ```flask run``` in the root directory
 
