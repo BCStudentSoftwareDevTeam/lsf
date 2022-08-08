@@ -370,18 +370,22 @@ def getNotes(formid):
     '''
     try:
         currentUser = require_login()
-        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) # Gets Supervisor note
-        notes = Notes.select().where(Notes.formID == formid, Notes.noteType == "Labor Note") # Gets labor department notes from the laborofficenotes table
-        notesDict = {}          # Stores the both types of notes
-        if supervisorNotes.supervisorNotes: # If there is a supervisor note, store it in notesDict
+        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) 
+        laborNotes = Notes.select().where(Notes.formID == formid, Notes.noteType == "Labor Note")
+
+        notesDict = {}
+        if supervisorNotes.supervisorNotes:
             notesDict["supervisorNotes"] = supervisorNotes.supervisorNotes
-        if len(notes) > 0: # If there are labor office notes, format, and store them in notesDict
-            listOfNotes = []
-            for i in range(len(notes)):
-                formattedDate = notes[len(notes) -  i - 1].date.strftime('%m/%d/%Y')   # formatting date in the database to display MM/DD/YYYY
-                listOfNotes.append("<dl class='dl-horizontal text-left'> <b>" + formattedDate + " | <i>" + notes[len(notes) -  i - 1].createdBy.supervisor.FIRST_NAME[0] + ". " + notes[len(notes) -  i - 1].createdBy.supervisor.LAST_NAME + "</i> | </b> " + notes[len(notes) -  i - 1].notesContents + "</dl>")
-            notesDict["laborDepartmentNotes"] = listOfNotes
-        return jsonify(notesDict)     # return as JSON
+
+        # If there are labor office notes, format, and store them in notesDict
+        if len(notes) > 0:
+            htmlList = []
+            for note in reverse(laborNotes):
+                formattedDate = note.date.strftime('%m/%d/%Y')
+                htmlList.append("<dl class='dl-horizontal text-left'> <b>" + formattedDate + " | <i>" + note.createdBy.firstName[0] + ". " + note.createdBy.lastName + "</i> | </b> " + note.notesContents + "</dl>")
+            notesDict["laborDepartmentNotes"] = htmlList
+
+        return jsonify(notesDict)
 
     except Exception as e:
         print("Error on getting notes: ", e)
@@ -436,14 +440,14 @@ def getOverloadModalData(formHistoryID):
 
         try:
             financialAidStatus = historyForm[0].overloadForm.financialAidApproved.statusName
-            FinancialAidApprover = "By " + historyForm[0].overloadForm.financialAidApprover.supervisor.FIRST_NAME + " " + historyForm[0].overloadForm.financialAidApprover.supervisor.LAST_NAME
+            FinancialAidApprover = "By " + historyForm[0].overloadForm.financialAidApprover.fullName
         except (AttributeError, IndexError):
             financialAidStatus = None
             FinancialAidApprover = None
 
         try:
             SAASStatus = historyForm[0].overloadForm.SAASApproved.statusName
-            SAASApprover = "By " + historyForm[0].overloadForm.SAASApprover.supervisor.FIRST_NAME + " " + historyForm[0].overloadForm.SAASApprover.supervisor.LAST_NAME
+            SAASApprover = "By " + historyForm[0].overloadForm.SAASApprover.fullName
         except (AttributeError, IndexError):
             SAASStatus = None
             SAASApprover = None
