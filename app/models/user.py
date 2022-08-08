@@ -17,3 +17,25 @@ class User(baseModel):
 
     def __str__(self):
         return str(self.__dict__)
+
+    @property
+    def firstName(self):
+        if self.supervisor:
+            return self.supervisor.FIRST_NAME
+        elif self.student:
+            return self.student.FIRST_NAME
+
+        return ""
+
+    @property
+    def lastName(self):
+        if self.supervisor:
+            return self.supervisor.LAST_NAME
+        elif self.student:
+            return self.student.LAST_NAME
+
+        return ""
+
+    @property
+    def fullName(self):
+        return self.firstName + " " + self.lastName
