@@ -378,7 +378,7 @@ def getNotes(formid):
             notesDict["supervisorNotes"] = supervisorNotes.supervisorNotes
 
         # If there are labor office notes, format, and store them in notesDict
-        if len(notes) > 0:
+        if len(laborNotes) > 0:
             htmlList = []
             for note in reverse(laborNotes):
                 formattedDate = note.date.strftime('%m/%d/%Y')
