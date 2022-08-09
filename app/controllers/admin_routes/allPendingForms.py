@@ -371,7 +371,8 @@ def getNotes(formid):
     try:
         currentUser = require_login()
         supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) 
-        laborNotes = Notes.select().where(Notes.formID == formid, Notes.noteType == "Labor Note")
+        laborNotes = list(Notes.select().where(Notes.formID == formid, Notes.noteType == "Labor Note"))
+        laborNotes.reverse()
 
         notesDict = {}
         if supervisorNotes.supervisorNotes:
@@ -380,7 +381,7 @@ def getNotes(formid):
         # If there are labor office notes, format, and store them in notesDict
         if len(laborNotes) > 0:
             htmlList = []
-            for note in reverse(laborNotes):
+            for note in laborNotes:
                 formattedDate = note.date.strftime('%m/%d/%Y')
                 htmlList.append("<dl class='dl-horizontal text-left'> <b>" + formattedDate + " | <i>" + note.createdBy.firstName[0] + ". " + note.createdBy.lastName + "</i> | </b> " + note.notesContents + "</dl>")
             notesDict["laborDepartmentNotes"] = htmlList
