@@ -1,4 +1,5 @@
 from flask import flash, send_file, json, jsonify, redirect, url_for
+from peewee import JOIN
 from app.login_manager import *
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
@@ -18,6 +19,7 @@ from datetime import datetime, date
 from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
+from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
 
@@ -88,34 +90,44 @@ def allPendingForms(formType):
             approvalTarget = ""
             pageTitle = "Approved Overload Forms"
 
+        # We are adding all of these joins so we don't do 10 queries later for every form
+        CreatorSup = Supervisor.alias()
+        baseQuery = (FormHistory.select(FormHistory, OverloadForm, LaborStatusForm, Supervisor, Student, User, Department, Term, CreatorSup, HistoryType)
+                                .join(OverloadForm, JOIN.LEFT_OUTER).switch()
+                                .join(HistoryType).switch()
+                                .join(LaborStatusForm)
+                                .join(Supervisor).switch(LaborStatusForm)
+                                .join(Student).switch(LaborStatusForm)
+                                .join(Department).switch(LaborStatusForm)
+                                .join(Term).switch()
+                                .join(User, attr="createdBy", on=(FormHistory.createdBy == User.userID))
+                                .join(CreatorSup, JOIN.LEFT_OUTER, attr="supervisor", on=(User.supervisor == CreatorSup.ID))
+                                )
         if currentUser.isFinancialAidAdmin:
             if formType == "pendingOverload":
-                formList = FormHistory.select().join_from(FormHistory, OverloadForm)\
-                                      .where((FormHistory.status == 'Pending'))\
-                                      .where(FormHistory.historyType == "Labor Overload Form")\
-                                      .where((FormHistory.overloadForm.financialAidApproved == 'Pending') | (FormHistory.overloadForm.financialAidApproved == None))\
-                                      .order_by(-FormHistory.createdDate).distinct()
+                baseQuery = (baseQuery.where((FormHistory.status == 'Pending'))
+                                      .where(FormHistory.historyType == "Labor Overload Form")
+                                      .where((FormHistory.overloadForm.financialAidApproved == 'Pending') | (FormHistory.overloadForm.financialAidApproved == None))
+                                      )
             elif formType == "completedOverload":
-                formList = FormHistory.select().join_from(FormHistory, OverloadForm)\
-                                      .where(FormHistory.historyType == "Labor Overload Form")\
-                                      .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied'))\
-                                      .order_by(-FormHistory.createdDate).distinct()
+                baseQuery = (baseQuery.where(FormHistory.historyType == "Labor Overload Form")
+                                      .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied'))
+                                      )
 
         if currentUser.isSaasAdmin:
             if formType == "pendingOverload":
-                formList = FormHistory.select().join_from(FormHistory, OverloadForm)\
-                                      .where(FormHistory.status == 'Pending')\
-                                      .where(FormHistory.historyType == "Labor Overload Form")\
-                                      .where((FormHistory.overloadForm.SAASApproved == 'Pending') | (FormHistory.overloadForm.SAASApproved == None))\
-                                      .order_by(-FormHistory.createdDate).distinct()
+                baseQuery = (baseQuery.where(FormHistory.status == 'Pending')
+                                      .where(FormHistory.historyType == "Labor Overload Form")
+                                      .where((FormHistory.overloadForm.SAASApproved == 'Pending') | (FormHistory.overloadForm.SAASApproved == None)))
             elif formType == "completedOverload":
-                formList = FormHistory.select().join_from(FormHistory, OverloadForm)\
-                                      .where(FormHistory.historyType == "Labor Overload Form")\
-                                      .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied'))\
-                                      .order_by(-FormHistory.createdDate).distinct()
+                baseQuery = (baseQuery.where(FormHistory.historyType == "Labor Overload Form")
+                                      .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied')))
 
         if currentUser.isLaborAdmin:
-            formList = FormHistory.select().where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')).where(FormHistory.historyType == historyType).order_by(-FormHistory.createdDate).distinct()
+            baseQuery = baseQuery.where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
+
+        formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
+
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -132,11 +144,9 @@ def allPendingForms(formType):
 
             checkAdjustment(allForms)
 
-        users = Supervisor.select()
         return render_template( 'admin/allPendingForms.html',
                                 title=pageTitle,
                                 username=currentUser.username,
-                                users=users,
                                 formList = formList,
                                 formType= formType,
                                 modalTarget = approvalTarget,
