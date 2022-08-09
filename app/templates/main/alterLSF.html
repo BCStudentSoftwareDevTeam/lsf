@@ -170,7 +170,7 @@
      <div class="logNotesDiv">
        <h4 class=" control-label text-left" id="notesLogHeader" for="notesLog">Notes Log:</h4>
         {% for note in notes %}
-          <dl class='dl-horizontal text-left'><strong>{{note.date.strftime('%m/%d/%Y')}} | <i>{{note.createdBy.supervisor.FIRST_NAME[0]}}. {{note.createdBy.supervisor.LAST_NAME}}</i> | </strong>{{note.notesContents}}</dl>
+          <dl class='dl-horizontal text-left'><strong>{{note.date.strftime('%m/%d/%Y')}} | <i>{{note.createdBy.firstName[0]}}. {{note.createdBy.lastName}}</i> | </strong>{{note.notesContents}}</dl>
         {% endfor %}
      </div>
   </div>

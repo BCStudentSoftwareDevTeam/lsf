@@ -65,11 +65,11 @@ ul li{
 </tr>
 </table>
 {% for form in statusForm %}
-<p><strong> Primary Supervisor:</strong> {{form.supervisor.FIRST_NAME}} {{form.supervisor.LAST_NAME}}</p>
+<p><strong> Primary Supervisor:</strong>{{form.supervisor.FIRST_NAME}} {{form.supervisor.LAST_NAME}}</p>
 {% endfor %}
 {% for form1 in forms %}
 {% if form1.historyType.historyTypeName == "Labor Status Form" %}
-<p><strong>Submitted by:</strong> {{form1.createdBy.FIRST_NAME}} {{form1.createdBy.LAST_NAME}}</p>
+<p><strong>Submitted by:</strong>{{form1.createdBy.fullName}}</p>
 {% endif %}
 {% endfor %}
 <h3 style="padding:0px; margin:0px;"> Guidelines </h3>

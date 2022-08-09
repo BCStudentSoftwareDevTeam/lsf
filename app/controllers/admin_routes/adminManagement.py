@@ -52,11 +52,11 @@ def adminSearch():
                         students.append(student)
                 except DoesNotExist as e:
                     students.append(student)
-            for i in students:
-                username = i.STU_EMAIL.split('@', 1)
+            for student in students:
+                username = student.STU_EMAIL.split('@', 1)
                 userList.append({'username': username[0],
-                                'firstName': i.FIRST_NAME,
-                                'lastName': i.LAST_NAME,
+                                'firstName': student.FIRST_NAME,
+                                'lastName': student.LAST_NAME,
                                 'type': 'Student'
                                 })
         tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
@@ -72,11 +72,11 @@ def adminSearch():
                     supervisors.append(supervisor)
             except DoesNotExist as e:
                 supervisors.append(supervisor)
-        for i in supervisors:
-            username = i.EMAIL.split('@', 1)
+        for sup in supervisors:
+            username = sup.EMAIL.split('@', 1)
             userList.append({'username': username[0],
-                            'firstName': i.FIRST_NAME,
-                            'lastName': i.LAST_NAME,
+                            'firstName': sup.FIRST_NAME,
+                            'lastName': sup.LAST_NAME,
                             'type': 'Supervisor'})
         return jsonify(userList)
     except Exception as e:
@@ -88,32 +88,32 @@ def manageLaborAdmin():
     if request.form.get("addAdmin"):
         newAdmin = getUser('addAdmin')
         addAdmin(newAdmin, 'labor')
-        flashMassage(newAdmin, 'added', 'Labor')
+        flashMessage(newAdmin, 'added', 'Labor')
 
     elif request.form.get("removeAdmin"):
         oldAdmin = getUser('removeAdmin')
         removeAdmin(oldAdmin, 'labor')
-        flashMassage(oldAdmin, 'removed', 'Labor')
+        flashMessage(oldAdmin, 'removed', 'Labor')
 
     elif request.form.get("addFinancialAidAdmin"):
         newAdmin = getUser('addFinancialAidAdmin')
         addAdmin(newAdmin, 'finAid')
-        flashMassage(newAdmin, 'added', 'Financial Aid')
+        flashMessage(newAdmin, 'added', 'Financial Aid')
 
     elif request.form.get("removeFinancialAidAdmin"):
         oldAdmin = getUser('removeFinancialAidAdmin')
         removeAdmin(oldAdmin, 'finAid')
-        flashMassage(oldAdmin, 'removed', 'Financial Aid')
+        flashMessage(oldAdmin, 'removed', 'Financial Aid')
 
     elif request.form.get("addSAASAdmin"):
         newAdmin = getUser('addSAASAdmin')
         addAdmin(newAdmin, 'saas')
-        flashMassage(newAdmin, 'added', 'SAAS')
+        flashMessage(newAdmin, 'added', 'SAAS')
 
     elif request.form.get("removeSAASAdmin"):
         oldAdmin = getUser('removeSAASAdmin')
         removeAdmin(oldAdmin, 'saas')
-        flashMassage(oldAdmin, 'removed', 'SAAS')
+        flashMessage(oldAdmin, 'removed', 'SAAS')
 
     return redirect(url_for('admin.admin_Management'))
 
@@ -149,11 +149,8 @@ def removeAdmin(oldAdmin, adminType):
         oldAdmin.isSaasAdmin = False
     oldAdmin.save()
 
-def flashMassage(user, action, adminType):
-    if user.student:
-        message = "{0} {1} has been {2} as a {3} Admin".format(user.student.FIRST_NAME, user.student.LAST_NAME, action, adminType)
-    elif user.supervisor:
-        message = "{0} {1} has been {2} as a {3} Admin".format(user.supervisor.FIRST_NAME, user.supervisor.LAST_NAME, action, adminType)
+def flashMessage(user, action, adminType):
+    message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
 
     if action == 'added':
         flash(message, "success")

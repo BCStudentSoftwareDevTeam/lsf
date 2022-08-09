@@ -160,7 +160,7 @@
                 </td>
               {% endif %}
               <td> {# CREATED BY #}
-                <a aria-label="{{allForms.createdBy.supervisor.ID}}" class="hover_indicator">{{allForms.createdBy.username}} </a><a href="mailto:{{allForms.createdBy.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>  <br/> {{allForms.createdDate.strftime('%m/%d/%y')}}
+                <a aria-label="{{allForms.createdBy.supervisor.ID}}" class="hover_indicator">{{allForms.createdBy.username}} </a><a href="mailto:{{allForms.createdBy.email}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>  <br/> {{allForms.createdDate.strftime('%m/%d/%y')}}
               </td>
               <td> {# ACTION #}
                 {% if allForms.historyType.historyTypeName != 'Labor Release Form' %}
