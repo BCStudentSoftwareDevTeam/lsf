@@ -29,6 +29,22 @@ app.config['use_banner'] = False
 if app.config['ENV'] in ('production','staging'):
     app.config['use_banner'] = True
 
+app.config['show_queries'] = cfg["show_queries"] if "show_queries" in cfg else False
+from flask import session
+from peewee import BaseQuery
+if app.config['show_queries']:
+    old_execute = BaseQuery.execute
+    def new_execute(*args, **kwargs):
+        if session:
+            if 'querycount' not in session:
+                session['querycount'] = 0
+
+            session['querycount'] += 1
+            print("**Running query {}**".format(session['querycount']))
+            print(args[0])
+        return old_execute(*args, **kwargs)
+    BaseQuery.execute = new_execute
+
 # Registers blueprints (controllers). These are general routes, like /index
 from app.controllers.main_routes import main_bp as main_bp
 app.register_blueprint(main_bp)
@@ -44,3 +60,9 @@ app.register_blueprint(errors_bp)
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])
+
+@app.before_request
+def queryCount():
+    if session:
+        session['querycount'] = 0
+
