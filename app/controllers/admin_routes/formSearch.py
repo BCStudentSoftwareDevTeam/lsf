@@ -277,7 +277,7 @@ def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
         manage = manageOptionHTML.format(laborHistoryId, f"loadLaborHistoryModal({laborStatusFormId})", 'Labor History')
         actionsButton = actionsButtonDropdownHTML.format(manage, approve, deny, modify, notes)
 
-    if form.status.statusName == "Pending":
+    if form.status.statusName in ("Pending", "Pre-Student Approval"):
         # show notes modal for all pending labor status forms
         notes = denyApproveNotesOptionsHTML.format(f'notes_{laborHistoryId}', f'getNotes({laborStatusFormId})', 'NotesModal', 'View Notes')
         if form.overloadForm:
