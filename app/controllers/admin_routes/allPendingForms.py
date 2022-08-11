@@ -474,14 +474,19 @@ def getOverloadModalData(formHistoryID):
             pendingFormType = False
 
         departmentStatusInfo.update({
-                            'SAASEmail': SAASEmailDate,
                             'SAASStatus': SAASStatus,
+                            'SAASEmail': SAASEmailDate,
+                            'SAASApprover': SAASApprover,
                             'financialAidStatus': financialAidStatus,
                             'financialAidLastEmail': financialAidEmailDate,
-                            'SAASApprover': SAASApprover,
                             'FinancialAidApprover': FinancialAidApprover,
                             })
         noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID, Notes.noteType == "Labor Note").count()
+        returnToTab = None
+        try:
+            returnToTab = globalFormType
+        except Exception as e:
+            pass
         return render_template('snips/pendingOverloadModal.html',
                                             historyForm = historyForm,
                                             departmentStatusInfo = departmentStatusInfo,
@@ -490,7 +495,7 @@ def getOverloadModalData(formHistoryID):
                                             noteTotal = noteTotal,
                                             pendingForm = pendingForm,
                                             pendingFormType = pendingFormType,
-                                            formType = globalFormType,
+                                            formType = returnToTab,
                                             status = status
                                             )
     except Exception as e:

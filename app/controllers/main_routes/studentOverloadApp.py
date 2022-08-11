@@ -92,8 +92,11 @@ def updateDatabase():
             formId = rsp.keys()
             for data in rsp.values():
                 formHistoryForm = FormHistory.get(FormHistory.formHistoryID == data["formID"])
-                secondPrestudentForm = FormHistory.select().join_from(FormHistory, HistoryType).where(FormHistory.formID == formHistoryForm.formID,
-                FormHistory.status == oldStatus, FormHistory.historyType.historyTypeName != "Labor Overload Form").get()
+                secondPrestudentForm = (FormHistory.select()
+                                                   .join_from(FormHistory, HistoryType)
+                                                   .where(FormHistory.formID == formHistoryForm.formID)
+                                                   .where(FormHistory.status == oldStatus)
+                                                   .where(FormHistory.historyType.historyTypeName != "Labor Overload Form")).get()
                 secondPrestudentForm.status = newStatus
                 formHistoryForm.status = newStatus
                 secondPrestudentForm.save()
