@@ -28,22 +28,21 @@ class CSVMaker:
         Removes any duplicate formHistory IDs
         '''
 
-        noDuplicates = []
-        for form in requestedLSFs:
-            if form not in noDuplicates:
-                noDuplicates.append(form)
+        allForms = list(set(requestedLSFs)) # remove duplicates
 
-        allForms = []
         if self.downloadType == "allPending":
             allForms = FormHistory.select().where(FormHistory.status == "Pending").order_by(-FormHistory.createdDate).distinct()
         else:
-            for statusForm in noDuplicates:
+            for statusForm in allForms:
+                studentFormHistories = []
                 if self.downloadType == "studentHistory":
                     studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
                 elif self.downloadType == "studentList":
                     studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
+
                 for historyForm in studentFormHistories:
                     allForms.append(historyForm)
+
         return allForms
 
 

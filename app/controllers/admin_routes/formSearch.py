@@ -304,6 +304,7 @@ def downloadFormSearchResults():
     '''
 
     global formSearchResults
+    print(formSearchResults) # intentionally printing so I can find it later
     global sleJoin
     if sleJoin == "evalComplete":
         includeEvals = "Final"
@@ -313,5 +314,5 @@ def downloadFormSearchResults():
         includeEvals = False
 
     formSearchResults = formSearchResults.order_by(-FormHistory.createdDate)
-    excel = CSVMaker("studentHistory", formSearchResults, includeEvals = includeEvals)
+    excel = CSVMaker("formSearch", formSearchResults, includeEvals = includeEvals)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
