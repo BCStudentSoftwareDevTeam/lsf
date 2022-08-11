@@ -55,8 +55,7 @@ def auth_user(env, username):
         This exception cannot be tested naturally in development env because we cannot run Shibboleth,
         but the demo data is set up so that this exception should never happen inside of development env.
         """
-        #description = env['description'].lower()
-        description = "student"
+        description = env['description'].lower()
         supervisor = student = None
         if description == 'student':
             print("Adding {} to student table".format(username))
