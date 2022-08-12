@@ -10,13 +10,12 @@ from app import cfg
 from app.logic.emailHandler import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy
+from app.logic.utils import makeThirdPartyLink
 from app.models.notes import Notes
 from app.models.supervisor import Supervisor
 from app.login_manager import require_login
 from datetime import date, datetime
-from flask import json, jsonify
-from flask import request
-from flask import flash
+from flask import json, jsonify, request, flash
 import base64
 
 
@@ -148,9 +147,9 @@ def submitAlteredLSF(laborStatusKey):
         for fieldName in fieldsChanged:
             lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
             if formStatus =="Pending":
-                modifyLSF(fieldsChanged, fieldName, lsf, currentUser)
+                modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
             elif formStatus =="Approved":
-                changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser)
+                changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
                 if changedForm:
                     formHistoryIDs.append(changedForm)
         if formStatus == "Approved":
@@ -178,7 +177,7 @@ def submitAlteredLSF(laborStatusKey):
         return jsonify({"Success": False}), 500
 
 
-def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
+def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
     if fieldName == "supervisorNotes":
         noteEntry = Notes.create(formID           = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -207,7 +206,7 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
 
     if fieldName == "weeklyHours":
         newWeeklyHours = fieldsChanged[fieldName]['newValue']
-        createOverloadForm(newWeeklyHours, lsf, currentUser)
+        createOverloadForm(newWeeklyHours, lsf, currentUser, host=host)
         lsf.weeklyHours = int(fieldsChanged[fieldName]["newValue"])
         lsf.save()
 
@@ -224,7 +223,7 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser):
         lsf.save()
 
 
-def adjustLSF(fieldsChanged, fieldName, lsf, currentUser):
+def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
     if fieldName == "supervisorNotes":
         newNoteEntry = Notes.create(formID        = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -248,10 +247,10 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser):
                                            status       = status.statusName)
         if fieldName == "weeklyHours":
             newWeeklyHours = fieldsChanged[fieldName]['newValue']
-            createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory)
+            createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory,host=host)
         return adjustedFormHistory.formHistoryID
 
-def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None):
+def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
     allTermForms = LaborStatusForm.select() \
                    .join_from(LaborStatusForm, Student) \
                    .join_from(LaborStatusForm, FormHistory) \
@@ -284,7 +283,7 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
             if formHistories:
                 formHistories.status = "Pre-Student Approval"
                 formHistories.save()
-                overloadEmail = emailHandler(formHistories.formHistoryID)
+
             else:
                 modifiedFormHistory = FormHistory.select() \
                                     .join_from(FormHistory, HistoryType) \
@@ -292,8 +291,11 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                                     .get()
                 modifiedFormHistory.status = "Pre-Student Approval"
                 modifiedFormHistory.save()
-                overloadEmail = emailHandler(newFormHistory.formHistoryID)
-            overloadEmail.LaborOverLoadFormSubmitted("http://{0}/".format(request.host) + "studentOverloadApp/" + str(newFormHistory.formHistoryID))
+
+            link = makeThirdPartyLink("student", host, newFormHistory.formHistoryID)
+            overloadEmail = emailHandler(newFormHistory.formHistoryID)
+            overloadEmail.LaborOverLoadFormSubmitted(link)
+
         except Exception as e:
             print("An error occured while attempting to send overload form emails: ", e)
 

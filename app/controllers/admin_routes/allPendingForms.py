@@ -10,6 +10,7 @@ from app.models.emailTracker import EmailTracker
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.logic.emailHandler import *
+from app.logic.utils import makeThirdPartyLink
 from app.models.formHistory import *
 from app.models.term import Term
 from app.logic.banner import Banner
@@ -92,7 +93,7 @@ def allPendingForms(formType):
 
         # We are adding all of these joins so we don't do 10 queries later for every form
         CreatorSup = Supervisor.alias()
-        baseQuery = (FormHistory.select(FormHistory, OverloadForm, LaborStatusForm, Supervisor, Student, User, Department, Term, CreatorSup, HistoryType)
+        baseQuery = (FormHistory.select(FormHistory, OverloadForm, LaborStatusForm, Supervisor, Student, User, Department, Term, CreatorSup, HistoryType, Status)
                                 .join(OverloadForm, JOIN.LEFT_OUTER).switch()
                                 .join(HistoryType).switch()
                                 .join(LaborStatusForm)
@@ -100,6 +101,7 @@ def allPendingForms(formType):
                                 .join(Student).switch(LaborStatusForm)
                                 .join(Department).switch(LaborStatusForm)
                                 .join(Term).switch()
+                                .join(Status).switch()
                                 .join(User, attr="createdBy", on=(FormHistory.createdBy == User.userID))
                                 .join(CreatorSup, JOIN.LEFT_OUTER, attr="supervisor", on=(User.supervisor == CreatorSup.ID))
                                 )
@@ -626,6 +628,8 @@ def modalFormUpdate():
     """
     try:
         currentUser = require_login()
+        if not currentUser.isLaborAdmin and not (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin):
+            abort(403)
         rsp = eval(request.data.decode("utf-8"))
         if rsp:
             historyForm = FormHistory.get(FormHistory.formHistoryID == rsp['formHistoryID'])
@@ -634,32 +638,23 @@ def modalFormUpdate():
             status = Status.get(Status.statusName == rsp['status'])
 
             save_form_status = True
+
+            # send it to banner if they have approved an overload
             if rsp['formType'] == 'Overload' and "Approved" in rsp['status'] and historyForm.formID.POSN_CODE != "S12345":
                 conn = Banner()
                 save_form_status = conn.insert(historyForm)
 
             # if we are able to save
             if save_form_status:
-                try:
-                    # This try is to handle Overload Forms
-                    overloadForm = OverloadForm.get(OverloadForm.overloadFormID == historyForm.overloadForm.overloadFormID)
-                    if (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin) and not currentUser.isLaborAdmin:
+                # This try is to handle Overload Forms
+                if historyForm.overloadForm:
+                    overloadForm = historyForm.overloadForm
+                    if currentUser.isLaborAdmin:
+                        laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email)
+                    elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
                         financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate)
 
-                    elif currentUser.isFinancialAidAdmin and currentUser.isLaborAdmin:
-                        if (not overloadForm.financialAidApproved) or (overloadForm.financialAidApproved == "Pending"):
-                            financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate)
-                        else:
-                            laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email)
-                    elif currentUser.isSaasAdmin and currentUser.isLaborAdmin:
-                        if (not overloadForm.SAASApproved) or overloadForm.SAASApproved == "Pending":
-                            financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate)
-                        else:
-                            laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email)
-
-                    elif currentUser.isLaborAdmin and (not currentUser.isFinancialAidAdmin or not currentUser.isSaasAdmin):
-                        laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email)
-                except:
+                else:
                     # This except is to handle Release Forms
                     historyForm.status = status.statusName
                     historyForm.reviewedDate = currentDate
@@ -687,6 +682,7 @@ def modalFormUpdate():
                         email.laborReleaseFormRejected()
                     elif rsp["status"] == "Approved":
                         email.laborReleaseFormApproved()
+
             return jsonify({"Success": True})
 
     except Exception as e:
@@ -701,13 +697,14 @@ def sendEmail():
     try:
         rsp = eval(request.data.decode("utf-8"))
         if rsp:
-            historyForm = FormHistory.get(FormHistory.formHistoryID == rsp['formHistoryID'])
-            overloadForm = OverloadForm.get(OverloadForm.overloadFormID == historyForm.overloadForm)
+            historyForm = FormHistory.get_by_id(rsp['formHistoryID'])
+            overloadForm = historyForm.overloadForm
             status = Status.get(Status.statusName == 'Pending')
             if rsp['emailRecipient'] == 'studentEmail':
                 recipient ="Student"
                 email = emailHandler(historyForm.formHistoryID)
-                email.laborOverloadFormStudentReminder("http://{0}/".format(request.host) + "studentOverloadApp/" + str(rsp['formHistoryID']))
+                link = makeThirdPartyLink("student", request.host, rsp['formHistoryID'])
+                email.LaborOverloadFormStudentReminder(link)
 
             else:
                 if rsp['emailRecipient'] == 'SAASEmail':
@@ -718,8 +715,9 @@ def sendEmail():
                     recipient = 'Financial Aid'
                     overloadForm.financialAidApproved = status.statusName
                     overloadForm.save()
-                link = 'http://{0}/'.format(request.host) + 'admin/financialAidOverloadApproval/' + str(rsp['formHistoryID'])
+
                 email = emailHandler(historyForm.formHistoryID)
+                link = makeThirdPartyLink(recipient, request.host, historyForm.formHistoryID)
                 email.overloadVerification(recipient, link)
             currentDate = datetime.now().strftime('%m/%d/%y')
             newEmailInformation = {'recipient': recipient,

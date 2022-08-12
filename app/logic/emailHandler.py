@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask
 from flask_mail import Mail, Message
 from app.config.loadConfig import*
 from app.models.emailTemplate import*
@@ -198,9 +198,14 @@ class emailHandler():
         self.link = link
         self.checkRecipient("Labor Overload Form Submitted For Student",
                       "Labor Overload Form Submitted For Supervisor")
-    def laborOverloadFormStudentReminder(self,link):
+
+    def LaborOverloadFormStudentReminder(self,link):
         self.link = link
         self.checkRecipient("Labor Overload Form Submitted For Student")
+
+    def LaborOverloadFormWithdrawn(self):
+        self.checkRecipient("Labor Overload Form Withdrawn For Student",
+                            "Labor Overload Form Withdrawn For Supervisor")
 
     def LaborOverLoadFormSubmittedNotification(self):
         """
@@ -213,11 +218,13 @@ class emailHandler():
 
     def LaborOverLoadFormApproved(self):
         self.checkRecipient("Labor Overload Form Approved For Student",
-                      "Labor Overload Form Approved For Supervisor")
+                      "Labor Overload Form Approved For Supervisor",
+                      "Labor Overload Form Approved For Financial Aid")
 
     def LaborOverLoadFormRejected(self):
         self.checkRecipient("Labor Overload Form Rejected For Student",
-                            "Labor Overload Form Rejected For Supervisor")
+                            "Labor Overload Form Rejected For Supervisor",
+                            "Labor Overload Form Rejected For Financial Aid")
 
     def notifyAdditionalLaborStatusFormSubmittedForBreak(self):
         # This is the submission
@@ -245,9 +252,8 @@ class emailHandler():
                 emailList.append(admin.username + "@berea.edu")
         elif dept == "Financial Aid":
             emailList.append(secret_conf["financial_aid"]["email"])
-        message = Message("Labor Overload Form Verification",
-            recipients=emailList)
         emailTemplateID = EmailTemplate.get(EmailTemplate.purpose == "SAAS and Financial Aid Office")
+        message = Message(emailTemplateID.subject, recipients=emailList)
         newEmailTracker = EmailTracker.create(
                         formID = self.laborStatusForm.laborStatusFormID,
                         date = datetime.today().strftime('%Y-%m-%d'),

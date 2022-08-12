@@ -21,9 +21,9 @@ function overloadSubmission(formHistoryKey){
       data: data,
       contentType: "application/json",
       success:function(){
-        msgFlash("Your changes have been saved successfuly.(You will be redirected shortly.)", "success")
+        msgFlash("Your changes have been saved successfully. Thank you. You will be redirected shortly.", "success")
         setTimeout(function() { // executed after 1 second
-           window.location.replace('http://berea.edu'); // redirects to a new website
+           window.location.replace('/'); // redirects to a new website
          }, 5000);
       },
       error:function(response){
@@ -35,16 +35,9 @@ function overloadSubmission(formHistoryKey){
 
 // for showing different messages with flash
 function msgFlash(flash_message, status){
-    if (status === "success") {
-        category = "success";
-        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
-        $("#flasher").delay(5000).fadeOut();
-    }
-    else {
-        category = "danger";
-        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
-        $("#flasher").delay(5000).fadeOut();
-    }
+    category = (status === "success") ? "success" : "danger";
+    $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+    $("#flasher").delay(5000).fadeOut();
 
 }
 var statusName = null
@@ -54,14 +47,13 @@ function openApproveDenyModal(status){
     $("#required-error").hide();
     $("#finOverloadSubmit").attr("data-dismiss", "modal")
     $("#finOverloadModal .modal-title").text("Reason for Approval")
-    $("#modal-body-content").html("You have selected 'Approve' for this student's Overload Request. Please indicate a reasoning for this decision <b>(Optional)</b>."+
-                                  "<br><br><b>Please indicate in the notes if the overload form is being approved for a different term.</b>");
+    $("#modal-body-content").html("You are approving this student's Overload Request. You can optionally provide a reason for this decision. <br><br><b>Please leave a note if the overload form is being approved for a different term.</b>");
     $(".textarea-required").prop('required', false);
     $("#finOverloadModal").modal("show");
   }
   else{
     $("#finOverloadModal .modal-title").text("Reason for Denial");
-    $("#modal-body-content").html("You have selected 'Deny' for this student's Overload Request. Please indicate a reasoning for this decision <b>(Required)</b>.");
+    $("#modal-body-content").html("You are denying this student's Overload Request. Please provide a reason for this decision.");
     $(".textarea-required").prop('required', true);
     $("#finOverloadModal").modal("show");
   }

@@ -84,7 +84,7 @@ def userInsert():
         try:
             lsf = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, rspFunctional[i])
             status = Status.get(Status.statusName == "Pending")
-            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, status) # createOverloadFormAndFormHistory()
+            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, status, host=request.host) 
             try:
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
             except Exception as e:
@@ -192,7 +192,7 @@ def releaseAndRehire():
         status = Status.get(Status.statusName == "Pending")
 
         newLaborStatusForm = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, studentDict)
-        formHistory = createOverloadFormAndFormHistory(studentDict, newLaborStatusForm, currentUser, status)
+        formHistory = createOverloadFormAndFormHistory(studentDict, newLaborStatusForm, currentUser, status, host=request.host)
 
         # Mark the newly created labor status form as approved in both our system and Banner
         saveStatus("Approved", [str(formHistory.formHistoryID)], currentUser)

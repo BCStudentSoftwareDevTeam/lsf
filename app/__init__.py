@@ -26,8 +26,8 @@ if app.config['ENV'] in ('production','staging'):
     app.config['use_tracy'] = True
 
 app.config['use_banner'] = False
-if app.config['ENV'] in ('production','staging'):
-    app.config['use_banner'] = True
+#if app.config['ENV'] in ('production','staging'):
+    #app.config['use_banner'] = True
 
 app.config['show_queries'] = cfg["show_queries"] if "show_queries" in cfg else False
 from flask import session
