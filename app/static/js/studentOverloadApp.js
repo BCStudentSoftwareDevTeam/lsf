@@ -45,17 +45,16 @@ function checkForEmptyFields(){
   }
 }
 
-function updateDatabase(formID){
-  var notes = $("#notes").val()
-  var dataDict = {}
-  dataDict[formID] = {"Notes": notes, "formID": formID}
-  data = JSON.stringify(dataDict)
-  var url = "/studentOverloadApp/update";
+function updateDatabase(overloadFormHistoryID){
    $.ajax({
-     url: url,
+     url: "/studentOverloadApp/update/" + overloadFormHistoryID,
      method: "POST",
-     data: data,
-     dataType: "json",
-     contentType: 'application/json'
+     data: {"overloadReason": $("#notes").val()},
+     success: function() {
+        window.location.href = '/';
+     },
+     error: function(e) {
+         console.log(e)
+     }
    })
 }

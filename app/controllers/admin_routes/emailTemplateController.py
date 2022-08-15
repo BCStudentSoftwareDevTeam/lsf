@@ -11,46 +11,28 @@ def email_templates():
     currentUser = require_login()
     if not currentUser:                    # Not logged in
         return render_template('errors/403.html'), 403
+
     if not currentUser.isLaborAdmin:       # Not a labor admin
         if currentUser.student: # logged in as a student
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
-    emailTemplateID = EmailTemplate.select()
-    purpose = EmailTemplate.select(EmailTemplate.purpose).distinct()
-    formType = EmailTemplate.select(EmailTemplate.formType).distinct()
-    action = EmailTemplate.select(EmailTemplate.action).distinct()
-    subject = EmailTemplate.select(EmailTemplate.subject).distinct()
-    recipient = EmailTemplate.select(EmailTemplate.audience).distinct()
-    body = EmailTemplate.select(EmailTemplate.body)
-    return render_template( 'admin/emailTemplates.html',
-				            title=('Email Templates'),
-                            emailTemplateID = emailTemplateID,
-                            purpose = purpose,
-                            action = action,
-                            formType = formType,
-                            subject = subject,
-                            recipient = recipient,
-                            body = body
-                          )
+
+    recipients = EmailTemplate.select(EmailTemplate.audience).distinct()
+    return render_template( 'admin/emailTemplates.html', recipients=recipients)
 
 @admin.route('/admin/emailTemplates/getEmailArray/', methods=['GET'])
-
 def getEmailArray():
-    response = EmailTemplate.select()
-    emailTemplateArrayDict = []
-    for i in range(len(response)):
-        currentTemplateDict = { "ID": response[i].emailTemplateID,
-                                "purpose": response[i].purpose,
-                                "subject": response[i].subject,
-                                "body": response[i].body,
-                                "audience": response[i].audience,
-                                "formType": response[i].formType,
-                                "action": response[i].action
-                              }
-        emailTemplateArrayDict.append(currentTemplateDict)
-
-    return json.dumps(emailTemplateArrayDict)
+    templates = EmailTemplate.select()
+    return json.dumps([{
+                        "ID": template.emailTemplateID,
+                        "purpose": template.purpose,
+                        "subject": template.subject,
+                        "body": template.body,
+                        "audience": template.audience,
+                        "formType": template.formType,
+                        "action": template.action
+            } for template in EmailTemplate.select()])
 
 @admin.route('/admin/emailTemplates/getPurpose/<fieldsDictSTR>', methods=['GET'])
 

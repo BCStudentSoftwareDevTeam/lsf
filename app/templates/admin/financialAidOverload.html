@@ -1,4 +1,5 @@
 {% extends "finAidBase.html" %}
+
 {% block styles %}
 {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/financialAidOverload.css')}}?u={{lastStaticUpdate}}">
@@ -12,32 +13,32 @@
 {% block app_content %}
 <!-- ?holds the heading and the student name -->
 <div align="center">
-  <h2 id="finAidTitle">Financial Aid (SAAS) Overload Approval
+    <h2 id="finAidTitle">{{userDept}} Overload Approval
     <span class="glyphicon glyphicon-bookmark"
        data-toggle="tooltip" data-tooltip="true"
        title="The Financial Aid (SAAS) interface is for approving or denying overload forms."
        data-placement = "right" id="titleGlyphicon">
     </span>
   </h2>
-  <h3 id = "student"> {{studentName}} ({{studentBnum}})</h3>
+  <h3 id = "student"> {{lsfForm.studentSupervisee.FIRST_NAME}} {{lsfForm.studentSupervisee.LAST_NAME}} ({{lsfForm.studentSupervisee_id}})</h3>
 </div>
  <form id="FinancialAidSAAS">
    <div class="container">
      <div class="floatleft">
          <div class="form-group">
            <div>
-             <h3> Current Position </h3>
+             <h3>Current Primary Position</h3>
            </div>
-           <label for="Student">Student Name:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="student" value="{{studentName}}" disabled> <!--User CANNOT edit-->
+           <label for="Student">Student Name:</label> 
+           <input type="text" class="form-control" id="student" value="{{lsfForm.studentSupervisee.FIRST_NAME}} {{lsfForm.studentSupervisee.LAST_NAME}}" disabled> 
          </div>
          <div class="form-group">
-           <label for="primaryPosition" class="field">Primary Position:</label>
-           <input type="text" class="form-control" id= "primaryPosition"value="{{position}}" disabled> </input> <!-- stores value of original-->
+           <label for="primaryPosition" class="field">Primary Position (WLS):</label>
+           <input type="text" class="form-control" id= "primaryPosition" value="{{primaryForm.POSN_TITLE}} ({{primaryForm.WLS}})" disabled> </input> <!-- stores value of original-->
          </div>
          <div class="form-group">
-           <label for="primaryPosHours">Total Primary Position Hours:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryPositionHours}}" disabled> <!--User CANNOT edit-->
+           <label for="primaryPosHours">Total Primary Position Hours:</label> 
+           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryForm.weeklyHours}}" disabled> 
          </div>
          <div class="form-group">
            <label for="primarySupervisor" class="field">Primary Supervisor:</label>
@@ -45,49 +46,53 @@
          </div>
          <!-- This selectpicker will be disabled if term is for a break, since jobtype is always Secondary-->
          <div class="form-group">
-           <label for="department">Department:</label> <!--User CANNOT edit-->
-           <input type="text" class="form-control" id="department" value="{{department}}" disabled> <!--User CANNOT edit-->
+           <label for="department">Department:</label> 
+           <input type="text" class="form-control" id="department" value="{{department}}" disabled> 
          </div>
      </div>
 
     <div class= "floatright" >
        <div class="form-group">
          <div>
-           <h3> Overload Request Info </h3>
+           <h3>Overload Request Info</h3>
          </div>
-         <label for="overloadPosition">Position:</label> <!--User CANNOT edit-->
-         <input type="text" class="form-control" id="overloadPosition" value="{{overloadPosition}}" disabled> <!--User CANNOT edit-->
+         <label for="overloadPosition">New Position (WLS):</label> 
+         <input type="text" class="form-control" id="overloadPosition" value="{{lsfForm.POSN_TITLE}} ({{lsfForm.WLS}})" disabled> 
        </div>
        <div class="form-group">
-         <label for="overloadHours">Total hours with overload:</label> <!--User CANNOT edit-->
-         <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled> <!--User CANNOT edit-->
+         <label for="dates">Contract Hours:</label> 
+           <input type="text" class="form-control" id="dates" value= "{{lsfForm.weeklyHours}}" disabled> 
        </div>
        <div class="form-group">
-         <label for="dates">Contract Date:</label> <!--User CANNOT edit--> <!--- TODO Is connected to Labor Status form Start Date -->
-           <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled> <!--User CANNOT edit-->
+         <label for="overloadHours">Total hours with overload (including all secondaries):</label> 
+         <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled> 
+       </div>
+       <div class="form-group">
+         <label for="dates">Contract Dates:</label> 
+           <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled> 
        </div>
        <div class="form-group">
          <label>Student's Overload Reason:</label>
-         <textarea type="text" class="form-control" id="overloadReason" value="{{studentOverloadReason}}" disabled>{{studentOverloadReason}}</textarea>
-       </div>
-       <div class="form-group">
-         <label>Labor Office Notes:</label>
-         <textarea type="text" class="form-control" id="laborNotes" value="{{laborOfficeNotes}}" disabled>{{laborOfficeNotes}}</textarea>
+         <textarea type="text" class="form-control" id="overloadReason" value="{{overloadFormHistory.overloadForm.studentOverloadReason}}" disabled>{{overloadFormHistory.overloadForm.studentOverloadReason}}</textarea>
        </div>
     </div>
+   <div class="form-group">
+     <label>Labor Office Notes:</label>
+     <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
+   </div>
   </div>
   <div class="container" align="center" id="buttonContainer">
     <div class="col-md-6" align="right">
       <button type="button" id = "approve" class="btn btn-success" value="approved" onclick="openApproveDenyModal(this.value)">Approve</button>
     </div>
     <div class="col-md-6" align="left" >
-      <button id="deny_{{overload.formHistoryID}}"
+      <button id="deny_{{overloadFormHistory.formHistoryID}}"
        type="button" class="btn btn-danger"
        value = "denied"
        onclick="openApproveDenyModal(this.value)"
        >Deny</button>
     </div>
-    {% with overload = overload %}
+    {% with overload = overloadFormHistory %}
       {% include "snips/financialAidOverloadModals.html" %}
     {% endwith %}
   </div>

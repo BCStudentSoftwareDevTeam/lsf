@@ -21,7 +21,11 @@
   </div>
 
   <!-- TODO: This page appears not to utilize Bootstrap -->
-
+<style>
+    .container ul label {
+        font-weight: normal;
+    }
+</style>
 <div class="container col-md-11" id="checkboxes" >
     <p>A labor overload is defined as more than 15 hours of labor per week during the regular academic year and may not be approved retroactively. All approvals are subject to periodic review.
        Approval may be revoked if primary labor hours, labor performance, or academic performance become less than satisfactory.
@@ -29,28 +33,40 @@
     <div>
         <p class="required-mark">* Marked fields are required</p>
     </div>
-  <div class="floatleft">
-    <ul class="small">
-      <h6><strong><span class="tooltip-right" data-tooltip="Required">Guidelines for Approval:</span></strong></h6>
-      <input type="checkbox" name="checkbox" id="checkbox1" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Sophomore, junior, or senior classification<span class="required-mark"> *</span><br>
-      <input type="checkbox" name="checkbox" id="checkbox2" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Not on any form of probation<span class="required-mark"> *</span><br>
-      <input type="checkbox" name="checkbox" id="checkbox3" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Enrolled in less than 5 course credits with less than 8 preparations<span class="required-mark"> *</span> <br>
-      <input type="checkbox" name="checkbox" id="checkbox4" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Have a 2.50 GPA, both cumulative and for the previous full term<span class="required-mark"> *</span> <br>
-      <input type="checkbox" name="checkbox" id="checkbox5" onclick="checkBoxCheck(this,{{totalFormHours}})" /> The required 2.50 cumulative GPA may be waived if a 3.00 GPA is earned during the previous full term<span class="required-mark"> *</span>
-    </ul>
-  </div>
-  {% if totalFormHours > 20 %}
-<div class="floatleft">
-  <ul class="small">
-    <h6><strong><span class="tooltip-right" data-tooltip="Required">Requests for over 20 hours* are subject to the following additional guidelines:</span></strong></h6>
-    <input type="checkbox" name="checkbox" id="checkbox6" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Junior or senior classification. 3.00 GPA in the major, overall, and for the previous term<span class="required-mark"> *</span> <br>
-    <input type="checkbox" name="checkbox" id="checkbox7" onclick="checkBoxCheck(this,{{totalFormHours}})" /> Approval of the Dean of Labor, the Student Admissions and Academic Standing Committee, and the Office of Financial Aid<span class="required-mark"> *</span>
-  </ul>
-</div>
-{% endif %}
-</div>
-<div class="col-md-1">
+    <ul>
+      <h4><span class="tooltip-right" data-tooltip="Required">Guidelines for Approval:</span></h4>
+      <input type="checkbox" name="checkbox" id="checkbox1" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <label for="checkbox1">Sophomore, junior, or senior classification</label>
+      <span class="required-mark"> *</span><br>
 
+      <input type="checkbox" name="checkbox" id="checkbox2" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <label for="checkbox2">Not on any form of probation</label>
+      <span class="required-mark"> *</span><br>
+
+      <input type="checkbox" name="checkbox" id="checkbox3" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <label for="checkbox3">Enrolled in less than 5 course credits with less than 8 preparations</label>
+      <span class="required-mark"> *</span> <br>
+
+      <input type="checkbox" name="checkbox" id="checkbox4" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <label for="checkbox4">Have a 2.50 GPA, both cumulative and for the previous full term</label>
+      <span class="required-mark"> *</span> <br>
+
+      <input type="checkbox" name="checkbox" id="checkbox5" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <label for="checkbox5">The required 2.50 cumulative GPA may be waived if a 3.00 GPA is earned during the previous full term</label>
+      <span class="required-mark"> *</span>
+    </ul>
+  {% if totalFormHours > 20 %}
+  <ul>
+    <h6><strong><span class="tooltip-right" data-tooltip="Required">Requests for over 20 hours* are subject to the following additional guidelines:</span></strong></h6>
+    <input type="checkbox" name="checkbox" id="checkbox6" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+    <label for="checkbox6">Junior or senior classification. 3.00 GPA in the major, overall, and for the previous term</label>
+    <span class="required-mark"> *</span> <br>
+
+    <input type="checkbox" name="checkbox" id="checkbox7" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+    <label for="checkbox7">Approval of the Dean of Labor, the Student Admissions and Academic Standing Committee, and the Office of Financial Aid</label>
+    <span class="required-mark"> *</span>
+  </ul>
+{% endif %}
 </div>
 
 <div class="container col-md-11">
@@ -134,9 +150,11 @@
 </div>
 <div class="container col-md-11">
   <div align="center" >
-    <button id="submit" type="submit" class="btn btn-success" onclick ="checkForEmptyFields()">Submit Changes</button>
+    <button id="submit" type="submit" class="btn btn-success" onclick ="checkForEmptyFields()">Submit Overload Request</button>
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#withdrawModal">Withdraw Request</button>
     {% with overloadForm=overloadForm %}
       {% include "snips/studentOverloadSubmit.html" %}
+      {% include "snips/studentOverloadWithdraw.html" %}
     {% endwith %}
   </div>
 </div>

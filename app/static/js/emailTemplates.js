@@ -153,7 +153,6 @@ function discard() {
     CKEDITOR.instances["editor1"].setData('')
     msg = "The email template changes have been discarded.";
     category = "info";
-    console.log($("#recipient").val());
   }
   $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>');
   $("#flasher").delay(3000).fadeOut();
