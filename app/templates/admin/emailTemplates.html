@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-​{% block scripts %}
+{% block scripts %}
 {{super()}}
 <script type=text/javascript src="{{url_for('static', filename='js/emailTemplates.js')}}?u={{lastStaticUpdate}}"></script>
 <link rel="stylesheet" href="/static/css/tooltip.css?u={{lastStaticUpdate}}" type="text/css"/>
@@ -36,7 +36,7 @@
           title="Select Recipient"
           data-width="100%"
           onchange="populateFormType()">
-      {% for value in recipient %}
+      {% for value in recipients %}
          <option value="{{value.audience}}">{{value.audience}}</option>
       {% endfor %}
     </select>

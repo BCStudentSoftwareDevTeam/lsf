@@ -186,7 +186,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
     return lsf
 
 
-def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status, host=None):
+def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
     """
     Creates a 'Labor Status Form' and then if the request needs an overload we create
     a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form'
@@ -197,7 +197,8 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status, host
     """
     # We create a 'Labor Status Form' first, then we check to see if a 'Labor Overload Form'
     # needs to be created
-    if rspFunctional.get("isItOverloadForm") == "True":
+    isOverload = rspFunctional.get("isItOverloadForm") == "True"
+    if isOverload:
         newLaborOverloadForm = OverloadForm.create( studentOverloadReason = None,
                                                     financialAidApproved = None,
                                                     financialAidApprover = None,
@@ -223,10 +224,12 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status, host
                         overloadForm = None,
                         createdBy   = creatorID,
                         createdDate = date.today(),
-                        status      = status)
-    if not formHistory.formID.termCode.isBreak:
+                        status      = "Pre-Student Approval")
+
+    if not formHistory.formID.termCode.isBreak and not isOverload:
         email = emailHandler(formHistory.formHistoryID)
         email.laborStatusFormSubmitted()
+
     return formHistory
 
 
