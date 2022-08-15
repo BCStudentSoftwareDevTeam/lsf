@@ -159,10 +159,15 @@
           <div class="col-sm-2" align="left">Submitted</div>
         </div>
       {% elif form.reviewedDate != None %}
+        {% set status = form.status_id %}
+        {% if currentUser.isStudent %}
+            {% set status = form.status_id.split()[0] %}
+        {% endif %}
+        
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
           <div class="col-sm-6 col-sm-offset-1"><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
-          <div class="col-sm-2" align="left">{{form.status}}</div>
+          <div class="col-sm-2" align="left">{{status}}</div>
         </div>
         {% if form.status.statusName == "Denied" %}
         <div class="leftMargin">

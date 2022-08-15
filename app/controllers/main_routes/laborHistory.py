@@ -140,6 +140,7 @@ def populateModal(statusKey):
 
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
+                                            currentUser = currentUser,
                                             statusForm = statusForm,
                                             currentDate = currentDate,
                                             pendingformType = pendingformType,

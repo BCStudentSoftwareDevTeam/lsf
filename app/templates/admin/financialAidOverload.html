@@ -33,12 +33,12 @@
            <input type="text" class="form-control" id="student" value="{{lsfForm.studentSupervisee.FIRST_NAME}} {{lsfForm.studentSupervisee.LAST_NAME}}" disabled> 
          </div>
          <div class="form-group">
-           <label for="primaryPosition" class="field">Primary Position:</label>
-           <input type="text" class="form-control" id= "primaryPosition"value="{{position}}" disabled> </input> <!-- stores value of original-->
+           <label for="primaryPosition" class="field">Primary Position (WLS):</label>
+           <input type="text" class="form-control" id= "primaryPosition" value="{{primaryForm.POSN_TITLE}} ({{primaryForm.WLS}})" disabled> </input> <!-- stores value of original-->
          </div>
          <div class="form-group">
            <label for="primaryPosHours">Total Primary Position Hours:</label> 
-           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryPositionHours}}" disabled> 
+           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryForm.weeklyHours}}" disabled> 
          </div>
          <div class="form-group">
            <label for="primarySupervisor" class="field">Primary Supervisor:</label>
@@ -56,26 +56,30 @@
          <div>
            <h3>Overload Request Info</h3>
          </div>
-         <label for="overloadPosition">Position:</label> 
-         <input type="text" class="form-control" id="overloadPosition" value="{{lsfForm.POSN_TITLE}}" disabled> 
+         <label for="overloadPosition">New Position (WLS):</label> 
+         <input type="text" class="form-control" id="overloadPosition" value="{{lsfForm.POSN_TITLE}} ({{lsfForm.WLS}})" disabled> 
+       </div>
+       <div class="form-group">
+         <label for="dates">Contract Hours:</label> 
+           <input type="text" class="form-control" id="dates" value= "{{lsfForm.weeklyHours}}" disabled> 
        </div>
        <div class="form-group">
          <label for="overloadHours">Total hours with overload (including all secondaries):</label> 
          <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled> 
        </div>
        <div class="form-group">
-         <label for="dates">Contract Date:</label> 
+         <label for="dates">Contract Dates:</label> 
            <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled> 
        </div>
        <div class="form-group">
          <label>Student's Overload Reason:</label>
          <textarea type="text" class="form-control" id="overloadReason" value="{{overloadFormHistory.overloadForm.studentOverloadReason}}" disabled>{{overloadFormHistory.overloadForm.studentOverloadReason}}</textarea>
        </div>
-       <div class="form-group">
-         <label>Labor Office Notes:</label>
-         <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
-       </div>
     </div>
+   <div class="form-group">
+     <label>Labor Office Notes:</label>
+     <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
+   </div>
   </div>
   <div class="container" align="center" id="buttonContainer">
     <div class="col-md-6" align="right">

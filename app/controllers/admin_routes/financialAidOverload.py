@@ -39,14 +39,14 @@ def financialAidOverload(formHistoryID):
                                        LaborStatusForm.studentSupervisee == lsfForm.studentSupervisee.ID, 
                                        LaborStatusForm.termCode == lsfForm.termCode))
     totalHours = {"secondaryHours" : 0, "primaryHours": 0}
-    postion = supervisor = department = ""
+    supervisor = department = ""
+    primaryForm = {}
     for form in allLaborStatusForms:
         if form.jobType == "Primary":
-            position = form.POSN_TITLE
+            primaryForm = form
             supervisor = form.supervisor.FIRST_NAME +" "+ form.supervisor.LAST_NAME
             department = form.department.DEPT_NAME
-            primaryPositionHours = form.weeklyHours
-            totalHours["primaryHours"] = primaryPositionHours
+            totalHours["primaryHours"] = form.weeklyHours
         if form.jobType == "Secondary":
             totalHours["secondaryHours"] += form.weeklyHours
 
@@ -59,11 +59,10 @@ def financialAidOverload(formHistoryID):
     return render_template( 'admin/financialAidOverload.html',
                         overloadFormHistory = overloadFormHistory,
                         lsfForm = lsfForm,
+                        primaryForm = primaryForm,
                         userDept = userDept,
                         department = department,
-                        position = position,
                         supervisor= supervisor,
-                        primaryPositionHours = primaryPositionHours,
                         contractDate = contractDate,
                         totalOverloadHours = totalHours["primaryHours"] + totalHours["secondaryHours"]
                       )
