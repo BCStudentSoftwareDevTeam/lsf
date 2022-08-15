@@ -304,7 +304,6 @@ def downloadFormSearchResults():
     '''
 
     global formSearchResults
-    print(formSearchResults) # intentionally printing so I can find it later
     global sleJoin
     if sleJoin == "evalComplete":
         includeEvals = "Final"

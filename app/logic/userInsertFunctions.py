@@ -17,6 +17,7 @@ from flask import Flask, redirect, url_for, flash
 from app import cfg
 from app.logic.emailHandler import emailHandler
 from app.logic.tracy import Tracy, InvalidQueryException
+from app.logic.utils import makeThirdPartyLink
 from peewee import DoesNotExist
 from functools import reduce
 import operator
@@ -185,7 +186,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
     return lsf
 
 
-def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status):
+def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
     """
     Creates a 'Labor Status Form' and then if the request needs an overload we create
     a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form'
@@ -196,9 +197,8 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status):
     """
     # We create a 'Labor Status Form' first, then we check to see if a 'Labor Overload Form'
     # needs to be created
-    if rspFunctional.get("isItOverloadForm") == "True":
-        status = Status.get(Status.statusName == "Pre-Student Approval")
-        overloadHistoryType = HistoryType.get(HistoryType.historyTypeName == "Labor Overload Form")
+    isOverload = rspFunctional.get("isItOverloadForm") == "True"
+    if isOverload:
         newLaborOverloadForm = OverloadForm.create( studentOverloadReason = None,
                                                     financialAidApproved = None,
                                                     financialAidApprover = None,
@@ -210,23 +210,26 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, status):
                                                     laborApprover = None,
                                                     laborReviewDate = None)
         formOverload = FormHistory.create( formID = lsf.laborStatusFormID,
-                                            historyType = overloadHistoryType.historyTypeName,
+                                            historyType = "Labor Overload Form",
                                             overloadForm = newLaborOverloadForm.overloadFormID,
                                             createdBy   = creatorID,
                                             createdDate = date.today(),
-                                            status      = status.statusName)
+                                            status      = "Pre-Student Approval")
         email = emailHandler(formOverload.formHistoryID)
-        email.LaborOverLoadFormSubmitted('http://{0}/'.format(request.host) + 'studentOverloadApp/' + str(formOverload.formHistoryID))
-    historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Status Form")
+        link = makeThirdPartyLink("student", host, formOverload.formHistoryID)
+        email.LaborOverLoadFormSubmitted(link)
+
     formHistory = FormHistory.create( formID = lsf.laborStatusFormID,
-                        historyType = historyType.historyTypeName,
+                        historyType = "Labor Status Form",
                         overloadForm = None,
                         createdBy   = creatorID,
                         createdDate = date.today(),
-                        status      = status.statusName)
-    if not formHistory.formID.termCode.isBreak:
+                        status      = "Pre-Student Approval")
+
+    if not formHistory.formID.termCode.isBreak and not isOverload:
         email = emailHandler(formHistory.formHistoryID)
         email.laborStatusFormSubmitted()
+
     return formHistory
 
 
