@@ -147,8 +147,7 @@ def updateDatabase(overloadFormHistoryID):
             overloadForm.studentOverloadReason = overloadReason
             overloadForm.save()
 
-            email = emailHandler(originalFormHistory.formHistoryID)
-            email.LaborOverLoadFormSubmittedNotification()
+            email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
 

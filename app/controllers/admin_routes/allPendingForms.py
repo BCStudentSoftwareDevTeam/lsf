@@ -383,7 +383,7 @@ def getNotes(formid):
     try:
         currentUser = require_login()
         supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) 
-        laborNotes = list(Notes.select().where(Notes.formID == formid, Notes.noteType == "Labor Note"))
+        laborNotes = list(Notes.select().where(Notes.formID == formid))
         laborNotes.reverse()
         
 
@@ -395,8 +395,9 @@ def getNotes(formid):
         if len(laborNotes) > 0:
             htmlList = []
             for note in laborNotes:
+                category = note.noteType[:-5]
                 formattedDate = note.date.strftime('%m/%d/%Y')
-                htmlList.append("<dl class='dl-horizontal text-left'> <b>" + formattedDate + " | <i>" + note.createdBy.firstName[0] + ". " + note.createdBy.lastName + "</i> | </b> " + note.notesContents + "</dl>")
+                htmlList.append(f"<dl class='dl-horizontal text-left'> <b>{formattedDate} |</b> {category} <b>| <i>{note.createdBy.firstName[0]}. {note.createdBy.lastName}</i> | </b>{note.notesContents}</dl>")
             notesDict["laborDepartmentNotes"] = htmlList
 
         return jsonify(notesDict)
@@ -484,7 +485,7 @@ def getOverloadModalData(formHistoryID):
                             'financialAidLastEmail': financialAidEmailDate,
                             'FinancialAidApprover': FinancialAidApprover,
                             })
-        noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID, Notes.noteType == "Labor Note").count()
+        noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID).count()
         returnToTab = None
         try:
             returnToTab = globalFormType
