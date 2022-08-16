@@ -2,7 +2,7 @@ from flask import request, session
 from app import cfg, app
 from app.controllers.errors_routes.handlers import *
 from app.models.user import User, DoesNotExist
-from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy, InvalidUserException
+from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy, InvalidUserException, updateUserFromTracy
 
 def getUsernameFromEnv(env):
     envK = "eppn"
@@ -34,6 +34,9 @@ def require_login():
     except InvalidUserException as e:
         print("Invalid User:", e)
         return False
+    
+    # Update the user's name
+    user = updateUserFromTracy(user)
 
     if 'username' not in session:
         print("Logging in as", user.username)

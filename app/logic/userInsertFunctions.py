@@ -50,6 +50,27 @@ def createUser(username, student=None, supervisor=None):
 
     return user
 
+def updateUserFromTracy(user):
+    try:
+        tracyUser = None
+        baseObj = None
+        if user.student:
+            tracyUser = Tracy().getStudentFromBNumber(user.student_id)
+            baseObj = user.student
+        if user.supervisor:
+            tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
+            baseObj = user.supervisor
+
+        baseObj.FIRST_NAME = tracyUser.FIRST_NAME
+        baseObj.LAST_NAME = tracyUser.LAST_NAME
+        baseObj.save()
+
+    except Exception as e:
+        print("We don't want to break our login if an old tracy user doesn't exist or something")
+
+    return user
+
+
 
 def createSupervisorFromTracy(username=None, bnumber=None):
     """

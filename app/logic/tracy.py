@@ -7,7 +7,7 @@ from app.models.Tracy.studata import STUDATA
 from app.models.Tracy.stustaff import STUSTAFF
 from app import app
 
-class InvalidQueryException(BaseException):
+class InvalidQueryException(Exception):
     pass
 
 class Tracy():
