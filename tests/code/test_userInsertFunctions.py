@@ -1,4 +1,9 @@
 import pytest
+
+from app.models import mainDB
+from app.models.Tracy import db
+from app.models.Tracy.studata import STUDATA
+from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import *
 
 @pytest.mark.integration
@@ -150,4 +155,48 @@ def test_getOrCreateStudentRecord():
     assert student.FIRST_NAME == "Kat"
     student.delete_instance()
 
+@pytest.mark.integration
+def test_updateSupervisorFromTracy():
+    user = User.get(username="heggens")
+    assert user.fullName == "Scott Heggen"
 
+    tracyEntry = Tracy().getSupervisorFromID(user.supervisor_id)
+    tracyEntry.FIRST_NAME="NotScott"
+    tracyEntry.LAST_NAME="NotHeggen"
+    db.session.commit()
+
+    user = updateUserFromTracy(user)
+    assert user.fullName == "NotScott NotHeggen"
+
+    dbuser = User.get(username="heggens")
+    assert dbuser.fullName == "NotScott NotHeggen", "The object changed but not the database"
+
+    tracyEntry.FIRST_NAME="Scott"
+    tracyEntry.LAST_NAME="Heggen"
+    db.session.commit()
+    dbuser.supervisor.FIRST_NAME="Scott"
+    dbuser.supervisor.LAST_NAME="Heggen"
+    dbuser.supervisor.save()
+
+def test_updateStudentFromTracy():
+
+    user = User.get(username="jamalie")
+    assert user.fullName == "Elaheh Jamali"
+
+    tracyEntry = Tracy().getStudentFromBNumber(user.student_id)
+    tracyEntry.FIRST_NAME="NotElaheh"
+    tracyEntry.LAST_NAME="NotJamali"
+    db.session.commit()
+
+    user = updateUserFromTracy(user)
+    assert user.fullName == "NotElaheh NotJamali"
+
+    dbuser = User.get(username="jamalie")
+    assert dbuser.fullName == "NotElaheh NotJamali", "The object changed but not the database"
+
+    tracyEntry.FIRST_NAME="Elaheh"
+    tracyEntry.LAST_NAME="Jamali"
+    db.session.commit()
+    dbuser.student.FIRST_NAME="Elaheh"
+    dbuser.student.LAST_NAME="Jamali"
+    dbuser.student.save()
