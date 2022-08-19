@@ -30,18 +30,15 @@ class CSVMaker:
 
         allForms = list(set(requestedLSFs)) # remove duplicates
 
-        if self.downloadType == "allPending":
-            allForms = FormHistory.select().where(FormHistory.status == "Pending").order_by(-FormHistory.createdDate).distinct()
-        else:
-            for statusForm in allForms:
-                studentFormHistories = []
-                if self.downloadType == "studentHistory":
-                    studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
-                elif self.downloadType == "studentList":
-                    studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
+        for statusForm in allForms:
+            studentFormHistories = []
+            if self.downloadType == "studentHistory":
+                studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
+            elif self.downloadType == "studentList":
+                studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
 
-                for historyForm in studentFormHistories:
-                    allForms.append(historyForm)
+            for historyForm in studentFormHistories:
+                allForms.append(historyForm)
 
         return allForms
 
@@ -91,6 +88,18 @@ class CSVMaker:
                                 'SLE Job Specific Comments',
                                 'SLE Overall Score'
                                 ])
+            
+            if self.downloadType == 'includeOverloads':
+                headers.extend(['Student Overload Reason',
+                                'Financial Aid Status',
+                                'Financial Aid Approver',
+                                'Financial Aid Review Date',
+                                'SAAS Status',
+                                'SAAS Approver',
+                                'SAAS Review Date',
+                                'Labor Status',
+                                'Labor Approver',
+                                'Labor Review Date'])
 
             self.filewriter.writerow(headers)
 
@@ -110,6 +119,10 @@ class CSVMaker:
                             row = [""] * 17
                             row.extend(evaluation)
                             self.filewriter.writerow(row)
+
+                elif self.downloadType == "includeOverloads":
+                    row = self.addOverloadData(form, row)
+                    self.filewriter.writerow(row)
                 else:
                     self.filewriter.writerow(row)
 
@@ -138,6 +151,27 @@ class CSVMaker:
                 form.formID.supervisorNotes
               ]
         return row
+
+    def addOverloadData(self, form, rowData):
+
+        faApprover = form.overloadForm.financialAidApprover.fullName if form.overloadForm.financialAidApprover else ""
+        saasApprover = form.overloadForm.SAASApprover.fullName if form.overloadForm.SAASApprover else ""
+        laborApprover = form.overloadForm.laborApprover.fullName if form.overloadForm.laborApprover else ""
+
+        rowData.extend([
+                form.overloadForm.studentOverloadReason, 
+                form.overloadForm.financialAidApproved_id, 
+                faApprover,
+                form.overloadForm.financialAidReviewDate, 
+                form.overloadForm.SAASApproved_id, 
+                saasApprover,
+                form.overloadForm.SAASReviewDate, 
+                form.overloadForm.laborApproved_id, 
+                laborApprover,
+                form.overloadForm.laborReviewDate, 
+            ])
+
+        return rowData
 
 
     def addEvaluationData(self, formID):

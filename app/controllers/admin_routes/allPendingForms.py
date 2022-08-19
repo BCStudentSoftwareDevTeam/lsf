@@ -1,4 +1,4 @@
-from flask import flash, send_file, json, jsonify, redirect, url_for
+from flask import flash, send_file, json, jsonify, redirect, url_for, abort
 from peewee import JOIN
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -195,8 +195,19 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    allPendingForms = FormHistory.select().where(FormHistory.status == "Pending").order_by(-FormHistory.createdDate).distinct()
-    excel = CSVMaker("allPending", allPendingForms)    
+    currentUser = require_login()
+
+    allPendingForms = FormHistory.select().order_by(-FormHistory.createdDate)
+    downloadType = "allPending"
+    if currentUser.isLaborAdmin:
+        allPendingForms = allPendingForms.where(FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
+    elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        downloadType = "includeOverloads"
+        allPendingForms = allPendingForms.join(OverloadForm).where(FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
+    else:
+        abort(403)
+
+    excel = CSVMaker(downloadType, allPendingForms)    
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
