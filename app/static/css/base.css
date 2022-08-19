@@ -2,6 +2,14 @@ html, body {
     height: 100%;
 }
 
+/* top gradient for financial and saas approval page */
+#topbar {
+    width: 100%;
+    height: 90px;
+    background-position: 0px 0px;
+    background-image: linear-gradient(to right, #275881 0px, #275881 250px, #a0b9ce 100%);
+}
+
 #sidebar {
     height: 100%;
     width: 280px;
