@@ -35,6 +35,12 @@
 
     <dt class="col-sm-3">Position (WLS)</dt>
     <dd class="col-sm-9">{{statusForm.POSN_CODE}} - {{statusForm.POSN_TITLE}} ({{statusForm.WLS}})</dd>
+
+    <dt class=“col-sm-3”>Start Date</dt>
+    <dd class=“col-sm-9">{{statusForm.startDate.strftime(‘%m-%d-%Y’)}}</dd>
+
+    <dt class=“col-sm-3”>End Date</dt>
+    <dd class=“col-sm-9">{{statusForm.endDate.strftime(‘%m-%d-%Y’)}}</dd>
   </dl>
 
   <hr>
@@ -163,7 +169,7 @@
         {% if currentUser.isStudent %}
             {% set status = form.status_id.split()[0] %}
         {% endif %}
-        
+
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
           <div class="col-sm-6 col-sm-offset-1"><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
