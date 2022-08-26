@@ -207,7 +207,7 @@ def downloadAllPendingForms():
     else:
         abort(403)
 
-    excel = CSVMaker(downloadType, allPendingForms)    
+    excel = CSVMaker(downloadType, allPendingForms)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
@@ -393,10 +393,10 @@ def getNotes(formid):
     '''
     try:
         currentUser = require_login()
-        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) 
+        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid)
         laborNotes = list(Notes.select().where(Notes.formID == formid))
         laborNotes.reverse()
-        
+
 
         notesDict = {}
         if supervisorNotes.supervisorNotes:

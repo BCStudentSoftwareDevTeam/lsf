@@ -74,6 +74,19 @@
   </div>
 
   {########################################
+    Note Field for SAAS and FinancialAid
+   ########################################}
+   {% if currentUser.isFinancialAidAdmin or  currentUser.isSaasAdmin%}
+   <h4 class="supeNotesLabel control-label text-left" for="supervisor">Enter Notes: </h4>
+   <div id="saasAndFaNotesTextAreaOverload" class="saasAndFaNotesTextArea">
+     <textarea id='saasAndFaOverloadNotes' class="saasAndFaFinalNote form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter Notes"></textarea>
+   </div>
+   <!-- <div align="right">
+   <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal" onclick= "clearTextArea()">Close</button>
+   <button type="button" class="btn btn-primary" value="laborNotesText" data-dismiss="modal" id="saveNotes" onclick="notesInsert(this.value, this.id)">Save Notes</button>
+   </div> -->
+   {% endif %}
+  {########################################
     SAAS and Financial Aid Status
    ########################################}
   {% if status in ["Pending","Pre-Student Approval"] and currentUser.isLaborAdmin %}
@@ -104,7 +117,7 @@
   {% endif %}
 
   {########################################
-    Approval 
+    Approval
    ########################################}
 
   {% if formType != "completedOverload" and (currentUser.isLaborAdmin or status != "Pre-Student Approval") %}
@@ -125,7 +138,7 @@
           <b>Approve</b>
         {% endif %}
       </label>
-      {% if currentUser.isLaborAdmin %}
+      {% if currentUser.isLaborAdmin%}
       <label for="approveRel" class="radio-inline">
         <input type="radio" id="approveRel" name="decision" value="approveRel" onclick="displayModalTextArea(this.value)"><b>Approve Reluctantly</b>
       </label>
@@ -144,10 +157,10 @@
   </div>
 
   {########################################
-    Initials Entry 
+    Initials Entry
    ########################################}
 
-    {% if (currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) or 
+    {% if (currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) or
           (currentUser.isSaasAdmin and not departmentStatusInfo['SAASStatus']) %}
       <div align="left" style="margin-top:2%;">
           <span class="tooltip-right" data-tooltip="Required">Mark approved by <strong>{{currentUser.fullName}}: </strong><span class="required-mark">*</span>
