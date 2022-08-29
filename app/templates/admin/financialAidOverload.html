@@ -29,16 +29,16 @@
            <div>
              <h3>Current Primary Position</h3>
            </div>
-           <label for="Student">Student Name:</label> 
-           <input type="text" class="form-control" id="student" value="{{lsfForm.studentSupervisee.FIRST_NAME}} {{lsfForm.studentSupervisee.LAST_NAME}}" disabled> 
+           <label for="Student">Student Name:</label>
+           <input type="text" class="form-control" id="student" value="{{lsfForm.studentSupervisee.FIRST_NAME}} {{lsfForm.studentSupervisee.LAST_NAME}}" disabled>
          </div>
          <div class="form-group">
            <label for="primaryPosition" class="field">Primary Position (WLS):</label>
            <input type="text" class="form-control" id= "primaryPosition" value="{{primaryForm.POSN_TITLE}} ({{primaryForm.WLS}})" disabled> </input> <!-- stores value of original-->
          </div>
          <div class="form-group">
-           <label for="primaryPosHours">Total Primary Position Hours:</label> 
-           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryForm.weeklyHours}}" disabled> 
+           <label for="primaryPosHours">Total Primary Position Hours:</label>
+           <input type="text" class="form-control" id="primaryPosHours" value="{{primaryForm.weeklyHours}}" disabled>
          </div>
          <div class="form-group">
            <label for="primarySupervisor" class="field">Primary Supervisor:</label>
@@ -46,8 +46,13 @@
          </div>
          <!-- This selectpicker will be disabled if term is for a break, since jobtype is always Secondary-->
          <div class="form-group">
-           <label for="department">Department:</label> 
-           <input type="text" class="form-control" id="department" value="{{department}}" disabled> 
+           <label for="department">Department:</label>
+           <input type="text" class="form-control" id="department" value="{{department}}" disabled>
+         </div>
+
+         <div class="form-group">
+           <label>Labor Office Notes:</label>
+           <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
          </div>
      </div>
 
@@ -56,30 +61,34 @@
          <div>
            <h3>Overload Request Info</h3>
          </div>
-         <label for="overloadPosition">New Position (WLS):</label> 
-         <input type="text" class="form-control" id="overloadPosition" value="{{lsfForm.POSN_TITLE}} ({{lsfForm.WLS}})" disabled> 
+         <label for="overloadPosition">New Position (WLS):</label>
+         <input type="text" class="form-control" id="overloadPosition" value="{{lsfForm.POSN_TITLE}} ({{lsfForm.WLS}})" disabled>
        </div>
        <div class="form-group">
-         <label for="dates">Contract Hours:</label> 
-           <input type="text" class="form-control" id="dates" value= "{{lsfForm.weeklyHours}}" disabled> 
+         <label for="dates">Contract Hours:</label>
+           <input type="text" class="form-control" id="dates" value= "{{lsfForm.weeklyHours}}" disabled>
        </div>
        <div class="form-group">
-         <label for="overloadHours">Total hours with overload (including all secondaries):</label> 
-         <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled> 
+         <label for="overloadHours">Total hours with overload (including all secondaries):</label>
+         <input type="text" class="form-control" id="overloadHours" value= "{{totalOverloadHours}}" disabled>
        </div>
        <div class="form-group">
-         <label for="dates">Contract Dates:</label> 
-           <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled> 
+         <label for="dates">Contract Dates:</label>
+           <input type="text" class="form-control" id="dates" value= "{{contractDate}}" disabled>
        </div>
        <div class="form-group">
          <label>Student's Overload Reason:</label>
          <textarea type="text" class="form-control" id="overloadReason" value="{{overloadFormHistory.overloadForm.studentOverloadReason}}" disabled>{{overloadFormHistory.overloadForm.studentOverloadReason}}</textarea>
        </div>
+       <div class="form-group">
+         <label>{{userDept}} Note:</label>
+         <textarea type="text" class="form-control" id="{{userDept}}_overloadApprovalNote" ></textarea>
+         <div class="text-right">
+            <button class="btn btn-primary" value="{{userDept}}_laborNotesText" id="{{userDept}}_saveNotes" onclick="notesInsert(this.value, this.id)">Save Notes</button>
+          </div>
+       </div>
+
     </div>
-   <div class="form-group">
-     <label>Labor Office Notes:</label>
-     <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
-   </div>
   </div>
   <div class="container" align="center" id="buttonContainer">
     <div class="col-md-6" align="right">
