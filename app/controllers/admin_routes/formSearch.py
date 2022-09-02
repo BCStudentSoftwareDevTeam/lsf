@@ -29,11 +29,17 @@ def formSearch():
     If the request is POST it also populates the datatable with data based on user input.
     '''
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    departments = Department.select().order_by(Department.DEPT_NAME.asc())
+    departments = departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
+                    .join_from(FormHistory, LaborStatusForm) \
+                    .join_from(LaborStatusForm, Department) \
+                    .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
+                    .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
+                    .distinct()
+
     supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
     students = Student.select().order_by(Student.FIRST_NAME.asc())
 
@@ -46,6 +52,7 @@ def formSearch():
                             supervisors = supervisors,
                             students = students,
                             departments = departments,
+                            department = None
                             )
 
 def getDatatableData(request):

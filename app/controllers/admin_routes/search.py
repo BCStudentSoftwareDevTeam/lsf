@@ -20,7 +20,7 @@ def studentDbToDict(item):
 @admin.route('/admin/search',  methods=['GET'])
 def search_page():
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
     return render_template( 'admin/search.html' )
@@ -29,7 +29,7 @@ def search_page():
 @admin.route('/admin/search/<query>',  methods=['GET'])
 def search(query=None):
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
     current_students = []

@@ -13,6 +13,7 @@
   <script type="text/javascript" src="{{url_for('static', filename='js/laborhistory.js')}}?u={{lastStaticUpdate}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/allPendingForms.js')}}?u={{lastStaticUpdate}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/formSearch.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/index.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -48,17 +49,21 @@
           <div class="form-group">
             <label for="departmentSelect">Department</label>
             <div><select class="selectpicker"
-                    name='department'
-                    id='departmentSelect'
-                    data-live-search='true'
-                    title="All departments">
-                    <option value="">All departments</option>
-                  {% for department in departments %}
-                    <option value="{{department.departmentID}}"
-                            data-content="{{department.DEPT_NAME}}<small class='text-muted'> ({{department.ORG}}-{{department.ACCOUNT}})</small>">
-                      {{department.DEPT_NAME}}
+                    id="departmentSelect"
+                    onchange="populateTable()"
+                    title="Department">
+              {% for formHistory in departments %}
+                  <!-- We want to either select the first option, or the option that matches the department -->
+                  {% if loop.index == 1 or formHistory.formID.department.DEPT_NAME == department %}
+                    <option value="{{formHistory.formID.department.DEPT_NAME}}"
+                            selected>{{formHistory.formID.department.DEPT_NAME}}
                     </option>
-                  {% endfor %}
+                  {% else %}
+                    <option value="{{formHistory.formID.department.DEPT_NAME}}">
+                                  {{formHistory.formID.department.DEPT_NAME}}
+                    </option>
+                  {% endif %}
+              {% endfor %}
             </select></div>
           </div>
           <div class="form-group">
