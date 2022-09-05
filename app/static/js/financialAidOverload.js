@@ -58,9 +58,10 @@ function openApproveDenyModal(status){
     $("#finOverloadModal").modal("show");
   }
 }
+
 function overloadNoteInsert(textareaID, buttonID) {
-  var laborNotes = $("#" + textareaID).val(); //this is getting the id of the labor notes text area
-  var data = JSON.stringify(laborNotes);
+  var overloadNotes = $("#" + textareaID).val();
+  var data = JSON.stringify(overloadNotes);
   $("#" + buttonID).on('submit', function(e) {
     e.preventDefault();
   });
