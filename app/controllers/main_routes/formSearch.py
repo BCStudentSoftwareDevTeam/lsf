@@ -33,12 +33,17 @@ def formSearch():
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    departments = departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
-                    .join_from(FormHistory, LaborStatusForm) \
-                    .join_from(LaborStatusForm, Department) \
-                    .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
-                    .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
-                    .distinct()
+
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        departments = Department.select().order_by(Department.DEPT_NAME.asc())
+
+    else:
+        departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
+                        .join_from(FormHistory, LaborStatusForm) \
+                        .join_from(LaborStatusForm, Department) \
+                        .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
+                        .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
+                        .distinct()
 
     supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
     students = Student.select().order_by(Student.FIRST_NAME.asc())
@@ -52,7 +57,8 @@ def formSearch():
                             supervisors = supervisors,
                             students = students,
                             departments = departments,
-                            department = None
+                            department = None,
+                            currentUser = currentUser
                             )
 
 def getDatatableData(request):

@@ -54,14 +54,26 @@
                     title="Department">
               {% for formHistory in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
-                  {% if loop.index == 1 or formHistory.formID.department.DEPT_NAME == department %}
-                    <option value="{{formHistory.formID.department.DEPT_NAME}}"
-                            selected>{{formHistory.formID.department.DEPT_NAME}}
-                    </option>
+                  {% if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
+                      {% if loop.index == 1 or formHistory.DEPT_NAME == department %}
+                        <option value="{{formHistory.DEPT_NAME}}"
+                                selected>{{formHistory.DEPT_NAME}}
+                        </option>
+                      {% else %}
+                        <option value="{{formHistory.DEPT_NAME}}">
+                                      {{formHistory.DEPT_NAME}}
+                        </option>
+                      {% endif %}
                   {% else %}
-                    <option value="{{formHistory.formID.department.DEPT_NAME}}">
-                                  {{formHistory.formID.department.DEPT_NAME}}
-                    </option>
+                      {% if loop.index == 1 or formHistory.formID.department.DEPT_NAME == department %}
+                        <option value="{{formHistory.formID.department.DEPT_NAME}}"
+                                selected>{{formHistory.formID.department.DEPT_NAME}}
+                        </option>
+                      {% else %}
+                        <option value="{{formHistory.formID.department.DEPT_NAME}}">
+                                      {{formHistory.formID.department.DEPT_NAME}}
+                        </option>
+                      {% endif %}
                   {% endif %}
               {% endfor %}
             </select></div>
