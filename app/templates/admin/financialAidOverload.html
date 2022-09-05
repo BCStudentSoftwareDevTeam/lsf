@@ -81,10 +81,10 @@
          <textarea type="text" class="form-control" id="overloadReason" value="{{overloadFormHistory.overloadForm.studentOverloadReason}}" disabled>{{overloadFormHistory.overloadForm.studentOverloadReason}}</textarea>
        </div>
        <div class="form-group">
-         <label>{{userDept}} Note:</label>
-         <textarea type="text" class="form-control" id="{{userDept}}_overloadApprovalNote" ></textarea>
+         <label>{{userDept}} Note :</label>
+         <textarea type="text" class="form-control" id="{{lsfForm.laborStatusFormID}}" ></textarea>
          <div class="text-right">
-            <button class="btn btn-primary" value="{{userDept}}_laborNotesText" id="{{userDept}}_saveNotes" onclick="notesInsert(this.value, this.id)">Save Notes</button>
+            <button class="btn btn-primary" value="{{lsfForm.laborStatusFormID}}" id="saveNotes" onclick="overloadNoteInsert(this.value, this.id)">Save Notes</button>
           </div>
        </div>
 

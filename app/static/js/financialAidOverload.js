@@ -58,3 +58,20 @@ function openApproveDenyModal(status){
     $("#finOverloadModal").modal("show");
   }
 }
+function overloadNoteInsert(textareaID, buttonID) {
+  var laborNotes = $("#" + textareaID).val(); //this is getting the id of the labor notes text area
+  var data = JSON.stringify(laborNotes);
+  $("#" + buttonID).on('submit', function(e) {
+    e.preventDefault();
+  });
+
+  $.ajax({
+    method: "POST",
+    url: '/admin/notesInsert/' + textareaID,
+    data: data,
+    contentType: 'application/json',
+    success: function(response) {
+        location.reload(true);
+      }
+  });
+}
