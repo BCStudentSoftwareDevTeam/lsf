@@ -1,4 +1,4 @@
-from app.controllers.admin_routes import admin
+from app.controllers.main_routes import *
 from app.login_manager import require_login
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file
 from app.models.term import Term
@@ -22,7 +22,7 @@ from peewee import JOIN, prefetch
 formSearchResults = None
 sleJoin = False
 
-@admin.route('/admin/formSearch', methods=['GET', 'POST'])
+@main_bp.route('/main/formSearch', methods=['GET', 'POST'])
 def formSearch():
     '''
     When the request is GET the function populates the General Search interface dropdown menus with their corresponding values.
@@ -46,7 +46,7 @@ def formSearch():
     if request.method == 'POST':
         return getDatatableData(request)
 
-    return render_template('admin/formSearch.html',
+    return render_template('main/formSearch.html',
                             title = "Form Search",
                             terms = terms,
                             supervisors = supervisors,
@@ -303,7 +303,7 @@ def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
     return actionsButton
 
 
-@admin.route('/admin/formSearch/download', methods=['POST'])
+@main_bp.route('/main/formSearch/download', methods=['POST'])
 def downloadFormSearchResults():
     '''
     This function uses the general search results, stored in a global variable, to

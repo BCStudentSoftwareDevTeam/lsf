@@ -79,7 +79,7 @@ function runformSearchQuery() {
             orderable: false,
           }],
           ajax: {
-              url: "/admin/formSearch",
+              url: "/main/formSearch",
               type: "POST",
               data: {'data': data},
               dataSrc: "data",

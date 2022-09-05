@@ -1,4 +1,4 @@
-from app.controllers.admin_routes import admin
+from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.models.student import Student
@@ -17,16 +17,16 @@ def studentDbToDict(item):
             'bnumber': item.ID.strip(),
             'type': 'Student'}
 
-@admin.route('/admin/search',  methods=['GET'])
+@main_bp.route('/main/search',  methods=['GET'])
 def search_page():
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
-    return render_template( 'admin/search.html' )
+    return render_template( 'main/search.html' )
 
 # search student table and STUDATA for student results
-@admin.route('/admin/search/<query>',  methods=['GET'])
+@main_bp.route('/main/search/<query>',  methods=['GET'])
 def search(query=None):
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:

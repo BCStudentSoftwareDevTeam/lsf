@@ -19,5 +19,3 @@ from app.controllers.admin_routes import adminManagement
 from app.controllers.admin_routes import allPendingForms
 from app.controllers.admin_routes import financialAidOverload
 from app.controllers.admin_routes import emailTemplateController
-from app.controllers.admin_routes import search
-from app.controllers.admin_routes import formSearch
