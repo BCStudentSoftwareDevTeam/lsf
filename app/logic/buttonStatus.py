@@ -33,7 +33,7 @@ class ButtonStatus:
 
         return: a form history object representing the original LSF form
         '''
-        return FormHistory.get(FormHistory.formID == historyForm.formID, FormHistory.status == "Approved", FormHistory.historyType == "Labor Status Form")
+        return FormHistory.get(FormHistory.formID == historyForm.formID, (FormHistory.status == "Approved") | (FormHistory.status == "Pending"), FormHistory.historyType == "Labor Status Form")
 
     def set_evaluation_button(self, historyForm, currentUser):
         ogHistoryForm = self.get_history_form_from_lsf(historyForm)

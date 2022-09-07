@@ -1,6 +1,7 @@
 from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
+from app.logic.search import limitSearch
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
@@ -62,25 +63,8 @@ def search(query=None):
     # combine lists, remove duplicates, and then sort
     students = list({v['bnumber']:v for v in (current_students + our_students)}.values())
     students = sorted(students, key=lambda f:f['firstName'] + f['lastName'])
+
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         return jsonify(students)
-    else:
-        newstudents = []
-        departments = list(FormHistory.select(FormHistory.formID.department.DEPT_NAME)
-                        .join_from(FormHistory, LaborStatusForm)
-                        .join_from(LaborStatusForm, Department)
-                        .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
-                        .order_by(FormHistory.formID.department.DEPT_NAME.asc())
-                        .distinct()
-                        )
-        for student in students:
-            student_in_department = (FormHistory.select(FormHistory.formID.department.DEPT_NAME)
-                        .join_from(FormHistory, LaborStatusForm)
-                        .join_from(LaborStatusForm, Department)
-                        .where((FormHistory.formID.studentSupervisee == student['bnumber']) & FormHistory.formID.department.DEPT_NAME in departments)
-                        .order_by(FormHistory.formID.department.DEPT_NAME.asc())
-                        .distinct()
-                        )
-            if student_in_department:
-                newstudents.append(student)
-        return jsonify(newstudents)
+
+    return jsonify(limitSearch(students))
