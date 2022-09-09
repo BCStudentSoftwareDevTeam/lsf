@@ -1,25 +1,13 @@
 from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
-from app.logic.search import limitSearch
+from app.logic.search import limitSearch, studentDbToDict, usernameFromEmail
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
 from flask import jsonify, render_template
 import re
-
-def usernameFromEmail(email):
-    # split always returns a list, even if there is nothing to split, so [0] is safe
-    return email.split('@',1)[0]
-
-# Convert a Student or STUDATA record into the dictionary that our js expects
-def studentDbToDict(item):
-    return {'username': usernameFromEmail(item.STU_EMAIL.strip()),
-            'firstName': item.FIRST_NAME.strip(),
-            'lastName': item.LAST_NAME.strip(),
-            'bnumber': item.ID.strip(),
-            'type': 'Student'}
 
 @main_bp.route('/main/search',  methods=['GET'])
 def search_page():
@@ -67,4 +55,4 @@ def search(query=None):
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         return jsonify(students)
 
-    return jsonify(limitSearch(students))
+    return jsonify(limitSearch(students, currentUser))
