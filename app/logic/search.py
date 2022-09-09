@@ -5,27 +5,26 @@ from app.models.formHistory import FormHistory
 
 def limitSearch(students, currentUser):
     newstudents = []
-    departments = list(FormHistory.select()
+    departments = list(FormHistory.select(FormHistory.formID.department)
                     .join_from(FormHistory, LaborStatusForm)
                     .join_from(LaborStatusForm, Department)
                     .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                     .distinct()
                     )
-
+    print([i.formID.department for i in departments])
     for student in students:
-        student_in_department = (FormHistory.select()
+        print(student)
+        student_in_department = list(FormHistory.select(FormHistory.formID.department)
                     .join_from(FormHistory, LaborStatusForm)
                     .join_from(LaborStatusForm, Department)
-                    .where((FormHistory.formID.studentSupervisee == student['bnumber']) & FormHistory in departments)
+                    .where(FormHistory.formID.studentSupervisee == student['bnumber'], FormHistory.formID.department.in_(departments))
                     .distinct()
                     )
-
-        for d in student_in_department:
-            print(d.formID.department.DEPT_NAME)
-        if student_in_department:
+        print([s for s in student_in_department])
+        if len(student_in_department) > 0:
             newstudents.append(student)
 
-            return newstudents
+    return newstudents
 
 def usernameFromEmail(email):
     # split always returns a list, even if there is nothing to split, so [0] is safe

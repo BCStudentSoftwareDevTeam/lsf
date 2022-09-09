@@ -20,6 +20,7 @@ def search_page():
 # search student table and STUDATA for student results
 @main_bp.route('/main/search/<query>',  methods=['GET'])
 def search(query=None):
+    print("Searching...")
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
@@ -53,6 +54,7 @@ def search(query=None):
     students = sorted(students, key=lambda f:f['firstName'] + f['lastName'])
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        print("ADMINS")
         return jsonify(students)
 
     return jsonify(limitSearch(students, currentUser))

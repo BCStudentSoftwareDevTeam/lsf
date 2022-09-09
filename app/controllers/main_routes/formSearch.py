@@ -38,6 +38,7 @@ def formSearch():
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
 
     else:
+        
         departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
                         .join_from(FormHistory, LaborStatusForm) \
                         .join_from(LaborStatusForm, Department) \
