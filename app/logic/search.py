@@ -11,17 +11,17 @@ def limitSearch(students, currentUser):
                     .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                     .distinct()
                     )
-    print([i for i in departments])
-    student_in_department = list(Student.select(Student.ID)
+    students_in_department = list(Student.select(Student.ID)
                 .join_from(Student, LaborStatusForm)
+                .join_from(LaborStatusForm, Department)
                 .where(Department.departmentID.in_(departments))
                 .distinct()
                 )
-    print(student_in_department)
-    # for student in students:
-    #     print([s for s in student_in_department])
-    #     if len(student_in_department) > 0:
-    #         newstudents.append(student)
+    print(type(students_in_department[0]))
+    for student in students:
+        print(type(student))
+        if student['bnumber'] in students_in_department:
+            newstudents.append(student)
 
     return newstudents
 
