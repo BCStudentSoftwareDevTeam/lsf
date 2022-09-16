@@ -59,9 +59,9 @@ function openApproveDenyModal(status){
   }
 }
 
-function overloadNoteInsert(textareaID, buttonID) {
-  var overloadNotes = $("#" + textareaID).val();
-  var data = JSON.stringify(overloadNotes);
+function insertOverloadNote(textareaID, buttonID) {
+  var overloadNote = $("#" + textareaID).val();
+  var data = JSON.stringify(overloadNote);
   $("#" + buttonID).on('submit', function(e) {
     e.preventDefault();
   });
