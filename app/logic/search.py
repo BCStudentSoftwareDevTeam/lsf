@@ -5,24 +5,23 @@ from app.models.formHistory import FormHistory
 
 def limitSearch(students, currentUser):
     newstudents = []
-    departments = list(FormHistory.select(FormHistory.formID.department)
-                    .join_from(FormHistory, LaborStatusForm)
-                    .join_from(LaborStatusForm, Department)
-                    .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+    departments = list(Department.select(Department.departmentID)
+                    .join_from(Department, LaborStatusForm)
+                    .join_from(LaborStatusForm, FormHistory)
+                    .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                     .distinct()
                     )
-    print([i.formID.department for i in departments])
-    for student in students:
-        print(student)
-        student_in_department = list(FormHistory.select(FormHistory.formID.department)
-                    .join_from(FormHistory, LaborStatusForm)
-                    .join_from(LaborStatusForm, Department)
-                    .where(FormHistory.formID.studentSupervisee == student['bnumber'], FormHistory.formID.department.in_(departments))
-                    .distinct()
-                    )
-        print([s for s in student_in_department])
-        if len(student_in_department) > 0:
-            newstudents.append(student)
+    print([i for i in departments])
+    student_in_department = list(Student.select(Student.ID)
+                .join_from(Student, LaborStatusForm)
+                .where(Department.departmentID.in_(departments))
+                .distinct()
+                )
+    print(student_in_department)
+    # for student in students:
+    #     print([s for s in student_in_department])
+    #     if len(student_in_department) > 0:
+    #         newstudents.append(student)
 
     return newstudents
 
