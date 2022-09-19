@@ -36,18 +36,28 @@ def formSearch():
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
+        supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
+        students = Student.select().order_by(Student.FIRST_NAME.asc())
 
     else:
-        
-        departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
-                        .join_from(FormHistory, LaborStatusForm) \
-                        .join_from(LaborStatusForm, Department) \
-                        .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
-                        .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
-                        .distinct()
 
-    supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
-    students = Student.select().order_by(Student.FIRST_NAME.asc())
+        departments = (Department.select(Department.DEPT_NAME)
+                        .join_from(Department, LaborStatusForm)
+                        .join_from(LaborStatusForm, FormHistory)
+                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .distinct()
+                        )
+        supervisors = (Supervisor.select()
+                            .join_from(Supervisor, LaborStatusForm)
+                            .join_from(LaborStatusForm, Department)
+                            .where(Department.DEPT_NAME.in_(departments))
+                            .distinct())
+
+        students = (Student.select()
+                    .join_from(Student, LaborStatusForm)
+                    .join_from(LaborStatusForm, Department)
+                    .where(Department.DEPT_NAME.in_(departments))
+                    .distinct())
 
     if request.method == 'POST':
         return getDatatableData(request)

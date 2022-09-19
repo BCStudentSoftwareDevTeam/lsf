@@ -36,7 +36,7 @@ def test_search():
         students_converted = [studentDbToDict(student) for student in students]
         newStudents = limitSearch(students_converted, outOfDeptSuperUser)
 
-        assert students_converted[1] not in newStudents
-        assert students_converted[0] in newStudents
+        assert students_converted[0] not in newStudents
+        assert students_converted[1] in newStudents
 
         transaction.rollback()

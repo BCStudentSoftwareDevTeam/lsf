@@ -4,23 +4,25 @@ from app.models.department import Department
 from app.models.formHistory import FormHistory
 
 def limitSearch(students, currentUser):
+    """ Given a list of student dictionaries and the currentUser the function will only return a
+    list of students who have held a labor position within the currentUsers department."""
     newstudents = []
+    # Query returns a list of all departments the currentUser has either been a supervisor or created an LSF for.
     departments = list(Department.select(Department.departmentID)
                     .join_from(Department, LaborStatusForm)
                     .join_from(LaborStatusForm, FormHistory)
                     .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                     .distinct()
                     )
+    # Query returns a list of student objects for every student who has worked in the departments returned by the "departments" query.
     students_in_department = list(Student.select(Student.ID)
                 .join_from(Student, LaborStatusForm)
                 .join_from(LaborStatusForm, Department)
                 .where(Department.departmentID.in_(departments))
-                .distinct()
-                )
-    print(type(students_in_department[0]))
+                .distinct())
+    studentBnumbers = [student.ID for student in students_in_department]
     for student in students:
-        print(type(student))
-        if student['bnumber'] in students_in_department:
+        if student['bnumber'] in studentBnumbers:
             newstudents.append(student)
 
     return newstudents
