@@ -69,7 +69,7 @@
                         <h4>Administration</h4>
                     </div>
                 </a>
-                <div id="admin" {% if request.path[:6] == "/admin"%} class="panel-collapse" {% endif %} class = "panel-collapse collapse">
+                <div id="admin" class='panel-collapse {% if request.path[:6] != "/admin"%} collapse {% endif %}'>
                   {% if currentUser.isLaborAdmin %}
                   <ul id="admindropdown" class="panel panel-default">
                     <a href="/admin/pendingForms/pendingLabor"><li class="panel-heading {% if request.path == "/admin/pendingForms/pendingLabor" or request.path == "/admin/pendingForms/pendingAdjustment" or request.path == "/admin/pendingForms/pendingOverload" or request.path == "/admin/pendingForms/pendingRelease" %} active {% endif %}" tabindex="9"><h4>Pending Forms</h4></li></a>
