@@ -29,8 +29,9 @@ and hide the department select picker. -->
 <div class="col-md-2" id="placeholder"></div>
 
 <div class="col-md-2" align="center" id="userDepartments">
-  <select class="selectpicker"
+  <select class="selectpicker readonly"
           id="departmentDropDown"
+          data-live-search='true'
           onchange="populateTable()"
           title="Department"
           data-width="100%">
@@ -174,7 +175,6 @@ and hide the department select picker. -->
           </a>
           <span class="pushRight h5">{{form.status}}</span>
           <br>
-          <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
         </td>
         <td style="display:none">My Current Students</td>
       </tr>
@@ -191,7 +191,6 @@ and hide the department select picker. -->
           </a>
           <span class="pushRight h5">Past Student</span>
           <br/>
-          <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
         </td>
         <td style="display:none">My Past Students</td>
       </tr>
@@ -209,7 +208,6 @@ and hide the department select picker. -->
         <br/>
         <span class="pushRight h5">No longer a student</span>
         <br/>
-        <span class="pushLeft h6"> {{form.formID.termCode.termName}} - {{form.formID.POSN_TITLE}} - {{form.formID.department.DEPT_NAME}}</span>
       </td>
       <td style="display:none">My Past Students</td>
     </tr>

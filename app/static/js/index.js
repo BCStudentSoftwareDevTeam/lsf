@@ -334,7 +334,7 @@ function populateTable(){
             }
         }
         table.row.add([`<a href='/laborHistory/${departmentSelected}/${bNumber}' value=0><span class='h4'>${student} (${bNumber})</a>` +
-          `<span class='pushRight h5'>${formStatus}</span><br /><span class='pushLeft h6'>${term} - ${position} - ${department}</span>`,
+          `<span class='pushRight h5'>${formStatus}</span>`,
           "<span style='display:none'>" + status + "</span>"]).draw()
 
         $(el_id).append(`<label class="container"><input class="${divClass}" type="checkbox" name="${formID}" id="${formID}" value="${formID}"/>${student}${inactive_tag}</label><br/>`)
