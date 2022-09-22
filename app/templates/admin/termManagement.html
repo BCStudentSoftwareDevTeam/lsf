@@ -90,7 +90,7 @@
                   <!-- checks to see if the start date is not empty -->
                   <td>
                     <div class="input-group date">
-                      {% if term.termStart != None %}
+                      {% if term.termStart %}
                           {% set startDate = term.termStart.strftime('%m/%d/%Y') %}
                       {% endif %}
                       <input id="start_{{term.termCode}}"
@@ -110,7 +110,7 @@
                   </td>
                   <td>
                     <div class="input-group date">
-                      {% if term.termEnd != None %}
+                      {% if term.termEnd %}
                           {% set endDate = term.termEnd.strftime('%m/%d/%Y') %}
                       {% endif %}
                       <input id="end_{{term.termCode}}"
