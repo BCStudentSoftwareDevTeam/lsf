@@ -90,15 +90,16 @@
                   <!-- checks to see if the start date is not empty -->
                   <td>
                     <div class="input-group date">
+                      {% if term.termStart %}
+                          {% set startDate = term.termStart.strftime('%m/%d/%Y') %}
+                      {% endif %}
                       <input id="start_{{term.termCode}}"
                             onchange="getDate(this, {{term.termCode}});
                                       updateEnd(this, {{term.termCode}});"
                             type="text"
                             class="form-control datepicker start"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.termStart != None %}
-                                  {{term.termStart.strftime('%m/%d/%Y')}}
-                                  {% endif %}"
+                            value="{{startDate}}"
                             {% if term.termStart != None %}
                               data-onload= "updateEnd(this, {{term.termCode}})"
                             {% endif %}/>
@@ -109,15 +110,16 @@
                   </td>
                   <td>
                     <div class="input-group date">
+                      {% if term.termEnd %}
+                          {% set endDate = term.termEnd.strftime('%m/%d/%Y') %}
+                      {% endif %}
                       <input id="end_{{term.termCode}}"
                             onchange="getDate(this, {{term.termCode}});
                                       updateStart(this, {{term.termCode}});"
                             type="text"
                             class="form-control datepicker emptyEnd"
                             placeholder="MM/DD/YYYY"
-                            value="{% if term.termEnd != None %}
-                                    {{term.termEnd.strftime('%m/%d/%Y')}}
-                                    {% endif %}"
+                            value="{{endDate}}"
                             {% if term.termEnd != None %}
                               data-onload= "updateStart(this, {{term.termCode}})"
                             {% endif %}/>
