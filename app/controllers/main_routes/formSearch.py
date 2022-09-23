@@ -1,4 +1,4 @@
-from app.controllers.main_routes import *
+from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file
 from app.models.term import Term
@@ -41,10 +41,10 @@ def formSearch():
 
     else:
 
-        departments = (Department.select(Department.DEPT_NAME)
+        departments = (Department.select()
                         .join_from(Department, LaborStatusForm)
                         .join_from(LaborStatusForm, FormHistory)
-                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME.asc())
                         .distinct()
                         )
         supervisors = (Supervisor.select()

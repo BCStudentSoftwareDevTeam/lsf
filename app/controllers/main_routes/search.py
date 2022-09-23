@@ -1,4 +1,4 @@
-from app.controllers.main_routes import *
+from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.search import limitSearch, studentDbToDict, usernameFromEmail
@@ -54,7 +54,6 @@ def search(query=None):
     students = sorted(students, key=lambda f:f['firstName'] + f['lastName'])
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        print("ADMINS")
         return jsonify(students)
 
     return jsonify(limitSearch(students, currentUser))

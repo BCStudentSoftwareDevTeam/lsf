@@ -21,9 +21,7 @@ def limitSearch(students, currentUser):
                 .where(Department.departmentID.in_(departments))
                 .distinct())
     studentBnumbers = [student.ID for student in students_in_department]
-    for student in students:
-        if student['bnumber'] in studentBnumbers:
-            newstudents.append(student)
+    newstudents = list(filter(lambda student: student['bnumber'] in studentBnumbers, students))
 
     return newstudents
 
