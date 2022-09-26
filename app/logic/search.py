@@ -4,16 +4,13 @@ from app.models.department import Department
 from app.models.formHistory import FormHistory
 
 def limitSearch(students, currentUser):
-    """ Given a list of student dictionaries and the currentUser the function will only return a
-    list of students who have held a labor position within the currentUsers department."""
+    """
+    Given a list of student dictionaries and the currentUser the function will only return a
+    list of students who have held a labor position within the currentUsers department.
+    """
     newstudents = []
     # Query returns a list of all departments the currentUser has either been a supervisor or created an LSF for.
-    departments = list(Department.select(Department.departmentID)
-                    .join_from(Department, LaborStatusForm)
-                    .join_from(LaborStatusForm, FormHistory)
-                    .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
-                    .distinct()
-                    )
+    departments = list(getDepartmentsForSupervisor(currentUser, DEPT_NAME=False))
     # Query returns a list of student objects for every student who has worked in the departments returned by the "departments" query.
     students_in_department = list(Student.select(Student.ID)
                 .join_from(Student, LaborStatusForm)
@@ -36,3 +33,26 @@ def studentDbToDict(item):
             'lastName': item.LAST_NAME.strip(),
             'bnumber': item.ID.strip(),
             'type': 'Student'}
+
+def getDepartmentsForSupervisor(currentUser, DEPT_NAME=True):
+    """
+    Given currentUser, find and return all departments that the user is associated with.
+    """
+    # if you want to query for DEPT_NAME
+    if DEPT_NAME:
+        departments = (Department.select(Department.DEPT_NAME)
+                        .join_from(Department, LaborStatusForm)
+                        .join_from(LaborStatusForm, FormHistory)
+                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .distinct()
+                        )
+    # if you want to query for departmentID
+    else:
+        departments = (Department.select(Department.departmentID)
+                        .join_from(Department, LaborStatusForm)
+                        .join_from(LaborStatusForm, FormHistory)
+                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .distinct()
+                        )
+
+    return departments

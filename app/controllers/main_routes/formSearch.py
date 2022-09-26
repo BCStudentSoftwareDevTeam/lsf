@@ -12,6 +12,7 @@ from app.models.status import Status
 from app.models.user import User
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
+from app.logic.search import getDepartmentsForSupervisor
 import operator
 from functools import reduce
 from app.controllers.main_routes.download import CSVMaker
@@ -41,12 +42,8 @@ def formSearch():
 
     else:
 
-        departments = (Department.select()
-                        .join_from(Department, LaborStatusForm)
-                        .join_from(LaborStatusForm, FormHistory)
-                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME.asc())
-                        .distinct()
-                        )
+        departments = list(getDepartmentsForSupervisor(currentUser))
+
         supervisors = (Supervisor.select()
                             .join_from(Supervisor, LaborStatusForm)
                             .join_from(LaborStatusForm, Department)
