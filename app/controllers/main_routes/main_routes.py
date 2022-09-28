@@ -13,6 +13,7 @@ from flask import json, jsonify
 from flask import make_response
 from app.logic.tracy import Tracy
 from app.logic.tracy import InvalidQueryException
+from app.logic.buttonStatus import ButtonStatus
 import app.login_manager as login_manager
 import base64
 import time
@@ -95,16 +96,18 @@ def index(department = None):
                 # If a student has not yet been added to the view, they are appended as an active student.
                 if student_processed == False:
                     if supervisee.formID.endDate < todayDate:
-                        pastSupervisees.append(supervisee)
+                        pastSupervisees.append([supervisee)
                     elif supervisee.formID.endDate >= todayDate:
                         studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
+                        buttonState = ButtonStatus()
+                        buttonState.set_button_states(studentFormHistory, currentUser)
                         if studentFormHistory.historyType.historyTypeName == "Labor Release Form":
                             if studentFormHistory.status.statusName == "Approved":
-                                pastSupervisees.append(supervisee)
+                                pastSupervisees.append([supervisee, buttonState])
                             else:
-                                currentSupervisees.append(supervisee)
+                                currentSupervisees.append([supervisee, buttonState])
                         else:
-                            currentSupervisees.append(supervisee)
+                            currentSupervisees.append([supervisee, buttonState])
 
             else: # if they are inactive
                 for student in inactiveSupervisees:
@@ -168,7 +171,7 @@ def index(department = None):
                         inactiveSupervisees = inactiveSupervisees,
                         UserID = currentUser,
                         currentUserDepartments = departments,
-                        department = department
+                        department = department,
                               )
     except Exception as e:
         #TODO We have to return some sort of error page
