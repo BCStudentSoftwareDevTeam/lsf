@@ -1,4 +1,5 @@
 from app.models.student import Student
+from app.models.supervisor import Supervisor
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
@@ -27,11 +28,14 @@ def usernameFromEmail(email):
     return email.split('@',1)[0]
 
 # Convert a Student or STUDATA record into the dictionary that our js expects
-def studentDbToDict(item):
-    return {'username': usernameFromEmail(item.STU_EMAIL.strip()),
-            'firstName': item.FIRST_NAME.strip(),
-            'lastName': item.LAST_NAME.strip(),
-            'bnumber': item.ID.strip(),
+def studentDbToDict(student):
+    """
+    Given a student object it will return a mapped Dict with student data.
+    """
+    return {'username': usernameFromEmail(student.STU_EMAIL.strip()),
+            'firstName': student.FIRST_NAME.strip(),
+            'lastName': student.LAST_NAME.strip(),
+            'bnumber': student.ID.strip(),
             'type': 'Student'}
 
 def getDepartmentsForSupervisor(currentUser, DEPT_NAME=True):
@@ -43,7 +47,7 @@ def getDepartmentsForSupervisor(currentUser, DEPT_NAME=True):
         departments = (Department.select(Department.DEPT_NAME)
                         .join_from(Department, LaborStatusForm)
                         .join_from(LaborStatusForm, FormHistory)
-                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .where((FormHistory.createdBy == currentUser) | (LaborStatusForm.supervisor == currentUser.supervisor.ID))
                         .distinct()
                         )
     # if you want to query for departmentID
@@ -51,7 +55,8 @@ def getDepartmentsForSupervisor(currentUser, DEPT_NAME=True):
         departments = (Department.select(Department.departmentID)
                         .join_from(Department, LaborStatusForm)
                         .join_from(LaborStatusForm, FormHistory)
-                        .where((LaborStatusForm.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                        .join_from(LaborStatusForm, Supervisor)
+                        .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                         .distinct()
                         )
 

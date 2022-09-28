@@ -108,6 +108,7 @@ def test_getDepartmentsForSupervisors():
 
         nonSupervisorDept = Department.create(DEPT_NAME="nonSupervisorDept", ACCOUNT="6740", ORG="9992", departmentCompliance = 1)
 
+        # Supervisor create so we can check when our superUser is the creator but tempSuper is the supervisor.
         tempSuper = Supervisor.create(ID = "B00000002",
                                            PIDM = 75,
                                            FIRST_NAME = "Not",
@@ -145,16 +146,18 @@ def test_getDepartmentsForSupervisors():
                                      isFinancialAidAdmin = None,
                                      isSaasAdmin = None)
 
+        # Form in which our superUser is the supervisor and not the creator.
         lsf1 = LaborStatusForm.create(StudentName = "Tyler Parton",
                                         termCode = 202000,
                                         studentSupervisee = "B99999999",
-                                        supervisor = "B00000001",
+                                        supervisor = supervisor.ID,
                                         department = supervisorDept.departmentID,
                                         jobType = "Primary",
                                         WLS = "1",
                                         POSN_TITLE = "Student Programmer",
                                         POSN_CODE = "S61407")
 
+        #Form in which our superUser is the creator and not the supervisor.
         lsf2 = LaborStatusForm.create(StudentName = "Tyler Parton",
                                         termCode = 202000,
                                         studentSupervisee = "B99999999",
@@ -165,7 +168,8 @@ def test_getDepartmentsForSupervisors():
                                         POSN_TITLE = "Student Programmer",
                                         POSN_CODE = "S61407")
 
-        formHistory = FormHistory.create(formID = lsf2.laborStatusFormID,
+        #Need formhistory for the query to check against.
+        formCreator = FormHistory.create(formID = lsf2.laborStatusFormID,
                                          historyType = "Labor Status Form",
                                          releaseForm = None,
                                          adjustedForm = None,
@@ -175,6 +179,18 @@ def test_getDepartmentsForSupervisors():
                                          reviewedDate = None,
                                          reviewedBy = None,
                                          status = "Approved")
+
+        formNonCreator = FormHistory.create(formID = lsf1.laborStatusFormID,
+                                         historyType = "Labor Status Form",
+                                         releaseForm = None,
+                                         adjustedForm = None,
+                                         overloadForm = None,
+                                         createdBy = tempSuperUser.userID,
+                                         createdDate = "2020-04-14",
+                                         reviewedDate = None,
+                                         reviewedBy = None,
+                                         status = "Approved")
+
 
         departments = list(getDepartmentsForSupervisor(supervisorUser))
         departments = [i.DEPT_NAME for i in departments]
