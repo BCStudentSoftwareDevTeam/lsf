@@ -44,142 +44,142 @@ def logout():
 @main_bp.route('/main/department', methods=['GET', 'POST'])
 @main_bp.route('/main/department/<department>', methods=['GET', 'POST'])
 def index(department = None):
-    # try:
-    currentUser = require_login()
-    if not currentUser:
-        return render_template('errors/403.html'), 403
-    if not currentUser.isLaborAdmin:
-        if currentUser.student and not currentUser.supervisor:   # logged in as a student
-            return redirect('/laborHistory/' + currentUser.student.ID)
-        if currentUser.supervisor:       # logged in as a Supervisor
-            # Checks all the forms where the current user has been the creator or the supervisor, and grabs all the departments associated with those forms. Will only grab each department once.
+    try:
+        currentUser = require_login()
+        if not currentUser:
+            return render_template('errors/403.html'), 403
+        if not currentUser.isLaborAdmin:
+            if currentUser.student and not currentUser.supervisor:   # logged in as a student
+                return redirect('/laborHistory/' + currentUser.student.ID)
+            if currentUser.supervisor:       # logged in as a Supervisor
+                # Checks all the forms where the current user has been the creator or the supervisor, and grabs all the departments associated with those forms. Will only grab each department once.
+                departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
+                                .join_from(FormHistory, LaborStatusForm) \
+                                .join_from(LaborStatusForm, Department) \
+                                .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
+                                .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
+                                .distinct()
+        else:   # logged in as an admin
+            # Grabs every single department that currently has at least one labor status form in it
             departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
                             .join_from(FormHistory, LaborStatusForm) \
                             .join_from(LaborStatusForm, Department) \
-                            .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                             .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
                             .distinct()
-    else:   # logged in as an admin
-        # Grabs every single department that currently has at least one labor status form in it
-        departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \
-                        .join_from(FormHistory, LaborStatusForm) \
-                        .join_from(LaborStatusForm, Department) \
-                        .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
-                        .distinct()
 
-    todayDate = date.today()
-    # Grabs all the labor status forms where the current user is the supervisor
-    formsBySupervisees = []
-    if currentUser.supervisor:
-        formsBySupervisees = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.supervisor == currentUser.supervisor.ID,
-        FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
-        formsBySupervisees = sorted(formsBySupervisees,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
+        todayDate = date.today()
+        # Grabs all the labor status forms where the current user is the supervisor
+        formsBySupervisees = []
+        if currentUser.supervisor:
+            formsBySupervisees = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.supervisor == currentUser.supervisor.ID,
+            FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
+            formsBySupervisees = sorted(formsBySupervisees,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
 
-    inactiveSupervisees = []
-    currentSupervisees = []
-    pastSupervisees = []
+        inactiveSupervisees = []
+        currentSupervisees = []
+        pastSupervisees = []
 
-    tic = time.perf_counter()
-    for supervisee in formsBySupervisees: # go through all the form in the formsBySupervisees
-        student_processed = False # whether or not the student has been added to the list
+        tic = time.perf_counter()
+        for supervisee in formsBySupervisees: # go through all the form in the formsBySupervisees
+            student_processed = False # whether or not the student has been added to the list
 
-        if isCurrentStudent(supervisee.formID.studentSupervisee.ID):
-            for student in currentSupervisees:
-                # Checks whether student has already been added as an current student.
-                if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
-                    student_processed = True
-            for student in pastSupervisees:
-                # Checks whether student has already been added as an past student.
-                if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
-                    student_processed = True
+            if isCurrentStudent(supervisee.formID.studentSupervisee.ID):
+                for student in currentSupervisees:
+                    # Checks whether student has already been added as an current student.
+                    if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
+                        student_processed = True
+                for student in pastSupervisees:
+                    # Checks whether student has already been added as an past student.
+                    if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
+                        student_processed = True
 
-            # If a student has not yet been added to the view, they are appended as an active student.
-            if student_processed == False:
-                if supervisee.formID.endDate < todayDate:
-                    pastStudentForm = FormHistory.select().join(LaborStatusForm).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate).order_by(FormHistory.formHistoryID.desc())[0]
-                    buttonState = ButtonStatus()
-                    buttonState.set_button_states(pastStudentForm, currentUser)
-                    pastSupervisees.append([supervisee, buttonState, pastStudentForm.formID.laborStatusFormID])
-                elif supervisee.formID.endDate >= todayDate:
-                    studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
-                    buttonState = ButtonStatus()
-                    buttonState.set_button_states(studentFormHistory, currentUser)
-                    if studentFormHistory.historyType.historyTypeName == "Labor Release Form":
-                        if studentFormHistory.status.statusName == "Approved":
-                            pastSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
+                # If a student has not yet been added to the view, they are appended as an active student.
+                if student_processed == False:
+                    if supervisee.formID.endDate < todayDate:
+                        pastStudentForm = FormHistory.select().join(LaborStatusForm).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate).order_by(FormHistory.formHistoryID.desc())[0]
+                        buttonState = ButtonStatus()
+                        buttonState.set_button_states(pastStudentForm, currentUser)
+                        pastSupervisees.append([supervisee, buttonState, pastStudentForm.formID.laborStatusFormID])
+                    elif supervisee.formID.endDate >= todayDate:
+                        studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
+                        buttonState = ButtonStatus()
+                        buttonState.set_button_states(studentFormHistory, currentUser)
+                        if studentFormHistory.historyType.historyTypeName == "Labor Release Form":
+                            if studentFormHistory.status.statusName == "Approved":
+                                pastSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
+                            else:
+                                currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
                         else:
                             currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
-                    else:
-                        currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
 
-        else: # if they are inactive
-            for student in inactiveSupervisees:
-                # Checks whether student has already been added as an active student.
-                if (supervisee.formID.studentSupervisee.ID) == (student.formID.studentSupervisee.ID):
-                    student_processed = True
-            # If a student has not yet been added to the view, they are appended as an active student.
-            if student_processed == False:
-                inactiveSupervisees.append(supervisee)
+            else: # if they are inactive
+                for student in inactiveSupervisees:
+                    # Checks whether student has already been added as an active student.
+                    if (supervisee.formID.studentSupervisee.ID) == (student.formID.studentSupervisee.ID):
+                        student_processed = True
+                # If a student has not yet been added to the view, they are appended as an active student.
+                if student_processed == False:
+                    inactiveSupervisees.append(supervisee)
 
-    toc = time.perf_counter()
-    # print("Processed {} supervisor students in {:0.4f} seconds".format(len(formsBySupervisees), toc-tic))
+        toc = time.perf_counter()
+        # print("Processed {} supervisor students in {:0.4f} seconds".format(len(formsBySupervisees), toc-tic))
 
-    # On the click of the download button, 'POST' method will send all checked boxes from modal to excel maker
-    if request.method == 'POST':
-        value =[]
-        # The "Try" and "Except" block here is needed because if the user tries to use the download button before they chose
-        # a department from the Department dropdown, it will throw a NameError. The reason behind the error is because the vairbales
-        # "currentDepartmentStudents", "allDepartmentStudents", and "inactiveDepStudent" are empty until the user chooses a department, so
-        # trying to iterate through the empty variables causes the error. The "Try" and "Except" blocks will catch this error so that
-        # a user can use the download button before they chose a department.
-        try:
-            for form in currentDepartmentStudents:
+        # On the click of the download button, 'POST' method will send all checked boxes from modal to excel maker
+        if request.method == 'POST':
+            value =[]
+            # The "Try" and "Except" block here is needed because if the user tries to use the download button before they chose
+            # a department from the Department dropdown, it will throw a NameError. The reason behind the error is because the vairbales
+            # "currentDepartmentStudents", "allDepartmentStudents", and "inactiveDepStudent" are empty until the user chooses a department, so
+            # trying to iterate through the empty variables causes the error. The "Try" and "Except" blocks will catch this error so that
+            # a user can use the download button before they chose a department.
+            try:
+                for form in currentDepartmentStudents:
+                    name = str(form.formID.laborStatusFormID)
+                    if request.form.get(name):
+                        value.append(request.form.get(name))
+                for form in allDepartmentStudents:
+                    name = str(form.formID.laborStatusFormID)
+                    if request.form.get(name):
+                        value.append(request.form.get(name))
+                for form in inactiveDepStudent:
+                    name = str(form.formID.laborStatusFormID)
+                    if request.form.get(name):
+                        value.append(request.form.get(name))
+            except NameError as e:
+                print("The runtime error happens because a department has not yet been selected.")
+            for form in currentSupervisees:
+                name = str(form[0].formID.laborStatusFormID)
+                if request.form.get(name):
+                    value.append( request.form.get(name))
+            for form in pastSupervisees:
+                name = str(form[0].formID.laborStatusFormID)
+                if request.form.get(name):
+                    value.append( request.form.get(name))
+            for form in inactiveSupervisees:
                 name = str(form.formID.laborStatusFormID)
                 if request.form.get(name):
-                    value.append(request.form.get(name))
-            for form in allDepartmentStudents:
-                name = str(form.formID.laborStatusFormID)
-                if request.form.get(name):
-                    value.append(request.form.get(name))
-            for form in inactiveDepStudent:
-                name = str(form.formID.laborStatusFormID)
-                if request.form.get(name):
-                    value.append(request.form.get(name))
-        except NameError as e:
-            print("The runtime error happens because a department has not yet been selected.")
-        for form in currentSupervisees:
-            name = str(form[0].formID.laborStatusFormID)
-            if request.form.get(name):
-                value.append( request.form.get(name))
-        for form in pastSupervisees:
-            name = str(form[0].formID.laborStatusFormID)
-            if request.form.get(name):
-                value.append( request.form.get(name))
-        for form in inactiveSupervisees:
-            name = str(form.formID.laborStatusFormID)
-            if request.form.get(name):
-                value.append( request.form.get(name))
+                    value.append( request.form.get(name))
 
 
-        # Prevents 'POST' method from sending the same value twice to excel maker
+            # Prevents 'POST' method from sending the same value twice to excel maker
 
-        excel = CSVMaker("studentList", value, includeEvals = True)
-        # Returns the file path so the button will download the file
-        return send_file(excel.relativePath,as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+            excel = CSVMaker("studentList", value, includeEvals = True)
+            # Returns the file path so the button will download the file
+            return send_file(excel.relativePath,as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
-    return render_template( 'main/index.html',
-				    title=('Home'),
-                    currentSupervisees = currentSupervisees,
-                    pastSupervisees = pastSupervisees,
-                    inactiveSupervisees = inactiveSupervisees,
-                    UserID = currentUser,
-                    currentUserDepartments = departments,
-                    department = department,
-                          )
-    # except Exception as e:
-    #     #TODO We have to return some sort of error page
-    #     print('Error in Supervisor Portal:', e)
-    #     return "",500
+        return render_template( 'main/index.html',
+    				    title=('Home'),
+                        currentSupervisees = currentSupervisees,
+                        pastSupervisees = pastSupervisees,
+                        inactiveSupervisees = inactiveSupervisees,
+                        UserID = currentUser,
+                        currentUserDepartments = departments,
+                        department = department,
+                              )
+    except Exception as e:
+        #TODO We have to return some sort of error page
+        print('Error in Supervisor Portal:', e)
+        return "",500
 
 @main_bp.route('/main/department/selection/<departmentSelected>', methods=['GET'])
 def populateDepartment(departmentSelected):
