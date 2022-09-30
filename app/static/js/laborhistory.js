@@ -33,7 +33,6 @@ function redirection(laborStatusKey){
   $("#rehire").attr("href", "/laborstatusform/" + laborStatusKey); // will go to the lsf controller
   $("#release").attr("href", "/laborReleaseForm/" + laborStatusKey); // will go to labor release form controller
   $("#sle").attr("href", "/sle/" + laborStatusKey); // will go to student labor evaluations controller
-  // console.log(laborStatusKey);
 }
 
 function fillPDF(laborStatusKey){
