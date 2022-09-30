@@ -168,12 +168,21 @@ and hide the department select picker. -->
       <tr>
         <td>
           <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
-                            {{form.formID.studentSupervisee.LAST_NAME}}
-                            ({{form.formID.studentSupervisee.ID}})
+            <span class="h4">{{form[0].formID.studentSupervisee.FIRST_NAME}}
+                            {{form[0].formID.studentSupervisee.LAST_NAME}}
+                            ({{form[0].formID.studentSupervisee.ID}})
             </span>
           </a>
-          <span class="pushRight h5">{{form.status}}</span>
+          {% if form[1].evaluate %}
+            <span class="pushRight h5">
+              <a id="sle" href="#">
+                <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Evaluate
+                </button>
+              </a>
+            </span>
+          {% else %}
+            <span class="pushRight h5">{{form[0].status}}</span>
+          {% endif %}
           <br>
         </td>
         <td style="display:none">My Current Students</td>
@@ -184,9 +193,9 @@ and hide the department select picker. -->
       <tr>
         <td>
           <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
-            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
-                            {{form.formID.studentSupervisee.LAST_NAME}}
-                            ({{form.formID.studentSupervisee.ID}})
+            <span class="h4">{{form[0].formID.studentSupervisee.FIRST_NAME}}
+                            {{form[0].formID.studentSupervisee.LAST_NAME}}
+                            ({{form[0].formID.studentSupervisee.ID}})
             </span>
           </a>
           <span class="pushRight h5">Past Student</span>
