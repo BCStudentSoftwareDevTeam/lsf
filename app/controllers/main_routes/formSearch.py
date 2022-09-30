@@ -44,6 +44,9 @@ def formSearch():
 
         departments = list(getDepartmentsForSupervisor(currentUser))
 
+        # convert department objects to strings
+        departments = [department.DEPT_NAME for department in departments]
+
         supervisors = (Supervisor.select()
                             .join_from(Supervisor, LaborStatusForm)
                             .join_from(LaborStatusForm, Department)
