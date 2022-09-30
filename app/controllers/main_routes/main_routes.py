@@ -99,18 +99,18 @@ def index(department = None):
                     pastStudentForm = FormHistory.select().join(LaborStatusForm).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate).order_by(FormHistory.formHistoryID.desc())[0]
                     buttonState = ButtonStatus()
                     buttonState.set_button_states(pastStudentForm, currentUser)
-                    pastSupervisees.append([supervisee, buttonState])
+                    pastSupervisees.append([supervisee, buttonState, pastStudentForm.formID.laborStatusFormID])
                 elif supervisee.formID.endDate >= todayDate:
                     studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
                     buttonState = ButtonStatus()
                     buttonState.set_button_states(studentFormHistory, currentUser)
                     if studentFormHistory.historyType.historyTypeName == "Labor Release Form":
                         if studentFormHistory.status.statusName == "Approved":
-                            pastSupervisees.append([supervisee, buttonState])
+                            pastSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
                         else:
-                            currentSupervisees.append([supervisee, buttonState])
+                            currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
                     else:
-                        currentSupervisees.append([supervisee, buttonState])
+                        currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
 
         else: # if they are inactive
             for student in inactiveSupervisees:
@@ -175,7 +175,6 @@ def index(department = None):
                     UserID = currentUser,
                     currentUserDepartments = departments,
                     department = department,
-                    statusForm = statusForm
                           )
     # except Exception as e:
     #     #TODO We have to return some sort of error page

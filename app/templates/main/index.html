@@ -175,7 +175,7 @@ and hide the department select picker. -->
           </a>
           {% if form[1].evaluate %}
             <span class="pushRight h5">
-              <a id="sle" href="/sle/{{statusForm.laborStatusFormID}}">
+              <a id="sle" href="/sle/{{form[2].laborStatusFormID}}">
                 <button type="submit" name="submit" value="submit" class="btn btn-warning"> Evaluate
                 </button>
               </a>
@@ -198,8 +198,17 @@ and hide the department select picker. -->
                             ({{form[0].formID.studentSupervisee.ID}})
             </span>
           </a>
-          <span class="pushRight h5">Past Student</span>
-          <br/>
+          {% if form[1].evaluate %}
+            <span class="pushRight h5">
+              <a id="sle" href="/sle/{{form[2].laborStatusFormID}}">
+                <button type="submit" name="submit" value="submit" class="btn btn-warning"> Evaluate
+                </button>
+              </a>
+            </span>
+          {% else %}
+            <span class="pushRight h5">Past Student</span>
+          {% endif %}
+          <br>
         </td>
         <td style="display:none">My Past Students</td>
       </tr>
