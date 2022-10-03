@@ -48,7 +48,7 @@ def getDepartmentsForSupervisor(currentUser):
                     .join_from(Department, LaborStatusForm)
                     .join_from(LaborStatusForm, FormHistory)
                     .join_from(LaborStatusForm, Supervisor)
-                    .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                    .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME)
                     .distinct()
                     )
 

@@ -54,8 +54,8 @@
                     title="Department">
               {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
-                <option value="{{department.DEPT_NAME}}"
-                        {% if loop.index == 1 or department.DEPT_NAME == department %} selected {% endif %}>{{department.DEPT_NAME}}
+                <option value="{{department}}"
+                        {% if loop.index == 1 %} selected {% endif %}>{{department}}
                 </option>
               {% endfor %}
             </select></div>

@@ -37,6 +37,7 @@ def formSearch():
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
+        departments = [department.DEPT_NAME for department in departments]
         supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
         students = Student.select().order_by(Student.FIRST_NAME.asc())
 
@@ -58,7 +59,7 @@ def formSearch():
                     .join_from(LaborStatusForm, Department)
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
-
+        print([i for i in departments])
     if request.method == 'POST':
         return getDatatableData(request)
 
