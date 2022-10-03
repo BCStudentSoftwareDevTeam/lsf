@@ -96,9 +96,16 @@ def index(department = None):
                 # If a student has not yet been added to the view, they are appended as an active student.
                 if student_processed == False:
                     if supervisee.formID.endDate < todayDate:
-                        pastStudentForm = FormHistory.select().join(LaborStatusForm).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate).order_by(FormHistory.formHistoryID.desc())[0]
+                        try:
+                            pastStudentForm = (FormHistory.select().join(LaborStatusForm)
+                                                                   .join(Term).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate, FormHistory.termCode.termName.startswith("A"))
+                                                                   .order_by(FormHistory.formHistoryID.desc()).get())
+                        except:
+                            "This didn't work"
+                        print(pastStudentForm)
                         buttonState = ButtonStatus()
                         buttonState.set_button_states(pastStudentForm, currentUser)
+                        print(pastStudentForm.formID.termCode.termName)
                         pastSupervisees.append([supervisee, buttonState, pastStudentForm.formID.laborStatusFormID])
                     elif supervisee.formID.endDate >= todayDate:
                         studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
