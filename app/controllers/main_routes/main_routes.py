@@ -71,13 +71,22 @@ def index(department = None):
         # Grabs all the labor status forms where the current user is the supervisor
         formsBySupervisees = []
         if currentUser.supervisor:
-            formsBySupervisees = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.supervisor == currentUser.supervisor.ID,
-            FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
+            formsBySupervisees = (FormHistory.select()
+                                            .join_from(FormHistory, LaborStatusForm)
+                                            .join(Term)
+                                            .join_from(FormHistory, HistoryType)
+                                            .where(FormHistory.formID.supervisor == currentUser.supervisor.ID,
+                                                   FormHistory.historyType.historyTypeName == "Labor Status Form",
+                                                   FormHistory.formID.termCode.termName.startswith("AY"))
+                                            .order_by(FormHistory.formID.startDate.desc())
+                                  )
+            print([i.formID.studentName for i in formsBySupervisees])
             formsBySupervisees = sorted(formsBySupervisees,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
 
         inactiveSupervisees = []
         currentSupervisees = []
         pastSupervisees = []
+        needsEvaluationSupervisees = []
 
         tic = time.perf_counter()
         for supervisee in formsBySupervisees: # go through all the form in the formsBySupervisees
@@ -86,38 +95,30 @@ def index(department = None):
             if isCurrentStudent(supervisee.formID.studentSupervisee.ID):
                 for student in currentSupervisees:
                     # Checks whether student has already been added as an current student.
-                    if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
+                    if (supervisee.formID.studentSupervisee.ID) == (student.formID.studentSupervisee.ID):
                         student_processed = True
                 for student in pastSupervisees:
                     # Checks whether student has already been added as an past student.
-                    if (supervisee.formID.studentSupervisee.ID) == (student[0].formID.studentSupervisee.ID):
+                    if (supervisee.formID.studentSupervisee.ID) == (student.formID.studentSupervisee.ID):
                         student_processed = True
 
                 # If a student has not yet been added to the view, they are appended as an active student.
                 if student_processed == False:
+                    # buttonState = ButtonStatus()
+                    # buttonState.set_button_states(supervisee, currentUser)
+                    # if buttonState.evaluate():
+
                     if supervisee.formID.endDate < todayDate:
-                        try:
-                            pastStudentForm = (FormHistory.select().join(LaborStatusForm)
-                                                                   .join(Term).where(FormHistory.formID == supervisee.formID.laborStatusFormID, FormHistory.formID.endDate < todayDate, FormHistory.termCode.termName.startswith("A"))
-                                                                   .order_by(FormHistory.formHistoryID.desc()).get())
-                        except:
-                            "This didn't work"
-                        print(pastStudentForm)
-                        buttonState = ButtonStatus()
-                        buttonState.set_button_states(pastStudentForm, currentUser)
-                        print(pastStudentForm.formID.termCode.termName)
-                        pastSupervisees.append([supervisee, buttonState, pastStudentForm.formID.laborStatusFormID])
+                        pastSupervisees.append(supervisee)
                     elif supervisee.formID.endDate >= todayDate:
                         studentFormHistory = FormHistory.select().where(FormHistory.formID == supervisee.formID.laborStatusFormID).order_by(FormHistory.formHistoryID.desc())[0]
-                        buttonState = ButtonStatus()
-                        buttonState.set_button_states(studentFormHistory, currentUser)
                         if studentFormHistory.historyType.historyTypeName == "Labor Release Form":
                             if studentFormHistory.status.statusName == "Approved":
-                                pastSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
+                                pastSupervisees.append(supervisee)
                             else:
-                                currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
+                                currentSupervisees.append(supervisee)
                         else:
-                            currentSupervisees.append([supervisee, buttonState, studentFormHistory.formID.laborStatusFormID])
+                            currentSupervisees.append(supervisee)
 
             else: # if they are inactive
                 for student in inactiveSupervisees:
@@ -155,11 +156,11 @@ def index(department = None):
             except NameError as e:
                 print("The runtime error happens because a department has not yet been selected.")
             for form in currentSupervisees:
-                name = str(form[0].formID.laborStatusFormID)
+                name = str(form.formID.laborStatusFormID)
                 if request.form.get(name):
                     value.append( request.form.get(name))
             for form in pastSupervisees:
-                name = str(form[0].formID.laborStatusFormID)
+                name = str(form.formID.laborStatusFormID)
                 if request.form.get(name):
                     value.append( request.form.get(name))
             for form in inactiveSupervisees:

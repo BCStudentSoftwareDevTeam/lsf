@@ -80,11 +80,11 @@ and hide the department select picker. -->
               <label class="container">
                 <input class="currentStudentModal"
                       type="checkbox"
-                      id ='{{form[0].formID.laborStatusFormID}}'
-                      name='{{form[0].formID.laborStatusFormID}}'
-                      value='{{form[0].formID.laborStatusFormID}}'>
-                  {{form[0].formID.studentSupervisee.FIRST_NAME}}
-                  {{form[0].formID.studentSupervisee.LAST_NAME}}
+                      id ='{{form.formID.laborStatusFormID}}'
+                      name='{{form.formID.laborStatusFormID}}'
+                      value='{{form.formID.laborStatusFormID}}'>
+                  {{form.formID.studentSupervisee.FIRST_NAME}}
+                  {{form.formID.studentSupervisee.LAST_NAME}}
               </label>
             {% endfor %}
           </div>
@@ -95,12 +95,12 @@ and hide the department select picker. -->
               <label class="container">
                 <input class="pastStudentModal"
                       type="checkbox"
-                      id= '{{form[0].formID.laborStatusFormID}}'
-                      name='{{form[0].formID.laborStatusFormID}}'
-                      value='{{form[0].formID.laborStatusFormID}}'
+                      id= '{{form.formID.laborStatusFormID}}'
+                      name='{{form.formID.laborStatusFormID}}'
+                      value='{{form.formID.laborStatusFormID}}'
                       disabled>
-                  {{form[0].formID.studentSupervisee.FIRST_NAME}}
-                  {{form[0].formID.studentSupervisee.LAST_NAME}}
+                  {{form.formID.studentSupervisee.FIRST_NAME}}
+                  {{form.formID.studentSupervisee.LAST_NAME}}
               </label>
             {% endfor %}
           </div>
@@ -167,22 +167,13 @@ and hide the department select picker. -->
     {% for form in currentSupervisees %}
       <tr>
         <td>
-          <a href="/laborHistory/{{form[0].formID.studentSupervisee.ID}}" value=0>
-            <span class="h4">{{form[0].formID.studentSupervisee.FIRST_NAME}}
-                            {{form[0].formID.studentSupervisee.LAST_NAME}}
-                            ({{form[0].formID.studentSupervisee.ID}})
+          <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
+            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                            {{form.formID.studentSupervisee.LAST_NAME}}
+                            ({{form.formID.studentSupervisee.ID}})
             </span>
           </a>
-          {% if form[1].evaluate %}
-            <span class="pushRight h5">
-              <a id="sle" href="/sle/{{form[2].laborStatusFormID}}">
-                <button type="submit" name="submit" value="submit" class="btn btn-warning"> Evaluate
-                </button>
-              </a>
-            </span>
-          {% else %}
-            <span class="pushRight h5">{{form[0].status}}</span>
-          {% endif %}
+            <span class="pushRight h5">{{form.status}}</span>
           <br>
         </td>
         <td style="display:none">My Current Students</td>
@@ -192,22 +183,13 @@ and hide the department select picker. -->
     {% for form in pastSupervisees %}
       <tr>
         <td>
-          <a href="/laborHistory/{{form[0].formID.studentSupervisee.ID}}" value=0>
-            <span class="h4">{{form[0].formID.studentSupervisee.FIRST_NAME}}
-                            {{form[0].formID.studentSupervisee.LAST_NAME}}
-                            ({{form[0].formID.studentSupervisee.ID}})
+          <a href="/laborHistory/{{form.formID.studentSupervisee.ID}}" value=0>
+            <span class="h4">{{form.formID.studentSupervisee.FIRST_NAME}}
+                            {{form.formID.studentSupervisee.LAST_NAME}}
+                            ({{form.formID.studentSupervisee.ID}})
             </span>
           </a>
-          {% if form[1].evaluate %}
-            <span class="pushRight h5">
-              <a id="sle" href="/sle/{{form[2].laborStatusFormID}}">
-                <button type="submit" name="submit" value="submit" class="btn btn-warning"> Evaluate
-                </button>
-              </a>
-            </span>
-          {% else %}
             <span class="pushRight h5">Past Student</span>
-          {% endif %}
           <br>
         </td>
         <td style="display:none">My Past Students</td>
