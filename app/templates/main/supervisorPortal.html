@@ -20,135 +20,151 @@
   <h1>Supervisor Portal</h1>
 </div>
 <br>
-<div class="container-fluid" align="center">
-  <div align="right">
-    <form method="POST" action="/supervisorPortal/download">
-      <button class="btn btn-success" type="submit" id="download">Download</button>
-    </form>
-  </div>
-  <div class="row col-md-12" align="left">
-    <form id="supervisorPortalForm">
-        <div class="col-md-2"></div>  <!-- empty div used for positioning -->
-        <div class="col-md-5">
-          <div class="form-group">
-            <label for="termSelect">Term</label>
-            <div><select class="selectpicker"
-                    name='term'
-                    id='termSelect'
-                    data-live-search='true'
-                    title="All terms">
-                    <option value="">All terms</option>
-                {% for term in terms %}
-                  <option value="{{term.termCode.termCode}}">
-                    {{term.termCode.termName}}
-                  </option>
-                {% endfor %}
-            </select></div>
-          </div>
-          <div class="form-group">
-            <label for="departmentSelect">Department</label>
-            <div><select class="selectpicker"
-                    id="departmentSelect"
-                    onchange="populateTable()"
-                    title="Department">
-                <option value="" selected>All departments</option>
-              {% for department in departments %}
-                  <!-- We want to either select the first option, or the option that matches the department -->
-                <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
-              {% endfor %}
-            </select></div>
-          </div>
-          <div class="form-group">
-            <label for="supervisorSelect">Supervisor</label>
-            <div><select class="selectpicker"
-                    name='supervisor'
-                    id='supervisorSelect'
-                    data-live-search='true'
-                    title="All supervisors">
-                    <option value="">All supervisors</option>
-                {% for supervisor in supervisors  %}
-                  <option value="{{supervisor.ID}}"
-                          data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
-                    {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
-                  </option>
-                {% endfor %}
-            </select></div>
-          </div>
-          <div class="form-group">
-            <label for="studentSelect">Student</label>
-            <div><select class="selectpicker"
-                    name='student'
-                    id='studentSelect'
-                    data-live-search='true'
-                    title="All students">
-                    <option value="">All students</option>
-                  {% for student in students %}
-                    <option value="{{student.ID}}"
-                            data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
-                      {{student.FIRST_NAME}} {{student.LAST_NAME}}
-                   </option>
-                  {% endfor %}
-            </select></div>
-          </div>
-          <br><br>
-          <button type="button" class="btn btn-primary" id="formSearchButton">Search</button>
-          <button type="button" class="btn btn-danger" id="clearSelectionsButton">Clear Selections</button>
-          <br><br>
-        </div>
-        <div class="col-md-5">
-          <div class="form-group">
-            <label for="">Limit Form Status</label>
-            <div class="radio">
-              <label><input type="radio" value="Pending" id="pending" name="formStatus"> Pending</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Approved" id="approved" name="formStatus"> Approved</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Approved Reluctantly" id="approved" name="formStatus"> Approved Reluctantly</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Denied" id="denied" name="formStatus"> Denied</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Pre-Student Approval" id="student" name="formStatus"> Pre-Student Approval</label>
-            </div>
-          </div>
-          <br>
-          <div class="form-group">
-            <label for="">Limit Form Type</label>
-            <div class="radio">
-              <label><input type="radio" value="Labor Status Form" id="original" name="formType"> Original</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Labor Adjustment Form" id="adjusted" name="formType"> Adjusted</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Labor Release Form" id="release" name="formType"> Release</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="Labor Overload Form" id="overload" name="formType"> Overload</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="">Limit Evaluation Status</label>
-            <div class="radio">
-              <label><input type="radio" value="evalMidyearMissing" id="missingMidyearEvaluations" name="evaluations">Missing Midyear Evaluations</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="evalMidyearComplete" id="completedMidyearEvaluations" name="evaluations">Completed Midyear Evaluations</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="evalMissing" id="missingEvaluations" name="evaluations">Missing Final Evaluations</label>
-            </div>
-            <div class="radio">
-              <label><input type="radio" value="evalComplete" id="completedEvaluations" name="evaluations">Completed Final Evaluations</label>
-            </div>
-          </div>
-        </div>
-      </form>
-      <br>
+<div align="right">
+  <form method="POST" action="/supervisorPortal/download">
+    <button class="btn btn-success" type="submit" id="download">Download</button>
+  </form>
     </div>
+<div class="container-fluid" align="center">
+  <div class="accordion m-75" id="accordionExample">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <button class="btn btn-block" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <div class="row">
+          <div class="col-md-4 text-left">Form Search</div>
+          <div class="col-md-4 text-right">↓</div>
+        </div>
+      </button>
+    </div>
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+      <div class="row col-md-12" align="left">
+        <form id="supervisorPortalForm">
+            <div class="col-md-2"></div>  <!-- empty div used for positioning -->
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="termSelect">Term</label>
+                <div><select class="selectpicker"
+                        name='term'
+                        id='termSelect'
+                        data-live-search='true'
+                        title="All terms">
+                        <option value="">All terms</option>
+                    {% for term in terms %}
+                      <option value="{{term.termCode.termCode}}">
+                        {{term.termCode.termName}}
+                      </option>
+                    {% endfor %}
+                </select></div>
+              </div>
+              <div class="form-group">
+                <label for="departmentSelect">Department</label>
+                <div><select class="selectpicker"
+                        id="departmentSelect"
+                        onchange="populateTable()"
+                        title="Department">
+                    <option value="" selected>All departments</option>
+                  {% for department in departments %}
+                      <!-- We want to either select the first option, or the option that matches the department -->
+                    <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                  {% endfor %}
+                </select></div>
+              </div>
+              <div class="form-group">
+                <label for="supervisorSelect">Supervisor</label>
+                <div><select class="selectpicker"
+                        name='supervisor'
+                        id='supervisorSelect'
+                        data-live-search='true'
+                        title="All supervisors">
+                        <option value="">All supervisors</option>
+                    {% for supervisor in supervisors  %}
+                      <option value="{{supervisor.ID}}"
+                              data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
+                        {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
+                      </option>
+                    {% endfor %}
+                </select></div>
+              </div>
+              <div class="form-group">
+                <label for="studentSelect">Student</label>
+                <div><select class="selectpicker"
+                        name='student'
+                        id='studentSelect'
+                        data-live-search='true'
+                        title="All students">
+                        <option value="">All students</option>
+                      {% for student in students %}
+                        <option value="{{student.ID}}"
+                                data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
+                          {{student.FIRST_NAME}} {{student.LAST_NAME}}
+                       </option>
+                      {% endfor %}
+                </select></div>
+              </div>
+              <br><br>
+              <button type="button" class="btn btn-primary" id="formSearchButton">Search</button>
+              <button type="button" class="btn btn-danger" id="clearSelectionsButton">Clear Selections</button>
+              <br><br>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="">Limit Form Status</label>
+                <div class="radio">
+                  <label><input type="radio" value="Pending" id="pending" name="formStatus"> Pending</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Approved" id="approved" name="formStatus"> Approved</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Approved Reluctantly" id="approved" name="formStatus"> Approved Reluctantly</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Denied" id="denied" name="formStatus"> Denied</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Pre-Student Approval" id="student" name="formStatus"> Pre-Student Approval</label>
+                </div>
+              </div>
+              <br>
+              <div class="form-group">
+                <label for="">Limit Form Type</label>
+                <div class="radio">
+                  <label><input type="radio" value="Labor Status Form" id="original" name="formType"> Original</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Labor Adjustment Form" id="adjusted" name="formType"> Adjusted</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Labor Release Form" id="release" name="formType"> Release</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="Labor Overload Form" id="overload" name="formType"> Overload</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="">Limit Evaluation Status</label>
+                <div class="radio">
+                  <label><input type="radio" value="evalMidyearMissing" id="missingMidyearEvaluations" name="evaluations">Missing Midyear Evaluations</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="evalMidyearComplete" id="completedMidyearEvaluations" name="evaluations">Completed Midyear Evaluations</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="evalMissing" id="missingEvaluations" name="evaluations">Missing Final Evaluations</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" value="evalComplete" id="completedEvaluations" name="evaluations">Completed Final Evaluations</label>
+                </div>
+              </div>
+            </div>
+          </form>
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 <table id="formSearchTable" class="table table-striped table-bordered" width="100%">
   <thead>
