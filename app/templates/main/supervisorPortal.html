@@ -12,23 +12,22 @@
   <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.21/b-1.6.2/datatables.min.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/laborhistory.js')}}?u={{lastStaticUpdate}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/allPendingForms.js')}}?u={{lastStaticUpdate}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/formSearch.js') }}?u={{lastStaticUpdate}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/index.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/supervisorPortal.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
 <div align="center">
-  <h1>{{title}}</h1>
+  <h1>Supervisor Portal</h1>
 </div>
 <br>
 <div class="container-fluid" align="center">
   <div align="right">
-    <form method="POST" action="/main/formSearch/download">
+    <form method="POST" action="/supervisorPortal/download">
       <button class="btn btn-success" type="submit" id="download">Download</button>
     </form>
   </div>
   <div class="row col-md-12" align="left">
-    <form id="formSearchForm">
+    <form id="supervisorPortalForm">
         <div class="col-md-2"></div>  <!-- empty div used for positioning -->
         <div class="col-md-5">
           <div class="form-group">
