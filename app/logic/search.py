@@ -4,7 +4,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
 
-def limitSearch(students, currentUser):
+def limitSearchByUserDepartment(students, currentUser):
     """
     Given a list of student dictionaries and the currentUser the function will only return a
     list of students who have held a labor position within the currentUsers department.

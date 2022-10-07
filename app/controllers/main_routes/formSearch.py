@@ -36,17 +36,13 @@ def formSearch():
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = Department.select().order_by(Department.DEPT_NAME.asc())
-        departments = [department for department in departments]
+        departments = list(Department.select().order_by(Department.DEPT_NAME.asc()))
         supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
         students = Student.select().order_by(Student.FIRST_NAME.asc())
 
     else:
 
         departments = list(getDepartmentsForSupervisor(currentUser))
-
-        # convert department objects to strings
-        departments = [department for department in departments]
 
         supervisors = (Supervisor.select()
                             .join_from(Supervisor, LaborStatusForm)

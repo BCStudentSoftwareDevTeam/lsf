@@ -25,7 +25,6 @@ function runformSearchQuery() {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
-  console.log(departmentID)
   var supervisorID = $("#supervisorSelect").val();
   var studentID = $("#studentSelect").val();
   var formStatusList = [];
