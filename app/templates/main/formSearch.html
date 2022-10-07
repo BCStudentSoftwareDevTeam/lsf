@@ -52,11 +52,10 @@
                     id="departmentSelect"
                     onchange="populateTable()"
                     title="Department">
+                <option value="" selected>All departments</option>
               {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
-                <option value="{{department}}"
-                        {% if loop.index == 1 %} selected {% endif %}>{{department}}
-                </option>
+                <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
               {% endfor %}
             </select></div>
           </div>
