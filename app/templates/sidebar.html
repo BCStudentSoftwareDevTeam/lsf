@@ -18,9 +18,11 @@
       {% if currentUser.supervisor %}
         <div class="container-fluid">
           <div class="panel panel-default">
-               <div {% if request.path[:13] =="/"%} class="panel-heading active" {% endif%} class="panel-heading" tabindex="2">
-                 <h4 >Supervisor Portal</h4>
-               </div>
+            <a class="adminTest" href="/">
+                <div {% if request.path =="/" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5">
+                      <h4>Supervisor Portal</h4>
+                  </div>
+              </a>
           </div>
           <div class="panel panel-default">
             <a class="adminTest" href="/laborstatusform">

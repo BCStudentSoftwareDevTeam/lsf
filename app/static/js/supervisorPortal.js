@@ -1,6 +1,8 @@
 $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
+  $('#collapseSearch').collapse(false)
+
 
   $('a.hover_indicator').click(function(e){
     e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
@@ -25,7 +27,6 @@ function runformSearchQuery() {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
-  console.log(departmentID)
   var supervisorID = $("#supervisorSelect").val();
   var studentID = $("#studentSelect").val();
   var formStatusList = [];
@@ -54,7 +55,7 @@ function runformSearchQuery() {
 
   data = JSON.stringify(queryDict)
 
-  if (termCode + departmentID + supervisorID + studentID == "" && formStatusList.length + formTypeList.length) {
+  if (termCode + departmentID + supervisorID + studentID == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
