@@ -15,6 +15,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from.app.models.StudentLaborEvaluation import StudentLaborEvaluation
 
 print("Inserting data for demo and testing purposes")
 
@@ -478,3 +479,11 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+StudentLaborEvaluation  = [
+                            {
+                            
+                            }
+
+
+]
