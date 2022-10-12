@@ -195,9 +195,9 @@ def getFormattedData(filteredSearchResults):
     the HTML for the datatables are also formatted here.
     '''
 
-    supervisorStudentHTML = '<a href="#" class="hover_indicator" aria-label="{}">{} </a><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>'
-    departmentHTML = '<a href="#" class="hover_indicator" aria-label="{}-{}"> {}</a>'
-    positionHTML = '<a href="#" class="hover_indicator" aria-label="{}"> {}</a>'
+    supervisorStudentHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
+    departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
+    positionHTML = '<span href="#" aria-label="{}"> {}</span>'
     formattedData = []
     for form in filteredSearchResults:
         # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
@@ -324,6 +324,11 @@ def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
             deny = denyApproveNotesOptionsHTML.format(f"reject_{laborHistoryId}", f"insertDenial({laborHistoryId})", 'denyModal', 'Deny')
             approve = denyApproveNotesOptionsHTML.format("", f"insertApprovals({laborHistoryId});", 'approvalModal', 'Approve')
         actionsButton = actionsButtonDropdownHTML.format(manage, approve, deny, modify, notes)
+    else:
+        # If the actions button only links to the labor history modal, just make a button to that modal.
+        laborHistoryButton = '<button type="button" onClick="{}" class="btn btn-primary">Labor History</button>'
+        laborHistoryButton = laborHistoryButton.format(f"loadLaborHistoryModal({laborStatusFormId})")
+        return laborHistoryButton
 
     return actionsButton
 

@@ -2,12 +2,7 @@ $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
   $('#collapseSearch').collapse(false)
-
-
-  $('a.hover_indicator').click(function(e){
-    e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
-  });
-
+  
   $('#formSearchButton').on('click', function(){
     runformSearchQuery();
   });
