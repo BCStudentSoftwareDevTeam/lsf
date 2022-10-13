@@ -481,9 +481,48 @@ Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
 
 StudentLaborEvaluation  = [
-                            {
-                            
+                            { "ID": 1,
+                              "formHistoryID": 1,
+
+
                             }
 
 
 ]
+
+
+"""
+Here is dummy data to test student labor evals:
+
+
+AY 2021-2022,
+Approved,
+BXXXXXXXXX,
+Student Name,
+fakeStudent@berea.edu,
+Primary,
+S77111,
+Residence Advisor,
+3,15,,2022-01-17,2022-05-08,
+Student Life - Hall Leadership,
+Fake Supervisor,
+supervisorName@berea.edu,
+Start Date Correction,
+Final,
+20,
+“Student has shown up on time for her duty nights. If she was running late or had to miss a meeting, etc. she would communicate this with the team.“,
+9,
+“This is their first semester, so she completed tasks as assigned, while trying to learning more about her responsibilities throughout the semester. Has followed policy while enforcing it, and has supported other policies and cared for workplace equipment, etc.“,
+8,
+“Works well with the rest of the team by communicating needs, and being willing to switch shifts if needed. Has collaborated with an event. Could grow with collaborating with other staff. “,
+9,
+“She takes initiative by asking questions about how to excel and improve in her role as Hall staff. She does need help, so she did need guidance, but once she knew what she needed to do - she did it well. They has been flexible, and was willing to make changes to her schedule as needed for the team.“,
+10,
+She has always demonstrated a willingness to learn and work well with her teammates.,
+19,
+“She as previously mentioned, takes initiative in reaching out to her supervisor and teammates about her role. She has shared knowledge in terms of letting the team know what is happening in the hall, (e.g. resident concerns). She has shared information with another new hall staff to help her grow, as well.
+“,
+18,
+She has done well with her job overall. ,93
+
+"""
