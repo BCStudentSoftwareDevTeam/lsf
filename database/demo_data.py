@@ -15,7 +15,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from.app.models.StudentLaborEvaluation import StudentLaborEvaluation
+from app.models.studentLaborEvaluation import StudentLaborEvaluation
 
 print("Inserting data for demo and testing purposes")
 
@@ -480,16 +480,35 @@ notes = [
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
 
-StudentLaborEvaluation  = [
+studentLaborEvaluation  = [
                             { "ID": 1,
-                              "formHistoryID": 1,
+                              "formHistoryID": 2,
+                              "attendance_score": 20,
+                              "attendance_comment": "Student has shown up on time for her duty nights. If she was running late or had to miss a meeting, etc. she would communicate this with the team.",
+                              "accountability_score": 9,
+                              "accountability_comment": "This is their first semester, so she completed tasks as assigned, while trying to learning more about her responsibilities throughout the semester. Has followed policy while enforcing it, and has supported other policies and cared for workplace equipment, etc.",
+                              "teamwork_score": 8,
+                              "teamwork_comment": "Works well with the rest of the team by communicating needs, and being willing to switch shifts if needed. Has collaborated with an event. Could grow with collaborating with other staff. ",
+                              "initiative_score": 9,
+                              "initiative_comment": "She takes initiative by asking questions about how to excel and improve in her role as Hall staff. She does need help, so she did need guidance, but once she knew what she needed to do - she did it well. They has been flexible, and was willing to make changes to her schedule as needed for the team.",
+                              "respect_score": 10,
+                              "respect_comment": "She has always demonstrated a willingness to learn and work well with her teammates.,",
+                              "learning_score":19,
+                              "learning_comment": "She as previously mentioned, takes initiative in reaching out to her supervisor and teammates about her role. She has shared knowledge in terms of letting the team know what is happening in the hall, (e.g. resident concerns). She has shared information with another new hall staff to help her grow, as well.",
+                              "jobSpecific_score": 18,
+                              "jobSpecific_comment": "",
+                              "transcript_comment": "She has done well with her job overall. ,93",
+                              "is_midyear_evaluation": False,
+                              "is_midyear_evaluation": True,
+                              "submitted_by": "Fake Supervisor"
+
 
 
                             }
 
 
 ]
-
+StudentLaborEvaluation.insert(studentLaborEvaluation).on_conflict_replace().execute()
 
 """
 Here is dummy data to test student labor evals:
