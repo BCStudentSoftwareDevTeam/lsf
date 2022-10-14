@@ -51,10 +51,8 @@
          </div>
 
          <div class="form-group">
-           <label>Notes Log:</label>
-             {%for note in notesList%}
-             <li>{{note.date.strftime('%m/%d/%Y')}} | {{note.noteType}} | {{note.createdBy.username}} | {{note.notesContents}}</li>
-             {%endfor%}
+           <label>Labor Office Notes:</label>
+           <textarea type="text" class="form-control" id="laborNotes" value="{{lsfForm.laborDepartmentNotes}}" disabled>{{lsfForm.laborDepartmentNotes}}</textarea>
          </div>
      </div>
 

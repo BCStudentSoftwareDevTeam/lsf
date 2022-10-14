@@ -36,7 +36,7 @@ def financialAidOverload(formHistoryID):
                                 .join(FormHistory)
                                 .where(FormHistory.status_id.in_(["Approved", "Approved Reluctantly", "Pending"]),
                                        FormHistory.historyType_id == "Labor Status Form",
-                                       LaborStatusForm.studentSupervisee == lsfForm.studentSupervisee.ID,
+                                       LaborStatusForm.studentSupervisee == lsfForm.studentSupervisee.ID, 
                                        LaborStatusForm.termCode == lsfForm.termCode))
     totalHours = {"secondaryHours" : 0, "primaryHours": 0}
     supervisor = department = ""
@@ -54,9 +54,8 @@ def financialAidOverload(formHistoryID):
     userDept = "Financial Aid"
     if currentUser.isSaasAdmin:
         userDept = "SAAS"
-# will need to add term to the interface and then have a prefill variable
 
-    notesList = Notes.select().where(Notes.formID == lsfForm)
+# will need to add term to the interface and then have a prefill variable
     return render_template( 'admin/financialAidOverload.html',
                         overloadFormHistory = overloadFormHistory,
                         lsfForm = lsfForm,
@@ -65,8 +64,7 @@ def financialAidOverload(formHistoryID):
                         department = department,
                         supervisor= supervisor,
                         contractDate = contractDate,
-                        totalOverloadHours = totalHours["primaryHours"] + totalHours["secondaryHours"],
-                        notesList = notesList
+                        totalOverloadHours = totalHours["primaryHours"] + totalHours["secondaryHours"]
                       )
 
 @admin.route("/admin/financialAidOverloadApproval/<status>", methods=["POST"])
