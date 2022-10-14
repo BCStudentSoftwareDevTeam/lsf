@@ -7,10 +7,10 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from peewee import DoesNotExist
-from app.logic.search import limitSearch, studentDbToDict,getDepartmentsForSupervisor
+from app.logic.search import limitSearchByUserDepartment, studentDbToDict,getDepartmentsForSupervisor
 
 @pytest.mark.integration
-def test_limitSearch():
+def test_limitSearchByUserDepartment():
     with mainDB.atomic() as transaction:
         # intialize departments for testing
         supervisorDept = Department.create(DEPT_NAME="supervisorDept", ACCOUNT="6740", ORG="2114", departmentCompliance = 1)
@@ -93,7 +93,7 @@ def test_limitSearch():
 
         students = [inDeptStudent, outDeptStudent]
         students_converted = [studentDbToDict(student) for student in students]
-        newStudents = limitSearch(students_converted, outOfDeptSuperUser)
+        newStudents = limitSearchByUserDepartment(students_converted, outOfDeptSuperUser)
 
         assert students_converted[0] not in newStudents
         assert students_converted[1] in newStudents

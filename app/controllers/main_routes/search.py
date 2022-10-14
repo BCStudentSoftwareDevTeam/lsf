@@ -1,7 +1,7 @@
 from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
-from app.logic.search import limitSearch, studentDbToDict, usernameFromEmail
+from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
@@ -30,7 +30,6 @@ def search(query=None):
     query = query.strip()
 
     # bnumber search
-    # '[Bb]\d+' == is the search a bnumber
     if re.match('[Bb]\d+', query):
         our_students = list(map(studentDbToDict, Student.select().where(Student.ID % "{}%".format(query.upper()))))
         current_students = list(map(studentDbToDict, Tracy().getStudentsFromBNumberSearch(query)))
@@ -56,4 +55,4 @@ def search(query=None):
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         return jsonify(students)
 
-    return jsonify(limitSearch(students, currentUser))
+    return jsonify(limitSearchByUserDepartment(students, currentUser))
