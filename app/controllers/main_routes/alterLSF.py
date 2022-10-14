@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.supervisor import Supervisor
 from app.models.department import Department
 from app.models.adjustedForm import AdjustedForm
+from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app import cfg
 from app.logic.emailHandler import *
 from app.login_manager import require_login
