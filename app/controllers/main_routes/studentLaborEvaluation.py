@@ -48,7 +48,6 @@ class SLEForm(FlaskForm):
 
 @main_bp.route('/sle/<statusKey>', methods=['GET', 'POST'])
 def sle(statusKey):
-    print("Here")
     # NOTE: statusKey is the LSF id. Everything after this (template and controller) uses the associated laborHistory object/ID for this LSF id.
     currentUser = require_login()
 
@@ -57,7 +56,6 @@ def sle(statusKey):
         # current user is not the student
         return render_template('errors/403.html'), 403
     elif currentUser.student == None and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
-        print(list(getDepartmentsForSupervisor(currentUser)))
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
