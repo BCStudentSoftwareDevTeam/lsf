@@ -9,6 +9,7 @@ from wtforms.validators import DataRequired, Length
 from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from werkzeug.exceptions import BadRequestKeyError
+from app.logic.search import getDepartmentsForSupervisor
 
 class SLEForm(FlaskForm):
 
@@ -55,7 +56,7 @@ def sle(statusKey):
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
-    elif currentUser.student == None and laborHistoryForm.formID.supervisor.DEPT_NAME not in list(getDepartmentsForSupervisor(currentUser)):
+    elif currentUser.student == None and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
         print(list(getDepartmentsForSupervisor(currentUser)))
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
