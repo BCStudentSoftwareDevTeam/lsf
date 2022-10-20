@@ -500,11 +500,10 @@ studentLaborEvaluation  = [
                               "transcript_comment": "She has done well with her job overall. ,93",
                               "is_midyear_evaluation": False,
                               "is_midyear_evaluation": True,
+                              "is_submitted": True,
                               "submitted_by": "Fake Supervisor"
-
-
-
-                            }
+                            },
+                            
 
 
 ]
