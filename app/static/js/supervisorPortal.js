@@ -2,7 +2,7 @@ $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
   $('#collapseSearch').collapse(false)
-  
+
   $('#formSearchButton').on('click', function(){
     runformSearchQuery();
   });
@@ -61,7 +61,7 @@ function runformSearchQuery() {
   else {
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
-    $('#formSearchTable').DataTable({
+    var formSearchInit = $('#formSearchTable').DataTable({
           responsive: true,
           destroy: true,
           searching: false,
@@ -89,12 +89,15 @@ function runformSearchQuery() {
                 {"data":"Hours"},
                 {"data":"Contract Dates"},
                 {"data":"Created"},
-                {"data":"Form Staus"},
-                {"data": "Form Type"},
-                {"data": "Evaluation Status"},
+                {"data":"Form Status"},
+                {"data": "Form Type"} + '(' + {"data": "Evaluation Status"} + ')',
                 {"data":""}
               ]
         }
     });
+    $('#formSearchTable tbody').on('click', 'td', function () {
+          var searchResult = formSearchInit.row(this).data();
+          alert('You clicked on ' + searchResult + "'s row");
+      });
   }
 }

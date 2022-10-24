@@ -70,6 +70,7 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
+        print(getDatatableData(request))
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
