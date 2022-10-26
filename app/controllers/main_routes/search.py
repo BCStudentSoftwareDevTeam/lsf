@@ -20,7 +20,6 @@ def search_page():
 # search student table and STUDATA for student results
 @main_bp.route('/main/search/<query>',  methods=['GET'])
 def search(query=None):
-    print("Searching...")
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
