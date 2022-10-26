@@ -58,6 +58,7 @@ def index(department = None):
                                 .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                 .order_by(FormHistory.formID.department.DEPT_NAME.asc()) \
                                 .distinct()
+
         else:   # logged in as an admin
             # Grabs every single department that currently has at least one labor status form in it
             departments = FormHistory.select(FormHistory.formID.department.DEPT_NAME) \

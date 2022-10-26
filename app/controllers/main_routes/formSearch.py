@@ -1,4 +1,4 @@
-from app.controllers.admin_routes import admin
+from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file
 from app.models.term import Term
@@ -12,6 +12,7 @@ from app.models.status import Status
 from app.models.user import User
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
+from app.logic.search import getDepartmentsForSupervisor
 import operator
 from functools import reduce
 from app.controllers.main_routes.download import CSVMaker
@@ -22,30 +23,49 @@ from peewee import JOIN, prefetch
 formSearchResults = None
 sleJoin = False
 
-@admin.route('/admin/formSearch', methods=['GET', 'POST'])
+@main_bp.route('/main/formSearch', methods=['GET', 'POST'])
 def formSearch():
     '''
     When the request is GET the function populates the General Search interface dropdown menus with their corresponding values.
     If the request is POST it also populates the datatable with data based on user input.
     '''
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    departments = Department.select().order_by(Department.DEPT_NAME.asc())
-    supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
-    students = Student.select().order_by(Student.FIRST_NAME.asc())
 
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        departments = list(Department.select().order_by(Department.DEPT_NAME.asc()))
+        supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
+        students = Student.select().order_by(Student.FIRST_NAME.asc())
+
+    else:
+
+        departments = list(getDepartmentsForSupervisor(currentUser))
+
+        supervisors = (Supervisor.select()
+                            .join_from(Supervisor, LaborStatusForm)
+                            .join_from(LaborStatusForm, Department)
+                            .where(Department.DEPT_NAME.in_(departments))
+                            .distinct())
+
+        students = (Student.select()
+                    .join_from(Student, LaborStatusForm)
+                    .join_from(LaborStatusForm, Department)
+                    .where(Department.DEPT_NAME.in_(departments))
+                    .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
 
-    return render_template('admin/formSearch.html',
+    return render_template('main/formSearch.html',
                             title = "Form Search",
                             terms = terms,
                             supervisors = supervisors,
                             students = students,
                             departments = departments,
+                            department = None,
+                            currentUser = currentUser
                             )
 
 def getDatatableData(request):
@@ -122,7 +142,6 @@ def getDatatableData(request):
                         .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
                         .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
                         .join(User, on=(FormHistory.createdBy == User.userID))
-
                         .where(expression))
 
     if sleJoin:
@@ -296,7 +315,7 @@ def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
     return actionsButton
 
 
-@admin.route('/admin/formSearch/download', methods=['POST'])
+@main_bp.route('/main/formSearch/download', methods=['POST'])
 def downloadFormSearchResults():
     '''
     This function uses the general search results, stored in a global variable, to

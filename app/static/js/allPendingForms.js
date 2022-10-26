@@ -1,6 +1,4 @@
 // Opens collapse menu for this page
-$("#admin").collapse("show");
-
 $('a.hover_indicator').click(function(e){
   e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
 });

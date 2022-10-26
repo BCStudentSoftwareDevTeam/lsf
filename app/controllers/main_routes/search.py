@@ -1,35 +1,27 @@
-from app.controllers.admin_routes import admin
+from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
+from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
 from app.models.student import Student
+from app.models.laborStatusForm import LaborStatusForm
+from app.models.department import Department
+from app.models.formHistory import FormHistory
 from flask import jsonify, render_template
 import re
 
-def usernameFromEmail(email):
-    # split always returns a list, even if there is nothing to split, so [0] is safe
-    return email.split('@',1)[0]
-
-# Convert a Student or STUDATA record into the dictionary that our js expects
-def studentDbToDict(item):
-    return {'username': usernameFromEmail(item.STU_EMAIL.strip()),
-            'firstName': item.FIRST_NAME.strip(),
-            'lastName': item.LAST_NAME.strip(),
-            'bnumber': item.ID.strip(),
-            'type': 'Student'}
-
-@admin.route('/admin/search',  methods=['GET'])
+@main_bp.route('/main/search',  methods=['GET'])
 def search_page():
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
-    return render_template( 'admin/search.html' )
+    return render_template( 'main/search.html' )
 
 # search student table and STUDATA for student results
-@admin.route('/admin/search/<query>',  methods=['GET'])
+@main_bp.route('/main/search/<query>',  methods=['GET'])
 def search(query=None):
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
 
     current_students = []
@@ -59,4 +51,7 @@ def search(query=None):
     students = list({v['bnumber']:v for v in (current_students + our_students)}.values())
     students = sorted(students, key=lambda f:f['firstName'] + f['lastName'])
 
-    return jsonify(students)
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        return jsonify(students)
+
+    return jsonify(limitSearchByUserDepartment(students, currentUser))
