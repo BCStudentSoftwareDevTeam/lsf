@@ -82,9 +82,5 @@ function runformSearchQuery() {
               dataSrc: "data"
         }
     });
-    $('#formSearchTable tbody').on('click', 'td', function () {
-          var searchResult = formSearchInit.row(this).data();
-          alert('You clicked on ' + searchResult + "'s row");
-      });
   }
 }
