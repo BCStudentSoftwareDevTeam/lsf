@@ -199,6 +199,7 @@ def getFormattedData(filteredSearchResults):
     supervisorStudentHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
+    formTypeStatus = '<span href="#" aria-label=""> {}</span>'
     formattedData = []
     for form in filteredSearchResults:
         # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
@@ -221,7 +222,6 @@ def getFormattedData(filteredSearchResults):
                         f'{form.formID.POSN_CODE} ({form.formID.WLS})')
         # Hours
         hoursField = form.formID.weeklyHours if form.formID.weeklyHours else form.formID.contractHours
-
         # Adjustment Form Specific Data
         checkAdjustment(form)
         if (form.adjustedForm):
@@ -260,9 +260,6 @@ def getFormattedData(filteredSearchResults):
               form.createdBy.username,
               form.createdBy.email,
               form.createdDate.strftime('%m/%d/%y')))
-
-        # Form Status
-        record.append(form.status.statusName)
         # Form Type
         formTypeNameMapping = {
             "Labor Status Form": "Original",
@@ -271,7 +268,8 @@ def getFormattedData(filteredSearchResults):
             "Labor Release Form": "Release"}
         originalFormTypeName = form.historyType.historyTypeName
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
-        record.append(mappedFormTypeName)
+        # formType(Status)
+        formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
 
         # Evaluation status
         # TODO Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)

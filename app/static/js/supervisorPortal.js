@@ -79,20 +79,7 @@ function runformSearchQuery() {
               url: "/",
               type: "POST",
               data: {'data': data},
-              dataSrc: "data",
-              columns: [
-                {"data":"Term"},
-                {"data":"Department"},
-                {"data":"Supervisor"},
-                {"data":"Student"},
-                {"data":"Position (WLS)"},
-                {"data":"Hours"},
-                {"data":"Contract Dates"},
-                {"data":"Created"},
-                {"data":"Form Status"},
-                {"data": "Form Type"} + '(' + {"data": "Evaluation Status"} + ')',
-                {"data":""}
-              ]
+              dataSrc: "data"
         }
     });
     $('#formSearchTable tbody').on('click', 'td', function () {
