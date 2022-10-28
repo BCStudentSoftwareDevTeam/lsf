@@ -2,7 +2,7 @@ $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
   $('#collapseSearch').collapse(false)
-  
+
   $('#formSearchButton').on('click', function(){
     runformSearchQuery();
   });
@@ -61,7 +61,7 @@ function runformSearchQuery() {
   else {
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
-    $('#formSearchTable').DataTable({
+    var formSearchInit = $('#formSearchTable').DataTable({
           responsive: true,
           destroy: true,
           searching: false,
@@ -79,21 +79,7 @@ function runformSearchQuery() {
               url: "/",
               type: "POST",
               data: {'data': data},
-              dataSrc: "data",
-              columns: [
-                {"data":"Term"},
-                {"data":"Department"},
-                {"data":"Supervisor"},
-                {"data":"Student"},
-                {"data":"Position (WLS)"},
-                {"data":"Hours"},
-                {"data":"Contract Dates"},
-                {"data":"Created"},
-                {"data":"Form Staus"},
-                {"data": "Form Type"},
-                {"data": "Evaluation Status"},
-                {"data":""}
-              ]
+              dataSrc: "data"
         }
     });
   }

@@ -70,6 +70,7 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
+        print(getDatatableData(request))
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
@@ -195,9 +196,12 @@ def getFormattedData(filteredSearchResults):
     the HTML for the datatables are also formatted here.
     '''
 
-    supervisorStudentHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
+    supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
+    studentHTML = '<a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a>'
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
+    formTypeStatus = '<span href="#" aria-label=""> {}</span>'
+    hiddenLSFID = "<div id={} data-id hidden></div>"
     formattedData = []
     for form in filteredSearchResults:
         # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
@@ -210,7 +214,7 @@ def getFormattedData(filteredSearchResults):
               form.formID.department.ACCOUNT,
               form.formID.department.DEPT_NAME))
         # Supervisor
-        supervisorField = supervisorStudentHTML.format(
+        supervisorField = supervisorHTML.format(
                             form.formID.supervisor.ID,
                             f'{form.formID.supervisor.FIRST_NAME} {form.formID.supervisor.LAST_NAME}',
                             form.formID.supervisor.EMAIL)
@@ -220,12 +224,11 @@ def getFormattedData(filteredSearchResults):
                         f'{form.formID.POSN_CODE} ({form.formID.WLS})')
         # Hours
         hoursField = form.formID.weeklyHours if form.formID.weeklyHours else form.formID.contractHours
-
         # Adjustment Form Specific Data
         checkAdjustment(form)
         if (form.adjustedForm):
             if form.adjustedForm.fieldAdjusted == "supervisor":
-                newSupervisor = supervisorStudentHTML.format(
+                newSupervisor = supervisorHTML.format(
                                 form.adjustedForm.oldValue['ID'],
                                 form.adjustedForm.newValue,
                                 form.adjustedForm.oldValue['email'])
@@ -243,7 +246,8 @@ def getFormattedData(filteredSearchResults):
 
         record.append(supervisorField)
         # Student
-        record.append(supervisorStudentHTML.format(
+        record.append(studentHTML.format(
+                form.formID.laborStatusFormID,
               form.formID.studentSupervisee.ID,
               f'{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME}',
               form.formID.studentSupervisee.STU_EMAIL))
@@ -254,14 +258,11 @@ def getFormattedData(filteredSearchResults):
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
                                    form.formID.endDate.strftime('%m/%d/%y')]))
         # Created By
-        record.append(supervisorStudentHTML.format(
+        record.append(supervisorHTML.format(
               form.createdBy.supervisor.ID if form.createdBy.supervisor else form.createdBy.student.ID,
               form.createdBy.username,
               form.createdBy.email,
               form.createdDate.strftime('%m/%d/%y')))
-
-        # Form Status
-        record.append(form.status.statusName)
         # Form Type
         formTypeNameMapping = {
             "Labor Status Form": "Original",
@@ -270,67 +271,15 @@ def getFormattedData(filteredSearchResults):
             "Labor Release Form": "Release"}
         originalFormTypeName = form.historyType.historyTypeName
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
-        record.append(mappedFormTypeName)
+        # formType(Status)
+        formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
 
         # Evaluation status
         # TODO Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
 
-        laborHistoryId = form.formHistoryID
-        laborStatusFormId = form.formID.laborStatusFormID
-        actionsButton = getActionButtonLogic(form, laborHistoryId, laborStatusFormId)
-
-        record.append(actionsButton)
         formattedData.append(record)
 
     return formattedData
-
-
-def getActionButtonLogic(form, laborHistoryId, laborStatusFormId):
-    '''
-    This function determines the options shown on the Actions dropdown, which depends on form type and form status.
-    '''
-
-    actionsButtonDropdownHTML = '<div class="dropdown"><button class="btn btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Actions <span class="caret"></span></button>' +\
-                                '<ul class="dropdown-menu" role="menu" aria-labelledby="menu1" style="min-width: 100%;">{}{}{}{}{}</ul></div>'
-    actionsListHTML = '<li role="presentation"><a role="menuitem" href="{}">{}</a></li>'
-    manageOptionHTML = actionsListHTML.format('#', '<span id="{}" onclick="{}">{}</span>')
-    denyApproveNotesOptionsHTML = actionsListHTML.format('#', '<span id="{}" onclick="{}" data-toggle="modal" data-target="#{}">{}</span>')
-    modifyOptionHTML = actionsListHTML.format('/alterLSF/{lsfID}', '<span id="edit_{lsfID}">Modify</span>')
-
-    # Actions button and its options
-    actionsButton = ""
-    approve = ""
-    deny = ""
-    manage = ""
-    modify = ""
-    notes = ""
-
-    if form.historyType.historyTypeName == "Labor Status Form":
-        manage = manageOptionHTML.format(laborHistoryId, f"loadLaborHistoryModal({laborStatusFormId})", 'Labor History')
-        actionsButton = actionsButtonDropdownHTML.format(manage, approve, deny, modify, notes)
-
-    if form.status.statusName in ("Pending", "Pre-Student Approval"):
-        # show notes modal for all pending labor status forms
-        notes = denyApproveNotesOptionsHTML.format(f'notes_{laborHistoryId}', f'getNotes({laborStatusFormId})', 'NotesModal', 'View Notes')
-        if form.overloadForm:
-            manage = manageOptionHTML.format(laborHistoryId, f"loadOverloadModal({laborHistoryId}, {laborStatusFormId})", 'Manage')
-        elif form.releaseForm:
-            manage = manageOptionHTML.format(laborHistoryId, f"loadReleaseModal({laborHistoryId}, {laborStatusFormId})", 'Manage')
-        elif form.adjustedForm:
-            deny = denyApproveNotesOptionsHTML.format(f"reject_{laborHistoryId}", f"insertDenial({laborHistoryId})", 'denyModal', 'Deny')
-            approve = denyApproveNotesOptionsHTML.format("", f"insertApprovals({laborHistoryId})", 'approvalModal', 'Approve')
-        else: # if it is the original labor status form
-            modify = modifyOptionHTML.format(lsfID = laborStatusFormId)
-            deny = denyApproveNotesOptionsHTML.format(f"reject_{laborHistoryId}", f"insertDenial({laborHistoryId})", 'denyModal', 'Deny')
-            approve = denyApproveNotesOptionsHTML.format("", f"insertApprovals({laborHistoryId});", 'approvalModal', 'Approve')
-        actionsButton = actionsButtonDropdownHTML.format(manage, approve, deny, modify, notes)
-    else:
-        # If the actions button only links to the labor history modal, just make a button to that modal.
-        laborHistoryButton = '<button type="button" onClick="{}" class="btn btn-primary">Labor History</button>'
-        laborHistoryButton = laborHistoryButton.format(f"loadLaborHistoryModal({laborStatusFormId})")
-        return laborHistoryButton
-
-    return actionsButton
 
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])

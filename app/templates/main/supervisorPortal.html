@@ -67,7 +67,6 @@
                 <div><select class="selectpicker"
                         id="departmentSelect"
                         data-live-search='true'
-                        onchange="populateTable()"
                         title="Department">
                     <option value="" selected>All departments</option>
                   {% for department in departments %}
@@ -180,12 +179,10 @@
     <th>Supervisor</th>
     <th>Student</th>
     <th>Position (WLS)</th>
-    <th>Hours</th>
+    <th>Hrs.</th>
     <th>Contract Dates</th>
     <th>Created</th>
-    <th>Form Status</th>
-    <th>Form Type</th>
-    <th></th>
+    <th>Form Type (Status)</th>
   </thead>
 </table>
 
