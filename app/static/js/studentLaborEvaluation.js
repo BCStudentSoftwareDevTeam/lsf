@@ -60,7 +60,6 @@ function update_sum() {
 
 $("#finalSubmitButton").click(function() {
   $("#isSubmitted").val("True");
-	console.log($("#isSubmitted").val())
 });
 
 $('#submit_as_final').change(function() {

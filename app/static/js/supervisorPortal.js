@@ -1,8 +1,11 @@
 $(document).ready(function(){
-  $('#formSearchTable').hide();
-  $("#download").prop('disabled', true);
-  $('#collapseSearch').collapse(false)
-
+  if (document.cookie) {
+        runformSearchQuery();
+  } else {
+      $('#formSearchTable').hide();
+      $("#download").prop('disabled', true);
+      $('#collapseSearch').collapse(false)
+  }
   $('#formSearchButton').on('click', function(){
     runformSearchQuery();
   });
@@ -18,7 +21,7 @@ $(document).ready(function(){
 
 
 
-function runformSearchQuery() {
+function runformSearchQuery(newData='') {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -47,9 +50,15 @@ function runformSearchQuery() {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
-
   data = JSON.stringify(queryDict)
-
+  if (newData) {
+      data = newData
+  }
+  if (String(window.location.pathname) == "/redirectSupervisorPortal") {
+      let now = new Date();
+      now.setTime(now.getTime() + 1 * 3600 * 1000)
+      document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
+  }
   if (termCode + departmentID + supervisorID + studentID == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(5000).fadeOut();

@@ -503,8 +503,8 @@
           </div>
           {% endif %}
           <div class="row">
-            <input class="btn btn-lg btn-primary" type="submit" value="Save for Later" id="saveForLater">
-            <input class="btn btn-lg btn-success" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
+            <input class="btn btn-lg btn-primary" href="/redirectSupervisorPortal" type="submit" value="Save for Later" id="saveForLater">
+            <input class="btn btn-lg btn-success" href="/redirectSupervisorPortal" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
           </div>
         </div>
       {% endif %}
