@@ -76,7 +76,6 @@ function runformSearchQuery() {
               type: "POST",
               data: {'data': data},
               dataSrc: "data",
-              success:  function(response){},
               error: function(request, status, error) {
                       location.reload();
                     }
