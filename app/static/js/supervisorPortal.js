@@ -50,11 +50,7 @@ function runformSearchQuery() {
 
   data = JSON.stringify(queryDict)
 
-  if (termCode + departmentID + supervisorID + studentID == "") {
-    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
-    $("#flasher").delay(5000).fadeOut();
-  }
-  else if (evaluationList.length > 0 && termCode == "") {
+  if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
@@ -79,7 +75,11 @@ function runformSearchQuery() {
               url: "/",
               type: "POST",
               data: {'data': data},
-              dataSrc: "data"
+              dataSrc: "data",
+              success:  function(response){},
+              error: function(request, status, error) {
+                      location.reload();
+                    }
         }
     });
   }
