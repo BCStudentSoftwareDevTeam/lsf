@@ -1,6 +1,6 @@
 import sys
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash
 from functools import reduce
 from peewee import JOIN, prefetch
 from app.models.term import Term
@@ -70,8 +70,11 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
-        print(getDatatableData(request))
-        return getDatatableData(request)
+        try:
+            return getDatatableData(request)
+        except:
+            flash("At least one field must be selected.", "danger")
+            return ""
 
     return render_template('main/supervisorPortal.html',
                             terms = terms,
