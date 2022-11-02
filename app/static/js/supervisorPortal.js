@@ -1,6 +1,7 @@
 $(document).ready(function(){
-  if (document.cookie) {
-        runformSearchQuery();
+  if (String(window.location.pathname) === "/redirectSupervisorPortal") {
+        console.log(parseCookie(document.cookie))
+        runformSearchQuery(parseCookie(document.cookie));
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
@@ -19,7 +20,13 @@ $(document).ready(function(){
   });
 });
 
-
+const parseCookie = str =>
+  str
+  .split(';')
+  .map(v => v.split('='))
+  .reduce((acc, v) => {
+    return decodeURIComponent(v[1].trim());
+  }, {});
 
 function runformSearchQuery(newData='') {
 
@@ -51,14 +58,12 @@ function runformSearchQuery(newData='') {
                'evaluations': evaluationList
              };
   data = JSON.stringify(queryDict)
-  if (newData) {
+  if (String(window.location.pathname) == "/redirectSupervisorPortal") {
       data = newData
   }
-  if (String(window.location.pathname) == "/redirectSupervisorPortal") {
-      let now = new Date();
-      now.setTime(now.getTime() + 1 * 3600 * 1000)
-      document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
-  }
+  let now = new Date();
+  now.setTime(now.getTime() + 1 * 3600 * 1000)
+  document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
   if (termCode + departmentID + supervisorID + studentID == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(5000).fadeOut();

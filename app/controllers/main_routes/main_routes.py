@@ -71,7 +71,7 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
-        print(getDatatableData(request))
+        print(request, "AAAAAAAAAAAAAAAAAAAAAAAAA")
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
