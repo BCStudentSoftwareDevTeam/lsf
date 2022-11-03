@@ -1,8 +1,6 @@
 $(document).ready(function(){
   $('#formSearchTable').hide();
   $("#download").prop('disabled', true);
-  $('#collapseSearch').collapse(false)
-
   $('#formSearchButton').on('click', function(){
     runformSearchQuery();
   });
@@ -14,6 +12,18 @@ $(document).ready(function(){
       $(`#${this.id}`).selectpicker("refresh");
     });
   });
+  $( function() {
+    $( "#formSearchAccordion" ).accordion({
+      collapsible: true
+    });
+  });
+  $( "#formSearchButton").on( "click", function( event ) {
+    $("#formSearchAccordion").accordion({ collapsible: true, active: false});
+});
+  $(function() {
+    $( "#formSearchAccordion" ).accordion();
+  	$("#formSearchAccordion .ui-accordion-header").css({fontSize: 20});// width of the box content area
+});
 });
 
 
@@ -76,7 +86,6 @@ function runformSearchQuery() {
               type: "POST",
               data: {'data': data},
               dataSrc: "data",
-              success:  function(response){},
               error: function(request, status, error) {
                       location.reload();
                     }
