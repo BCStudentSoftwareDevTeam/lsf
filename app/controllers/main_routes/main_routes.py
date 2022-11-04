@@ -88,7 +88,6 @@ def getDatatableData(request):
     This function runs a query based on selected options in the front-end and retrieves the appropriate forms.
     Then, it puts all the retrieved data in appropriate form to be send to the ajax call in the supervisorPortal.js file.
     '''
-
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
     draw = int(request.form.get('draw', -1))

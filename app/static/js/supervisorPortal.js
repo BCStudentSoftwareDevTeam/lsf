@@ -1,14 +1,14 @@
 $(document).ready(function(){
-  if (String(window.location.pathname) === "/redirectSupervisorPortal") {
+  if (String(window.location.pathname) === "/") {
         console.log(parseCookie(document.cookie))
-        runformSearchQuery(parseCookie(document.cookie));
+        runformSearchQuery(parseCookie(document.cookie), true);
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
   $('#formSearchButton').on('click', function(){
-    runformSearchQuery();
+    runformSearchQuery(newData='', false);
   });
 
   $('#clearSelectionsButton').on('click', function(){
@@ -28,7 +28,7 @@ const parseCookie = str =>
     return decodeURIComponent(v[1].trim());
   }, {});
 
-function runformSearchQuery(newData='') {
+function runformSearchQuery(newData='', cookie) {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -58,21 +58,13 @@ function runformSearchQuery(newData='') {
                'evaluations': evaluationList
              };
   data = JSON.stringify(queryDict)
-  if (String(window.location.pathname) == "/redirectSupervisorPortal") {
+  if (cookie) {
       data = newData
   }
   let now = new Date();
-  now.setTime(now.getTime() + 1 * 3600 * 1000)
+  now.setMinutes(now.getMinutes() + 1);
   document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
-  if (termCode + departmentID + supervisorID + studentID == "") {
-    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
-    $("#flasher").delay(5000).fadeOut();
-  }
-  else if (evaluationList.length > 0 && termCode == "") {
-    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
-    $("#flasher").delay(5000).fadeOut();
-  }
-  else {
+  if(true) {
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
