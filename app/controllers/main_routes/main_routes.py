@@ -70,11 +70,7 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
-        try:
-            return getDatatableData(request)
-        except:
-            flash("At least one field must be selected.", "danger")
-            return ""
+        return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
                             terms = terms,

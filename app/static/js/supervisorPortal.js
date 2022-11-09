@@ -17,9 +17,6 @@ $(document).ready(function(){
       collapsible: true
     });
   });
-  $( "#formSearchButton").on( "click", function( event ) {
-    $("#formSearchAccordion").accordion({ collapsible: true, active: false});
-});
   $(function() {
     $( "#formSearchAccordion" ).accordion();
   	$("#formSearchAccordion .ui-accordion-header").css({fontSize: 20});// width of the box content area
@@ -64,7 +61,11 @@ function runformSearchQuery() {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
-  else {
+  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == ""){
+    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
+    $("#flasher").delay(3000).fadeOut();
+  } else {
+    $("#formSearchAccordion").accordion({ collapsible: true, active: false});
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
