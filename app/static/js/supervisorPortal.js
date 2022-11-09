@@ -87,9 +87,6 @@ function runformSearchQuery() {
               type: "POST",
               data: {'data': data},
               dataSrc: "data",
-              error: function(request, status, error) {
-                      location.reload();
-                    }
         }
     });
   }
