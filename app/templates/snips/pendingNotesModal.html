@@ -8,6 +8,8 @@
           <h3 class="modal-title" id="notesModalLabel">Labor Office Notes </h3>
         {% elif currentUser.isFinancialAidAdmin %}
           <h3 class="modal-title" id="notesModalLabel">Financial Aid Office Notes </h3>
+        {% elif currentUser.isSaasAdmin %}
+          <h3 class="modal-title" id="notesModalLabel">Saas Office Notes </h3>
         {% endif %}
       </div>
       <div class="modal-body" id="noteModalBody">
