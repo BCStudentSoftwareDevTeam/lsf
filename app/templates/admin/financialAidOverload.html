@@ -53,7 +53,7 @@
          <div class="form-group">
            <label>Notes Log:</label>
              {%for note in notesList%}
-             <li>{{note.date.strftime('%m/%d/%Y')}} | {{note.noteType}} | {{note.createdBy.username}} | {{note.notesContents}}</li>
+             <li>{{note.date.strftime('%m/%d/%Y')}} | {{note.noteType}} | <strong><i>{{note.createdBy.username}}</i></strong> | {{note.notesContents}}</li>
              {%endfor%}
          </div>
      </div>
