@@ -1,6 +1,6 @@
 import sys
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash
 from functools import reduce
 from peewee import JOIN, prefetch
 from app.models.term import Term
@@ -71,7 +71,6 @@ def supervisorPortal():
                     .where(Department.DEPT_NAME.in_(departments))
                     .distinct())
     if request.method == 'POST':
-        print(request, "AAAAAAAAAAAAAAAAAAAAAAAAA")
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',

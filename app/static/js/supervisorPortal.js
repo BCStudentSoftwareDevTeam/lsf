@@ -7,10 +7,11 @@ $(document).ready(function(){
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
+  $('#formSearchTable').hide();
+  $("#download").prop('disabled', true);
   $('#formSearchButton').on('click', function(){
     runformSearchQuery(newData='', false);
   });
-
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
     $('select.selectpicker').each(function() {
@@ -18,6 +19,15 @@ $(document).ready(function(){
       $(`#${this.id}`).selectpicker("refresh");
     });
   });
+  $( function() {
+    $( "#formSearchAccordion" ).accordion({
+      collapsible: true
+    });
+  });
+  $(function() {
+    $( "#formSearchAccordion" ).accordion();
+  	$("#formSearchAccordion .ui-accordion-header").css({fontSize: 20});// width of the box content area
+});
 });
 
 const parseCookie = str =>
@@ -64,7 +74,15 @@ function runformSearchQuery(newData='', cookie) {
   let now = new Date();
   now.setMinutes(now.getMinutes() + 1);
   document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
-  if(true) {
+  if (evaluationList.length > 0 && termCode == "") {
+    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
+    $("#flasher").delay(5000).fadeOut();
+  }
+  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == ""){
+    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
+    $("#flasher").delay(3000).fadeOut();
+  } else {
+    $("#formSearchAccordion").accordion({ collapsible: true, active: false});
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
@@ -85,7 +103,7 @@ function runformSearchQuery(newData='', cookie) {
               url: "/",
               type: "POST",
               data: {'data': data},
-              dataSrc: "data"
+              dataSrc: "data",
         }
     });
   }
