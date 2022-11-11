@@ -1,6 +1,8 @@
 import pytest
 from app.logic.tracy import Tracy
 from app.logic.tracy import InvalidQueryException
+from app.logic.update_from_tracy import update_user
+
 
 @pytest.fixture(scope='class')
 def tracy(request):
@@ -142,3 +144,6 @@ class Test_Tracy:
 
         with pytest.raises(InvalidQueryException):
             user = tracy.checkStudentOrSupervisor("smith")
+    @pytest.mark.integration
+    def test_tracyUsers(self, tracy):
+        print(update_user("B00730361"))
