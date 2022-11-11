@@ -45,7 +45,7 @@ def laborStatusForm(laborStatusKey = None):
         selectedFormHistory = FormHistory.get(FormHistory.formID == laborStatusKey)
         creator = selectedFormHistory.createdBy.supervisor.ID
         supervisor = selectedLSForm.supervisor.ID
-        if currentUser.supervisor.ID == supervisor or currentUser.supervisor.ID == creator:
+        if currentUser.supervisor.ID == supervisor or currentUser.supervisor.ID == creator or currentUser.isLaborAdmin:
             forms = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey) # getting labor status form id, to prepopulate laborStatusForm.
         else:
             forms = None
@@ -83,7 +83,7 @@ def userInsert():
         term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
         try:
             lsf = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, rspFunctional[i])
-            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
+            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host)
             try:
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
             except Exception as e:

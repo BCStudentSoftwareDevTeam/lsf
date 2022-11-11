@@ -1,14 +1,11 @@
 $(document).ready(function(){
-  if (String(window.location.pathname) === "/") {
-        console.log(parseCookie(document.cookie))
+  if (String(window.location.pathname) === "/" && document.cookie) {
         runformSearchQuery(parseCookie(document.cookie), true);
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
-  $('#formSearchTable').hide();
-  $("#download").prop('disabled', true);
   $('#formSearchButton').on('click', function(){
     runformSearchQuery(newData='', false);
   });
@@ -72,13 +69,14 @@ function runformSearchQuery(newData='', cookie) {
       data = newData
   }
   let now = new Date();
+  console.log(now.getMinutes())
   now.setMinutes(now.getMinutes() + 1);
-  document.cookie = "searchResults="+data +"; expires" + now.toUTCString() +";"
+  var searchCookie = document.cookie = "searchResults="+data +"; expires=" + now.toUTCString() +";"
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
-  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == ""){
+  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == "" && cookie == false){
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(3000).fadeOut();
   } else {

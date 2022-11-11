@@ -34,7 +34,6 @@ formSearchResults = None
 sleJoin = False
 
 @main_bp.route('/', methods=['GET', 'POST'])
-@main_bp.route('/redirectSupervisorPortal', methods=['GET', 'POST'])
 def supervisorPortal():
     '''
     When the request is GET the function populates the General Search interface dropdown menus with their corresponding values.
