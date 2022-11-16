@@ -83,8 +83,9 @@
          <textarea type="text" class="form-control" id="overloadReason" value="{{overloadFormHistory.overloadForm.studentOverloadReason}}" disabled>{{overloadFormHistory.overloadForm.studentOverloadReason}}</textarea>
        </div>
        <div class="form-group">
-         <label>{{userDept}} Note :</label>
-         <textarea type="text" class="form-control" id="{{lsfForm.laborStatusFormID}}" ></textarea>
+         <label>{{userDept}} Note:</label>
+         <label id="remainingCharacters"></label>
+         <textarea type="text" class="form-control" id="{{lsfForm.laborStatusFormID}}" onkeyup="setNotesLimit(this.id, remainingCharacters)"></textarea>
          <div class="text-right">
             <button class="btn btn-primary" value="{{lsfForm.laborStatusFormID}}" id="saveNotes" onclick="insertOverloadNote(this.value, this.id)">Save Notes</button>
           </div>
