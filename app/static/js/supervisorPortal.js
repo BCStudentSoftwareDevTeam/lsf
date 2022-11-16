@@ -66,7 +66,7 @@ function runformSearchQuery(newData='', cookie) {
       data = newData
   }
   let now = new Date();
-  now.setMinutes(now.getMinutes() + 10);
+  now.setMinutes(now.getMinutes() + 15);
   var searchCookie = document.cookie = "searchResults="+data +"; expires=" + now.toUTCString() +";"
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
