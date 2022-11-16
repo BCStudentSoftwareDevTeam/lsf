@@ -12,21 +12,21 @@ $(document).ready(function(){
     $("#selectedHoursPerWeek").val(value);
     fillHoursPerWeek("fillhours");
   }
-  // var cookies = document.cookie;
-  // if (cookies){
-  //   parsedArrayOfStudentCookies = JSON.parse(cookies);
-  //   document.cookie = parsedArrayOfStudentCookies + ";max-age=28800;";
-  //   for (i in parsedArrayOfStudentCookies) {
-  //     createAndFillTable(parsedArrayOfStudentCookies[i]);
-  //   }
-  //   $("#selectedTerm option[value=" + parsedArrayOfStudentCookies[0].stuTermCode + "]").attr('selected', 'selected');
-  //   $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
-  //   $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
-  //   getDepartment($("#selectedDepartment"));
-  //   preFilledDate($("#selectedTerm"));
-  //   showAccessLevel($("#selectedTerm"));
-  //   disableTermSupervisorDept();
-  // }
+  var cookies = document.cookie;
+  if (cookies){
+    parsedArrayOfStudentCookies = JSON.parse(cookies);
+    document.cookie = parsedArrayOfStudentCookies + ";max-age=28800;";
+    for (i in parsedArrayOfStudentCookies) {
+      createAndFillTable(parsedArrayOfStudentCookies[i]);
+    }
+    $("#selectedTerm option[value=" + parsedArrayOfStudentCookies[0].stuTermCode + "]").attr('selected', 'selected');
+    $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
+    $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
+    getDepartment($("#selectedDepartment"));
+    preFilledDate($("#selectedTerm"));
+    showAccessLevel($("#selectedTerm"));
+    disableTermSupervisorDept();
+  }
 });
 
 $("#laborStatusForm").submit(function(event) {
@@ -719,7 +719,6 @@ $("#resetConfirmButton").click(function(){
     globalArrayOfStudents = [];
     $("#tbodyid tr").remove();
     document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=0;";
-    console.log(document.cookie);
     location.reload();
 });
 

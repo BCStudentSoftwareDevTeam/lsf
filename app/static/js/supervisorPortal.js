@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  if (String(window.location.pathname) === "/" && document.cookie) {
+  if ((document.cookie).includes("searchResults=")) {
         runformSearchQuery(parseCookie(document.cookie), true);
   } else {
       $('#formSearchTable').hide();
@@ -27,13 +27,10 @@ $(document).ready(function(){
 });
 });
 
-const parseCookie = str =>
-  str
-  .split(';')
-  .map(v => v.split('='))
-  .reduce((acc, v) => {
-    return decodeURIComponent(v[1].trim());
-  }, {});
+function parseCookie(str){
+    cookieArray = str.split('=')
+    return cookieArray[1];
+  };
 
 function runformSearchQuery(newData='', cookie) {
 
@@ -69,8 +66,7 @@ function runformSearchQuery(newData='', cookie) {
       data = newData
   }
   let now = new Date();
-  console.log(now.getMinutes())
-  now.setMinutes(now.getMinutes() + 1);
+  now.setMinutes(now.getMinutes() + 10);
   var searchCookie = document.cookie = "searchResults="+data +"; expires=" + now.toUTCString() +";"
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
