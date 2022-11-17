@@ -66,7 +66,7 @@
     </div>
     <div class="logNotesDiv row col-sm-12" style='display:none'>
       <h4 class="supeNotesLabel control-label text-left" for="supervisor">Supervisor Notes: </h4>
-      <textarea class="notesText form-control" rows="2" cols="70" disabled> </textarea>
+      <textarea class="notesText form-control" rows="2" cols="70" maxlength="250" disabled> </textarea>
       <h4 class=" control-label text-left" id="notesLogHeader" for="notesLog">Notes Log:</h4>
       <div class="notesLogArea"></div>
       <br>
@@ -104,7 +104,7 @@
   {% endif %}
 
   {########################################
-    Approval 
+    Approval
    ########################################}
 
   {% if formType != "completedOverload" and (currentUser.isLaborAdmin or status != "Pre-Student Approval") %}
@@ -136,18 +136,18 @@
     </div>
   </div>
   <div id="notesTextAreaOverload" class="notesTextArea">
-    <textarea id='overloadNotes' class="finalNote form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for approval"></textarea>
+    <textarea id='overloadNotes' class="finalNote form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for approval (250 Characters)" maxlength="250"></textarea>
   </div>
   <div id="denyTextAreaOverload" class="denyTextArea" style="display:None">
-    <textarea id='denyOverloadReason' class="finalDeny form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial"></textarea>
+    <textarea id='denyOverloadReason' class="finalDeny form-control" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial (250 Characters)" maxlength="250"></textarea>
     <p id="required-error" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><b> This field is required</b></p>
   </div>
 
   {########################################
-    Initials Entry 
+    Initials Entry
    ########################################}
 
-    {% if (currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) or 
+    {% if (currentUser.isFinancialAidAdmin and not departmentStatusInfo['financialAidStatus']) or
           (currentUser.isSaasAdmin and not departmentStatusInfo['SAASStatus']) %}
       <div align="left" style="margin-top:2%;">
           <span class="tooltip-right" data-tooltip="Required">Mark approved by <strong>{{currentUser.fullName}}: </strong><span class="required-mark">*</span>

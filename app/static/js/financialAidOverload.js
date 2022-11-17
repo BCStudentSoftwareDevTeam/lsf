@@ -76,15 +76,3 @@ function insertOverloadNote(textareaID, buttonID) {
       }
   });
 }
-
-export function setNotesLimit(textboxId, labelId){
-  var maxCharacters = 250;
-  var textLength = 0;
-  var textVal = $("#" + textboxId).val();
-  var textLength = textVal.length;
-  $(labelId).text("Remaining Characters: " + (maxCharacters - textLength));
-  if (textLength > maxCharacters){
-    $("#" + textboxId).val(textVal.substring(0, maxCharacters));
-    $(labelId).text("Remaining Characters: " + 0);
-  }
-}

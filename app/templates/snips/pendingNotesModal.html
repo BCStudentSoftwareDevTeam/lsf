@@ -15,13 +15,13 @@
       <div class="modal-body" id="noteModalBody">
         <div id="notesDiv">
            <h4 class="supeNotesLabel col-md-4 control-label text-left" for ="supervisor">Supervisor Notes: </h4>
-              <textarea class="notesText" rows="2" cols="70" disabled> </textarea>
+              <textarea class="notesText" rows="2" cols="70" maxlength="250" placeholder="250 Characters Maximum" disabled> </textarea>
           {% if currentUser.isLaborAdmin %}
-            <h4 class="col-md-4 control-label text-left" for ="laboroffice" align = "left">Labor Office Notes: </h4>
+            <h4 class="col-md-6 control-label text-left" for ="laboroffice" align = "left">Labor Office Notes: </h4>
           {% elif currentUser.isFinancialAidAdmin %}
             <h4 class="col-md-6 control-label text-left" for ="laboroffice" align = "left">Financial Aid Office Notes: </h4>
           {% endif %}
-              <textarea id="laborNotesText" rows="2" cols="70"></textarea>
+              <textarea id="laborNotesText" rows="2" cols="70" maxlength="250" placeholder="250 Characters Maximum"></textarea>
           <h4 class=" control-label text-left" id="notesLogTitle" for="notesLog">Notes Log:</h4>
               <div class="notesLogArea"></div>
         </div>

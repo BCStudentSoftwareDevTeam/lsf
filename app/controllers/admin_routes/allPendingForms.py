@@ -753,7 +753,7 @@ def getNotesCounter():
     try:
         rsp = eval(request.data.decode("utf-8"))
         if rsp:
-            noteTotal = Notes.select().where(Notes.formID == rsp['laborStatusFormID'], Notes.noteType == "Labor Note").count()
+            noteTotal = Notes.select().where(Notes.formID == rsp['laborStatusFormID']).count()
             noteDictionary = {'noteTotal': noteTotal}
             return jsonify(noteDictionary)
     except Exception as e:
