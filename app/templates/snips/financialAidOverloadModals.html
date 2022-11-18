@@ -8,7 +8,7 @@
       <div class="modal-body">
         <p align = "left" id="modal-body-content"> You have chosen to deny this student's Overload Request. Please provide a reason.</p>
         <p id="required-error" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong> This field is required</strong></p>
-            <textarea class="textarea-required" id="denyReason_{{overload.formHistoryID}}" rows="5" cols="60" style="resize: none;" required> </textarea>
+            <textarea class="textarea-required" id="denyReason_{{overload.formHistoryID}}" rows="5" cols="60" style="resize: none;" maxlength="250" placeholder="250 Characters Maximum"></textarea>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal">Close</button>

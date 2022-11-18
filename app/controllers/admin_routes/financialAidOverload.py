@@ -55,7 +55,8 @@ def financialAidOverload(formHistoryID):
     if currentUser.isSaasAdmin:
         userDept = "SAAS"
 
-    notesList = Notes.select().where(Notes.formID == lsfForm)
+    notesList = list(Notes.select().where(Notes.formID == lsfForm))
+    notesList.reverse()
 
 # will need to add term to the interface and then have a prefill variable
     return render_template( 'admin/financialAidOverload.html',

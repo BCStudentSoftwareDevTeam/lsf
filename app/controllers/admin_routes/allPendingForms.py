@@ -396,8 +396,7 @@ def getNotes(formid):
         supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid)
         laborNotes = list(Notes.select().where(Notes.formID == formid))
         laborNotes.reverse()
-
-
+        
         notesDict = {}
         if supervisorNotes.supervisorNotes:
             notesDict["supervisorNotes"] = supervisorNotes.supervisorNotes
