@@ -6,6 +6,7 @@ from peewee import JOIN, prefetch
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
@@ -278,9 +279,17 @@ def getFormattedData(filteredSearchResults):
 
     return formattedData
 
-@main_bp.route('/supervisorPortal/addUserToDept')
+@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
-    return
+    userDeptData = request.form
+    print(userDeptData['supervisor'], userDeptData['department'])
+    supervisorDeptRecord = SupervisorDepartment.select().where(SupervisorDepartment.supervisor == userDeptData['supervisor'], SupervisorDepartment.department == userDeptData['department']).get()
+    if supervisorDeptRecord:
+        return 0
+
+    else:
+        createSupervisorDeptRecord = SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
+        return 1
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
