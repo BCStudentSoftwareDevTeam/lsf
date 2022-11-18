@@ -23,9 +23,12 @@
 <br>
 <div align="right">
   <form method="POST" action="/supervisorPortal/download">
+    <button class="btn btn-primary" type="button" id="addUserToDept">Add User to Dept.</button>
     <button class="btn btn-success" type="submit" id="download">Download</button>
   </form>
-    </div>
+</div>
+
+
     <br>
 <div class="container-fluid fs-1" align="center">
   <div id="formSearchAccordion">
@@ -197,5 +200,6 @@
 {% include "snips/pendingNotesModal.html" %}
 {% include "snips/FormsDeny.html" %}
 {% include "snips/pendingApprovalModal.html" %}
+{% include "snips/addSuperToDeptModal.html" %}
 
 {% endblock %}

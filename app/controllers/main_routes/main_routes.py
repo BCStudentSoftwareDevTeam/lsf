@@ -44,13 +44,12 @@ def supervisorPortal():
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-
+    unfilteredSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
         supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
         students = Student.select().order_by(Student.FIRST_NAME.asc())
-
     else:
 
         departments = list(getDepartmentsForSupervisor(currentUser))
@@ -63,7 +62,6 @@ def supervisorPortal():
                             .join_from(LaborStatusForm, Department)
                             .where(Department.DEPT_NAME.in_(departments))
                             .distinct())
-
         students = (Student.select()
                     .join_from(Student, LaborStatusForm)
                     .join_from(LaborStatusForm, Department)
@@ -75,6 +73,7 @@ def supervisorPortal():
     return render_template('main/supervisorPortal.html',
                             terms = terms,
                             supervisors = supervisors,
+                            unfilteredSupervisors = unfilteredSupervisors,
                             students = students,
                             departments = departments,
                             department = None,
@@ -279,7 +278,9 @@ def getFormattedData(filteredSearchResults):
 
     return formattedData
 
-
+@main_bp.route('/supervisorPortal/addUserToDept')
+def addUserToDept():
+    return
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''

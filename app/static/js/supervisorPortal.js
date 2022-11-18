@@ -9,6 +9,22 @@ $(document).ready(function(){
   $('#formSearchButton').on('click', function(){
     runformSearchQuery(newData='', false);
   });
+  $('#addUserToDept').on('click', function() {
+      $("#addSupervisorToDeptModal").modal("show");
+  })
+
+  $('#addUser').on('click', function() {
+      let supervisor = $('#supervisorModalSelect :selected').val()
+      let department = $('#departmentModalSelect :selected').val()
+      let data = {supervisor: supervisor, department: department}
+      $.ajax({
+        method: "POST",
+        url: "/supervisorPortal/addUserToDept",
+        data: data,
+        success: function(response) {},
+        error: function() {},
+    }
+  })
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
     $('select.selectpicker').each(function() {
