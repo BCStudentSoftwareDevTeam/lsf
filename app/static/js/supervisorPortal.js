@@ -1,13 +1,13 @@
 $(document).ready(function(){
   if ((document.cookie).includes("searchResults=")) {
-        runformSearchQuery(parseCookie(document.cookie), true);
+        runFormSearchQuery(parseCookie(document.cookie), true);
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
   $('#formSearchButton').on('click', function(){
-    runformSearchQuery(newData='', false);
+    runFormSearchQuery(newData='', false);
   });
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
@@ -32,7 +32,7 @@ function parseCookie(str){
     return cookieArray[1];
   };
 
-function runformSearchQuery(newData='', cookie) {
+function runFormSearchQuery(newData='', cookie) {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
