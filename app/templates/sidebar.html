@@ -17,35 +17,17 @@
       {% endif %}
       {% if currentUser.supervisor %}
         <div class="container-fluid">
-          <div class="panel-group" class="accordion" >
-              <div class="panel panel-default">
-                <a id="supervisor-toggle" data-toggle="collapse" href="#supervisorNavBar">
-               <div {% if request.path[:13] =="/laborHistory"%} class="panel-heading active" {% endif%} class="panel-heading" tabindex="2">
-                 <h4 >Supervisor Portal</h4>
-               </div>
-                  </a>
-                  <div id="supervisorNavBar" {% if request.path =="/main/students" or request.path =="/main/department"%} class="panel-collapse collapse in"{% endif %} class="panel-collapse collapse">
-                      <ul id="supervisordropdown" class="panel panel-default">
-                        <a href="/main/students"><li {% if request.path =="/main/students"%} class="panel-heading active"{% endif %}class="panel-heading" tabindex="3"><h4>My Students</h4></li></a>
-                         <a href="/main/department"><li {% if request.path=="/main/department" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="4"><h4>Department Students</h4></li></a>
-                      </ul>
-
+          <div class="panel panel-default">
+            <a class="adminTest" href="/">
+                <div {% if request.path =="/" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5">
+                      <h4>Supervisor Portal</h4>
                   </div>
-
-              </div>
-
+              </a>
           </div>
           <div class="panel panel-default">
             <a class="adminTest" href="/laborstatusform">
                 <div {% if request.path =="/laborstatusform" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5">
                       <h4>New Labor Status Form</h4>
-                  </div>
-              </a>
-          </div>
-          <div class="panel panel-default">
-            <a class="adminTest" href="/main/formSearch">
-                <div {% if request.path =="/main/formSearch" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="6">
-                      <h4>Form Search</h4>
                   </div>
               </a>
           </div>

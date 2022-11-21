@@ -34,11 +34,12 @@ def studentDbToDict(student):
     """
     Given a student object it will return a mapped Dict with student data.
     """
-    return {'username': usernameFromEmail(student.STU_EMAIL.strip()),
-            'firstName': student.FIRST_NAME.strip(),
-            'lastName': student.LAST_NAME.strip(),
-            'bnumber': student.ID.strip(),
-            'type': 'Student'}
+    dbToDict =  {'username': usernameFromEmail(student.STU_EMAIL.strip()),
+                'firstName': student.FIRST_NAME.strip(),
+                'lastName': student.LAST_NAME.strip(),
+                'bnumber': student.ID.strip(),
+                'type': 'Student'}
+    return dbToDict
 
 def getDepartmentsForSupervisor(currentUser):
     """

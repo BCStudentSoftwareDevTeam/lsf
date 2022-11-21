@@ -37,7 +37,7 @@ def laborReleaseForm(laborStatusKey):
                         # then the user should not be able submit another one
                         message = "An error has occurred. {0} {1} already has a 'Pending' Labor Release Form.".format(historyForms[0].formID.studentSupervisee.FIRST_NAME, historyForms[0].formID.studentSupervisee.LAST_NAME)
                         flash(message, "danger")
-                        return redirect(url_for("main.index"))
+                        return redirect(url_for("main.supervisorPortal"))
             # If the labor status form does not have a pending labor release form, then the user
             # will be able to submit a labor release form. This section will create the new
             # labor release form, and a new form in the form history table.
@@ -57,13 +57,13 @@ def laborReleaseForm(laborStatusKey):
             # submiteds
             message = "Your Labor Release Form for {0} {1} has been submitted.".format(laborStatusForiegnKey.studentSupervisee.FIRST_NAME, laborStatusForiegnKey.studentSupervisee.LAST_NAME)
             flash(message, "success")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.supervisorPortal"))
 
         except Exception as e:
             print("Error: ", e)
             message = "An error has occurred. Your Labor Release Form for {0} {1} was not submitted.".format(laborStatusForiegnKey.studentSupervisee.FIRST_NAME, laborStatusForiegnKey.studentSupervisee.LAST_NAME)
             flash(message, "danger")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.supervisorPortal"))
     return render_template('main/laborReleaseForm.html',
 				            title=('Labor Release Form'),
                             forms = forms
