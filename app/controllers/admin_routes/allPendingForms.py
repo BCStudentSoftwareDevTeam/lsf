@@ -207,7 +207,7 @@ def downloadAllPendingForms():
     else:
         abort(403)
 
-    excel = CSVMaker(downloadType, allPendingForms)    
+    excel = CSVMaker(downloadType, allPendingForms)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
@@ -393,11 +393,10 @@ def getNotes(formid):
     '''
     try:
         currentUser = require_login()
-        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid) 
+        supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid)
         laborNotes = list(Notes.select().where(Notes.formID == formid))
         laborNotes.reverse()
         
-
         notesDict = {}
         if supervisorNotes.supervisorNotes:
             notesDict["supervisorNotes"] = supervisorNotes.supervisorNotes
@@ -429,8 +428,12 @@ def insertNotes(formId):
         currentDate = datetime.now().strftime("%Y-%m-%d")  # formats the date to match the peewee format for the database
 
         if stripresponse:
-            Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "Labor Note") # creates a new entry in the laborOfficeNotes table
-
+            if currentUser.isLaborAdmin:
+                Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "Labor Note") # creates a new entry in the laborOfficeNotes table
+            elif currentUser.isFinancialAidAdmin:
+                Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "Financial Aid Note")
+            elif currentUser.isSaasAdmin:
+                Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "SAAS Note")
             return jsonify({"Success": True})
 
         elif stripresponse=="" or stripresponse==None:
@@ -749,7 +752,7 @@ def getNotesCounter():
     try:
         rsp = eval(request.data.decode("utf-8"))
         if rsp:
-            noteTotal = Notes.select().where(Notes.formID == rsp['laborStatusFormID'], Notes.noteType == "Labor Note").count()
+            noteTotal = Notes.select().where(Notes.formID == rsp['laborStatusFormID']).count()
             noteDictionary = {'noteTotal': noteTotal}
             return jsonify(noteDictionary)
     except Exception as e:
