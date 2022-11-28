@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd database;
+
 PRODUCTION=0
 if [ "`hostname`" == 'lsf.berea.edu' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"

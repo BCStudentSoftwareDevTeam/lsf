@@ -58,3 +58,21 @@ function openApproveDenyModal(status){
     $("#finOverloadModal").modal("show");
   }
 }
+
+function insertOverloadNote(textareaID, buttonID) {
+  var overloadNote = $("#" + textareaID).val();
+  var data = JSON.stringify(overloadNote);
+  $("#" + buttonID).on('submit', function(e) {
+    e.preventDefault();
+  });
+
+  $.ajax({
+    method: "POST",
+    url: '/admin/notesInsert/' + textareaID,
+    data: data,
+    contentType: 'application/json',
+    success: function(response) {
+        location.reload(true);
+      }
+  });
+}
