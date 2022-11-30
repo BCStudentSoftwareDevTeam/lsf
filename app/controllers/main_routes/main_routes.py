@@ -57,16 +57,17 @@ def supervisorPortal():
 
         # convert department objects to strings
         departments = [department for department in departments]
+        deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select()
                             .join_from(Supervisor, LaborStatusForm)
                             .join_from(LaborStatusForm, Department)
-                            .where(Department.DEPT_NAME.in_(departments))
+                            .where(Department.DEPT_NAME.in_(deptNames))
                             .distinct())
         students = (Student.select()
                     .join_from(Student, LaborStatusForm)
                     .join_from(LaborStatusForm, Department)
-                    .where(Department.DEPT_NAME.in_(departments))
+                    .where(Department.DEPT_NAME.in_(deptNames))
                     .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
@@ -273,7 +274,7 @@ def getFormattedData(filteredSearchResults):
         formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
 
         # Evaluation status
-        # TODO Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
+        # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
 
         formattedData.append(record)
 
@@ -282,7 +283,6 @@ def getFormattedData(filteredSearchResults):
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
-    print(userDeptData['supervisor'], userDeptData['department'])
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisor'], department = userDeptData['department'])
     try:
         if supervisorDeptRecord:

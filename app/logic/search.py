@@ -1,5 +1,6 @@
 from app.models.student import Student
 from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
@@ -45,12 +46,19 @@ def getDepartmentsForSupervisor(currentUser):
     """
     Given currentUser, find and return all departments that the user is associated with.
     """
-    departments = (Department.select()
+    supervisorDepts = Department.select(Department).join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
+    supervisorDepts = [dept for dept in supervisorDepts]
+    print(supervisorDepts)
+    departments = (Department.select(Department)
                     .join_from(Department, LaborStatusForm)
                     .join_from(LaborStatusForm, FormHistory)
                     .join_from(LaborStatusForm, Supervisor)
                     .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME)
                     .distinct()
                     )
-
-    return departments
+    departments = [dept for dept in departments]
+    print(departments)
+    alldepts = departments + supervisorDepts
+    alldepts = list(set(alldepts))
+    print(alldepts)
+    return supervisorDepts
