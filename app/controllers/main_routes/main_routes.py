@@ -283,13 +283,16 @@ def getFormattedData(filteredSearchResults):
 def addUserToDept():
     userDeptData = request.form
     print(userDeptData['supervisor'], userDeptData['department'])
-    supervisorDeptRecord = SupervisorDepartment.select().where(SupervisorDepartment.supervisor == userDeptData['supervisor'], SupervisorDepartment.department == userDeptData['department']).get()
-    if supervisorDeptRecord:
-        return 0
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisor'], department = userDeptData['department'])
+    try:
+        if supervisorDeptRecord:
+            return "False"
 
-    else:
-        createSupervisorDeptRecord = SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
-        return 1
+        else:
+            createSupervisorDeptRecord = SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
+            return "True"
+    except:
+        return ""
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
