@@ -15,8 +15,7 @@
                   name='supervisor'
                   id='supervisorModalSelect'
                   data-live-search='true'
-                  title="All supervisors">
-                  <option value="">All supervisors</option>
+                  title="Supervisors">
               {% for supervisor in unfilteredSupervisors  %}
                 <option value="{{supervisor.ID}}"
                         data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
@@ -31,7 +30,6 @@
                     id="departmentModalSelect"
                     data-live-search='true'
                     title="Department">
-                <option value="" selected>All departments</option>
               {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
                 <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>

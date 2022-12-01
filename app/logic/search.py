@@ -46,7 +46,7 @@ def getDepartmentsForSupervisor(currentUser):
     """
     Given currentUser, find and return all departments that the user is associated with.
     """
-    supervisorDepts = Department.select(Department).join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
+    supervisorDepts = SupervisorDepartment.select(Department).join(Department).where(SupervisorDepartment.supervisor == currentUser.supervisor)
     supervisorDepts = [dept for dept in supervisorDepts]
     print(supervisorDepts)
     departments = (Department.select(Department)
@@ -61,4 +61,4 @@ def getDepartmentsForSupervisor(currentUser):
     alldepts = departments + supervisorDepts
     alldepts = list(set(alldepts))
     print(alldepts)
-    return supervisorDepts
+    return alldepts
