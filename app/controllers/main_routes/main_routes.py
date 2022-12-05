@@ -53,7 +53,7 @@ def supervisorPortal():
         students = Student.select().order_by(Student.FIRST_NAME.asc())
     else:
 
-        departments = list(getDepartmentsForSupervisor(currentUser))
+        departments = getDepartmentsForSupervisor(currentUser)
 
         # convert department objects to strings
         departments = [department for department in departments]

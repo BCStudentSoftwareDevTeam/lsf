@@ -60,11 +60,16 @@
                         id="departmentSelect"
                         data-live-search='true'
                         title="Department">
-                    <option value="" selected>All departments</option>
-                  {% for department in departments %}
-                      <!-- We want to either select the first option, or the option that matches the department -->
-                    <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
-                  {% endfor %}
+                  {% if departments|count != 1%}
+                        <option value="" selected>All departments</option>
+                      {% for department in departments %}
+                          <!-- We want to either select the first option, or the option that matches the department -->
+                        <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                      {% endfor %}
+                  {% else %}
+                        <option value="{{departments[0].departmentID}}" selected>{{departments[0].DEPT_NAME}}</option>
+
+                  {% endif %}
                 </select></div>
               </div>
               <div class="form-group">

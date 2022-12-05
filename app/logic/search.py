@@ -46,9 +46,11 @@ def getDepartmentsForSupervisor(currentUser):
     """
     Given currentUser, find and return all departments that the user is associated with.
     """
-    supervisorDepts = SupervisorDepartment.select(Department).join(Department).where(SupervisorDepartment.supervisor == currentUser.supervisor)
+    # query the SupervisorDepartment table to see if any entries exist for the currentUser
+    supervisorDepts = Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
     supervisorDepts = [dept for dept in supervisorDepts]
-    print(supervisorDepts)
+
+    # queries all forms to see what departments the user has interacted with
     departments = (Department.select(Department)
                     .join_from(Department, LaborStatusForm)
                     .join_from(LaborStatusForm, FormHistory)
@@ -57,8 +59,8 @@ def getDepartmentsForSupervisor(currentUser):
                     .distinct()
                     )
     departments = [dept for dept in departments]
-    print(departments)
     alldepts = departments + supervisorDepts
+
+    # removes duplicate departments
     alldepts = list(set(alldepts))
-    print(alldepts)
     return alldepts
