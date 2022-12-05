@@ -48,8 +48,7 @@ class CSVMaker:
         Creates the CSV file
         '''
         with open(self.completePath, 'w', encoding="utf-8", errors="backslashreplace") as csvfile:
-            self.filewriter = csv.writer(csvfile, delimiter=',',
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            self.filewriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
             ## Create heading on csv ##
             headers =   ([  'Term',
