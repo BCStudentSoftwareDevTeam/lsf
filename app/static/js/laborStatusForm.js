@@ -719,7 +719,6 @@ $("#resetConfirmButton").click(function(){
     globalArrayOfStudents = [];
     $("#tbodyid tr").remove();
     document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=0;";
-    console.log(document.cookie);
     location.reload();
 });
 

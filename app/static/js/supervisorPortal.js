@@ -1,10 +1,14 @@
 $(document).ready(function(){
-  $('#formSearchTable').hide();
-  $("#download").prop('disabled', true);
+  if ((document.cookie).includes("searchResults=")) {
+        runFormSearchQuery(parseCookie(document.cookie), true);
+  } else {
+      $('#formSearchTable').hide();
+      $("#download").prop('disabled', true);
+      $('#collapseSearch').collapse(false)
+  }
   $('#formSearchButton').on('click', function(){
-    runformSearchQuery();
+    runFormSearchQuery(newData='', false);
   });
-
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
     $('select.selectpicker').each(function() {
@@ -23,9 +27,12 @@ $(document).ready(function(){
 });
 });
 
+function parseCookie(str){
+    cookieArray = str.split('=')
+    return cookieArray[1];
+  };
 
-
-function runformSearchQuery() {
+function runFormSearchQuery(newData='', cookie) {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -54,14 +61,18 @@ function runformSearchQuery() {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
-
   data = JSON.stringify(queryDict)
-
+  if (cookie) {
+      data = newData
+  }
+  let now = new Date();
+  now.setMinutes(now.getMinutes() + 15);
+  var searchCookie = document.cookie = "searchResults="+data +"; expires=" + now.toUTCString() +";"
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
-  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == ""){
+  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == "" && cookie == false){
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(3000).fadeOut();
   } else {

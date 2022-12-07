@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import date
+from app.logic.search import getDepartmentsForSupervisor
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 
@@ -46,7 +47,8 @@ class ButtonStatus:
                 elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
                     self.evaluation_exists = True
         else:
-            if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME:
+            currentUserDepartments = [department.DEPT_NAME for department in getDepartmentsForSupervisor(currentUser)]
+            if ogHistoryForm.formID.supervisor.DEPT_NAME in currentUserDepartments:
                 if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                     self.evaluate = True
                 for evaluation in evaluations:

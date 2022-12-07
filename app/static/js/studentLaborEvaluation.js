@@ -1,4 +1,13 @@
+$(document).ready(function(){
+    $("#saveForLater").click(function() {
+        window.location.pathname = "/redirectSupervisorPortal";
+    })
 
+
+    $("#finalSubmitButton").click(function() {
+        window.location.pathname = "/redirectSupervisorPortal";
+    })
+})
 
 $(function () {
   $('[data-toggle="popover"]').popover()
@@ -35,7 +44,9 @@ $('.slider').on('input', function() {
   $("#" + this.id + "_help").removeAttr("hidden");
 
   update_sum();
+
 });
+
 
 function update_sum() {
   sum = 0;
@@ -60,7 +71,6 @@ function update_sum() {
 
 $("#finalSubmitButton").click(function() {
   $("#isSubmitted").val("True");
-	console.log($("#isSubmitted").val())
 });
 
 $('#submit_as_final').change(function() {
