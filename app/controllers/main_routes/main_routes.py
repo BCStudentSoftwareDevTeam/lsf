@@ -45,7 +45,7 @@ def supervisorPortal():
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    unfilteredSupervisors = Supervisor.select()
+    allSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
@@ -75,7 +75,7 @@ def supervisorPortal():
     return render_template('main/supervisorPortal.html',
                             terms = terms,
                             supervisors = supervisors,
-                            unfilteredSupervisors = unfilteredSupervisors,
+                            allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
                             department = None,

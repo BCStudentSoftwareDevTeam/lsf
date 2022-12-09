@@ -24,15 +24,15 @@ $(document).ready(function(){
         success: function(response) {
           if (response == "True") {
             $("#flash_container").html('<div class="alert alert-success" role="alert" id="flasher">Supervisor has been added to department.</div>');
-            ("#flasher").delay(3000).fadeOut();
+            $("#flasher").delay(3000).fadeOut();
           } else {
             $("#flash_container").html('<div class="alert alert-warning" role="alert" id="flasher">Supervisor is already a member of this department.</div>');
-            ("#flasher").delay(3000).fadeOut();
+            $("#flasher").delay(3000).fadeOut();
           }
         },
         error: function() {
-          $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Failed to add supervisor, please try again.</div>');
-          ("#flasher").delay(3000).fadeOut();
+          $("#flash_container").html('<div class="alert alert-warning" role="alert" id="flasher">Failed to add supervisor, please try again.</div>');
+          $("#flasher").delay(3000).fadeOut();
         },
     })
   })
