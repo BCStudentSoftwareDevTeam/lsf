@@ -52,6 +52,19 @@ $(document).ready(function(){
     $( "#formSearchAccordion" ).accordion();
   	$("#formSearchAccordion .ui-accordion-header").css({fontSize: 20});// width of the box content area
 });
+// listening for preset button clicks.
+$('#mySupervisees').on('click', function(){
+  runFormSearchQuery(newData='', false, "mySupervisees");
+});
+$('#evaluationsMissing').on('click', function(){
+  runFormSearchQuery(newData='', false, "missingEvals");
+});
+$('#superviseesPendingForms').on('click', function(){
+  runFormSearchQuery(newData='', false, "pendingForms");
+});
+$('#currentTerm').on('click', function(){
+  runFormSearchQuery(newData='', false, "currentTerm");
+});
 });
 
 function parseCookie(str){
@@ -59,7 +72,7 @@ function parseCookie(str){
     return cookieArray[1];
   };
 
-function runFormSearchQuery(newData='', cookie) {
+function runFormSearchQuery(newData='', cookie, button) {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -80,6 +93,41 @@ function runFormSearchQuery(newData='', cookie) {
   $("input:radio[name='evaluations']:checked").each(function(){
       evaluationList.push($(this).val());
   });
+  if (button) {
+    if (button=="mySupervisees") {
+      termCode = "currentTerm"
+      departmentID = ""
+      supervisorID = "currentUser"
+      studentID = ""
+      formStatusList = []
+      formType  = []
+      evaluationList = []
+    } else if (button=="missingEvals") {
+      termCode = "currentTerm"
+      departmentID = ""
+      supervisorID = ""
+      studentID = ""
+      formStatusList = []
+      formType  = []
+      evaluationList = ["allEvalMissing"]
+    } else if (button=="pendingForms") {
+      termCode = "currentTerm"
+      departmentID = ""
+      supervisorID = ""
+      studentID = ""
+      formStatusList = ["Pending"]
+      formType  = []
+      evaluationList = []
+    } else if (button=="currentTerm") {
+      termCode = "currentTerm"
+      departmentID = ""
+      supervisorID = ""
+      studentID = ""
+      formStatusList = []
+      formType  = []
+      evaluationList = []
+    }
+  }
   queryDict = {'termCode': termCode,
                'departmentID': departmentID,
                'supervisorID': supervisorID,

@@ -89,6 +89,7 @@ def getDatatableData(request):
     '''
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
+    currentUser = require_login()
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
     rowsPerPage = int(request.form.get('length', -1))
@@ -111,8 +112,14 @@ def getDatatableData(request):
                             10: StudentLaborEvaluation.ID}
 
     termCode = queryFilterDict.get('termCode', "")
+    if termCode == "currentTerm":
+        termCode = Term.select(Term.termCode).where(Term.termState).get()
+        print(termCode)
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
+    print(type(supervisorId))
+    if supervisorId == "currentUser":
+        supervisorId = Supervisor.select(Supervisor.ID).where(Supervisor.ID == currentUser.supervisor).get()
     studentId = queryFilterDict.get('studentID', "")
     formStatusList = queryFilterDict.get('formStatus', "") # form status radios
     formTypeList = queryFilterDict.get('formType', "") # form type radios
@@ -156,11 +163,14 @@ def getDatatableData(request):
                         .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
                         .join(User, on=(FormHistory.createdBy == User.userID))
                         .where(expression))
-
+    print(sleJoin)
     if sleJoin:
         if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
             #grab all the midyear evaluationStatus
             evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == True, StudentLaborEvaluation.is_submitted == True)
+        elif sleJoin == "allEvalMissing":
+            #grab all evaluations for term
+            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_submitted == True)
         else:
             #grab all the final evaluationStatus
             evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == False, StudentLaborEvaluation.is_submitted == True)
@@ -172,6 +182,8 @@ def getDatatableData(request):
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
         elif sleJoin == "evalComplete":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+        elif sleJoin == "allEvalMissing":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
 
     recordsTotal = formSearchResults.count()
 
