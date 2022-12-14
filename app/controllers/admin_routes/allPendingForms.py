@@ -173,7 +173,13 @@ def checkAdjustment(allForms):
         if allForms.adjustedForm.fieldAdjusted == "supervisor":
             # use the supervisor id in the field adjusted to find supervisor in User table.
             newSupervisorID = allForms.adjustedForm.newValue
-            newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
+            if Supervisor.get_or_none(Supervisor.ID == newSupervisorID):
+                newSupervisor = Supervisor.get(Supervisor.ID == newSupervisorID)
+            else:
+                try:
+                    newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
+                except:
+                    pass
 
             # we are temporarily storing the supervisor name in new value,
             # because we want to show the supervisor name in the hmtl template.
@@ -396,7 +402,7 @@ def getNotes(formid):
         supervisorNotes =  LaborStatusForm.get(LaborStatusForm.laborStatusFormID == formid)
         laborNotes = list(Notes.select().where(Notes.formID == formid))
         laborNotes.reverse()
-        
+
         notesDict = {}
         if supervisorNotes.supervisorNotes:
             notesDict["supervisorNotes"] = supervisorNotes.supervisorNotes
