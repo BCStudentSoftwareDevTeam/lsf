@@ -105,7 +105,7 @@ function runFormSearchQuery(newData='', cookie, button) {
     } else if (button=="missingEvals") {
       termCode = "currentTerm"
       departmentID = ""
-      supervisorID = ""
+      supervisorID = "currentUser"
       studentID = ""
       formStatusList = []
       formType  = []
