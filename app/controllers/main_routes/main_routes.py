@@ -155,7 +155,6 @@ def getDatatableData(request):
     global formSearchResults
     if not currentUser.isLaborAdmin:
         supervisorDepartments = getDepartmentsForSupervisor(currentUser)
-        print(supervisorDepartments)
         formSearchResults = (FormHistory.select()
                             .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
                             .join(Department, on=(LaborStatusForm.department == Department.departmentID))
@@ -193,9 +192,7 @@ def getDatatableData(request):
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
         elif sleJoin == "allEvalMissing":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
-
-    recordsTotal = formSearchResults.count()
-
+    recordsTotal = len(formSearchResults)
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
     if order == "desc":
