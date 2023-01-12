@@ -113,7 +113,7 @@ function runFormSearchQuery(newData='', cookie, button) {
     } else if (button=="pendingForms") {
       termCode = "currentTerm"
       departmentID = ""
-      supervisorID = ""
+      supervisorID = "currentUser"
       studentID = ""
       formStatusList = ["Pending"]
       formType  = []
