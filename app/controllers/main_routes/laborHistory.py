@@ -34,7 +34,7 @@ def laborhistory(id, departmentName = None):
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
         studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
-         FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
+        FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
         authorizedForms = set(studentForms)
         if not currentUser.isLaborAdmin:
             # View only your own form history
@@ -176,9 +176,13 @@ def withdraw_form():
     This function deletes forms from the database when they are pending and the "withdraw" button is clicked.
     """
     try:
+        currentUser = require_login()
+        if not currentUser:                    # Not logged in
+            return render_template('errors/403.html'), 403
         rsp = eval(request.data.decode("utf-8"))
         student = LaborStatusForm.get(rsp["FormID"])
-        selectedPendingForms = FormHistory.select().join(Status).where(FormHistory.formID == rsp["FormID"]).where(FormHistory.status.statusName == "Pending").order_by(FormHistory.historyType.asc())
+        studentID = student.studentSupervisee.ID
+        selectedPendingForms = FormHistory.select().join(Status).where(FormHistory.formID == rsp["FormID"]).where(FormHistory.status.statusName == "Pending" | FormHistory.status.statusName == "Pre-Student Approval").order_by(FormHistory.historyType.asc())
         for form in selectedPendingForms:
             if form.historyType.historyTypeName == "Labor Status Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
@@ -192,7 +196,12 @@ def withdraw_form():
                 historyFormToDelete.delete_instance()
         message = "Your selected form for {0} {1} has been withdrawn.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
         flash(message, "success")
-        return jsonify({"Success":True, "url":"/"})
+
+        if currentUser.student:
+            return jsonify({"Success":True, "url":"/laborHistory/" + studentID})
+        else:
+
+            return jsonify({"Success":True, "url":"/"})
     except Exception as e:
         print(e)
         message = "An error occured. Your selected form for {0} {1} was not withdrawn.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
