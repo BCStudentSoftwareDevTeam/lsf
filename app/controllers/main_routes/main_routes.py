@@ -110,7 +110,6 @@ def getDatatableData(request):
                             8: FormHistory.status,
                             9: FormHistory.historyType,
                             10: StudentLaborEvaluation.ID}
-
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
         termCode = Term.select(Term.termCode).where(Term.termState).get()
