@@ -7,11 +7,39 @@ import json
 @pytest.mark.integration
 def test_getDatatableData():
     with mainDB.atomic() as transaction:
-        dict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "201500", "departmentID": "", "supervisorID": "", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        termCodeDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "201500", "departmentID": "", "supervisorID": "", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        currentTermDict= {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "currentTerm", "departmentID": "", "supervisorID": "", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        currentUserDict= {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "currentTerm", "departmentID": "", "supervisorID": "currentUser", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        departmentIDDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "currentTerm", "departmentID": "1", "supervisorID": "currentUser", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        studentIDDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "", "departmentID": "", "supervisorID": "currentUser", "studentID": "B00730361", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
+        allEvalDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "", "departmentID": "", "supervisorID": "currentUser", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[allEvalMissing]"}'}
+
         with app.test_request_context(
-        "/", method="POST", data=dict):
+        "/", method="POST", data=termCodeDict):
+            runGetDatatableData = supervisorPortal()
+            print(runGetDatatableData)
+        with app.test_request_context(
+        "/", method="POST", data=currentTermDict):
+            runGetDatatableData = supervisorPortal()
+            print(runGetDatatableData)
+        with app.test_request_context(
+        "/", method="POST", data=currentUserDict):
+            runGetDatatableData = supervisorPortal()
+            print(runGetDatatableData)
+        with app.test_request_context(
+        "/", method="POST", data=departmentIDDict):
+            runGetDatatableData = supervisorPortal()
+            print(runGetDatatableData)
+        with app.test_request_context(
+        "/", method="POST", data=studentIDDict):
+            runGetDatatableData = supervisorPortal()
+            print(runGetDatatableData)
+        with app.test_request_context(
+        "/", method="POST", data=allEvalDict):
             runGetDatatableData = supervisorPortal()
             print(runGetDatatableData)
             assert True
+
+            
 
         transaction.rollback()
