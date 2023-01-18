@@ -177,7 +177,7 @@ def test_updateSupervisorFromTracy():
     dbuser.supervisor.FIRST_NAME="Scott"
     dbuser.supervisor.LAST_NAME="Heggen"
     dbuser.supervisor.save()
-
+@pytest.mark.integration
 def test_updateStudentFromTracy():
 
     user = User.get(username="jamalie")
