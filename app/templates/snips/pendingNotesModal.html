@@ -12,13 +12,17 @@
           <h3 class="modal-title" id="notesModalLabel">Saas Office Notes </h3>
         {% endif %}
       </div>
+
+
       <div class="modal-body" id="noteModalBody">
         <div id="notesDiv">
-          <textarea id="laborNotesText" rows="2" cols="70" maxlength="250" placeholder="250 Characters Maximum"></textarea>
+          <textarea id="laborNotesText" rows="2" cols="70"></textarea>
           <h4 class=" control-label text-left" id="notesLogTitle" for="notesLog">Notes Log:</h4>
               <div class="notesLogArea"></div>
         </div>
       </div>
+
+
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal" onclick= "clearTextArea()">Close</button>
         <button type="button" class="btn btn-primary" value="laborNotesText" data-dismiss="modal" id="saveNotes" onclick="notesInsert(this.value, this.id)">Save Notes</button>
