@@ -50,13 +50,26 @@ def createUser(username, student=None, supervisor=None):
 
     return user
 
+def updateStudentDBRecords():
+    studentsInDB = User.select().where(User.student_id.is_null(False))
+    recordsUpdated = 0
+    recordsFailed = 0
+    for student in studentsInDB:
+        try:
+            updateUserFromTracy(student)
+            recordsUpdated = recordsUpdated + 1
+        except:
+            recordsFailed = recordsFailed + 1
+            print("Trouble updating this user.")
+    return "Update Complete. Records updated: " + str(recordsUpdated) + " Records failed to update: " + str(recordsFailed)
+
 def updateUserFromTracy(user):
-    print(user)
     try:
         tracyUser = None
         baseObj = None
+        print(user.student)
         if user.student:
-            tracyUser = Tracy().getStudentFromBNumber(user.student_id)
+            tracyUser = Tracy().getStudentFromBNumber(user.student_id) 
             user.student.FIRST_NAME = tracyUser.FIRST_NAME
             user.student.LAST_NAME = tracyUser.LAST_NAME
             user.student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
@@ -76,7 +89,7 @@ def updateUserFromTracy(user):
             user.supervisor.save()
 
     except Exception as e:
-        print("We don't want to break our login if an old tracy user doesn't exist or something")
+        print("We don't want to break our login if an old tracy user doesn't exist or something", e)
 
     return user
 

@@ -200,3 +200,9 @@ def test_updateStudentFromTracy():
     dbuser.student.FIRST_NAME="Elaheh"
     dbuser.student.LAST_NAME="Jamali"
     dbuser.student.save()
+
+@pytest.mark.integration
+def test_updateStudentDBRecords():
+    runUpdate = updateStudentDBRecords()
+    print(runUpdate)
+    assert True
