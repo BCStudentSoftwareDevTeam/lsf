@@ -50,50 +50,82 @@ def createUser(username, student=None, supervisor=None):
 
     return user
 
-def updateStudentDBRecords():
-    studentsInDB = User.select().where(User.student_id.is_null(False))
-    recordsUpdated = 0
-    recordsFailed = 0
+def updateDBRecords():
+    """
+    This function will update all student and supervisor records according to
+    Tracy data.
+    """
+    studentsInDB = Student.select()
+    supervisorsInDB = Supervisor.select()
+    studentsUpdated = 0
+    studentsFailed = 0
+    supervisorsUpdated = 0
+    supervisorsFailed = 0
     for student in studentsInDB:
         try:
-            updateUserFromTracy(student)
-            recordsUpdated = recordsUpdated + 1
-        except:
-            recordsFailed = recordsFailed + 1
-            print("Trouble updating this user.")
-    return "Update Complete. Records updated: " + str(recordsUpdated) + " Records failed to update: " + str(recordsFailed)
+            updateStudentRecord(student)
+            studentsUpdated = studentsUpdated + 1
+        except Exception as e:
+            studentsFailed = studentsFailed + 1
+    for supervisor in supervisorsInDB:
+        try:
+            updateSupervisorRecord(supervisor)
+            supervisorsUpdated = supervisorsUpdated + 1
+        except Exception as e:
+            supervisorsFailed = supervisorsFailed + 1
+    return studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed
 
 def updateUserFromTracy(user):
+    """
+        Takes user object and determines if it is a student user or a supervisor user and will
+        update the DB accordingly.
+    """
     try:
         tracyUser = None
         baseObj = None
-        print(user.student)
         if user.student:
-            tracyUser = Tracy().getStudentFromBNumber(user.student_id) 
-            user.student.FIRST_NAME = tracyUser.FIRST_NAME
-            user.student.LAST_NAME = tracyUser.LAST_NAME
-            user.student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
-            user.student.ACADEMIC_FOCUS = tracyUser.ACADEMIC_FOCUS
-            user.student.MAJOR = tracyUser.MAJOR
-            user.student.PROBATION = tracyUser.PROBATION
-            user.student.ADVISOR = tracyUser.ADVISOR
-            user.student.STU_EMAIL = tracyUser.STU_EMAIL
-            user.student.STU_CPO = tracyUser.STU_CPO
-            user.student.LAST_POSN = tracyUser.LAST_POSN
-            user.student.LAST_SUP_PIDM = tracyUser.LAST_SUP_PIDM
-            user.student.save()
+            tracyUser = Tracy().getStudentFromBNumber(user.student_id)
+            baseObj = user.student
         if user.supervisor:
             tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
-            user.supervisor.FIRST_NAME = tracyUser.FIRST_NAME
-            user.supervisor.LAST_NAME = tracyUser.LAST_NAME
-            user.supervisor.save()
+            baseObj = user.supervisor
+
+        baseObj.FIRST_NAME = tracyUser.FIRST_NAME
+        baseObj.LAST_NAME = tracyUser.LAST_NAME
+        baseObj.save()
 
     except Exception as e:
-        print("We don't want to break our login if an old tracy user doesn't exist or something", e)
+        print("We don't want to break our login if an old tracy user doesn't exist or something")
 
     return user
 
+def updateStudentRecord(student):
+    """This function will update all student fields to match Tracy data."""
+    tracyUser = Tracy().getStudentFromBNumber(student.ID)
+    student.FIRST_NAME = tracyUser.FIRST_NAME
+    student.LAST_NAME = tracyUser.LAST_NAME
+    student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
+    student.ACADEMIC_FOCUS = tracyUser.ACADEMIC_FOCUS
+    student.MAJOR = tracyUser.MAJOR
+    student.PROBATION = tracyUser.PROBATION
+    student.ADVISOR = tracyUser.ADVISOR
+    student.STU_EMAIL = tracyUser.STU_EMAIL
+    student.STU_CPO = tracyUser.STU_CPO
+    student.LAST_POSN = tracyUser.LAST_POSN
+    student.LAST_SUP_PIDM = tracyUser.LAST_SUP_PIDM
+    student.save()
 
+def updateSupervisorRecord(supervisor):
+    """This function will update all supervisor fields to match Tracy data."""
+    tracyUser = Tracy().getSupervisorFromID(supervisor.ID)
+    supervisor.PIDM = tracyUser.PIDM
+    supervisor.FIRST_NAME = tracyUser.FIRST_NAME
+    supervisor.LAST_NAME = tracyUser.LAST_NAME
+    supervisor.EMAIL = tracyUser.EMAIL
+    supervisor.CPO = tracyUser.CPO
+    supervisor.ORG = tracyUser.ORG
+    supervisor.DEPT_NAME = tracyUser.DEPT_NAME
+    supervisor.save()
 
 def createSupervisorFromTracy(username=None, bnumber=None):
     """
