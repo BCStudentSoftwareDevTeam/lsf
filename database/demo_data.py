@@ -100,6 +100,21 @@ tracyStudents = [
                 "STU_CPO":"420",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00751360",
+                "PIDM":"90",
+                "FIRST_NAME":"Tyler",
+                "LAST_NAME":"Parton",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"partont@berea.edu",
+                "STU_CPO":"420",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
                 }
 ]
 
@@ -217,7 +232,16 @@ staffs = [
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
             },
-
+            {
+            "ID": "B00769499",
+            "PIDM":28,
+            "FIRST_NAME":"Madina",
+            "LAST_NAME" : "Solijonova",
+            "EMAIL"  :"solijonovam@berea.edu",
+            "CPO":"6300",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
             {
             "ID": "B12365892",
             "PIDM":2,
