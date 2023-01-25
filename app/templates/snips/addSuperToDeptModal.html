@@ -16,7 +16,7 @@
                   id='supervisorModalSelect'
                   data-live-search='true'
                   title="Supervisors">
-              {% for supervisor in unfilteredSupervisors  %}
+              {% for supervisor in allSupervisors  %}
                 <option value="{{supervisor.ID}}"
                         data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
                   {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
