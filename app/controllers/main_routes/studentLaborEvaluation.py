@@ -94,7 +94,7 @@ def sle(statusKey):
             sleForm.respect.data = existing_saved_evaluation.respect_score
             sleForm.learning.data = existing_saved_evaluation.learning_score
             sleForm.jobSpecific.data = existing_saved_evaluation.jobSpecific_score
-            sleForm.date_submitted.data = correctFormat
+            sleForm.date_submitted.data = existing_saved_evaluation.date_submitted
 
             sleForm.attendanceComments.data = existing_saved_evaluation.attendance_comment
             sleForm.accountabilityComments.data = existing_saved_evaluation.accountability_comment
