@@ -10,6 +10,7 @@ from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from werkzeug.exceptions import BadRequestKeyError
 from app.logic.search import getDepartmentsForSupervisor
+from datetime import date
 
 class SLEForm(FlaskForm):
 
@@ -93,6 +94,7 @@ def sle(statusKey):
             sleForm.respect.data = existing_saved_evaluation.respect_score
             sleForm.learning.data = existing_saved_evaluation.learning_score
             sleForm.jobSpecific.data = existing_saved_evaluation.jobSpecific_score
+            sleForm.date_submitted.data = existing_saved_evaluation.date_submitted
 
             sleForm.attendanceComments.data = existing_saved_evaluation.attendance_comment
             sleForm.accountabilityComments.data = existing_saved_evaluation.accountability_comment
@@ -164,7 +166,8 @@ def sle(statusKey):
                                     jobSpecific_comment = sleForm.jobSpecificComments.data,
                                     transcript_comment = sleForm.transcriptComments.data,
                                     is_submitted = True if sleForm.isSubmitted.data == "True" else False,
-                                    submitted_by = currentUser
+                                    submitted_by = currentUser,
+                                    date_submitted = date.today()
                                 )
         if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen and not submitAsFinal:
             studentLaborEvaluation.is_midyear_evaluation = True

@@ -50,6 +50,10 @@
             <dd>{{laborHistoryForm.formID.jobType}} ({{laborHistoryForm.formID.weeklyHours}})</dd>
             <dt>Position (WLS): </dt>
             <dd>{{laborHistoryForm.formID.POSN_TITLE}} ({{laborHistoryForm.formID.WLS}})</dd>
+            {% if existing_final_evaluation %}
+              <dt>Date Submitted: </dt>
+              <dd>{{existing_final_evaluation.date_submitted}}</dd>
+            {% endif %}
           </dl>
         </div>
       </div>

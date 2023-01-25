@@ -23,6 +23,7 @@ class StudentLaborEvaluation(baseModel):
     is_midyear_evaluation   = BooleanField(default=False)
     is_submitted            = BooleanField(default=False)
     submitted_by            = CharField(null=False)
+    date_submitted          = DateField(null=False)
 
     def __str__(self):
         return str(self.__dict__)
