@@ -512,11 +512,16 @@
             <input class="btn btn-lg btn-success" id="finalSubmitButton" type="submit" value="Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation">
           </div>
         </div>
+      {% else %}
+      <button type="button" class="btn btn-danger" id='resetForm'>Reset</button>
       {% endif %}
     </div>
   </form>
 </div>
 <div class="col-2">
 </div>
+
+{% include "snips/resetConfirmationModal.html" %}
+
 
 {% endblock %}
