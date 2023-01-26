@@ -7,8 +7,10 @@ $(document).ready(function(){
     $("#finalSubmitButton").click(function() {
         window.location.pathname = "/redirectSupervisorPortal";
     })
+    $( "#resetForm" ).click(function() {
+      $("#resetModal").modal("show");
+});
 })
-
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
