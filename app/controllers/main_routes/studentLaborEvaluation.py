@@ -92,6 +92,7 @@ def sle(statusKey):
             sleForm.respect.data = existing_saved_evaluation.respect_score
             sleForm.learning.data = existing_saved_evaluation.learning_score
             sleForm.jobSpecific.data = existing_saved_evaluation.jobSpecific_score
+            sleForm.date_submitted.data = correctFormat
 
             sleForm.attendanceComments.data = existing_saved_evaluation.attendance_comment
             sleForm.accountabilityComments.data = existing_saved_evaluation.accountability_comment
@@ -177,17 +178,17 @@ def sle(statusKey):
         # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
-    if existing_final_evaluation:
-        submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
-    else:
-        submittedDate = None 
+    listDate = str(existing_final_evaluation.date_submitted).split('-')
+    print(listDate)
+    correctFormat = listDate[1] + '-' + listDate[2] + '-' + listDate[0]
+    print(correctFormat)
 
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
                             laborHistoryForm = laborHistoryForm,
                             existing_final_evaluation = existing_final_evaluation,
                             existing_midyear_evaluation = existing_midyear_evaluation,
-                            date_submitted = submittedDate,
+                            date_submitted = correctFormat,
                             overall_score = overall_score,
                             isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen,
                             currentUser = currentUser
