@@ -9,8 +9,13 @@ $(document).ready(function(){
     })
     $( "#resetForm" ).click(function() {
       $("#resetModal").modal("show");
-});
 })
+
+    $( "#eraseData" ).click(function() {
+      console.log("Click!")
+    })
+
+});
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
