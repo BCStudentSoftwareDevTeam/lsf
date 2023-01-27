@@ -8,6 +8,7 @@ $(document).ready(function() {
 
     $( "#eraseData" ).click(function() {
       console.log("Click!")
+      $("#formContent").prepend('<textarea name="resetConfirmation" hidden>Reset</textarea>')
     })
 
 });

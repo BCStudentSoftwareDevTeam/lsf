@@ -29,7 +29,7 @@
 </div>
 
 <div class="container col-10">
-  <form method="POST">
+  <form id="formContent" method="POST">
     <div class="container form-group">
       {{ form.csrf_token }}
       <div class="row">
@@ -516,12 +516,11 @@
       <button type="button" class="btn btn-danger" id='resetForm'>Reset</button>
       {% endif %}
     </div>
+    {% include "snips/resetConfirmationModal.html" %}
   </form>
 </div>
 <div class="col-2">
 </div>
-
-{% include "snips/resetConfirmationModal.html" %}
 
 
 {% endblock %}
