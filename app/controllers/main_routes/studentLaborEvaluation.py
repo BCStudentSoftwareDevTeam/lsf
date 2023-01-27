@@ -127,6 +127,14 @@ def sle(statusKey):
 
     if sleForm.validate_on_submit():
         # Handling Booleanfields are tricky...
+        print("Entered Function")
+        try:
+            if request.form.get('resetConfirmation'):
+                print('this works')
+            else:
+                print("this doesn't work!")
+        except:
+            print("Exception")
         try:
             submitAsFinal = True if request.form["submit_as_final"] else False
         except BadRequestKeyError:
