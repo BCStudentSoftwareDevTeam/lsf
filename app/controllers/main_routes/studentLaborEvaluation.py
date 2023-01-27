@@ -181,10 +181,11 @@ def sle(statusKey):
         # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
-    listDate = str(existing_final_evaluation.date_submitted).split('-')
-    print(listDate)
-    correctFormat = listDate[1] + '-' + listDate[2] + '-' + listDate[0]
-    print(correctFormat)
+    if existing_final_evaluation:
+        listDate = str(existing_final_evaluation.date_submitted).split('-')
+        correctFormat = listDate[1] + '-' + listDate[2] + '-' + listDate[0]
+    else:
+        correctFormat = None
 
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
