@@ -508,7 +508,10 @@
           </div>
         </div>
       {% else %}
-      <button type="button" class="btn btn-danger" id='resetForm'>Reset</button>
+      <div class="btn-group pull-right col-xs-6" role="group">
+        <div>
+          <button type="button" class="btn btn-lg btn-danger" id='resetForm'>Reset</button>
+        </div>
       {% endif %}
     </div>
     {% include "snips/resetConfirmationModal.html" %}
