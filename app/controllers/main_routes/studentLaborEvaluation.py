@@ -53,6 +53,9 @@ def sle(statusKey):
     currentUser = require_login()
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
+    if request.form.get("resetConfirmation"):
+        deleteExistingForm = (StudentLaborEvaluation.delete().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)).execute()
+        return redirect("/sle/" + str(laborHistoryForm.formID.laborStatusFormID))
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
@@ -129,14 +132,6 @@ def sle(statusKey):
 
     if sleForm.validate_on_submit():
         # Handling Booleanfields are tricky...
-        print("Entered Function")
-        try:
-            if request.form.get('resetConfirmation'):
-                print('this works')
-            else:
-                print("this doesn't work!")
-        except:
-            print("Exception")
         try:
             submitAsFinal = True if request.form["submit_as_final"] else False
         except BadRequestKeyError:
