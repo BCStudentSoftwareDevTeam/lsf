@@ -37,30 +37,30 @@ def testCreateStudentEval():
                                DEPT_NAME = "Biology")
 
 
-        testingLSF = LaborStatusForm.create(StudentName = "Tyler Parton",
-                                            termCode = 200000,
-                                            studentSupervisee = "B00000002",
-                                            supervisor = Supervisor.get_by_id("B00000001"),
-                                            department = testingDept.departmentID,
-                                            jobType = "Primary",
-                                            WLS = "1",
-                                            POSN_TITLE = "Student Programmer",
-                                            POSN_CODE = "S61407")
+        # testingLSF = LaborStatusForm.create(StudentName = "Tyler Parton",
+        #                                     termCode = 200000,
+        #                                     studentSupervisee = "B00000002",
+        #                                     supervisor = "B00000002",
+        #                                     department = testingDept.departmentID,
+        #                                     jobType = "Primary",
+        #                                     WLS = "1",
+        #                                     POSN_TITLE = "Student Programmer",
+        #                                     POSN_CODE = "S61407")
 
-        testingFormHistory = (FormHistory.create(formID = testingLSF.laborStatusFormID,
-                                               historyType = "Labor Status Form",
-                                               releaseForm = None,
-                                               adjustedForm = None,
-                                               overloadForm = None,
-                                               createdBy = testingSupervisor.ID,
-                                               createdDate = "2020-04-14",
-                                               reviewedDate = "2020-04-14",
-                                               reviewedBy = None,
-                                               status = "Approved"))
+        # testingFormHistory = (FormHistory.create(formID = testingLSF.laborStatusFormID,
+        #                                        historyType = "Labor Status Form",
+        #                                        releaseForm = None,
+        #                                        adjustedForm = None,
+        #                                        overloadForm = None,
+        #                                        createdBy = "B00000002",
+        #                                        createdDate = "2020-04-14",
+        #                                        reviewedDate = "2020-04-14",
+        #                                        reviewedBy = None,
+        #                                        status = "Approved"))
 
 
         with app.test_request_context(
-            "/sle", method="POST", data={"submit_as_final": True}):
-                createSLEform = sle(testingLSF.laborStatusFormID)
-                assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) != None
+            "/sle", method="POST", data={"isSubmitted": True}):
+                createSLEform = sle(2)
+                assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == 2) != None
                 transaction.rollback()
