@@ -64,7 +64,7 @@ def sle(statusKey):
         return render_template('errors/403.html'), 403
 
     sleForm = SLEForm()
-
+    print(sleForm.isSubmitted)
     existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False, is_submitted = True)
     existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True, is_submitted = True)
     existing_saved_evaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm, StudentLaborEvaluation.is_submitted == False)
@@ -129,11 +129,13 @@ def sle(statusKey):
                         existing_midyear_evaluation.respect_score +
                         existing_midyear_evaluation.learning_score +
                         existing_midyear_evaluation.jobSpecific_score)
-
+    print("we re here")
     if sleForm.validate_on_submit():
+        print("here?")
         # Handling Booleanfields are tricky...
         try:
             submitAsFinal = True if request.form["submit_as_final"] else False
+            print(submitAsFinal)
         except BadRequestKeyError:
             submitAsFinal = False
 
