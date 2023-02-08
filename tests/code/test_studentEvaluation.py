@@ -12,15 +12,23 @@ from app.models.supervisor import Supervisor
 from app.models.user import User
 from app.logic.userInsertFunctions import createLaborStatusForm
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
-
 import json
 
 
 @pytest.mark.integration
 def testCreateStudentEval():
     with mainDB.atomic() as transaction:
-        testingDept = Department.create(DEPT_NAME="Testing Department", ACCOUNT="6740", ORG="2114")
-        testingTerm = Term.create(termCode = 200000, termName = "Testing Term")
+        testingDept = Department.create(DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114")
+        testingTerm = (Term.create(termCode = 200000,
+                        termName = "Testing Term",
+                        termStart="2022-08-01", termEnd="2022-05-01",
+                        primaryCutOff="2022-09-01", adjustedCutOff="2022-09-01",
+                        termState=1,
+                        isBreak=0,
+                        isSummer=0,
+                        isAcademicYear=0,
+                        isFinalEvaluationOpen=1))
+
         testingStudent =  (Student.create(
                 ID="B00000002",
                 FIRST_NAME="Tyler",
@@ -34,33 +42,41 @@ def testCreateStudentEval():
                                LAST_NAME = "Scott",
                                EMAIL = "None",
                                CPO = "None",
-                               DEPT_NAME = "Biology")
+                               DEPT_NAME = "Computer Science")
 
 
-        # testingLSF = LaborStatusForm.create(StudentName = "Tyler Parton",
-        #                                     termCode = 200000,
-        #                                     studentSupervisee = "B00000002",
-        #                                     supervisor = "B00000002",
-        #                                     department = testingDept.departmentID,
-        #                                     jobType = "Primary",
-        #                                     WLS = "1",
-        #                                     POSN_TITLE = "Student Programmer",
-        #                                     POSN_CODE = "S61407")
+        testingLSF = LaborStatusForm.create(StudentName = "Tyler Parton",
+                                            termCode = 200000,
+                                            studentSupervisee = "B00000002",
+                                            supervisor = "B00000001",
+                                            department = testingDept.departmentID,
+                                            jobType = "Primary",
+                                            WLS = "1",
+                                            POSN_TITLE = "Student Programmer",
+                                            POSN_CODE = "S61407")
 
-        # testingFormHistory = (FormHistory.create(formID = testingLSF.laborStatusFormID,
-        #                                        historyType = "Labor Status Form",
-        #                                        releaseForm = None,
-        #                                        adjustedForm = None,
-        #                                        overloadForm = None,
-        #                                        createdBy = "B00000002",
-        #                                        createdDate = "2020-04-14",
-        #                                        reviewedDate = "2020-04-14",
-        #                                        reviewedBy = None,
-        #                                        status = "Approved"))
+        testUser = User.create(student = None,
+                                         supervisor = testingSupervisor.ID,
+                                         username = "scottn",
+                                         isLaborAdmin = None,
+                                         isFinancialAidAdmin = None,
+                                         isSaasAdmin = None)
+
+
+        testingFormHistory = (FormHistory.create(formID = testingLSF.laborStatusFormID,
+                                               historyType = "Labor Status Form",
+                                               releaseForm = None,
+                                               adjustedForm = None,
+                                               overloadForm = None,
+                                               createdBy = testUser.userID,
+                                               createdDate = "2020-04-14",
+                                               reviewedDate = "2020-04-14",
+                                               reviewedBy = None,
+                                               status = "Approved"))
 
 
         with app.test_request_context(
-            "/sle", method="POST", data={"isSubmitted": True}):
-                createSLEform = sle(2)
-                assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == 2) != None
+            "/sle", method="POST", data={"isSubmitted": True, "submit_as_final": True, "attendance": 15, "accountability": 7, "teamwork": 7, "initiative": 7, "respect": 7, "learning": 15, "jobSpecific": 15, "attendanceComments": "", "teamworkComments": "", "initiativeComments": "", "respectComments": "", "learningComments": "", "jobSpecificComments": "", "transcriptComments": ""}):
+                createSLEform = sle(testingLSF.laborStatusFormID)
+                assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) != None
                 transaction.rollback()
