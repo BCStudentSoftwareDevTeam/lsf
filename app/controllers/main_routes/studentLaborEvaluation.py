@@ -126,23 +126,11 @@ def sle(statusKey):
                         existing_midyear_evaluation.respect_score +
                         existing_midyear_evaluation.learning_score +
                         existing_midyear_evaluation.jobSpecific_score)
-    print("we re here")
-    print(sleForm.validate_on_submit())
-    # print(sleForm.attendance.data)
-    # print(sleForm.accountability.data)
-    # print(sleForm.teamwork.data)
-    # print(sleForm.initiative.data)
-    # print(sleForm.respect.data)
-    # print(sleForm.learning.data)
-    # print(sleForm.jobSpecific.data)
-    # print(sleForm.isSubmitted)
-    print(request.form)
+
     if sleForm.validate_on_submit():
-        print("here?")
         # Handling Booleanfields are tricky...
         try:
             submitAsFinal = True if request.form["submit_as_final"] else False
-            print(submitAsFinal)
         except BadRequestKeyError:
             submitAsFinal = False
 
@@ -158,7 +146,6 @@ def sle(statusKey):
             sle.delete_instance()
         except DoesNotExist:
             pass
-
         # Then, save the new record
         studentLaborEvaluation = StudentLaborEvaluation.create(
                                     formHistoryID = laborHistoryForm,

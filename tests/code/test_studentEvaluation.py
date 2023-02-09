@@ -1,6 +1,7 @@
 import pytest
 from app.controllers.main_routes.studentLaborEvaluation import sle
 from app import app
+from flask_wtf.csrf import CSRFProtect
 import pytest
 from app.models import mainDB
 from app.models.laborStatusForm import LaborStatusForm
@@ -45,7 +46,7 @@ def testCreateStudentEval():
                                DEPT_NAME = "Computer Science")
 
 
-        testingLSF = LaborStatusForm.create(StudentName = "Tyler Parton",
+        testingLSF = LaborStatusForm.create(studentName = "Tyler Parton",
                                             termCode = 200000,
                                             studentSupervisee = "B00000002",
                                             supervisor = "B00000001",
@@ -74,9 +75,35 @@ def testCreateStudentEval():
                                                reviewedBy = None,
                                                status = "Approved"))
 
+        testCreation = {"isSubmitted": True,
+                        "submit_as_final": True,
+                        "attendance": 15,
+                        "accountability": 7,
+                        "teamwork": 7,
+                        "initiative": 7,
+                        "respect": 7,
+                        "learning": 15,
+                        "jobSpecific": 15,
+                        "attendanceComments": " ",
+                        "teamworkComments": " ",
+                        "initiativeComments": " ",
+                        "respectComments": " ",
+                        "accountabilityComments": " ",
+                        "learningComments": " ",
+                        "jobSpecificComments": " ", 
+                        "transcriptComments": " "}
+
+        testReset = {"resetConfirmation": True}
 
         with app.test_request_context(
-            "/sle", method="POST", data={"isSubmitted": True, "submit_as_final": True, "attendance": 15, "accountability": 7, "teamwork": 7, "initiative": 7, "respect": 7, "learning": 15, "jobSpecific": 15, "attendanceComments": "", "teamworkComments": "", "initiativeComments": "", "respectComments": "", "learningComments": "", "jobSpecificComments": "", "transcriptComments": ""}):
+            "/sle", method="POST", data=testCreation):
+                app.config['WTF_CSRF_ENABLED'] = False
                 createSLEform = sle(testingLSF.laborStatusFormID)
                 assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) != None
+
+        with app.test_request_context(
+            "/sle", method="POST", data=testReset):
+                app.config['WTF_CSRF_ENABLED'] = False
+                createSLEform = sle(testingLSF.laborStatusFormID)
+                assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) == None
                 transaction.rollback()
