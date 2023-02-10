@@ -182,7 +182,7 @@ def sle(statusKey):
     if existing_final_evaluation:
         submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
     else:
-        submittedDate = None
+        submittedDate = None 
 
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
