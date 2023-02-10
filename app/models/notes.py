@@ -6,6 +6,6 @@ class Notes(baseModel):
     noteHistoryID       = PrimaryKeyField()
     formID              = ForeignKeyField(LaborStatusForm, on_delete="cascade")               # foreign key to lsf
     createdBy           = ForeignKeyField(User, on_delete="cascade")
-    notesContents       = CharField()
+    notesContents       = TextField()
     noteType            = CharField()
     date                = DateField()
