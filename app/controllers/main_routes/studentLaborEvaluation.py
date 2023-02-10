@@ -52,6 +52,9 @@ def sle(statusKey):
     currentUser = require_login()
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
+    if request.form.get("resetConfirmation"):
+        deleteExistingForm = (StudentLaborEvaluation.delete().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)).execute()
+        return redirect("/sle/" + str(laborHistoryForm.formID.laborStatusFormID))
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
@@ -60,7 +63,6 @@ def sle(statusKey):
         return render_template('errors/403.html'), 403
 
     sleForm = SLEForm()
-
     existing_final_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = False, is_submitted = True)
     existing_midyear_evaluation = StudentLaborEvaluation.get_or_none(formHistoryID = laborHistoryForm, is_midyear_evaluation = True, is_submitted = True)
     existing_saved_evaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm, StudentLaborEvaluation.is_submitted == False)
@@ -144,7 +146,6 @@ def sle(statusKey):
             sle.delete_instance()
         except DoesNotExist:
             pass
-
         # Then, save the new record
         studentLaborEvaluation = StudentLaborEvaluation.create(
                                     formHistoryID = laborHistoryForm,
