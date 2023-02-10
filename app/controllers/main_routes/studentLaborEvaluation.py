@@ -187,6 +187,7 @@ def sle(statusKey):
                             laborHistoryForm = laborHistoryForm,
                             existing_final_evaluation = existing_final_evaluation,
                             existing_midyear_evaluation = existing_midyear_evaluation,
+                            date_submitted = submittedDate,
                             overall_score = overall_score,
                             isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen,
                             currentUser = currentUser
