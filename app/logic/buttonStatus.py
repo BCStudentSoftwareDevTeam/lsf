@@ -64,14 +64,21 @@ class ButtonStatus:
     def set_button_states(self, historyForm, currentUser):
         if currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
             # students get no buttons except "show evaluation"
-            self.rehire = False
-            self.release = False
-            self.withdraw = False
-            self.adjust = False
-            self.correction = False
-            self.evaluate = False
-            self.set_evaluation_button( historyForm, currentUser)
-            self.num_buttons = 1
+            if historyForm.historyType.historyTypeName == "Labor Status Form" or historyForm.historyType.historyTypeName == "Labor Overload Form" :
+                if historyForm.status.statusName == "Pending" or historyForm.status.statusName == "Pre-Student Approval":
+                    self.withdraw = True
+                    self.num_buttons = 1
+            else:
+                self.rehire = False
+                self.release = False
+                self.withdraw = False
+                self.adjust = False
+                self.correction = False
+                self.evaluate = False
+                self.set_evaluation_button( historyForm, currentUser)
+                self.num_buttons = 1
+
+
         else:
             if historyForm.releaseForm != None:     # If its a release form
                 if historyForm.status.statusName == "Approved":
@@ -104,8 +111,8 @@ class ButtonStatus:
                     # Pending adjustment forms get no buttons
                     pass
                 #FIXME: Add cases for approved and denied adjustment forms
-            elif historyForm.historyType.historyTypeName == "Labor Status Form":
-                if historyForm.status.statusName == "Pending":
+            elif historyForm.historyType.historyTypeName == "Labor Status Form" or historyForm.historyType.historyTypeName == "Labor Overload Form":
+                if historyForm.status.statusName == "Pending" or historyForm.status.statusName == "Pre-Student Approval":
                     # Pending LSF can be withdrawn or corrected
                     self.withdraw = True
                     self.correction = True
