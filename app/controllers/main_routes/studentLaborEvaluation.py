@@ -180,8 +180,7 @@ def sle(statusKey):
         return redirect("/")
 
     if existing_final_evaluation:
-        listDate = str(existing_final_evaluation.date_submitted).split('-')
-        correctFormat = listDate[1] + '-' + listDate[2] + '-' + listDate[0]
+        submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
     else:
         correctFormat = None
 
@@ -190,7 +189,7 @@ def sle(statusKey):
                             laborHistoryForm = laborHistoryForm,
                             existing_final_evaluation = existing_final_evaluation,
                             existing_midyear_evaluation = existing_midyear_evaluation,
-                            date_submitted = correctFormat,
+                            date_submitted = submittedDate,
                             overall_score = overall_score,
                             isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen,
                             currentUser = currentUser
