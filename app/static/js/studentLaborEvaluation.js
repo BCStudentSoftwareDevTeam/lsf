@@ -7,8 +7,16 @@ $(document).ready(function(){
     $("#finalSubmitButton").click(function() {
         window.location.pathname = "/redirectSupervisorPortal";
     })
+    $( "#resetForm" ).click(function() {
+      $("#resetModal").modal("show");
 })
 
+    $( "#eraseData" ).click(function() {
+      console.log("Click!")
+      $("#formContent").prepend('<textarea name="resetConfirmation" hidden>reset</textarea>')
+    })
+
+});
 $(function () {
   $('[data-toggle="popover"]').popover()
 })

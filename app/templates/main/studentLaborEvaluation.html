@@ -28,7 +28,7 @@
 </div>
 
 <div class="container col-10">
-  <form method="POST">
+  <form id="formContent" method="POST">
     <div class="container form-group">
       {{ form.csrf_token }}
       <div class="row">
@@ -507,11 +507,18 @@
             <button class="btn btn-lg btn-success" id="finalSubmitButton" type="submit">Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s {% if not isFinalEvaluationOpen %}Midyear {% else %}Final {% endif %}Evaluation</button>
           </div>
         </div>
+      {% else %}
+      <div class="btn-group pull-right col-xs-6" role="group">
+        <div>
+          <button type="button" class="btn btn-lg btn-danger" id='resetForm'>Reset</button>
+        </div>
       {% endif %}
     </div>
+    {% include "snips/resetConfirmationModal.html" %}
   </form>
 </div>
 <div class="col-2">
 </div>
+
 
 {% endblock %}
