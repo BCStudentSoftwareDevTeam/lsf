@@ -17,29 +17,23 @@ def test_getDatatableData():
         with app.test_request_context(
         "/", method="POST", data=termCodeDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
         with app.test_request_context(
         "/", method="POST", data=currentTermDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
         with app.test_request_context(
         "/", method="POST", data=currentUserDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
         with app.test_request_context(
         "/", method="POST", data=departmentIDDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
         with app.test_request_context(
         "/", method="POST", data=studentIDDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
         with app.test_request_context(
         "/", method="POST", data=allEvalDict):
             runGetDatatableData = supervisorPortal()
-            print(runGetDatatableData)
             assert True
 
-            
+
 
         transaction.rollback()
