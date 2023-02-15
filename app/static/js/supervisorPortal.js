@@ -23,16 +23,13 @@ $(document).ready(function(){
         data: data,
         success: function(response) {
           if (response == "True") {
-            $("#flash_container").html('<div class="alert alert-success" role="alert" id="flasher">Supervisor has been added to department.</div>');
-            $("#flasher").delay(3000).fadeOut();
+            msgFlash("Supervisor has been added to department.", 'success')
           } else {
-            $("#flash_container").html('<div class="alert alert-warning" role="alert" id="flasher">Supervisor is already a member of this department.</div>');
-            $("#flasher").delay(3000).fadeOut();
+            msgFlash("Supervisor is already a member of this department.", "warning")
           }
         },
         error: function() {
-          $("#flash_container").html('<div class="alert alert-warning" role="alert" id="flasher">Failed to add supervisor, please try again.</div>');
-          $("#flasher").delay(3000).fadeOut();
+          msgFlash("Failed to add supervisor, please try again.", "fail")
         },
     })
   })
