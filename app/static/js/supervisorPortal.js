@@ -23,13 +23,19 @@ $(document).ready(function(){
         data: data,
         success: function(response) {
           if (response == "True") {
-            msgFlash("Supervisor has been added to department.", 'success')
+            msgFlash("Supervisor has been added to department.", 'success')   
+            $('#supervisorModalSelect').attr("title", "");
+            $('#departmentModalSelect').attr("title", "");
           } else {
             msgFlash("Supervisor is already a member of this department.", "warning")
+            $('#supervisorModalSelect').val("").blur();
+            $('#departmentModalSelect').val("").blur();
           }
         },
         error: function() {
           msgFlash("Failed to add supervisor, please try again.", "fail")
+          $('#supervisorModalSelect').val("").blur();
+          $('#departmentModalSelect').val("").blur();
         },
     })
   })
