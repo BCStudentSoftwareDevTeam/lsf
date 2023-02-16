@@ -23,29 +23,24 @@ $(document).ready(function(){
         data: data,
         success: function(response) {
           if (response == "True") {
-            msgFlash("Supervisor has been added to department.", 'success')   
-            $('#supervisorModalSelect').attr("title", "");
-            $('#departmentModalSelect').attr("title", "");
+            msgFlash("Supervisor has been added to department.", 'success')
+            clearDropdown()
           } else {
             msgFlash("Supervisor is already a member of this department.", "warning")
-            $('#supervisorModalSelect').val("").blur();
-            $('#departmentModalSelect').val("").blur();
+            clearDropdown()
           }
         },
         error: function() {
           msgFlash("Failed to add supervisor, please try again.", "fail")
-          $('#supervisorModalSelect').val("").blur();
-          $('#departmentModalSelect').val("").blur();
+          clearDropdown()
         },
     })
   })
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
-    $('select.selectpicker').each(function() {
-      $(`#${this.id} option:eq(0)`).prop("selected", true);
-      $(`#${this.id}`).selectpicker("refresh");
+    clearDropdown()
     });
-  });
+    
   $( function() {
     $( "#formSearchAccordion" ).accordion({
       collapsible: true
@@ -57,6 +52,12 @@ $(document).ready(function(){
 });
 });
 
+function clearDropdown(){
+  $('select.selectpicker').each(function() {
+    $(`#${this.id} option:eq(0)`).prop("selected", true);
+    $(`#${this.id}`).selectpicker("refresh");
+  });
+};
 function parseCookie(str){
     cookieArray = str.split('=')
     return cookieArray[1];
