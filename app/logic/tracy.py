@@ -91,6 +91,13 @@ class Tracy():
         return STUPOSN.query.with_entities(STUPOSN.ORG, STUPOSN.DEPT_NAME, STUPOSN.ACCOUNT) \
                             .distinct().order_by(STUPOSN.DEPT_NAME).all()
 
+    def getDepartmentsFromName(self, deptName):
+        """
+        Return a list of departments, ordered by department name.
+        """
+        return STUPOSN.query.with_entities(STUPOSN.ORG, STUPOSN.DEPT_NAME, STUPOSN.ACCOUNT) \
+                            .filter(STUPOSN.DEPT_NAME == deptName).first()
+
     def getPositionsFromDepartment(self, departmentOrg: str, departmentAcct: str):
         """
         Return a list of position objects for the given department name, sorted by position title

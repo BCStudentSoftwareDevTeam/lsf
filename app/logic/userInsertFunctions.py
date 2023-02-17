@@ -9,6 +9,7 @@ from app.models.historyType import *
 from app.models.term import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.department import *
 from flask import json, jsonify
 from flask import request
@@ -57,23 +58,40 @@ def updateDBRecords():
     """
     studentsInDB = Student.select()
     supervisorsInDB = Supervisor.select()
+    departmentsFromDB = Department.select()
     studentsUpdated = 0
     studentsFailed = 0
     supervisorsUpdated = 0
     supervisorsFailed = 0
+    departmentsUpdated = 0
+    departmentsFailed = 0
+
     for student in studentsInDB:
         try:
             updateStudentRecord(student)
-            studentsUpdated = studentsUpdated + 1
+            studentsUpdated +=1
         except Exception as e:
-            studentsFailed = studentsFailed + 1
+            studentsFailed +=1
     for supervisor in supervisorsInDB:
         try:
             updateSupervisorRecord(supervisor)
-            supervisorsUpdated = supervisorsUpdated + 1
+            supervisorsUpdated +=1
         except Exception as e:
-            supervisorsFailed = supervisorsFailed + 1
-    return studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed
+            supervisorsFailed +=1
+    for department in departmentsFromDB:
+        try:
+            updateDepartment(department)
+            departmentsUpdated +=1
+        except:
+            departmentsFailed +=1
+
+    return studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed, departmentsUpdated, departmentsFailed
+
+def updateDepartment(department):
+    tracyDept = Tracy().getDepartmentsFromName(department.DEPT_NAME)
+    department.ACCOUNT = tracyDept.ACCOUNT
+    department.ORG = tracyDept.ORG
+    department.save()
 
 def updateUserFromTracy(user):
     """
