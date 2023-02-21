@@ -53,7 +53,7 @@ def createUser(username, student=None, supervisor=None):
 
 def updateDBRecords():
     """
-    This function will update all student and supervisor records according to
+    This function will update all student, supervisor and department records according to
     Tracy data.
     """
     studentsInDB = Student.select()
