@@ -146,7 +146,7 @@ def allPendingForms(formType):
 
             checkAdjustment(allForms)
 
-        return render_template( 'admin/allPendingForms.html',
+        return render_template( 'admin/allPendingForms.html', 
                                 title=pageTitle,
                                 username=currentUser.username,
                                 formList = formList,
