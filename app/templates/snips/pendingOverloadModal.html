@@ -47,8 +47,10 @@
             {% elif status == "Pre-Student Approval" %}
                 <dd style="text-align: left; color: red;">
                     <strong> *The student has not completed their overload request*</strong>
+                    <br> 
                     <a href="javascript:void()" style="text-decoration: underline" onclick="sendEmail('{{formHistoryID}}', 'studentEmail')" data-dismiss="modal">Send Reminder Email</a>
-                </dd>
+                    <a href = "{{studentLinks[form.formHistoryID]}}" > Student Overload Request</a>
+                  </dd>
             {% endif %}
           </dl>
 

@@ -145,7 +145,6 @@ def allPendingForms(formType):
                     print(e)
 
             checkAdjustment(allForms)
-
         return render_template( 'admin/allPendingForms.html', 
                                 title=pageTitle,
                                 username=currentUser.username,
@@ -158,7 +157,7 @@ def allPendingForms(formType):
                                 releaseFormCounter = releaseFormCounter,
                                 completedOverloadFormCounter = completedOverloadFormCounter,
                                 pendingOverloadFormPairs = pendingOverloadFormPairs
-                                )
+                              )
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
@@ -449,6 +448,10 @@ def getOverloadModalData(formHistoryID):
         currentUser = require_login()
         departmentStatusInfo = {}
         historyForm = FormHistory.select().where(FormHistory.formHistoryID == int(formHistoryID))
+        studentLinks = {}
+        for form in historyForm:
+            studentLinks[form.formHistoryID] = makeThirdPartyLink("student", request.host, form.formHistoryID)
+        print(studentLinks)
         try:
             financialAidLastEmail = EmailTracker.select().limit(1).where((EmailTracker.recipient == 'Financial Aid') & (EmailTracker.formID == historyForm[0].formID.laborStatusFormID)) .order_by(EmailTracker.date.desc())
             financialAidEmailDate = financialAidLastEmail[0].date.strftime('%m/%d/%y')
@@ -510,7 +513,8 @@ def getOverloadModalData(formHistoryID):
                                             pendingForm = pendingForm,
                                             pendingFormType = pendingFormType,
                                             formType = returnToTab,
-                                            status = status
+                                            status = status,
+                                            studentLinks = studentLinks
                                             )
     except Exception as e:
         print("Error Populating Overload Modal:", e)
