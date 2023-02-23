@@ -7,6 +7,7 @@ from app.logic.emailHandler import*
 from app.logic.utils import makeThirdPartyLink
 from app.login_manager import require_login
 from app.models import mainDB
+from app.models.supervisor import Supervisor
 from app.models.user import *
 from app.models.laborStatusForm import *
 from app.models.student import *
@@ -16,14 +17,15 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
-    if not currentUser:        # Not logged in
-        return render_template('errors/403.html'), 403
+    if not currentUser.isLaborAdmin:
+        if not currentUser:        # Not logged in
+            return render_template('errors/403.html'), 403
+        if not currentUser.student:
+            return render_template('errors/403.html'), 403
+        if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
+            return render_template('errors/403.html'), 403
     overloadForm = FormHistory.get_by_id(formHistoryId)
-    if not currentUser.student:
-        return render_template('errors/403.html'), 403
-    if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
-        return render_template('errors/403.html'), 403
-    
+        
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()
