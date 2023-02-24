@@ -48,8 +48,11 @@
                 <dd style="text-align: left; color: red;">
                     <strong> *The student has not completed their overload request*</strong>
                     <br> 
-                    <a href="javascript:void()" style="text-decoration: underline" onclick="sendEmail('{{formHistoryID}}', 'studentEmail')" data-dismiss="modal">Send Reminder Email</a>
-                    <a href = "{{studentLinks[form.formHistoryID]}}" > Student Overload Request</a>
+                    <div class = "d-flex justify-content-between">
+                       <a href="javascript:void()" style="text-decoration: underline" onclick="sendEmail('{{formHistoryID}}', 'studentEmail')" data-dismiss="modal">Send Reminder Email</a>
+                       <span style = "color: black;"> or view </span>
+                       <a href = "{{studentLinks[form.formHistoryID]}}" style="text-decoration: underline" > Student Overload Request</a>
+                    </div>
                   </dd>
             {% endif %}
           </dl>
