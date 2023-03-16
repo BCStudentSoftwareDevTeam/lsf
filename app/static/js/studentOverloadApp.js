@@ -51,7 +51,8 @@ function updateDatabase(overloadFormHistoryID){
      method: "POST",
      data: {"overloadReason": $("#notes").val()},
      success: function() {
-        window.location.href = '/';
+       $("#flash_container").html('<div class="alert alert-success" role="alert" id="flasher">Form has been successfully submitted.</div>');
+       $("#flasher").delay(5000).fadeOut();
      },
      error: function(e) {
          console.log(e)
