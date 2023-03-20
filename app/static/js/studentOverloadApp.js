@@ -50,9 +50,8 @@ function updateDatabase(overloadFormHistoryID){
      url: "/studentOverloadApp/update/" + overloadFormHistoryID,
      method: "POST",
      data: {"overloadReason": $("#notes").val()},
-     success: function() {
-       $("#flash_container").html('<div class="alert alert-success" role="alert" id="flasher">Form has been successfully submitted.</div>');
-       $("#flasher").delay(5000).fadeOut();
+     success: function(bnumber) {
+       window.location.replace("/laborHistory/" + bnumber);
      },
      error: function(e) {
          console.log(e)

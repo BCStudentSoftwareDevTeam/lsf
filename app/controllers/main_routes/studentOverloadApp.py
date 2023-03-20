@@ -150,8 +150,7 @@ def updateDatabase(overloadFormHistoryID):
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
         currentUser = require_login()
-        print('attempting redirect...')
-        return redirect('/laborHistory/' + currentUser.student.ID)
+        return (currentUser.student.ID)
 
     except Exception as e:
         print("ERROR: " + str(e))
