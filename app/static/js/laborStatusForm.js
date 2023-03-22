@@ -74,6 +74,7 @@ function checkIfFreshman() {
     laborStatusFormNote = null;
   }
   searchDataToPrepareToCheckPrimaryPosition();
+  userInsert();
 }
 
 function disableTermSupervisorDept() {
