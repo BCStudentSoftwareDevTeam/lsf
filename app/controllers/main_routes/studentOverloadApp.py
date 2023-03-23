@@ -17,12 +17,12 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
+    overloadForm = FormHistory.get_by_id(formHistoryId)
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
         if not currentUser.student:
             return render_template('errors/403.html'), 403
-        overloadForm = FormHistory.get_by_id(formHistoryId)
         if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
 
