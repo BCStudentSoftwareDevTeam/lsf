@@ -766,8 +766,6 @@ function createModalContent() { // Populates Submit Modal with Student informati
 
 // userInsert() sends SubmitModal's info to controller using ajax and gets the response in array containing true(s) or/and false(s)
 function userInsert(){
-    checkIfFreshman();
-    reviewButtonFunctionality();
     $("#laborStatusForm").on("submit", function(e) {
       e.preventDefault();
     });
@@ -895,4 +893,5 @@ function releaseAndRehire(){
       }
     }
   })
+
 }
