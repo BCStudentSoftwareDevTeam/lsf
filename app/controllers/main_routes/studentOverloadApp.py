@@ -22,10 +22,10 @@ def studentOverloadApp(formHistoryId):
             return render_template('errors/403.html'), 403
         if not currentUser.student:
             return render_template('errors/403.html'), 403
+        overloadForm = FormHistory.get_by_id(formHistoryId)
         if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
-    overloadForm = FormHistory.get_by_id(formHistoryId)
-        
+
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()
@@ -113,7 +113,7 @@ def withdrawRequest(formHistoryId):
     # send a withdrawal notification to student and supervisor
     email = emailHandler(formHistory.formHistoryID)
     email.LaborOverloadFormWithdrawn()
-    
+
     # TODO should we email financial aid?
 
     formHistory.overloadForm.delete_instance()
