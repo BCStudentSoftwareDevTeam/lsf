@@ -578,12 +578,15 @@ function checkPrimaryPositionToCreateTheTable(studentDict) {
 function initialLSFInsert(studentDict){ //Add student info to the table if they have no previous lsf's in the database
   if (checkDuplicate(studentDict) == false){
       checkTotalHours(studentDict);
-      createAndFillTable(studentDict);
+      createAndFillTable(studentDict, reviewButtonFunctionality);
   }
 }
 
-function createAndFillTable(studentDict) {
+function createAndFillTable(studentDict, callback=null) {
   globalArrayOfStudents.push(studentDict);
+  if(callback){
+    callback()
+  }
   document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
   $("#mytable").show();
   $("#jobTable").show();
