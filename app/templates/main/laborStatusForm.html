@@ -238,14 +238,27 @@
     <table class="table table-striped" id="mytable">
       <thead>
         <tr>
-          <th>Student </th>
+          <th id ='studentName'>Student </th>
           <th id = "positionTable">Position (WLS) </th>
           <th id = "jobTable">Job Type </th>
           <th id = "hoursTable">Hours</th>
+          <th id = "term">Term</th>
           <th id = "datesTable">Contract Dates</th>
           <th id = "notes">Notes</th>
-          <th>Remove</th>
+          <th id = "edit">Edit</th>
         </tr>
+        {% for form in supervisorForms %}
+        <tr>
+          <td>{{form.formID.studentName}}</td>
+          <td>{{form.formID.POSN_CODE}} ({{form.formID.WLS}})</td>
+          <td>{{form.formID.jobType}}</td>
+          <td>{{form.formID.weeklyHours}}</td>
+          <td>{{form.formID.termCode.ternName}}</td>
+          <td>{{form.formID.startDate}} - {{form.formID.endDate}}</td>
+          <td><a href="#\" data-toggle=\"modal\" tabindex=\"0\" aria-label=\"View Notes\" onclick = \"showNotesModal(this)\" id= \"nGlyphicon\" ><span class=\"glyphicon glyphicon-edit\"></span></a></td>
+          <td><a href="/alterLSF/{{form.formID}}"><button type="button" class="btn btn-primary">Edit</button></a></td>
+        </tr>
+        {% endfor %}
       </thead>
       <tbody id='tbodyid'></tbody>
     </table>

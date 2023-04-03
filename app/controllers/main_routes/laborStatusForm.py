@@ -34,6 +34,12 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
+    supervisorForms = (FormHistory.select().where((FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
+                                            .join(LaborStatusForm)
+                                            .join(Term)).distinct()
+
+    for form in supervisorForms:
+        print(form.formID.laborStatusFormID)
     students = Tracy().getStudents()
     terms = Term.select().where(Term.termState == "open") # changed to term state, open, closed, inactive
     staffs = Tracy().getSupervisors()
@@ -56,6 +62,7 @@ def laborStatusForm(laborStatusKey = None):
                             UserID = currentUser,
                             forms = forms,
                             students = students,
+                            supervisorForms = supervisorForms,
                             terms = terms,
                             staffs = staffs,
                             departments = departments)
