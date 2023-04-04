@@ -34,10 +34,9 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
-    supervisorForms = (FormHistory.select().where((FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
+    supervisorForms = ((FormHistory.select().where((FormHistory.historyType == "Labor Status Form") & (FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
                                             .join(LaborStatusForm)
-                                            .join(Term)).distinct()
-
+                                            .join(Term)).distinct()).order_by(FormHistory.createdDate.desc())
     for form in supervisorForms:
         print(form.formID.laborStatusFormID)
     students = Tracy().getStudents()

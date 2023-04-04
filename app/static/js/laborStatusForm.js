@@ -341,7 +341,6 @@ $("#contractHours").hide();
 $("#hoursPerWeek").hide();
 $("#JobTypes").hide();
 $("#plus").hide();
-$("#mytable").hide();
 $("#failedTable").hide();
 
 

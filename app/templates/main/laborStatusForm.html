@@ -253,10 +253,10 @@
           <td>{{form.formID.POSN_CODE}} ({{form.formID.WLS}})</td>
           <td>{{form.formID.jobType}}</td>
           <td>{{form.formID.weeklyHours}}</td>
-          <td>{{form.formID.termCode.ternName}}</td>
+          <td>{{form.formID.termCode.termName}}</td>
           <td>{{form.formID.startDate}} - {{form.formID.endDate}}</td>
-          <td><a href="#\" data-toggle=\"modal\" tabindex=\"0\" aria-label=\"View Notes\" onclick = \"showNotesModal(this)\" id= \"nGlyphicon\" ><span class=\"glyphicon glyphicon-edit\"></span></a></td>
-          <td><a href="/alterLSF/{{form.formID}}"><button type="button" class="btn btn-primary">Edit</button></a></td>
+          <td><a href="#\" data-toggle="modal" tabindex="0" aria-label="View Notes" onclick = "showNotesModal(this)" id= "nGlyphicon" ><span class="glyphicon glyphicon-edit"></span></a></td>
+          <td><a href="/alterLSF/{{form.formID.laborStatusFormID}}"><button type="button" class="btn btn-primary">Edit</button></a></td>
         </tr>
         {% endfor %}
       </thead>
