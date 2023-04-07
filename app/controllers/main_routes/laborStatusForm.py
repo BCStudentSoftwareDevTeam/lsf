@@ -22,7 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.controllers.admin_routes.allPendingForms import saveStatus
 
-@main_bp.route('/laborstatusform', methods=['GET'])
+@main_bp.route('/laborstatusform', methods=['GET', 'POST'])
 @main_bp.route('/laborstatusform/<laborStatusKey>', methods=['GET'])
 def laborStatusForm(laborStatusKey = None):
     """ Render labor Status Form, and pre-populate LaborStatusForm page with the correct information when redirected from Labor History."""
@@ -34,11 +34,6 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
-    supervisorForms = ((FormHistory.select().where((FormHistory.historyType == "Labor Status Form") & (FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
-                                            .join(LaborStatusForm)
-                                            .join(Term)).distinct()).order_by(FormHistory.createdDate.desc())
-    for form in supervisorForms:
-        print(form.formID.laborStatusFormID)
     students = Tracy().getStudents()
     terms = Term.select().where(Term.termState == "open") # changed to term state, open, closed, inactive
     staffs = Tracy().getSupervisors()
@@ -61,10 +56,21 @@ def laborStatusForm(laborStatusKey = None):
                             UserID = currentUser,
                             forms = forms,
                             students = students,
-                            supervisorForms = supervisorForms,
                             terms = terms,
                             staffs = staffs,
                             departments = departments)
+
+@main_bp.route('/lsfdatatable', methods=['GET'])
+def lsfdatatable():
+    """This function in called in laborStatusFrom.js to get data for the DataTable on the lsf creation page."""
+
+    currentUser = require_login()
+    supervisorForms = list(((FormHistory.select().where((FormHistory.historyType == "Labor Status Form") & (FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
+                                            .join(LaborStatusForm)
+                                            .join(Term)).distinct()).order_by(FormHistory.createdDate.desc()))
+    print(supervisorForms)
+
+    return supervisorForms
 
 @main_bp.route('/laborstatusform/userInsert', methods=['POST'])
 def userInsert():
