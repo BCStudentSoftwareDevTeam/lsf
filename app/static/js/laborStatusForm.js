@@ -3,7 +3,7 @@ var display_failed = [];
 var laborStatusFormNote = null;
 
 $(document).ready(function(){
-  intializeDataTable()
+  $('#lsfTable').DataTable();
   if($("#selectedDepartment").val()){ // prepopulates position on redirect from rehire button and checks whether department is in compliance.
     checkCompliance($("#selectedDepartment"));
     getDepartment($("#selectedDepartment"));
@@ -898,27 +898,3 @@ function releaseAndRehire(){
   })
 
 }
-
-function intializeDataTable() {
-  var lsfTable = $('#lsfTable').DataTable({
-    paging: true,
-    ordering: false,
-    info: false,
-    responsive: true,
-    searching: false,
-        ajax: {
-          url: "/lsfdatatable",
-          type: "GET",
-        columns: [
-            { data: 'Student' },
-            { data: 'Position (WLS)' },
-            { data: 'Job Type' },
-            { data: 'Hours' },
-            { data: 'Term' },
-            { data: 'Contract Dates' },
-            { data: 'Notes'},
-            { data: 'Edit'}
-        ],
-      }
-    });
-  };

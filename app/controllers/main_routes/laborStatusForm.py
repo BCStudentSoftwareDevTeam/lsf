@@ -34,6 +34,9 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
+    supervisorForms = ((FormHistory.select().where((FormHistory.historyType == "Labor Status Form") & (FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
+                                            .join(LaborStatusForm)
+                                            .join(Term)).distinct()).order_by(FormHistory.createdDate.desc())
     students = Tracy().getStudents()
     terms = Term.select().where(Term.termState == "open") # changed to term state, open, closed, inactive
     staffs = Tracy().getSupervisors()
@@ -57,20 +60,9 @@ def laborStatusForm(laborStatusKey = None):
                             forms = forms,
                             students = students,
                             terms = terms,
+                            supervisorForms = supervisorForms,
                             staffs = staffs,
                             departments = departments)
-
-@main_bp.route('/lsfdatatable', methods=['GET'])
-def lsfdatatable():
-    """This function in called in laborStatusFrom.js to get data for the DataTable on the lsf creation page."""
-
-    currentUser = require_login()
-    supervisorForms = list(((FormHistory.select().where((FormHistory.historyType == "Labor Status Form") & (FormHistory.formID.termCode.termState) & ((FormHistory.formID.supervisor == currentUser.supervisor) | (FormHistory.createdBy == currentUser)))
-                                            .join(LaborStatusForm)
-                                            .join(Term)).distinct()).order_by(FormHistory.createdDate.desc()))
-    print(supervisorForms)
-
-    return supervisorForms
 
 @main_bp.route('/laborstatusform/userInsert', methods=['POST'])
 def userInsert():

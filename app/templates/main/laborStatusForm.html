@@ -8,8 +8,8 @@
 
 ​{% block scripts %}
 {{super()}}
-<script type=text/javascript src="{{url_for('static', filename='js/laborStatusForm.js')}}?u={{lastStaticUpdate}}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.21/b-1.6.2/datatables.min.js"></script>
+<script type=text/javascript src="{{url_for('static', filename='js/laborStatusForm.js')}}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -237,7 +237,7 @@
 </div>
   <br />
 
-    <table class="table table-striped" id="lsfTable">
+    <table class="table table-striped" class="display" id="lsfTable">
       <thead>
         <tr>
           <th id ='studentName'>Student </th>
@@ -249,6 +249,7 @@
           <th id = "notes">Notes</th>
           <th id = "edit">Edit</th>
         </tr>
+        </thead>
         {% for form in supervisorForms %}
         <tr>
           <td>{{form.formID.studentName}}</td>
@@ -261,7 +262,6 @@
           <td><a href="/alterLSF/{{form.formID.laborStatusFormID}}"><button type="button" class="btn btn-primary">Edit</button></a></td>
         </tr>
         {% endfor %}
-      </thead>
       <tbody id='tbodyid'></tbody>
     </table>
   <div class="col-md-12" id="reviewButton">
