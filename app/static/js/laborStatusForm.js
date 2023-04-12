@@ -15,25 +15,15 @@ $(document).ready(function(){
   }
   var cookies = document.cookie;
   if (cookies){
-
+      console.log(cookies)
   }
 });
 
 $( "#addMoreStudent" ).click(function() {
-  // var presetSupervisor = $("#").val()
-  // var presetDepartment = $("#").val()
-  // var presetTerm = $("#").val()
-  // var presetPosition = $("#").val()
-  // var presetJobType = $("#").val()
-  // var presetHours = $("#").val()
-  presetDict = {presetSupervisor: $("#selectedSupervisor").val(),
-                presetDepartment: $("#selectedDepartment").val(),
-                presetTerm: $("#selectedTerm").val(),
-                presetPosition: $("#position").val(),
-                presetJobType: $("#jobType").val(),
-                presetHours: $("#selectedHoursPerWeek").val()}
- console.log(presetDict)
+      document.cookie = "lsfPreselected=" + "presetSupervisor:" + $("#selectedSupervisor").val() + "presetDepartment:" + $("#selectedDepartment").val() + "presetTerm:" + $("#selectedTerm").val() + "presetPosition:" + $("#position").val() + "presetJobType:" + $("#jobType").val() + "presetHours:" + $("#selectedHoursPerWeek").val();
+
 });
+
 
 $("#laborStatusForm").submit(function(event) {
   event.preventDefault();
@@ -551,12 +541,10 @@ function createAndFillTable(studentDict, callback=null) {
   if(callback){
     callback()
   }
-  document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
   $("#mytable").show();
   $("#jobTable").show();
   $("#hoursTable").show();
   var isBreak = (studentDict).isTermBreak;
-  var table = document.getElementById("mytable").getElementsByTagName("tbody")[0]; //This one needs document.getElementById, it won't work without it
   if (!isBreak) {
     var notesID0 = String((studentDict).stuName + (studentDict).stuJobType + (studentDict).stuPosition);
     var notesID1 = notesID0.replace(/ /g, "");
@@ -685,7 +673,6 @@ $("#resetConfirmButton").click(function(){
     $("#warningModal").modal('hide');
     globalArrayOfStudents = [];
     $("#tbodyid tr").remove();
-    document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=0;";
     location.reload();
 });
 
@@ -805,8 +792,6 @@ function userInsert(){
                  $("a").attr("onclick", "").unbind("click");
                  $(".glyphicon-edit").css("color", "grey");
                  $(".glyphicon-remove").css("color", "grey");
-                 parsedArrayOfStudentCookies = document.cookie;
-                 document.cookie = parsedArrayOfStudentCookies +";max-age=0";
                  window.location.replace("/laborstatusform");
                }
              }
