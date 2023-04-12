@@ -15,19 +15,24 @@ $(document).ready(function(){
   }
   var cookies = document.cookie;
   if (cookies){
-    parsedArrayOfStudentCookies = JSON.parse(cookies);
-    document.cookie = parsedArrayOfStudentCookies + ";max-age=28800;";
-    for (i in parsedArrayOfStudentCookies) {
-      createAndFillTable(parsedArrayOfStudentCookies[i]);
-    }
-    $("#selectedTerm option[value=" + parsedArrayOfStudentCookies[0].stuTermCode + "]").attr('selected', 'selected');
-    $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
-    $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
-    getDepartment($("#selectedDepartment"));
-    preFilledDate($("#selectedTerm"));
-    showAccessLevel($("#selectedTerm"));
-    disableTermSupervisorDept();
+
   }
+});
+
+$( "#addMoreStudent" ).click(function() {
+  // var presetSupervisor = $("#").val()
+  // var presetDepartment = $("#").val()
+  // var presetTerm = $("#").val()
+  // var presetPosition = $("#").val()
+  // var presetJobType = $("#").val()
+  // var presetHours = $("#").val()
+  presetDict = {presetSupervisor: $("#selectedSupervisor").val(),
+                presetDepartment: $("#selectedDepartment").val(),
+                presetTerm: $("#selectedTerm").val(),
+                presetPosition: $("#position").val(),
+                presetJobType: $("#jobType").val(),
+                presetHours: $("#selectedHoursPerWeek").val()}
+ console.log(presetDict)
 });
 
 $("#laborStatusForm").submit(function(event) {
@@ -337,14 +342,6 @@ function checkCompliance(obj) {
       });
 }
 
-// TABLE LABELS
-$("#contractHours").hide();
-$("#hoursPerWeek").hide();
-$("#JobTypes").hide();
-$("#plus").hide();
-$("#failedTable").hide();
-
-
 function showAccessLevel(){ // Make Table labels appear
   if ($("#selectedSupervisor").val() && $("#selectedDepartment").val() && $("#selectedTerm").val()){
     var isBreak = $("#selectedTerm").find("option:selected").data("termbreak");
@@ -362,11 +359,6 @@ function showAccessLevel(){ // Make Table labels appear
     }
   }
 }
-// TABLE LABELS
-
-// hide review button will show when add student is clicked
-$("#reviewButton").hide();
-//end
 
 // Table glyphicons
 function showNotesModal(glyphicon){// pops up Note Modal when notes glyphicon is clicked
@@ -387,34 +379,6 @@ function saveNotes(arrayIndex){ // saves notes written in textarea when save but
     globalArrayOfStudents[arrayIndex].stuNotes = $("#modal_text").val();
   }
 }
-
-function deleteRow(glyphicon) {
-  var rowParent = glyphicon.parentNode.parentNode;
-  var table = document.getElementById("mytable").getElementsByTagName("tbody")[0];
-  for (var i = 0, row; row = table.rows[i]; i++) {
-    if (rowParent === table.rows[i]) {
-      $(glyphicon).parents("tr").remove();
-      globalArrayOfStudents.splice(i, 1);
-      if(globalArrayOfStudents.length > 1){
-        document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
-      }
-      else {
-        parsedArrayOfStudentCookies = document.cookie;
-        document.cookie = parsedArrayOfStudentCookies + ";max-age=0;";
-      }
-      break;
-    }
-  }
-  if (globalArrayOfStudents.length <= 0) {
-    $("#selectedTerm").prop("disabled", false);
-    $("#selectedTerm").selectpicker("refresh");
-    $("#selectedSupervisor").prop("disabled", false);
-    $("#selectedSupervisor").selectpicker("refresh");
-    $("#selectedDepartment").prop("disabled", false);
-    $("#selectedDepartment").selectpicker("refresh");
-  }
-}
-//END of glyphicons
 
 function msgFlash(flash_message, status){
     if (status === "success") {
