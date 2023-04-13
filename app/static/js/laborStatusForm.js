@@ -16,11 +16,26 @@ $(document).ready(function(){
   var cookies = document.cookie;
   if (cookies){
       console.log(cookies)
+      var pageCookies = cookies.split("/")
+      var cookieData = (pageCookies[0]).split("lsfPreselected=")
+      var presetData = (cookieData[1]).split(",")
+      console.log(presetData)
+      $("#selectedSupervisor").val(presetData[0])
+      $("#selectedDepartment").val(presetData[1])
+      checkCompliance($("#selectedDepartment"));
+      getDepartment($("#selectedDepartment"));
+      $("#selectedTerm").val(presetData[2])
+      preFilledDate($("#selectedTerm"))
+      var selectedPosition = "#" + presetData[3]
+      $(selectedPosition).attr("selected","selected")
+      $("#jobType").val(presetData[4])
+      fillHoursPerWeek()
+      $("#selectedHoursPerWeek").val(presetData[5])
   }
 });
 
 $( "#addMoreStudent" ).click(function() {
-      document.cookie = "lsfPreselected=" + "presetSupervisor:" + $("#selectedSupervisor").val() + "presetDepartment:" + $("#selectedDepartment").val() + "presetTerm:" + $("#selectedTerm").val() + "presetPosition:" + $("#position").val() + "presetJobType:" + $("#jobType").val() + "presetHours:" + $("#selectedHoursPerWeek").val();
+    document.cookie = "lsfPreselected=" + $("#selectedSupervisor").val() + "," + $("#selectedDepartment").val() + ',' + $("#selectedTerm").val() + "," + $('#position option:selected').attr('id') + "," + $("#jobType").val() + "," + $("#selectedHoursPerWeek").val() + "/";
 
 });
 
