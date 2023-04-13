@@ -7,9 +7,15 @@ from peewee import CharField
 class Supervisor(baseModel):
     ID                  = CharField(primary_key=True)  #B-number
     PIDM                = IntegerField(null=True)  # from Tracy
-    FIRST_NAME          = CharField(null=True)
     LAST_NAME           = CharField(null=True)
     EMAIL               = CharField(null=True)
     CPO                 = CharField(null=True)
     ORG                 = CharField(null=True)
     DEPT_NAME           = CharField(null=True)
+
+    legal_name      = CharField(null=True)
+    preferred_name  = CharField(null=True)
+
+    @property
+    def FIRST_NAME(self):
+        return self.preferred_name or self.legal_name
