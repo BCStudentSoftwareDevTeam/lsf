@@ -90,7 +90,7 @@ def updateUserFromTracy(user):
             tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
             baseObj = user.supervisor
 
-        baseObj.FIRST_NAME = tracyUser.FIRST_NAME
+        baseObj.legal_name = tracyUser.FIRST_NAME
         baseObj.LAST_NAME = tracyUser.LAST_NAME
         baseObj.save()
 
@@ -153,7 +153,7 @@ def createSupervisorFromTracy(username=None, bnumber=None):
         return Supervisor.get(Supervisor.ID == tracyUser.ID.strip())
     except DoesNotExist:
         return Supervisor.create(PIDM = tracyUser.PIDM,
-                                 FIRST_NAME = tracyUser.FIRST_NAME,
+                                 legal_name = tracyUser.FIRST_NAME,
                                  LAST_NAME = tracyUser.LAST_NAME,
                                  ID = tracyUser.ID.strip(),
                                  EMAIL = tracyUser.EMAIL,
@@ -213,7 +213,7 @@ def createStudentFromTracy(username=None, bnumber=None):
         #print('Could not find {0} {1} in Student table, creating new entry.'.format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
         return Student.create(ID = tracyStudent.ID.strip(),
                             PIDM = tracyStudent.PIDM,
-                            FIRST_NAME = tracyStudent.FIRST_NAME,
+                            legal_name = tracyStudent.FIRST_NAME,
                             LAST_NAME = tracyStudent.LAST_NAME,
                             CLASS_LEVEL = tracyStudent.CLASS_LEVEL,
                             ACADEMIC_FOCUS = tracyStudent.ACADEMIC_FOCUS,
