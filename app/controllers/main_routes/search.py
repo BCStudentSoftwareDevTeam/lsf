@@ -37,12 +37,12 @@ def search(query=None):
     else:
         if " " not in query:
             search = query.upper() + "%"
-            results = Student.select().where(Student.FIRST_NAME ** search | Student.LAST_NAME ** search)
+            results = Student.select().where(Student.preferred_name ** search | Student.legal_name ** search | Student.LAST_NAME ** search)
         else:
             search = query.split()
             first_query = search[0] + "%"
             last_query = search[1] + "%"
-            results = Student.select().where(Student.FIRST_NAME ** first_query & Student.LAST_NAME ** last_query)
+            results = Student.select().where((Student.preferred_name ** first_query | Student.legal_name ** first_query) & Student.LAST_NAME ** last_query)
 
         our_students = list(map(studentDbToDict, results))
         current_students = list(map(studentDbToDict, Tracy().getStudentsFromUserInput(query)))
