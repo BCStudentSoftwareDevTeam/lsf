@@ -1,4 +1,9 @@
-from flask import render_template , flash, redirect, url_for, request, g, jsonify, current_app, send_file
+import datetime
+import re
+import types
+from fpdf import FPDF
+
+from flask import render_template , flash, redirect, url_for, request, g, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
 from app.models.user import *
@@ -9,13 +14,8 @@ from app.models.department import *
 from app.models.student import *
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
-from flask import json
-from flask import make_response
-import datetime
-import re
 from app import cfg
 from app.controllers.main_routes.download import CSVMaker
-from fpdf import FPDF
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
@@ -120,7 +120,11 @@ def populateModal(statusKey):
 
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
                     newPosition = Tracy().getPositionFromCode(newValue)
-                    oldPosition = Tracy().getPositionFromCode(oldValue)
+                    try:
+                        oldPosition = form.formID.Tracy().getPositionFromCode(oldValue)
+                    except:
+                        oldPosition = types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?")
+
                     # temporarily storing the new position name in new value, and old position name in old value
                     # because we want to show these information in the hmtl template.
                     form.adjustedForm.newValue = newPosition.POSN_TITLE + " (" + newPosition.WLS+")"
