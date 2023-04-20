@@ -34,8 +34,8 @@ def formSearch():
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     departments = Department.select().order_by(Department.DEPT_NAME.asc())
-    supervisors = Supervisor.select().order_by(Supervisor.FIRST_NAME.asc())
-    students = Student.select().order_by(Student.FIRST_NAME.asc())
+    supervisors = Supervisor.select().order_by(Supervisor.preferred_name, Supervisor.legal_name)
+    students = Student.select().order_by(Student.preferred_name,Student.legal_name)
 
     if request.method == 'POST':
         return getDatatableData(request)

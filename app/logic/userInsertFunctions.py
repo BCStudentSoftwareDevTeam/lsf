@@ -173,7 +173,7 @@ def createStudentFromTracy(username=None, bnumber=None):
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
 
 
-def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFunctional):
+def createLaborStatusForm(student, primarySupervisor, department, term, rspFunctional):
     """
     Creates a labor status form with the appropriate data passed from userInsert() in laborStatusForm.py
     studentID: student's primary ID in the database AKA their B#
@@ -188,7 +188,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
     endDate = datetime.strptime(rspFunctional['stuEndDate'], "%m/%d/%Y").strftime('%Y-%m-%d')
     # Creates the labor Status form
     lsf = LaborStatusForm.create(termCode_id = term,
-                                 studentSupervisee_id = studentID,
+                                 studentSupervisee_id = student.ID,
                                  supervisor_id = primarySupervisor,
                                  department_id  = department,
                                  jobType = rspFunctional["stuJobType"],
@@ -201,7 +201,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
                                  endDate = endDate,
                                  supervisorNotes = rspFunctional["stuNotes"],
                                  laborDepartmentNotes = rspFunctional["stuLaborNotes"],
-                                 studentName = rspFunctional["stuName"]
+                                 studentName = student.legal_name + " " + student.LAST_NAME
                                  )
 
     return lsf
