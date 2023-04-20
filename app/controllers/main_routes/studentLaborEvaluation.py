@@ -173,7 +173,7 @@ def sle(statusKey):
             studentLaborEvaluation.is_midyear_evaluation = True
         studentLaborEvaluation.save()
         # Use first and last (so preferred name works)
-        msg = "Thank you for submitting a labor evaluation for " + laborHistoryForm.formID.studentName + "!"
+        msg = f"Thank you for submitting a labor evaluation for {laborHistoryForm.formID.studentSupervisee.FIRST_NAME} {laborHistoryForm.formID.studentSupervisee.LAST_NAME}!"
         flash(msg, "success")
         return redirect("/")
 
