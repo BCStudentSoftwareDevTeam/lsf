@@ -300,7 +300,7 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
                         overloadForm = None,
                         createdBy   = creatorID,
                         createdDate = date.today(),
-                        status      = "Pre-Student Approval")
+                        status      = "Pre-Student Approval" if isOverload else "Pending")
 
     if not formHistory.formID.termCode.isBreak and not isOverload:
         email = emailHandler(formHistory.formHistoryID)
