@@ -177,12 +177,13 @@ def test_updateSupervisorFromTracy():
     tracyEntry.FIRST_NAME="Scott"
     tracyEntry.LAST_NAME="Heggen"
     db.session.commit()
-    dbuser.supervisor.FIRST_NAME="Scott"
+
+    dbuser.supervisor.legal_name="Scott"
     dbuser.supervisor.LAST_NAME="Heggen"
     dbuser.supervisor.save()
+
 @pytest.mark.integration
 def test_updateStudentFromTracy():
-
     user = User.get(username="jamalie")
     assert user.fullName == "Elaheh Jamali"
 
@@ -200,7 +201,8 @@ def test_updateStudentFromTracy():
     tracyEntry.FIRST_NAME="Elaheh"
     tracyEntry.LAST_NAME="Jamali"
     db.session.commit()
-    dbuser.student.FIRST_NAME="Elaheh"
+
+    dbuser.student.legal_name="Elaheh"
     dbuser.student.LAST_NAME="Jamali"
     dbuser.student.save()
 
