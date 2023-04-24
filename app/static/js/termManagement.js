@@ -120,6 +120,9 @@ function termStatus(term) {
         category = "success";
         state = "'Open'.";
       }
+      $("#termBtn").click(function() {
+        alert('Disabled: ' + $(this).is('[disabled=disabled]'));
+      })
       term = response['termChanged']
       $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">The state for '+ term +' is set to '+ state +'</div>');
       $("#flasher").delay(5000).fadeOut();
