@@ -19,14 +19,14 @@ def test_limitSearchByUserDepartment():
         # initialize students for testing
         inDeptStudent = Student.create(ID = "B10701360",
                                        PIDM = 3,
-                                       FIRST_NAME = "Tyler",
+                                       legal_name = "Tyler",
                                        LAST_NAME = "Parton",
                                        CLASS_LEVEL = "Senior",
                                        STU_EMAIL = "partont@berea.edu")
 
         outDeptStudent = Student.create(ID = "B00000000",
                                         PIDM = 4,
-                                        FIRST_NAME = "Not",
+                                        legal_name = "Not",
                                         LAST_NAME = "Tyler",
                                         CLASS_LEVEL = "Not a Senior",
                                         STU_EMAIL = "tylern@berea.edu")
@@ -34,7 +34,7 @@ def test_limitSearchByUserDepartment():
         # intitialize supervisor for testing
         outOfDeptSuper = Supervisor.create(ID = "B00000001",
                                            PIDM = 75,
-                                           FIRST_NAME = "Not",
+                                           legal_name = "Not",
                                            LAST_NAME = "Scott",
                                            EMAIL = "None",
                                            CPO = "None",
@@ -111,7 +111,7 @@ def test_getDepartmentsForSupervisors():
         # Supervisor create so we can check when our superUser is the creator but tempSuper is the supervisor.
         tempSuper = Supervisor.create(ID = "B00000002",
                                            PIDM = 75,
-                                           FIRST_NAME = "Not",
+                                           legal_name = "Not",
                                            LAST_NAME = "Scott",
                                            EMAIL = "None",
                                            CPO = "None",
@@ -126,14 +126,14 @@ def test_getDepartmentsForSupervisors():
 
         tempStudent = Student.create(ID = "B99999999",
                                      PIDM = 97,
-                                     FIRST_NAME = "Tyler",
+                                     legal_name = "Tyler",
                                      LAST_NAME = "Parton",
                                      CLASS_LEVEL = "Senior",
                                      STU_EMAIL = "partont@berea.edu")
 
         supervisor = Supervisor.create(ID = "B00000001",
                                        PIDM = 75,
-                                       FIRST_NAME = "Not",
+                                       legal_name = "Not",
                                        LAST_NAME = "Scott",
                                        EMAIL = "None",
                                        CPO = "None",

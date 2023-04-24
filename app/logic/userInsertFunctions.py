@@ -102,7 +102,8 @@ def updateUserFromTracy(user):
 def updateStudentRecord(student):
     """This function will update all student fields to match Tracy data."""
     tracyUser = Tracy().getStudentFromBNumber(student.ID)
-    student.FIRST_NAME = tracyUser.FIRST_NAME
+
+    student.legal_name = tracyUser.FIRST_NAME
     student.LAST_NAME = tracyUser.LAST_NAME
     student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
     student.ACADEMIC_FOCUS = tracyUser.ACADEMIC_FOCUS
@@ -118,8 +119,9 @@ def updateStudentRecord(student):
 def updateSupervisorRecord(supervisor):
     """This function will update all supervisor fields to match Tracy data."""
     tracyUser = Tracy().getSupervisorFromID(supervisor.ID)
+
     supervisor.PIDM = tracyUser.PIDM
-    supervisor.FIRST_NAME = tracyUser.FIRST_NAME
+    supervisor.legal_name = tracyUser.FIRST_NAME
     supervisor.LAST_NAME = tracyUser.LAST_NAME
     supervisor.EMAIL = tracyUser.EMAIL
     supervisor.CPO = tracyUser.CPO

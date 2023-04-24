@@ -209,8 +209,8 @@ def test_updateStudentFromTracy():
 @pytest.mark.integration
 def test_updateStudentDBRecords():
     with mainDB.atomic() as transaction:
-        incorrectStudent = Student.create(ID="B00751360", PIDM=2345, FIRST_NAME="NotTyler", LAST_NAME="Parton")
-        updateRecordIncorrectly = Supervisor.update(FIRST_NAME="NotMadina").where(Supervisor.ID == "B00769499").execute()
+        incorrectStudent = Student.create(ID="B00751360", PIDM=2345, legal_name="NotTyler", LAST_NAME="Parton")
+        updateRecordIncorrectly = Supervisor.update(legal_name="NotMadina").where(Supervisor.ID == "B00769499").execute()
         incorrectSupervisor = Supervisor.get(Supervisor.ID == "B00769499")
         updateStudentRecord(incorrectStudent)
         updateSupervisorRecord(incorrectSupervisor)

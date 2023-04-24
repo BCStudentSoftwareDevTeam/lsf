@@ -32,14 +32,14 @@ def testCreateStudentEval():
 
         testingStudent =  (Student.create(
                 ID="B00000002",
-                FIRST_NAME="Tyler",
+                legal_name="Tyler",
                 LAST_NAME="Parton",
                 STU_EMAIL="partont@whatever.edu",
                 STU_CPO="Unknown"
                 ))
         testingSupervisor = Supervisor.create(ID = "B00000001",
                                PIDM = 75,
-                               FIRST_NAME = "Not",
+                               legal_name = "Not",
                                LAST_NAME = "Scott",
                                EMAIL = "None",
                                CPO = "None",
@@ -95,15 +95,15 @@ def testCreateStudentEval():
 
         testReset = {"resetConfirmation": True}
 
-        with app.test_request_context(
-            "/sle", method="POST", data=testCreation):
+        with app.test_request_context( "/sle", method="POST", data=testCreation):
                 app.config['WTF_CSRF_ENABLED'] = False
+                app.config['show_queries'] = False
                 createSLEform = sle(testingLSF.laborStatusFormID)
                 assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) != None
 
-        with app.test_request_context(
-            "/sle", method="POST", data=testReset):
+        with app.test_request_context( "/sle", method="POST", data=testReset):
                 app.config['WTF_CSRF_ENABLED'] = False
+                app.config['show_queries'] = False
                 createSLEform = sle(testingLSF.laborStatusFormID)
                 assert StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == testingFormHistory.formHistoryID) == None
                 transaction.rollback()
