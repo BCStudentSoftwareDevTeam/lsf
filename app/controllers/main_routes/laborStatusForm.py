@@ -82,7 +82,7 @@ def userInsert():
         department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
         term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
         try:
-            lsf = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, rspFunctional[i])
+            lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
             createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
             try:
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
@@ -189,7 +189,7 @@ def releaseAndRehire():
         department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
         term, created = Term.get_or_create(termCode = studentDict['stuTermCode'])
 
-        newLaborStatusForm = createLaborStatusForm(student.ID, supervisor.ID, department.departmentID, term, studentDict)
+        newLaborStatusForm = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, studentDict)
         formHistory = createOverloadFormAndFormHistory(studentDict, newLaborStatusForm, currentUser, host=request.host)
 
         # Mark the newly created labor status form as approved in both our system and Banner

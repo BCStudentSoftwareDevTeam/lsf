@@ -29,6 +29,7 @@ app.config['use_banner'] = False
 if app.config['ENV'] in ('production','staging'):
     app.config['use_banner'] = True
 
+# Record and output queries if requested
 app.config['show_queries'] = cfg["show_queries"] if "show_queries" in cfg else False
 from flask import session
 from peewee import BaseQuery
