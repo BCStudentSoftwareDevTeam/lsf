@@ -177,12 +177,13 @@ def test_updateSupervisorFromTracy():
     tracyEntry.FIRST_NAME="Scott"
     tracyEntry.LAST_NAME="Heggen"
     db.session.commit()
-    dbuser.supervisor.FIRST_NAME="Scott"
+
+    dbuser.supervisor.legal_name="Scott"
     dbuser.supervisor.LAST_NAME="Heggen"
     dbuser.supervisor.save()
+
 @pytest.mark.integration
 def test_updateStudentFromTracy():
-
     user = User.get(username="jamalie")
     assert user.fullName == "Elaheh Jamali"
 
@@ -200,15 +201,16 @@ def test_updateStudentFromTracy():
     tracyEntry.FIRST_NAME="Elaheh"
     tracyEntry.LAST_NAME="Jamali"
     db.session.commit()
-    dbuser.student.FIRST_NAME="Elaheh"
+
+    dbuser.student.legal_name="Elaheh"
     dbuser.student.LAST_NAME="Jamali"
     dbuser.student.save()
 
 @pytest.mark.integration
 def test_updateStudentDBRecords():
     with mainDB.atomic() as transaction:
-        incorrectStudent = Student.create(ID="B00751360", PIDM=2345, FIRST_NAME="NotTyler", LAST_NAME="Parton")
-        updateRecordIncorrectly = Supervisor.update(FIRST_NAME="NotMadina").where(Supervisor.ID == "B00769499").execute()
+        incorrectStudent = Student.create(ID="B00751360", PIDM=2345, legal_name="NotTyler", LAST_NAME="Parton")
+        updateRecordIncorrectly = Supervisor.update(legal_name="NotMadina").where(Supervisor.ID == "B00769499").execute()
         incorrectSupervisor = Supervisor.get(Supervisor.ID == "B00769499")
         updateStudentRecord(incorrectStudent)
         updateSupervisorRecord(incorrectSupervisor)

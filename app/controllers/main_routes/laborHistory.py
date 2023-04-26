@@ -31,7 +31,6 @@ def laborhistory(id, departmentName = None):
     try:
         currentUser = require_login()
         if not currentUser:
-            print("Not currentuser")                # Not logged in
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
         studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
@@ -56,7 +55,6 @@ def laborhistory(id, departmentName = None):
 
 
                 if len(authorizedForms) == 0:
-                    print("len wrong?")
                     return render_template('errors/403.html'), 403
         authorizedForms = sorted(authorizedForms,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
