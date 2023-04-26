@@ -46,7 +46,7 @@ class ButtonStatus:
                 elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
                     self.evaluation_exists = True
         else:
-            if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME:
+            if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME or currentUser.isLaborAdmin:
                 if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                     self.evaluate = True
                 for evaluation in evaluations:
@@ -60,7 +60,11 @@ class ButtonStatus:
                         self.evaluate = False
 
     def set_button_states(self, historyForm, currentUser):
+        ############################################################
+        # Student Options
+        ############################################################
         if currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
+
             # students get no buttons except "show evaluation"
             if historyForm.historyType.historyTypeName == "Labor Status Form" or historyForm.historyType.historyTypeName == "Labor Overload Form" :
                 if historyForm.status.statusName == "Pending" or historyForm.status.statusName == "Pre-Student Approval":
@@ -76,15 +80,21 @@ class ButtonStatus:
                 self.set_evaluation_button( historyForm, currentUser)
                 self.num_buttons = 1
 
-
+        ############################################################
+        # Labor Admin and Supervisor Options
+        ############################################################
         else:
-            if historyForm.releaseForm != None:     # If its a release form
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # Release
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            if historyForm.releaseForm != None:
                 if historyForm.status.statusName == "Approved":
                     # Approved release forms can be rehired
                     self.rehire = True
                     if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                         self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 2
+
                 elif historyForm.status.statusName == "Denied":
                     self.rehire = True
                     self.release = True
@@ -92,34 +102,46 @@ class ButtonStatus:
                     if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                         self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 4
+
                 elif historyForm.status.statusName == "Pending":
                     # Pending release forms get no buttons
                     pass
-                #FIXME: Add cases for approved and denied release forms
-            elif historyForm.adjustedForm != None:    # If its an adjustment form
-                if historyForm.status.statusName == "Approved" or historyForm.status.statusName == "Denied":
+
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # Adjustment
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            elif historyForm.adjustedForm != None:
+                if historyForm.status.statusName in ["Approved","Denied"]:
                     self.rehire = True
                     self.release = True
                     self.adjust = True
 
-                    if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
+                    if currentUser.isLaborAdmin or historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
                         self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 4
+
                 elif historyForm.status.statusName == "Pending":
                     # Pending adjustment forms get no buttons
-                    pass
-                #FIXME: Add cases for approved and denied adjustment forms
-            elif historyForm.historyType.historyTypeName == "Labor Status Form" or historyForm.historyType.historyTypeName == "Labor Overload Form":
-                if historyForm.status.statusName == "Pending" or historyForm.status.statusName == "Pre-Student Approval":
+                    if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
+                        self.set_evaluation_button(historyForm, currentUser)
+                    self.num_buttons += 1
+
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # Standard or Overload
+            #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            elif historyForm.historyType.historyTypeName in ["Labor Status Form", "Labor Overload Form"]:
+                if historyForm.status.statusName in ["Pending","Pre-Student Approval"]:
                     # Pending LSF can be withdrawn or corrected
                     self.withdraw = True
                     self.correction = True
                     self.num_buttons += 2
+
                 elif historyForm.status.statusName == "Denied":
                     # Denied LSF forms can be rehired
                     self.rehire = True
                     self.num_buttons += 1
-                elif historyForm.status.statusName == "Approved":
+
+                elif historyForm.status.statusName in ["Approved","Approved Reluctantly"]:
                     self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 1
                     if self.currentDate <= historyForm.formID.endDate:

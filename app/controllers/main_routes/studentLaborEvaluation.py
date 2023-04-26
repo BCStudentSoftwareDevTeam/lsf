@@ -54,7 +54,7 @@ def sle(statusKey):
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
-    elif currentUser.student == None and currentUser.supervisor.DEPT_NAME != laborHistoryForm.formID.supervisor.DEPT_NAME:
+    elif not currentUser.isLaborAdmin and currentUser.supervisor.DEPT_NAME != laborHistoryForm.formID.supervisor.DEPT_NAME:
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
