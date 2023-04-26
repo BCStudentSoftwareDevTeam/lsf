@@ -5,7 +5,6 @@ from app.models import *
 class Student(baseModel):
     ID              = CharField(primary_key=True)		        # B-number
     PIDM            = IntegerField(null=True)                  # from Tracy
-    FIRST_NAME      = CharField(null=True)
     LAST_NAME       = CharField(null=True)
     CLASS_LEVEL     = CharField(null=True)
     ACADEMIC_FOCUS  = CharField(null=True)
@@ -17,5 +16,12 @@ class Student(baseModel):
     LAST_POSN     	= CharField(null=True)
     LAST_SUP_PIDM   = CharField(null=True)
 
+    legal_name      = CharField(null=True)
+    preferred_name  = CharField(null=True)
+
     def __str__(self):
         return str(self.__dict__)
+
+    @property
+    def FIRST_NAME(self):
+        return self.preferred_name or self.legal_name

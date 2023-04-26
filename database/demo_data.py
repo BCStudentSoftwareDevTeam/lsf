@@ -129,6 +129,9 @@ for student in (localStudents + bothStudents):
     # Set up lsf db data
     del student["PIDM"]
     student['ID'] = student['ID'].strip()
+    student['legal_name'] = student['FIRST_NAME'].strip()
+    del student['FIRST_NAME']
+
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
 print(" * students (TRACY) added")
@@ -312,6 +315,8 @@ for staff in staffs:
     db.session.add(STUSTAFF(**staff))
     db.session.commit()
 
+    staff['legal_name'] = staff['FIRST_NAME'].strip()
+    del staff['FIRST_NAME']
     Supervisor.get_or_create(**staff)
 
 # Add non Supervisor staffs to Tracy db

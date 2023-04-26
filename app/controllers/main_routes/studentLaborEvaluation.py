@@ -172,7 +172,8 @@ def sle(statusKey):
         if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen and not submitAsFinal:
             studentLaborEvaluation.is_midyear_evaluation = True
         studentLaborEvaluation.save()
-        msg = "Thank you for submitting a labor evaluation for " + laborHistoryForm.formID.studentName + "!"
+        # Use first and last (so preferred name works)
+        msg = f"Thank you for submitting a labor evaluation for {laborHistoryForm.formID.studentSupervisee.FIRST_NAME} {laborHistoryForm.formID.studentSupervisee.LAST_NAME}!"
         flash(msg, "success")
         return redirect("/")
 
