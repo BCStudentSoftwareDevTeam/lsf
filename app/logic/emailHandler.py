@@ -109,6 +109,7 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            # print("Debugging emailHandler.py: ", app.config)
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':

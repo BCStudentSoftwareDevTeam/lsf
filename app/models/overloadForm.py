@@ -6,7 +6,7 @@ from app.models.user import User
 
 class OverloadForm(baseModel):
     overloadFormID          = PrimaryKeyField()
-    studentOverloadReason   = CharField(null=True)
+    studentOverloadReason   = TextField(null=True)
     financialAidApproved    = ForeignKeyField(Status, null=True, on_delete="cascade") #Foreign key to status
     financialAidApprover    = ForeignKeyField(User, null=True, on_delete="cascade")#Foreign key to Supervisor
     financialAidInitials    = CharField(null=True)
