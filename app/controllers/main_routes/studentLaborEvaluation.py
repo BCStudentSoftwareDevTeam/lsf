@@ -180,7 +180,7 @@ def sle(statusKey):
         # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
-    if existing_final_evaluation:
+    if existing_final_evaluation and existing_final_evaluation.date_submitted:
         submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
     else:
         submittedDate = None
