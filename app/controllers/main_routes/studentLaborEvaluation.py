@@ -9,7 +9,6 @@ from wtforms.validators import DataRequired, Length
 from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from werkzeug.exceptions import BadRequestKeyError
-from app.logic.search import getDepartmentsForSupervisor
 from datetime import date
 
 class SLEForm(FlaskForm):
