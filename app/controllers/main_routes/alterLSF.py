@@ -248,14 +248,8 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         
         if fieldName == "weeklyHours":
             newWeeklyHours = fieldsChanged[fieldName]['newValue']
-            lsf.weeklyHours = newWeeklyHours
-            lsf.save()
-            if int(fieldsChanged[fieldName]["newValue"]) > 15:
-                createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory,host=host)
+            createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory,host=host)
 
-        if fieldName == "supervisor":
-            lsf.supervisor = fieldsChanged[fieldName]["newValue"]
-            lsf.save()
         return adjustedFormHistory.formHistoryID
 
 def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
