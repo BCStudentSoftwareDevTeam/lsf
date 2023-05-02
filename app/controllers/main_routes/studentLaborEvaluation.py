@@ -53,8 +53,16 @@ def sle(statusKey):
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
     if request.form.get("resetConfirmation"):
-        deleteExistingForm = (StudentLaborEvaluation.delete().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)).execute()
+        # Delete the most recently submitted evaluation for this formhistory
+        newest = (StudentLaborEvaluation.select()
+                    .where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)
+                    .order_by(StudentLaborEvaluation.date_submitted.desc(nulls="LAST"), StudentLaborEvaluation.ID.desc())
+                    ).get()
+        if newest:
+            newest.delete_instance()
+
         return redirect("/sle/" + str(laborHistoryForm.formID.laborStatusFormID))
+
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
