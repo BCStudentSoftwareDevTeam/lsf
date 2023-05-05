@@ -58,7 +58,7 @@ def updateDBRecords():
     """
     studentsInDB = Student.select()
     supervisorsInDB = Supervisor.select()
-    departmentsFromDB = Department.select()
+    departmentsInDB = Department.select() 
     studentsUpdated = 0
     studentsFailed = 0
     supervisorsUpdated = 0
@@ -78,7 +78,7 @@ def updateDBRecords():
             supervisorsUpdated +=1
         except Exception as e:
             supervisorsFailed +=1
-    for department in departmentsFromDB:
+    for department in departmentsInDB:
         try:
             updateDepartment(department)
             departmentsUpdated +=1
