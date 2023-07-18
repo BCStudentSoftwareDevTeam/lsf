@@ -300,22 +300,19 @@ def getFormattedData(filteredSearchResults):
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
-    print("entered function")
     userDeptData = request.form
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisor'], department = userDeptData['department'])
     try:
         if supervisorDeptRecord:
-            print("true")
             return "False"
 
         else:
-            print("false")
-            createSupervisorDeptRecord = SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
+            SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
             return "True"
-            print("printing somethintg")
-    except:
-        print("error")
-        return ""
+    
+    except Exception as e:
+        print(f'Could not add user to department: {e}')
+        return "", 500
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
