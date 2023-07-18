@@ -14,24 +14,24 @@ def test_getDatatableData():
         studentIDDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "", "departmentID": "", "supervisorID": "currentUser", "studentID": "B00730361", "formStatus": "[]", "formType": "[]", "evaluations": "[]"}'}
         allEvalDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "", "departmentID": "", "supervisorID": "currentUser", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[allEvalMissing]"}'}
 
-        with app.test_request_context(
-        "/", method="POST", data=termCodeDict):
+        with app.test_request_context("/", method="POST", data=termCodeDict):
             runGetDatatableData = supervisorPortal()
-        with app.test_request_context(
-        "/", method="POST", data=currentTermDict):
+            
+        with app.test_request_context("/", method="POST", data=currentTermDict):
             runGetDatatableData = supervisorPortal()
-        with app.test_request_context(
-        "/", method="POST", data=currentUserDict):
+            
+        with app.test_request_context("/", method="POST", data=currentUserDict):
             runGetDatatableData = supervisorPortal()
-        with app.test_request_context(
-        "/", method="POST", data=departmentIDDict):
+            
+        with app.test_request_context("/", method="POST", data=departmentIDDict):
             runGetDatatableData = supervisorPortal()
-        with app.test_request_context(
-        "/", method="POST", data=studentIDDict):
+            
+        with app.test_request_context("/", method="POST", data=studentIDDict):
             runGetDatatableData = supervisorPortal()
-        with app.test_request_context(
-        "/", method="POST", data=allEvalDict):
+            
+        with app.test_request_context("/", method="POST", data=allEvalDict):
             runGetDatatableData = supervisorPortal()
+            
             assert True
 
 
