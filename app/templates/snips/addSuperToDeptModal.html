@@ -10,13 +10,13 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="supervisorModalSelect">Select a supervisor to add</label>
+          <label for="supervisorModalSelect">Select a supervisor to add:</label>
           <div class="dropdown"><select class="selectpicker"
                   name='supervisor'
                   id='supervisorModalSelect'
                   data-live-search='true'
-                  title="Supervisors">
-              {% for supervisor in unfilteredSupervisors  %}
+                  title="Supervisor">
+              {% for supervisor in allSupervisors  %}
                 <option value="{{supervisor.ID}}"
                         data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
                   {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
@@ -25,7 +25,7 @@
           </select></div>
         </div>
         <div class="form-group">
-            <label for="departmentModalSelect">Select a department to add the supervisor to.</label>
+            <label for="departmentModalSelect">Select a department to add the supervisor to:</label>
             <div><select class="selectpicker"
                     id="departmentModalSelect"
                     data-live-search='true'
@@ -40,7 +40,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" id="addUser" data-dismiss="modal" class="btn btn-primary">Add User</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary pull-left" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

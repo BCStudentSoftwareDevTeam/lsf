@@ -23,26 +23,24 @@ $(document).ready(function(){
         data: data,
         success: function(response) {
           if (response == "True") {
-            $("#flash_container").html('<div class="alert alert-success" role="alert" id="flasher">Supervisor has been added to department.</div>');
-            ("#flasher").delay(3000).fadeOut();
+            msgFlash("Supervisor has been added to department.", 'success')
+            clearDropdown()
           } else {
-            $("#flash_container").html('<div class="alert alert-warning" role="alert" id="flasher">Supervisor is already a member of this department.</div>');
-            ("#flasher").delay(3000).fadeOut();
+            msgFlash("Supervisor is already a member of this department.", "warning")
+            clearDropdown()
           }
         },
         error: function() {
-          $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Failed to add supervisor, please try again.</div>');
-          ("#flasher").delay(3000).fadeOut();
+          msgFlash("Failed to add supervisor, please try again.", "fail")
+          clearDropdown()
         },
     })
   })
   $('#clearSelectionsButton').on('click', function(){
     $("input:radio:checked").removeAttr("checked");
-    $('select.selectpicker').each(function() {
-      $(`#${this.id} option:eq(0)`).prop("selected", true);
-      $(`#${this.id}`).selectpicker("refresh");
+    clearDropdown()
     });
-  });
+    
   $( function() {
     $( "#formSearchAccordion" ).accordion({
       collapsible: true
@@ -67,6 +65,12 @@ $('#currentTerm').on('click', function(){
 });
 });
 
+function clearDropdown(){
+  $('select.selectpicker').each(function() {
+    $(`#${this.id} option:eq(0)`).prop("selected", true);
+    $(`#${this.id}`).selectpicker("refresh");
+  });
+};
 function parseCookie(str){
     cookieArray = str.split('=')
     return cookieArray[1];

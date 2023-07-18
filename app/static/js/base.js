@@ -1,7 +1,19 @@
-/*$(document).ready(function () {
-    // Alert categories: https://getbootstrap.com/docs/4.0/components/alerts/
-    category = "danger";
-    msg = "An example flash message generated using jquery";
-    x = $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
-})
-*/
+function msgFlash(flash_message, status){
+    if (status === "success") {
+        category = "success";
+        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+        $("#flasher").delay(5000).fadeOut();
+    }
+    else if (status === "fail"){
+        category = "danger";
+        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+        $("#flasher").delay(5000).fadeOut();
+    }
+    else if (status === "warning") {
+        category = "warning"
+        $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+        $("#flasher").delay(5000).fadeOut();
+    }
+
+}
+

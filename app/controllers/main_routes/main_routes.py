@@ -45,7 +45,7 @@ def supervisorPortal():
         return render_template('errors/403.html'), 403
 
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    unfilteredSupervisors = Supervisor.select()
+    allSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
@@ -76,7 +76,7 @@ def supervisorPortal():
     return render_template('main/supervisorPortal.html',
                             terms = terms,
                             supervisors = supervisors,
-                            unfilteredSupervisors = unfilteredSupervisors,
+                            allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
                             department = None,
@@ -300,16 +300,21 @@ def getFormattedData(filteredSearchResults):
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
+    print("entered function")
     userDeptData = request.form
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisor'], department = userDeptData['department'])
     try:
         if supervisorDeptRecord:
+            print("true")
             return "False"
 
         else:
+            print("false")
             createSupervisorDeptRecord = SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
             return "True"
+            print("printing somethintg")
     except:
+        print("error")
         return ""
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
