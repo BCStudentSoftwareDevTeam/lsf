@@ -150,28 +150,21 @@ def getDatatableData(request):
                 clauses.append(field == value)
 
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
-    expression = reduce(operator.and_, clauses)
-
     global formSearchResults
+    formSearchResults = (FormHistory.select()
+                        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                        .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
+                        .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
+                        .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
+                        .join(User, on=(FormHistory.createdBy == User.userID)))
+    if clauses:
+       formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
+
     if not currentUser.isLaborAdmin:
         supervisorDepartments = getDepartmentsForSupervisor(currentUser)
-        formSearchResults = (FormHistory.select()
-                            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                            .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
-                            .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
-                            .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
-                            .join(User, on=(FormHistory.createdBy == User.userID))
-                            .where(expression, FormHistory.formID.department.in_(supervisorDepartments)))
-    else:
-        formSearchResults = (FormHistory.select()
-                            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                            .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
-                            .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
-                            .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
-                            .join(User, on=(FormHistory.createdBy == User.userID))
-                            .where(expression))
+        formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
+
     if sleJoin:
         if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
             #grab all the midyear evaluationStatus

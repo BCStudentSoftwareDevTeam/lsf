@@ -1,13 +1,14 @@
 $(document).ready(function(){
-  if ((document.cookie).includes("searchResults=")) {
-        runFormSearchQuery(parseCookie(document.cookie), true);
+  if ((document.cookie).includes("lsfSearchResults=")) {
+       console.log(document.cookie)
+        runFormSearchQuery(Cookies.get('lsfSearchResults'));
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
   $('#formSearchButton').on('click', function(){
-    runFormSearchQuery(newData='', false);
+    runFormSearchQuery(cookieData='');
   });
   $('#addUserToDept').on('click', function() {
       $("#addSupervisorToDeptModal").modal("show");
@@ -52,16 +53,16 @@ $(document).ready(function(){
 });
 // listening for preset button clicks.
 $('#mySupervisees').on('click', function(){
-  runFormSearchQuery(newData='', false, "mySupervisees");
+  runFormSearchQuery(cookieData='', "mySupervisees");
 });
 $('#evaluationsMissing').on('click', function(){
-  runFormSearchQuery(newData='', false, "missingEvals");
+  runFormSearchQuery(cookieData='', "missingEvals");
 });
 $('#superviseesPendingForms').on('click', function(){
-  runFormSearchQuery(newData='', false, "pendingForms");
+  runFormSearchQuery(cookieData='', "pendingForms");
 });
 $('#currentTerm').on('click', function(){
-  runFormSearchQuery(newData='', false, "currentTerm");
+  runFormSearchQuery(cookieData='', "currentTerm");
 });
 });
 
@@ -71,12 +72,8 @@ function clearDropdown(){
     $(`#${this.id}`).selectpicker("refresh");
   });
 };
-function parseCookie(str){
-    cookieArray = str.split('=')
-    return cookieArray[1];
-  };
 
-function runFormSearchQuery(newData='', cookie, button) {
+function runFormSearchQuery(cookieData='', button) {
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -141,17 +138,20 @@ function runFormSearchQuery(newData='', cookie, button) {
                'evaluations': evaluationList
              };
   data = JSON.stringify(queryDict)
-  if (cookie) {
-      data = newData
+  console.log(data)
+  if (cookieData.length) {
+      data = cookieData
+      console.log(data)
   }
   let now = new Date();
   now.setMinutes(now.getMinutes() + 15);
-  var searchCookie = document.cookie = "searchResults="+data +"; expires=" + now.toUTCString() +";"
+  // var searchCookie = document.cookie = "lsfSearchResults="+data +"; expires=" + now.toUTCString() +";"
+  Cookies.set('lsfSearchResults', data)
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
   }
-  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == "" && cookie == false){
+  else if (evaluationList.length == 0 && formStatusList.length == 0 && formTypeList.length == 0 && termCode == "" && departmentID == "" && supervisorID == "" && studentID == "" && cookieData.length == 0){
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">At least one field must be selected.</div>');
     $("#flasher").delay(3000).fadeOut();
   } else {

@@ -95,7 +95,7 @@ def updateUserFromTracy(user):
         baseObj.save()
 
     except Exception as e:
-        print("We don't want to break our login if an old tracy user doesn't exist or something")
+        print( f"We don't want to break our login if an old tracy user doesn't exist or something")
 
     return user
 
