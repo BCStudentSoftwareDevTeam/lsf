@@ -24,7 +24,8 @@
 
   <a class="skipContent" href="#condition" tabindex="1">Click to Skip</a>
 
-  <h1> Student Labor Evaluation - {{laborHistoryForm.formID.studentName}} </h1>
+  <!-- Use FIRST and LAST so that preferred and legal name are handled properly -->
+  <h1> Student Labor Evaluation - {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}} {{laborHistoryForm.formID.studentSupervisee.LAST_NAME}} </h1>
 </div>
 
 <div class="container col-10">
@@ -39,7 +40,7 @@
             <dt>Supervisor: </dt>
             <dd>{{laborHistoryForm.formID.supervisor.FIRST_NAME}} {{laborHistoryForm.formID.supervisor.LAST_NAME}}</dd>
             <dt>Student: </dt>
-            <dd>{{laborHistoryForm.formID.studentName}}</dd>
+            <dd>{{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}} {{laborHistoryForm.formID.studentSupervisee.LAST_NAME}}</dd>
           </dl>
         </div>
         <div class="col-sm-6">
@@ -50,6 +51,10 @@
             <dd>{{laborHistoryForm.formID.jobType}} ({{laborHistoryForm.formID.weeklyHours}})</dd>
             <dt>Position (WLS): </dt>
             <dd>{{laborHistoryForm.formID.POSN_TITLE}} ({{laborHistoryForm.formID.WLS}})</dd>
+            {% if existing_final_evaluation %}
+              <dt>Date Submitted: </dt>
+              <dd>{{existing_final_evaluation.date_submitted}}</dd>
+            {% endif %}
           </dl>
         </div>
       </div>

@@ -10,6 +10,7 @@ from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from werkzeug.exceptions import BadRequestKeyError
 from app.logic.search import getDepartmentsForSupervisor
+from datetime import date
 
 class SLEForm(FlaskForm):
 
@@ -53,12 +54,21 @@ def sle(statusKey):
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
     if request.form.get("resetConfirmation"):
-        deleteExistingForm = (StudentLaborEvaluation.delete().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)).execute()
+        # Delete the most recently submitted evaluation for this formhistory
+        newest = (StudentLaborEvaluation.select()
+                    .where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)
+                    .order_by(StudentLaborEvaluation.date_submitted.desc(nulls="LAST"), StudentLaborEvaluation.ID.desc())
+                    ).get()
+        if newest:
+            newest.delete_instance()
+
         return redirect("/sle/" + str(laborHistoryForm.formID.laborStatusFormID))
+
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
-    elif currentUser.student == None and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
+
+    elif not currentUser.isLaborAdmin and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
@@ -165,12 +175,14 @@ def sle(statusKey):
                                     jobSpecific_comment = sleForm.jobSpecificComments.data,
                                     transcript_comment = sleForm.transcriptComments.data,
                                     is_submitted = True if sleForm.isSubmitted.data == "True" else False,
-                                    submitted_by = currentUser
+                                    submitted_by = currentUser,
+                                    date_submitted = date.today()
                                 )
         if laborHistoryForm.formID.termCode.isMidyearEvaluationOpen and not submitAsFinal:
             studentLaborEvaluation.is_midyear_evaluation = True
         studentLaborEvaluation.save()
-        msg = "Thank you for submitting a labor evaluation for " + laborHistoryForm.formID.studentName + "!"
+        # Use first and last (so preferred name works)
+        msg = f"Thank you for submitting a labor evaluation for {laborHistoryForm.formID.studentSupervisee.FIRST_NAME} {laborHistoryForm.formID.studentSupervisee.LAST_NAME}!"
         flash(msg, "success")
         return redirect("/")
 
@@ -178,11 +190,17 @@ def sle(statusKey):
         # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
+    if existing_final_evaluation and existing_final_evaluation.date_submitted:
+        submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
+    else:
+        submittedDate = None
+
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
                             laborHistoryForm = laborHistoryForm,
                             existing_final_evaluation = existing_final_evaluation,
                             existing_midyear_evaluation = existing_midyear_evaluation,
+                            date_submitted = submittedDate,
                             overall_score = overall_score,
                             isFinalEvaluationOpen = laborHistoryForm.formID.termCode.isFinalEvaluationOpen,
                             currentUser = currentUser

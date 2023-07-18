@@ -90,7 +90,7 @@ def updateUserFromTracy(user):
             tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
             baseObj = user.supervisor
 
-        baseObj.FIRST_NAME = tracyUser.FIRST_NAME
+        baseObj.legal_name = tracyUser.FIRST_NAME
         baseObj.LAST_NAME = tracyUser.LAST_NAME
         baseObj.save()
 
@@ -102,7 +102,8 @@ def updateUserFromTracy(user):
 def updateStudentRecord(student):
     """This function will update all student fields to match Tracy data."""
     tracyUser = Tracy().getStudentFromBNumber(student.ID)
-    student.FIRST_NAME = tracyUser.FIRST_NAME
+
+    student.legal_name = tracyUser.FIRST_NAME
     student.LAST_NAME = tracyUser.LAST_NAME
     student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
     student.ACADEMIC_FOCUS = tracyUser.ACADEMIC_FOCUS
@@ -118,8 +119,9 @@ def updateStudentRecord(student):
 def updateSupervisorRecord(supervisor):
     """This function will update all supervisor fields to match Tracy data."""
     tracyUser = Tracy().getSupervisorFromID(supervisor.ID)
+
     supervisor.PIDM = tracyUser.PIDM
-    supervisor.FIRST_NAME = tracyUser.FIRST_NAME
+    supervisor.legal_name = tracyUser.FIRST_NAME
     supervisor.LAST_NAME = tracyUser.LAST_NAME
     supervisor.EMAIL = tracyUser.EMAIL
     supervisor.CPO = tracyUser.CPO
@@ -153,7 +155,7 @@ def createSupervisorFromTracy(username=None, bnumber=None):
         return Supervisor.get(Supervisor.ID == tracyUser.ID.strip())
     except DoesNotExist:
         return Supervisor.create(PIDM = tracyUser.PIDM,
-                                 FIRST_NAME = tracyUser.FIRST_NAME,
+                                 legal_name = tracyUser.FIRST_NAME,
                                  LAST_NAME = tracyUser.LAST_NAME,
                                  ID = tracyUser.ID.strip(),
                                  EMAIL = tracyUser.EMAIL,
@@ -213,7 +215,7 @@ def createStudentFromTracy(username=None, bnumber=None):
         #print('Could not find {0} {1} in Student table, creating new entry.'.format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
         return Student.create(ID = tracyStudent.ID.strip(),
                             PIDM = tracyStudent.PIDM,
-                            FIRST_NAME = tracyStudent.FIRST_NAME,
+                            legal_name = tracyStudent.FIRST_NAME,
                             LAST_NAME = tracyStudent.LAST_NAME,
                             CLASS_LEVEL = tracyStudent.CLASS_LEVEL,
                             ACADEMIC_FOCUS = tracyStudent.ACADEMIC_FOCUS,
@@ -228,7 +230,7 @@ def createStudentFromTracy(username=None, bnumber=None):
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
 
 
-def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFunctional):
+def createLaborStatusForm(student, primarySupervisor, department, term, rspFunctional):
     """
     Creates a labor status form with the appropriate data passed from userInsert() in laborStatusForm.py
     studentID: student's primary ID in the database AKA their B#
@@ -243,7 +245,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
     endDate = datetime.strptime(rspFunctional['stuEndDate'], "%m/%d/%Y").strftime('%Y-%m-%d')
     # Creates the labor Status form
     lsf = LaborStatusForm.create(termCode_id = term,
-                                 studentSupervisee_id = studentID,
+                                 studentSupervisee_id = student.ID,
                                  supervisor_id = primarySupervisor,
                                  department_id  = department,
                                  jobType = rspFunctional["stuJobType"],
@@ -256,7 +258,7 @@ def createLaborStatusForm(studentID, primarySupervisor, department, term, rspFun
                                  endDate = endDate,
                                  supervisorNotes = rspFunctional["stuNotes"],
                                  laborDepartmentNotes = rspFunctional["stuLaborNotes"],
-                                 studentName = rspFunctional["stuName"]
+                                 studentName = student.legal_name + " " + student.LAST_NAME
                                  )
 
     return lsf
@@ -300,7 +302,7 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
                         overloadForm = None,
                         createdBy   = creatorID,
                         createdDate = date.today(),
-                        status      = "Pre-Student Approval")
+                        status      = "Pre-Student Approval" if isOverload else "Pending")
 
     if not formHistory.formID.termCode.isBreak and not isOverload:
         email = emailHandler(formHistory.formHistoryID)
