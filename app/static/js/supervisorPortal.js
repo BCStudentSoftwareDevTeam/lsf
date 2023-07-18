@@ -1,6 +1,5 @@
 $(document).ready(function(){
   if ((document.cookie).includes("lsfSearchResults=")) {
-       console.log(document.cookie)
         runFormSearchQuery(Cookies.get('lsfSearchResults'));
   } else {
       $('#formSearchTable').hide();
@@ -141,12 +140,14 @@ function runFormSearchQuery(cookieData='', button) {
   console.log(data)
   if (cookieData.length) {
       data = cookieData
-      console.log(data)
   }
+
   let now = new Date();
   now.setMinutes(now.getMinutes() + 15);
-  // var searchCookie = document.cookie = "lsfSearchResults="+data +"; expires=" + now.toUTCString() +";"
-  Cookies.set('lsfSearchResults', data)
+
+  var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
+  Cookies.set('lsfSearchResults', data, {expires: inAnHour})
+
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
