@@ -1,6 +1,6 @@
 import sys
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
 from peewee import JOIN, prefetch
 from app.models.term import Term

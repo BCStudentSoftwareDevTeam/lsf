@@ -71,5 +71,5 @@ def auth_user(env, username):
         print("Creating record for {} in user table".format(username))
         return createUser(username, student=student, supervisor=supervisor)
 
-def getCurrentTerm():
+def getOpenTerm():
     return Term.get_or_none(termState = True)

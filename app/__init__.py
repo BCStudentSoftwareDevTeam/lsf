@@ -58,16 +58,18 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
+from flask import g
 from app.models.term import Term
-from login_manager import getCurrentTerm()
+from app.login_manager import getOpenTerm
 @app.before_request
 def load_openTerm():
     try: 
-        g.open_term = dict_to_model(Term, session['openTerm'])
+        g.open_term = dict_to_model(Term, session['open_term'])
     except Exception as e:
-        term = getCurrentTerm()
-        session['currentTerm'] = model_to_dict(term)
+        term = getOpenTerm()
+        session['open_term'] = model_to_dict(term)
         g.open_term = term
+        
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])
