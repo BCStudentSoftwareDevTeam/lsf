@@ -2,6 +2,7 @@ from flask import request, session
 from app import cfg, app
 from app.controllers.errors_routes.handlers import *
 from app.models.user import User, DoesNotExist
+from app.models.term import Term
 from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy, InvalidUserException, updateUserFromTracy
 
 def getUsernameFromEnv(env):
@@ -69,3 +70,6 @@ def auth_user(env, username):
 
         print("Creating record for {} in user table".format(username))
         return createUser(username, student=student, supervisor=supervisor)
+
+def getCurrentTerm():
+    return Term.get_or_none(termState = True)

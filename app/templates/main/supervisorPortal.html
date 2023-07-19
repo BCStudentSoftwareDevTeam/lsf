@@ -29,7 +29,7 @@
 </div>
 <br>
 <div class="row col-md-12" align="center">
-  <button class="btn btn-primary" type="button" id="mySupervisees">Current Students</button>
+  <button class="btn btn-primary" type="button" data-currentTerm="{{}}" id="mySupervisees">Current Students</button>
   <button class="btn btn-primary" type="button" id="evaluationsMissing">Evaluations Missing</button>
   <button class="btn btn-primary" type="button" id="superviseesPendingForms">Pending Forms</button>
 </div>
@@ -47,18 +47,20 @@
               <div class="form-group">
                 <br>
                 <label for="termSelect">Term</label>
-                <div><select class="selectpicker"
-                        name='term'
-                        id='termSelect'
-                        data-live-search='true'
-                        title="All terms">
-                        <option value="">All terms</option>
+                <div>
+                  <select class="selectpicker"
+                          name='term'
+                          id='termSelect'
+                          data-live-search='true'
+                          title="All terms">
+                    <option value="">All terms</option>
                     {% for term in terms %}
-                      <option value="{{term.termCode.termCode}}">
+                      <option value="{{term.termCode.termCode}}" id="termOption">
                         {{term.termCode.termName}}
                       </option>
                     {% endfor %}
-                </select></div>
+                  </select>
+                </div>
               </div>
               <div class="form-group">
                 <label for="departmentSelect">Department</label>

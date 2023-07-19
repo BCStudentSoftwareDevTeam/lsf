@@ -1,6 +1,8 @@
 from flask import Flask
 import yaml
 from flask_bootstrap import Bootstrap
+from playhouse.shortcuts import model_to_dict, dict_to_model
+
 
 
 app = Flask(__name__)
@@ -56,6 +58,16 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
+from app.models.term import Term
+from login_manager import getCurrentTerm()
+@app.before_request
+def load_openTerm():
+    try: 
+        g.open_term = dict_to_model(Term, session['openTerm'])
+    except Exception as e:
+        term = getCurrentTerm()
+        session['currentTerm'] = model_to_dict(term)
+        g.open_term = term
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])

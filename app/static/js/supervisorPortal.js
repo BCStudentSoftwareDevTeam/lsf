@@ -127,6 +127,7 @@ function runFormSearchQuery(cookieData='', button) {
       formType  = []
       evaluationList = []
     }
+    $("#termSelect").val(termCode)
   }
   queryDict = {'termCode': termCode,
                'departmentID': departmentID,
