@@ -64,11 +64,11 @@ from app.login_manager import getOpenTerm
 @app.before_request
 def load_openTerm():
     try: 
-        g.open_term = dict_to_model(Term, session['open_term'])
+        g.openTerm = dict_to_model(Term, session['openTerm'])
     except Exception as e:
         term = getOpenTerm()
-        session['open_term'] = model_to_dict(term)
-        g.open_term = term
+        session['openTerm'] = model_to_dict(term)
+        g.openTerm = term
         
 @app.context_processor
 def inject_environment():

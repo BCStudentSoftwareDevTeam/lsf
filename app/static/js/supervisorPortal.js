@@ -53,6 +53,7 @@ $(document).ready(function(){
 // listening for preset button clicks.
 $('#mySupervisees').on('click', function(){
   runFormSearchQuery(cookieData='', "mySupervisees");
+  console.log($(this).data())
 });
 $('#evaluationsMissing').on('click', function(){
   runFormSearchQuery(cookieData='', "missingEvals");
@@ -127,7 +128,7 @@ function runFormSearchQuery(cookieData='', button) {
       formType  = []
       evaluationList = []
     }
-    $("#termSelect").val(termCode)
+
   }
   queryDict = {'termCode': termCode,
                'departmentID': departmentID,
