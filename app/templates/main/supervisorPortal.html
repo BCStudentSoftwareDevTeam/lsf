@@ -15,6 +15,8 @@
   <script type="text/javascript" src="{{url_for('static', filename='js/supervisorPortal.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
   <script>var currentTerm = {{g.openTerm}}</script>
+  <script>var currentUser = "{{g.currentUser.supervisor}}"</script>
+
 {% endblock %}
 
 
@@ -31,9 +33,9 @@
 </div>
 <br>
 <div class="row col-md-12" align="center">
-  <button class="btn btn-primary" type="button" id="mySupervisees">Current Students</button>
-  <button class="btn btn-primary" type="button" id="evaluationsMissing">Evaluations Missing</button>
-  <button class="btn btn-primary" type="button" id="superviseesPendingForms">Pending Forms</button>
+  <button class="btn btn-primary" type="button" id="mySupervisees">My Current Supervisees</button>
+  <button class="btn btn-primary" type="button" id="evaluationsMissing">My Missing Evaluations</button>
+  <button class="btn btn-primary" type="button" id="superviseesPendingForms">My Pending Forms</button>
 </div>
 <br>
 <br>
@@ -57,7 +59,7 @@
                           title="All terms">
                     <option value="">All terms</option>
                     {% for term in terms %}
-                      <option value="{{term.termCode}}" data-isOpen="{{g.openTerm == term.termCode}}">
+                      <option value="{{term.termCode}}">
                         {{term.termCode.termName}}
                       </option>
                     {% endfor %}
@@ -121,51 +123,89 @@
               <div class="form-group">
                 <br>
                 <label for="">Limit Form Status</label>
-                <div class="radio">
-                  <label><input type="radio" value="Pending" id="pending" name="formStatus"> Pending</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formStatus" type="checkbox" value="Pending" id="pending">
+                  <label class="form-check-label" for="pending">
+                    Pending  
+                  </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Approved" id="approved" name="formStatus"> Approved</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formStatus" type="checkbox" value="Approved" id="approved">
+                  <label class="form-check-label" for="approved">
+                    Approved  
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Approved Reluctantly" id="approved" name="formStatus"> Approved Reluctantly</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formStatus" type="checkbox" value="Approved Reluctantly" id="approvedReluctantly">
+                  <label class="form-check-label" for="approvedReluctantly">
+                    Approved  Reluctantly
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Denied" id="denied" name="formStatus"> Denied</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formStatus" type="checkbox" value="Denied" id="denied">
+                  <label class="form-check-label" for="denied">
+                    Denied
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Pre-Student Approval" id="student" name="formStatus"> Pre-Student Approval</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formStatus" type="checkbox" value="Pre-Student Approval" id="student">
+                  <label class="form-check-label" for="student">
+                    Pre-Student Approval
+                    </label> 
                 </div>
               </div>
-              <br>
               <div class="form-group">
                 <label for="">Limit Form Type</label>
-                <div class="radio">
-                  <label><input type="radio" value="Labor Status Form" id="original" name="formType"> Original</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formType" type="checkbox" value="Labor Status Form" id="original">
+                  <label class="form-check-label" for="original">
+                    Original  
+                  </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Labor Adjustment Form" id="adjusted" name="formType"> Adjusted</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formType" type="checkbox" value="Labor Adjustment Form" id="adjusted">
+                  <label class="form-check-label" for="adjusted">
+                    Adjusted
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Labor Release Form" id="release" name="formType"> Release</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formType" type="checkbox" value="Labor Release Form" id="release">
+                  <label class="form-check-label" for="release">
+                    Release
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="Labor Overload Form" id="overload" name="formType"> Overload</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="formType" type="checkbox" value="Labor Overload Form" id="overload">
+                  <label class="form-check-label" for="overload">
+                    Overload
+                    </label> 
                 </div>
               </div>
               <div class="form-group">
                 <label for="">Limit Evaluation Status</label>
-                <div class="radio">
-                  <label><input type="radio" value="evalMidyearMissing" id="missingMidyearEvaluations" name="evaluations">Missing Midyear Evaluations</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="evaluations" type="checkbox" value="evalMidyearMissing" id="missingMidyearEvaluations">
+                  <label class="form-check-label" for="missingMidyearEvaluations">
+                    Missing Midyear Evaluations
+                  </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="evalMidyearComplete" id="completedMidyearEvaluations" name="evaluations">Completed Midyear Evaluations</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="evaluations" type="checkbox" value="evalMidyearComplete" id="completedMidyearEvaluations">
+                  <label class="form-check-label" for="completedMidyearEvaluations">
+                    Completed Midyear Evaluations
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="evalMissing" id="missingEvaluations" name="evaluations">Missing Final Evaluations</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="evaluations" type="checkbox" value="evalMissing" id="missingEvaluations">
+                  <label class="form-check-label" for="missingEvaluations">
+                    Missing Final Evaluations
+                    </label> 
                 </div>
-                <div class="radio">
-                  <label><input type="radio" value="evalComplete" id="completedEvaluations" name="evaluations">Completed Final Evaluations</label>
+                <div class="form-check">
+                  <input class="form-check-input" name="evaluations" type="checkbox" value="evalComplete" id="completedEvaluations">
+                  <label class="form-check-label" for="completedEvaluations">
+                    Completed Final Evaluations
+                    </label> 
                 </div>
               </div>
             </div>

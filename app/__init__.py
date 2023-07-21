@@ -59,6 +59,17 @@ from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
 from flask import g
+from app.models.user import User
+from app.login_manager import require_login
+@app.before_request
+def load_user():
+    try: 
+        g.currentUser = dict_to_model(User, session['currentUser'])
+    except Exception as e:
+        user = require_login()
+        session['currentUser'] = model_to_dict(user)
+        g.currentUser = user
+
 from app.models.term import Term
 from app.login_manager import getOpenTerm
 @app.before_request

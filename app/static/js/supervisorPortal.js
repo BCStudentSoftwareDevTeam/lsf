@@ -82,15 +82,15 @@ function runFormSearchQuery(cookieData='', button) {
   var formTypeList = [];
   var evaluationList = [];
 
-  $("input:radio[name='formStatus']:checked").each(function(){
+  $("input:checkbox[name='formStatus']:checked").each(function(){
       formStatusList.push($(this).val());
   });
 
-  $("input:radio[name='formType']:checked").each(function(){
+  $("input:checkbox[name='formType']:checked").each(function(){
       formTypeList.push($(this).val());
   });
 
-  $("input:radio[name='evaluations']:checked").each(function(){
+  $("input:checkbox[name='evaluations']:checked").each(function(){
       evaluationList.push($(this).val());
   });
   if (button) {
@@ -137,7 +137,7 @@ function runFormSearchQuery(cookieData='', button) {
                'evaluations': evaluationList
              };
 
-  setFormSearchValues(termCode)
+  setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList)
 
 
   data = JSON.stringify(queryDict)
@@ -146,20 +146,13 @@ function runFormSearchQuery(cookieData='', button) {
       data = cookieData
   }
 
-  function setFormSearchValues(termCode) {
-    console.log(termCode)
-    if (termCode == "currentTerm"){
-      $("#termSelect").val(currentTerm)
-      $("#termSelect").selectpicker("refresh");
-    }
-  }
-
+  
   let now = new Date();
   now.setMinutes(now.getMinutes() + 15);
-
+  
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, {expires: inAnHour})
-
+  
   if (evaluationList.length > 0 && termCode == "") {
     $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">Term must be selected with evaluation status.</div>');
     $("#flasher").delay(5000).fadeOut();
@@ -172,25 +165,45 @@ function runFormSearchQuery(cookieData='', button) {
     $("#download").prop('disabled', false);
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
-          responsive: true,
-          destroy: true,
-          searching: false,
-          processing: true,
-          serverSide: true,
-          paging: true,
-          lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-          pageLength: 25,
-          aaSorting: [[0, 'desc']],
-          columnDefs: [{
-            targets: -1,
-            orderable: false,
-          }],
-          ajax: {
+      responsive: true,
+      destroy: true,
+      searching: false,
+      processing: true,
+      serverSide: true,
+      paging: true,
+      lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+      pageLength: 25,
+      aaSorting: [[0, 'desc']],
+      columnDefs: [{
+        targets: -1,
+        orderable: false,
+      }],
+      ajax: {
               url: "/",
               type: "POST",
               data: {'data': data},
               dataSrc: "data",
+            }
+          });
         }
-    });
+      }
+      
+function setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList) {
+  console.log(termCode)
+  if (termCode == "currentTerm"){
+    $("#termSelect").val(currentTerm);
+    $("#termSelect").selectpicker("refresh");
+  }
+  if (supervisorID == "currentUser"){
+    $("#supervisorSelect").val(currentUser);
+    $("#supervisorSelect").selectpicker("refresh");
+  }
+  if (evaluationList == "allEvalMissing"){
+    $("input:checkbox[value='evalMissing']").prop('checked', true);
+    $("input:checkbox[value='evalMidyearMissing']").prop('checked', true);
+    
+  }
+  if (formStatusList == "Pending"){
+    $("input:checkbox[value='Pending']").prop('checked', true);
   }
 }
