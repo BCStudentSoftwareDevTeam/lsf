@@ -37,7 +37,7 @@ $(document).ready(function(){
     })
   })
   $('#clearSelectionsButton').on('click', function(){
-    $("input:radio:checked").removeAttr("checked");
+    $("input:checkbox").removeAttr("checked");
     clearDropdown()
     });
     
@@ -73,6 +73,8 @@ function clearDropdown(){
 };
 
 function runFormSearchQuery(cookieData='', button) {
+  $("input:checkbox").removeAttr("checked");
+  Cookies.remove('lsfSearchResults')
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
