@@ -107,9 +107,9 @@ function runFormSearchQuery(cookieData='', button) {
       departmentID = ""
       supervisorID = "currentUser"
       studentID = ""
-      formStatusList = []
+      formStatusList = ["Approved", "Approved Reluctantly"]
       formType  = []
-      evaluationList = ["allEvalMissing"]
+      evaluationList = ["evalMissing", "evalMidyearMissing"]
     } else if (button=="pendingForms") {
       termCode = "currentTerm"
       departmentID = ""
@@ -136,7 +136,6 @@ function runFormSearchQuery(cookieData='', button) {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
-
   setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList)
 
 
@@ -146,10 +145,6 @@ function runFormSearchQuery(cookieData='', button) {
       data = cookieData
   }
 
-  
-  let now = new Date();
-  now.setMinutes(now.getMinutes() + 15);
-  
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, {expires: inAnHour})
   
@@ -189,7 +184,6 @@ function runFormSearchQuery(cookieData='', button) {
       }
       
 function setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList) {
-  console.log(termCode)
   if (termCode == "currentTerm"){
     $("#termSelect").val(currentTerm);
     $("#termSelect").selectpicker("refresh");
@@ -198,12 +192,8 @@ function setFormSearchValues(termCode, supervisorID, evaluationList, formStatusL
     $("#supervisorSelect").val(currentUser);
     $("#supervisorSelect").selectpicker("refresh");
   }
-  if (evaluationList == "allEvalMissing"){
-    $("input:checkbox[value='evalMissing']").prop('checked', true);
-    $("input:checkbox[value='evalMidyearMissing']").prop('checked', true);
-    
-  }
-  if (formStatusList == "Pending"){
-    $("input:checkbox[value='Pending']").prop('checked', true);
-  }
+  $(evaluationList.concat(formStatusList)).each(function(i, value){
+    $(`input:checkbox[value='${value}']`).prop('checked', true);
+  })
+
 }

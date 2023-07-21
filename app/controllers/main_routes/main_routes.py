@@ -61,15 +61,16 @@ def supervisorPortal():
         deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select()
-                            .join_from(Supervisor, LaborStatusForm)
-                            .join_from(LaborStatusForm, Department)
-                            .where(Department.DEPT_NAME.in_(deptNames))
-                            .distinct())
+                                 .join_from(Supervisor, LaborStatusForm)
+                                 .join_from(LaborStatusForm, Department)
+                                 .where(Department.DEPT_NAME.in_(deptNames))
+                                 .distinct())
+        
         students = (Student.select()
-                    .join_from(Student, LaborStatusForm)
-                    .join_from(LaborStatusForm, Department)
-                    .where(Department.DEPT_NAME.in_(deptNames))
-                    .distinct())
+                           .join_from(Student, LaborStatusForm)
+                           .join_from(LaborStatusForm, Department)
+                           .where(Department.DEPT_NAME.in_(deptNames))
+                           .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
 
@@ -113,84 +114,84 @@ def getDatatableData(request):
                             10: StudentLaborEvaluation.ID}
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
-        termCode = Term.select(Term.termCode).where(Term.termState).get()
+        termCode = g.openTerm
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
     if supervisorId == "currentUser":
-        supervisorId = Supervisor.select(Supervisor.ID).where(Supervisor.ID == currentUser.supervisor).get()
+        supervisorId = g.currentUser.supervisor
     studentId = queryFilterDict.get('studentID', "")
     formStatusList = queryFilterDict.get('formStatus', "") # form status radios
     formTypeList = queryFilterDict.get('formType', "") # form type radios
     evaluationStatus = queryFilterDict.get('evaluations', "") # evaluation radios
 
     fieldValueMap = {Term.termCode: termCode,
-                     Department.departmentID: departmentId,
-                     Student.ID: studentId,
-                     Supervisor.ID: supervisorId,
-                     FormHistory.status: formStatusList,
-                     FormHistory.historyType: formTypeList,
-                     StudentLaborEvaluation.ID: evaluationStatus}
-
+                        Department.departmentID: departmentId,
+                        Student.ID: studentId,
+                        Supervisor.ID: supervisorId,
+                        FormHistory.status: formStatusList,
+                        FormHistory.historyType: formTypeList,
+                        StudentLaborEvaluation.ID: evaluationStatus}
     clauses = []
 
     global sleJoin
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
-            # "is" is used to compare the two peewee objects as opposed to "==" operator.
-            if field is FormHistory.historyType:
-                for val in value:
-                    clauses.append(field == val)
-            elif field is FormHistory.status:
-                for val in value:
-                    clauses.append(field == val)
+            if field is FormHistory.historyType or field is FormHistory.status:
+                clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
-                sleJoin = value[0]       # LSF exists but SLE does not (LOJ)
+                sleJoin = value[0]       
             else:
                 clauses.append(field == value)
-
+   
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
     global formSearchResults
     formSearchResults = (FormHistory.select()
-                        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                        .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
-                        .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
-                        .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
-                        .join(User, on=(FormHistory.createdBy == User.userID)))
+                                    .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                                    .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                                    .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
+                                    .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
+                                    .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
+                                    .join(User, on=(FormHistory.createdBy == User.userID)))
     if clauses:
-       formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
-
+        formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
     if not currentUser.isLaborAdmin:
         supervisorDepartments = getDepartmentsForSupervisor(currentUser)
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
     if sleJoin:
-        if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
-            #grab all the midyear evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == True, StudentLaborEvaluation.is_submitted == True)
-        elif sleJoin == "allEvalMissing":
-            #grab all evaluations for term
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_submitted == True)
-        else:
-            #grab all the final evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == False, StudentLaborEvaluation.is_submitted == True)
+        midYearEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                    .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                           StudentLaborEvaluation.is_midyear_evaluation == True, 
+                                                           StudentLaborEvaluation.is_submitted == True))
+        
+        allEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                       StudentLaborEvaluation.is_submitted == True))
+        
+        finalEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                  .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                         StudentLaborEvaluation.is_midyear_evaluation == False, 
+                                                         StudentLaborEvaluation.is_submitted == True))
         if sleJoin == "evalMidyearMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+            formSearchResults = formSearchResults.where(FormHistory.formHistoryID.not_in(midYearEvaluations))
         elif sleJoin == "evalMidyearComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(midYearEvaluations))
         elif sleJoin == "evalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(allEvaluations))
         elif sleJoin == "evalComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(allEvaluations))
         elif sleJoin == "allEvalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(finalEvaluations))
+    
     recordsTotal = len(formSearchResults)
+    
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
     if order == "desc":
         filteredSearchResults = formSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
+    
     else:
         filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
 
