@@ -75,7 +75,6 @@ def supervisorPortal():
 
     return render_template('main/supervisorPortal.html',
                             terms = terms,
-                            blooTerm = g.openTerm, 
                             supervisors = supervisors,
                             allSupervisors = allSupervisors,
                             students = students,

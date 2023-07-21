@@ -53,7 +53,6 @@ $(document).ready(function(){
 // listening for preset button clicks.
 $('#mySupervisees').on('click', function(){
   runFormSearchQuery(cookieData='', "mySupervisees");
-  console.log($(this).data())
 });
 $('#evaluationsMissing').on('click', function(){
   runFormSearchQuery(cookieData='', "missingEvals");
@@ -128,7 +127,6 @@ function runFormSearchQuery(cookieData='', button) {
       formType  = []
       evaluationList = []
     }
-
   }
   queryDict = {'termCode': termCode,
                'departmentID': departmentID,
@@ -138,10 +136,22 @@ function runFormSearchQuery(cookieData='', button) {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
+
+  setFormSearchValues(termCode)
+
+
   data = JSON.stringify(queryDict)
-  console.log(data)
+
   if (cookieData.length) {
       data = cookieData
+  }
+
+  function setFormSearchValues(termCode) {
+    console.log(termCode)
+    if (termCode == "currentTerm"){
+      $("#termSelect").val(currentTerm)
+      $("#termSelect").selectpicker("refresh");
+    }
   }
 
   let now = new Date();

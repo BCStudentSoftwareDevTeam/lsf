@@ -14,7 +14,9 @@
   <script type="text/javascript" src="{{url_for('static', filename='js/allPendingForms.js')}}?u={{lastStaticUpdate}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/supervisorPortal.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script>var currentTerm = {{g.openTerm}}</script>
 {% endblock %}
+
 
 {% block app_content %}
 <div align="center">
@@ -29,7 +31,7 @@
 </div>
 <br>
 <div class="row col-md-12" align="center">
-  <button class="btn btn-primary" type="button" data-currentTerm="{{blooTerm}}" id="mySupervisees">Current Students</button>
+  <button class="btn btn-primary" type="button" id="mySupervisees">Current Students</button>
   <button class="btn btn-primary" type="button" id="evaluationsMissing">Evaluations Missing</button>
   <button class="btn btn-primary" type="button" id="superviseesPendingForms">Pending Forms</button>
 </div>
@@ -38,7 +40,7 @@
 <div class="container-fluid fs-1" align="center">
   <div id="formSearchAccordion">
     <h1 class="fs-1" data-toggle="collapse">Form Search</h1>
-      <div class="card-body">
+      <div class="card-body" >
       <div class="row col-md-12" align="left">
         <br>
         <form id="supervisorPortalForm">
@@ -55,7 +57,7 @@
                           title="All terms">
                     <option value="">All terms</option>
                     {% for term in terms %}
-                      <option value="{{term.termCode.termCode}}" id="termOption">
+                      <option value="{{term.termCode}}" data-isOpen="{{g.openTerm == term.termCode}}">
                         {{term.termCode.termName}}
                       </option>
                     {% endfor %}
