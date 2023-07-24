@@ -12,6 +12,9 @@ $(document).ready(function(){
   $('#addUserToDept').on('click', function() {
       $("#addSupervisorToDeptModal").modal("show");
   })
+  if (! $("#formSearchTable").DataTable().data().count()){
+    $("#download").prop('disabled', false);
+  }
 
   $('#addUser').on('click', function() {
       let supervisor = $('#supervisorModalSelect :selected').val()
@@ -73,7 +76,6 @@ function clearDropdown(){
 };
 
 function runFormSearchQuery(cookieData='', button) {
-  $("input:checkbox").removeAttr("checked");
   Cookies.remove('lsfSearchResults')
 
   var termCode = $("#termSelect").val();
@@ -140,8 +142,8 @@ function runFormSearchQuery(cookieData='', button) {
              };
   setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList)
 
-
   data = JSON.stringify(queryDict)
+  console.log(data)
 
   if (cookieData.length) {
       data = cookieData
@@ -159,7 +161,7 @@ function runFormSearchQuery(cookieData='', button) {
     $("#flasher").delay(3000).fadeOut();
   } else {
     $("#formSearchAccordion").accordion({ collapsible: true, active: false});
-    $("#download").prop('disabled', false);
+    
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
       responsive: true,
