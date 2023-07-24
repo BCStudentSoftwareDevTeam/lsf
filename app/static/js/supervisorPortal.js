@@ -193,26 +193,17 @@ function setFormSearchValues(){
 
   console.log(cookieData)
   if (cookieData.termCode == "currentTerm"){
-    $("#termSelect").val(g_currentTerm);
-    $("#termSelect").selectpicker("refresh");
+    $("#termSelect").selectpicker("val", g_currentTerm);
   } else {
-    $("#termSelect").val(cookieData.termCode);
-    $("#termSelect").selectpicker("refresh");
+    $("#termSelect").selectpicker("val", cookieData.termCode);
   }
-
   if (cookieData.supervisorID == "currentUser"){
-    $("#supervisorSelect").val(g_currentUser);
-    $("#supervisorSelect").selectpicker("refresh");
+    $("#supervisorSelect").selectpicker("val", g_currentUser);
   } else {
-    $("#supervisorSelect").val(cookieData.supervisorID);
-    $("#supervisorSelect").selectpicker("refresh");
-  }
-  
-  $("#departmentSelect").val(cookieData.departmentID);
-  $("#departmentSelect").selectpicker("refresh");
-  $("#studentSelect").val(cookieData.studentID);
-  $("#studentSelect").selectpicker("refresh");
-
+    $("#supervisorSelect").selectpicker("val", cookieData.supervisorID);
+  }  
+  $("#departmentSelect").selectpicker("val", cookieData.departmentID);
+  $("#studentSelect").selectpicker("val", cookieData.studentID);
 
   $(cookieData.evaluations).each(function(i, value){
     $(`input:checkbox[value='${value}']`).prop('checked', true);
