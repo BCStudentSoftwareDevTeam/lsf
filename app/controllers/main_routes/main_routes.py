@@ -91,6 +91,10 @@ def getDatatableData(request):
     '''
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
+    global sleJoin
+    if sleJoin:
+        sleJoin = False
+    
     currentUser = require_login()
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
@@ -125,15 +129,14 @@ def getDatatableData(request):
     evaluationStatus = queryFilterDict.get('evaluations', "") # evaluation radios
 
     fieldValueMap = {Term.termCode: termCode,
-                        Department.departmentID: departmentId,
-                        Student.ID: studentId,
-                        Supervisor.ID: supervisorId,
-                        FormHistory.status: formStatusList,
-                        FormHistory.historyType: formTypeList,
-                        StudentLaborEvaluation.ID: evaluationStatus}
+                     Department.departmentID: departmentId,
+                     Student.ID: studentId,
+                     Supervisor.ID: supervisorId,
+                     FormHistory.status: formStatusList,
+                     FormHistory.historyType: formTypeList,
+                     StudentLaborEvaluation.ID: evaluationStatus}
     clauses = []
-
-    global sleJoin
+    
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
@@ -183,6 +186,9 @@ def getDatatableData(request):
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(allEvaluations))
         elif sleJoin == "allEvalMissing":
             formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(finalEvaluations))
+
+        if sleJoin =="evalMidyearMissing" or sleJoin == "evalMissing" or sleJoin == "allEvalMissing":
+             formSearchResults = formSearchResults.select().where(FormHistory.status == "Approved" or FormHistory.status == "Approved Reluctantly")
     
     recordsTotal = len(formSearchResults)
     

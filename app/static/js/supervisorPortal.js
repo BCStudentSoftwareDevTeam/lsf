@@ -1,6 +1,7 @@
 $(document).ready(function(){
   if ((document.cookie).includes("lsfSearchResults=")) {
-        runFormSearchQuery(Cookies.get('lsfSearchResults'));
+    runFormSearchQuery(Cookies.get('lsfSearchResults'));
+    setSearchAfterPageReload();
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
@@ -12,9 +13,6 @@ $(document).ready(function(){
   $('#addUserToDept').on('click', function() {
       $("#addSupervisorToDeptModal").modal("show");
   })
-  if (! $("#formSearchTable").DataTable().data().count()){
-    $("#download").prop('disabled', false);
-  }
 
   $('#addUser').on('click', function() {
       let supervisor = $('#supervisorModalSelect :selected').val()
@@ -76,7 +74,6 @@ function clearDropdown(){
 };
 
 function runFormSearchQuery(cookieData='', button) {
-  Cookies.remove('lsfSearchResults')
 
   var termCode = $("#termSelect").val();
   var departmentID = $("#departmentSelect").val();
@@ -142,8 +139,8 @@ function runFormSearchQuery(cookieData='', button) {
              };
   setFormSearchValues(termCode, supervisorID, evaluationList, formStatusList)
 
+
   data = JSON.stringify(queryDict)
-  console.log(data)
 
   if (cookieData.length) {
       data = cookieData
@@ -161,7 +158,8 @@ function runFormSearchQuery(cookieData='', button) {
     $("#flasher").delay(3000).fadeOut();
   } else {
     $("#formSearchAccordion").accordion({ collapsible: true, active: false});
-    
+    $("#download").prop('disabled', false);
+
     $('#formSearchTable').show();
     var formSearchInit = $('#formSearchTable').DataTable({
       responsive: true,
@@ -200,4 +198,27 @@ function setFormSearchValues(termCode, supervisorID, evaluationList, formStatusL
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
 
+}
+
+function setSearchAfterPageReload() {
+  const cookieData = Cookies.get('lsfSearchResults');
+  if (cookieData) {
+    const cookieSearchData = JSON.parse(cookieData);
+
+    // Set select dropdown values
+    $("#termSelect").val(cookieSearchData.termCode);
+    $("#departmentSelect").val(cookieSearchData.departmentID);
+    $("#supervisorSelect").val(cookieSearchData.supervisorID);
+    $("#studentSelect").val(cookieSearchData.studentID);
+
+    cookieSearchData.formStatus.forEach(function (formStatusValue) {
+      $(`input:checkbox[name='formStatus'][value='${formStatusValue}']`).prop("checked", true);
+    });
+    cookieSearchData.formType.forEach(function (formTypeValue) {
+      $(`input:checkbox[name='formType'][value='${formTypeValue}']`).prop("checked", true);
+    });
+    cookieSearchData.evaluations.forEach(function (formEvaluationValue) {
+      $(`input:checkbox[name='evaluations'][value='${formEvaluationValue}']`).prop("checked", true);
+    });
+  }
 }
