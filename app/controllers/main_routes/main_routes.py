@@ -3,6 +3,7 @@ import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
 from peewee import JOIN, prefetch
+from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -43,7 +44,7 @@ def supervisorPortal():
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
-
+    
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     allSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
@@ -119,6 +120,8 @@ def getDatatableData(request):
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
         termCode = g.openTerm
+    elif termCode == "activeTerms":
+        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= datetime.now()))
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
     if supervisorId == "currentUser":
@@ -140,7 +143,7 @@ def getDatatableData(request):
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
-            if field is FormHistory.historyType or field is FormHistory.status:
+            if type(value) is list:
                 clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
                 sleJoin = value[0]       

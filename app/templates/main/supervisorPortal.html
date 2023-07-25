@@ -52,12 +52,9 @@
                 <br>
                 <label for="termSelect">Term</label>
                 <div>
-                  <select class="selectpicker"
-                          name='term'
-                          id='termSelect'
-                          data-live-search='true'
-                          title="All terms">
+                  <select class="selectpicker" name='term' id='termSelect' data-live-search='true' title="All terms">
                     <option value="">All terms</option>
+                    <option value="activeTerms">All Active Terms</option>
                     {% for term in terms %}
                       <option value="{{term.termCode}}">
                         {{term.termCode.termName}}
@@ -68,51 +65,43 @@
               </div>
               <div class="form-group">
                 <label for="departmentSelect">Department</label>
-                <div><select class="selectpicker"
-                        id="departmentSelect"
-                        data-live-search='true'
-                        title="Department">
-                  {% if departments|count != 1%}
-                        <option value="" selected>All departments</option>
-                  {% endif %}
-                  {% for department in departments %}
-                       <!-- We want to either select the first option, or the option that matches the department -->
-                     <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
-                  {% endfor %}
-                  
-                </select></div>
+                <div>
+                  <select class="selectpicker" id="departmentSelect" data-live-search='true' title="Department">
+                    {% if departments|count != 1%}
+                      <option value="" selected>All departments</option>
+                    {% endif %}
+                    {% for department in departments %}
+                      <!-- We want to either select the first option, or the option that matches the department -->
+                      <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
               <div class="form-group">
                 <label for="supervisorSelect">Supervisor</label>
-                <div class="dropdown"><select class="selectpicker"
-                        name='supervisor'
-                        id='supervisorSelect'
-                        data-live-search='true'
-                        title="All supervisors">
-                        <option value="">All supervisors</option>
+                <div class="dropdown">
+                  <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search='true' title="All supervisors">
+                    <option value="">All supervisors</option>
                     {% for supervisor in supervisors  %}
-                      <option value="{{supervisor.ID}}"
-                              data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
+                      <option value="{{supervisor.ID}}" data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
                         {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
                       </option>
                     {% endfor %}
-                </select></div>
+                  </select>
+                </div>
               </div>
               <div class="form-group">
                 <label for="studentSelect">Student</label>
-                <div><select class="selectpicker"
-                        name='student'
-                        id='studentSelect'
-                        data-live-search='true'
-                        title="All students">
-                        <option value="">All students</option>
-                      {% for student in students %}
-                        <option value="{{student.ID}}"
-                                data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
-                          {{student.FIRST_NAME}} {{student.LAST_NAME}}
-                       </option>
-                      {% endfor %}
-                </select></div>
+                <div>
+                  <select class="selectpicker"name='student' id='studentSelect' data-live-search='true' title="All students">
+                    <option value="">All students</option>
+                    {% for student in students %}
+                      <option value="{{student.ID}}" data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
+                        {{student.FIRST_NAME}} {{student.LAST_NAME}}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
               <br><br>
               <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch" id="formSearchButton">Search</button>

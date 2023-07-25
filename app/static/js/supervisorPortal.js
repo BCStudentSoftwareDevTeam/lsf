@@ -1,7 +1,7 @@
 $(document).ready(function(){
   if ((document.cookie).includes("lsfSearchResults=")) {
     runFormSearchQuery(Cookies.get('lsfSearchResults'));
-    setFormSearchValues()
+    setFormSearchValues(JSON.parse(Cookies.get('lsfSearchResults')))
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
@@ -9,7 +9,6 @@ $(document).ready(function(){
   }
   $('#formSearchButton').on('click', function(){
     runFormSearchQuery(cookieData='');
-    setFormSearchValues()
 
   });
   $('#addUserToDept').on('click', function() {
@@ -57,17 +56,14 @@ $(document).ready(function(){
 $('#mySupervisees').on('click', function(){
   $("input:checkbox").removeAttr("checked");
   runFormSearchQuery(cookieData='', "mySupervisees");
-  setFormSearchValues()
 });
 $('#evaluationsMissing').on('click', function(){
   $("input:checkbox").removeAttr("checked");
   runFormSearchQuery(cookieData='', "missingEvals");
-  setFormSearchValues()
 });
 $('#superviseesPendingForms').on('click', function(){
   $("input:checkbox").removeAttr("checked");
   runFormSearchQuery(cookieData='', "pendingForms");
-  setFormSearchValues()
 });
 $('#currentTerm').on('click', function(){
   runFormSearchQuery(cookieData='', "currentTerm");
@@ -102,6 +98,7 @@ function runFormSearchQuery(cookieData='', button) {
   $("input:checkbox[name='evaluations']:checked").each(function(){
       evaluationList.push($(this).val());
   });
+
   if (button) {
     if (button=="mySupervisees") {
       termCode = "currentTerm"
@@ -146,6 +143,7 @@ function runFormSearchQuery(cookieData='', button) {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
+  setFormSearchValues(queryDict)
 
   data = JSON.stringify(queryDict)
 
@@ -156,11 +154,10 @@ function runFormSearchQuery(cookieData='', button) {
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, {expires: inAnHour})
 
-  createDataTable()
+  createDataTable(data)
 }
 
-function createDataTable(){
-  data = Cookies.get('lsfSearchResults')
+function createDataTable(data){
   
   $("#formSearchAccordion").accordion({ collapsible: true, active: false});
   $("#download").prop('disabled', false);
@@ -188,30 +185,28 @@ function createDataTable(){
         });
 }
       
-function setFormSearchValues(){
-  cookieData = JSON.parse(Cookies.get('lsfSearchResults'))
-
-  console.log(cookieData)
-  if (cookieData.termCode == "currentTerm"){
+function setFormSearchValues(searchDict){
+  
+  if (searchDict.termCode == "currentTerm"){
     $("#termSelect").selectpicker("val", g_currentTerm);
   } else {
-    $("#termSelect").selectpicker("val", cookieData.termCode);
+    $("#termSelect").selectpicker("val", searchDict.termCode);
   }
-  if (cookieData.supervisorID == "currentUser"){
+  if (searchDict.supervisorID == "currentUser"){
     $("#supervisorSelect").selectpicker("val", g_currentUser);
   } else {
-    $("#supervisorSelect").selectpicker("val", cookieData.supervisorID);
+    $("#supervisorSelect").selectpicker("val", searchDict.supervisorID);
   }  
-  $("#departmentSelect").selectpicker("val", cookieData.departmentID);
-  $("#studentSelect").selectpicker("val", cookieData.studentID);
+  $("#departmentSelect").selectpicker("val", searchDict.departmentID);
+  $("#studentSelect").selectpicker("val", searchDict.studentID);
 
-  $(cookieData.evaluations).each(function(i, value){
+  $(searchDict.evaluations).each(function(i, value){
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
-  $(cookieData.formType).each(function(i, value){
+  $(searchDict.formType).each(function(i, value){
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
-  $(cookieData.formStatus).each(function(i, value){
+  $(searchDict.formStatus).each(function(i, value){
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
 }
