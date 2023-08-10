@@ -3,10 +3,12 @@
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="/static/css/laborStatusForm.css?u={{lastStaticUpdate}}" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.21/b-1.6.2/datatables.min.css"/>
 {% endblock %}
 
 ​{% block scripts %}
 {{super()}}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.21/b-1.6.2/datatables.min.js"></script>
 <script type=text/javascript src="{{url_for('static', filename='js/laborStatusForm.js')}}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
@@ -167,8 +169,8 @@
           {% endfor %}
         </select>
   </div>
-  <div class= "form-group " id="Position">
-      <!--selectpicker for positio3-->
+  <div class= "form-group " id="positionDiv">
+      <!--selectpicker for position-->
       <label for="position"><span class="tooltip-right" data-tooltip="Required">Position (WLS)<span class="required-mark">*</span></span></label>
         <select class="selectpicker disable"
                 name='position'
@@ -208,7 +210,7 @@
             {% if forms %} <option value="{{forms.weeklyHours}}" selected >{{forms.weeklyHours}}</option> {% endif %}
           </select>​
     </div>
-    <div id="contractHours" class= "form-group ">
+    <div id="contractHours" class= "form-group " hidden>
     <!-- Contract hours for breaks -->
        <label for="selectedContractHours"><span class="tooltip-right" data-tooltip="Required">Total Contract Hours<span class="required-mark">*</span></span></label>
          <input class="form-control quantity disable"
@@ -231,22 +233,33 @@
           value = "formSubmission"
           onclick="checkIfFreshman();">Add Student
   </button>
- <strong>*Want to add multiple students for this supervisor? Add them now!</strong>
 </div>
   <br />
-
-    <table class="table table-striped" id="mytable">
+    <table class="table table-striped" class="display" id="lsfTable">
       <thead>
         <tr>
-          <th>Student </th>
+          <th id ='studentName'>Student </th>
           <th id = "positionTable">Position (WLS) </th>
           <th id = "jobTable">Job Type </th>
           <th id = "hoursTable">Hours</th>
+          <th id = "term">Term</th>
           <th id = "datesTable">Contract Dates</th>
           <th id = "notes">Notes</th>
-          <th>Remove</th>
+          <th id = "edit">Edit</th>
         </tr>
-      </thead>
+        </thead>
+        {% for form in supervisorForms %}
+        <tr>
+          <td>{{form.formID.studentName}}</td>
+          <td>{{form.formID.POSN_CODE}} ({{form.formID.WLS}})</td>
+          <td>{{form.formID.jobType}}</td>
+          <td>{{form.formID.weeklyHours}}</td>
+          <td>{{form.formID.termCode.termName}}</td>
+          <td>{{form.formID.startDate}} - {{form.formID.endDate}}</td>
+          <td><a href="#\" data-toggle="modal" tabindex="0" aria-label="View Notes" onclick = "showNotesModal(this)" id= "nGlyphicon" ><span class="glyphicon glyphicon-edit"></span></a></td>
+          <td><a href="/alterLSF/{{form.formID.laborStatusFormID}}"><button type="button" class="btn btn-primary">Edit</button></a></td>
+        </tr>
+        {% endfor %}
       <tbody id='tbodyid'></tbody>
     </table>
   <div class="col-md-12" id="reviewButton">
