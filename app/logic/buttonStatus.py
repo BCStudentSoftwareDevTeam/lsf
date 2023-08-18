@@ -64,21 +64,15 @@ class ButtonStatus:
         # Student Options
         ############################################################
         if currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
-
             # students get no buttons except "show evaluation"
-            if historyForm.historyType.historyTypeName == "Labor Status Form" or historyForm.historyType.historyTypeName == "Labor Overload Form" :
-                if historyForm.status.statusName == "Pending" or historyForm.status.statusName == "Pre-Student Approval":
-                    self.withdraw = True
-                    self.num_buttons = 1
-            else:
-                self.rehire = False
-                self.release = False
-                self.withdraw = False
-                self.adjust = False
-                self.correction = False
-                self.evaluate = False
-                self.set_evaluation_button( historyForm, currentUser)
-                self.num_buttons = 1
+            self.rehire = False
+            self.release = False
+            self.withdraw = False
+            self.adjust = False
+            self.correction = False
+            self.evaluate = False
+            self.set_evaluation_button( historyForm, currentUser)
+            self.num_buttons = 1
 
         ############################################################
         # Labor Admin and Supervisor Options

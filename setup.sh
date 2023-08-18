@@ -14,16 +14,16 @@ fi
 # Create a virtual environment for dependencies
 if [ ! -d venv ]
 then
-  python3 -m venv venv
+  python -m venv venv
 fi
 . venv/bin/activate
 
 # upgrade pip
-python3 -m pip install --upgrade pip #added python-m for pip installs (source setup overwrite for venv)
+python -m pip install --upgrade pip #added python-m for pip installs (source setup overwrite for venv)
 
 # install requirements
-python3 -m pip install wheel
-python3 -m pip install -r requirements.txt
+python -m pip install wheel
+python -m pip install -r requirements.txt
 # To generate a new requirements.txt file, run "pip freeze > requirements.txt"
 
 echo

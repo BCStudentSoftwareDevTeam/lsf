@@ -31,13 +31,22 @@ def update_records(table, people):
         if count:
             print("Updating",bnumber,"name to",preferred)
 
+def alphaRange(start,end):
+    return [chr(i) for i in range(ord(start), ord(end)+1)]
+
 def fetch_descriptions(conn, descriptions):
-    conn.search('dc=berea,dc=edu',
-      f"(|" + "".join(map(lambda s: f"(description=*{s}*)", descriptions)) + ")",
-      attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
-      )
-    print(f"Found {len(conn.entries)} {descriptions} in the AD");
-    return conn.entries
+    # we have to split the query up alphabetically so we don't go over 1500 results
+    people = []
+    for letters in [alphaRange('a','e'),alphaRange('f','n'),alphaRange('o','z')]:
+        letterQuery = f"(|" + "".join(map(lambda s: f"(givenname={s}*)", letters)) + ")"
+        descriptionQuery = f"(|" + "".join(map(lambda s: f"(description=*{s}*)", descriptions)) + ")"
+        conn.search('dc=berea,dc=edu', f"(&{letterQuery}{descriptionQuery})",
+          attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
+          )
+        print(f"Found {len(conn.entries)} {descriptions} {letters[0]}-{letters[-1]} in AD");
+        people += conn.entries
+
+    return people
 
 def main(user, password):
     connection = connect_to_server(user, password)
