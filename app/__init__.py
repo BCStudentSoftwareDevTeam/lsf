@@ -56,6 +56,11 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
+from app.logic.celtsPositionEndpoint import getCeltsLaborPosition
+@app.route('/getCeltsPositionInfo', methods=['GET'])
+def getCeltsPositionInfo():
+    return getCeltsLaborPosition()
+
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])
