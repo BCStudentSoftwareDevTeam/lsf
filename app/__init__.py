@@ -57,8 +57,9 @@ from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
 from app.logic.celtsPositionEndpoint import getCeltsLaborPosition
-@app.route('/getCeltsPositionInfo', methods=['GET'])
+@app.route('/api/getPositionInfo', methods=['GET'])
 def getCeltsPositionInfo():
+    # TODO: Need to add authentication
     return getCeltsLaborPosition()
 
 @app.context_processor
