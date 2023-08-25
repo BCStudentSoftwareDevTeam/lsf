@@ -5,6 +5,11 @@ from app import app
 from app.models.laborStatusForm import LaborStatusForm
 
 def getCeltsLaborPosition():
+    '''
+    Returns relevant labor information for CELTS labor students to be sent to CELTS-Link
+    '''
+    # TODO: Need to figure out which labor positions are CELTS and what info they want.
+    # TODO: Write test 
     celtsLabor = (LaborStatusForm.select(LaborStatusForm.studentName, LaborStatusForm.termCode_id, LaborStatusForm.POSN_TITLE, LaborStatusForm.POSN_CODE)
                                  .where(LaborStatusForm.POSN_CODE == 'S41119'))
     
