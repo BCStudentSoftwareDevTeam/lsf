@@ -7,40 +7,40 @@
   <button type="button" class="close" data-dismiss="modal">&times;</button>
 
   <span style="text-align: right;"><button type="button" class="btn btn-default btn col-sm-2" id="print" onclick="fillPDF({{statusForm.laborStatusFormID}})"><span class="glyphicon glyphicon-print"></span> Print</button></span>
-  <span class="h3 col-sm-9 modalHeader">
+  <span class="h3 col-sm-9 modalHeader" id="studentDetails">
       {{statusForm.studentSupervisee.FIRST_NAME}} {{statusForm.studentSupervisee.LAST_NAME}} <a href="mailto:{{statusForm.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
       <br><span class="h4">{{statusForm.studentSupervisee.ID}}</span>
       {% if statusForm.studentSupervisee.FIRST_NAME + " " + statusForm.studentSupervisee.LAST_NAME != statusForm.studentName %}
       <div class="original-name">Originally filed under "{{statusForm.studentName}}"</div>
       {% endif %}
   </span>
-
+  <div class="btn btn-primary" id="easyEmail" onClick="mailPositionToLabor()"><span>Email Labor</span></div>
 </div>
 <div class="modal-body" id="modalid">
 
   <dl class="row">
     <dt class="col-sm-3">Term</dt>
-    <dd class="col-sm-9">{{statusForm.termCode.termName}}</dd>
+    <dd class="col-sm-9" id="laborTerm">{{statusForm.termCode.termName}}</dd>
 
     <dt class="col-sm-3">Department (ID)</dt>
-    <dd class="col-sm-9">{{statusForm.department.DEPT_NAME}} ({{statusForm.department.ORG}}-{{statusForm.department.ACCOUNT}})</dd>
+    <dd class="col-sm-9" id="laborDepartment">{{statusForm.department.DEPT_NAME}} ({{statusForm.department.ORG}}-{{statusForm.department.ACCOUNT}})</dd>
 
     <dt class="col-sm-3">Supervisor</dt>
-    <dd class="col-sm-9">{{statusForm.supervisor.FIRST_NAME}} {{statusForm.supervisor.LAST_NAME}} - {{statusForm.supervisor.ID}} <a href="mailto:{{statusForm.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a></dd>
+    <dd class="col-sm-9" id="laborSupervisor">{{statusForm.supervisor.FIRST_NAME}} {{statusForm.supervisor.LAST_NAME}} - {{statusForm.supervisor.ID}} <a href="mailto:{{statusForm.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a></dd>
 
     <dt class="col-sm-3">Job Type (Hours)</dt>
-    <dd class="col-sm-9">{{statusForm.jobType}}
+    <dd class="col-sm-9" id="laborJobType">{{statusForm.jobType}}
       ({% if statusForm.weeklyHours == None %}{{statusForm.contractHours}}{% else %}{{statusForm.weeklyHours}}{% endif %})
     </dd>
 
     <dt class="col-sm-3">Position (WLS)</dt>
-    <dd class="col-sm-9">{{statusForm.POSN_CODE}}  {{statusForm.POSN_TITLE}} ({{statusForm.WLS}})</dd>
+    <dd class="col-sm-9" id="laborPosition">{{statusForm.POSN_CODE}}  {{statusForm.POSN_TITLE}} ({{statusForm.WLS}})</dd>
 
     <dt class="col-sm-3">Start Date</dt>
-    <dd class="col-sm-9">{{statusForm.startDate.strftime('%m-%d-%Y')}}</dd>
+    <dd class="col-sm-9" id="laborStartDate">{{statusForm.startDate.strftime('%m-%d-%Y')}}</dd>
 
     <dt class="col-sm-3">End Date</dt>
-    <dd class="col-sm-9">{{statusForm.endDate.strftime('%m-%d-%Y')}}</dd>
+    <dd class="col-sm-9" id="laborEndDate">{{statusForm.endDate.strftime('%m-%d-%Y')}}</dd>
   </dl>
 
   <hr>
