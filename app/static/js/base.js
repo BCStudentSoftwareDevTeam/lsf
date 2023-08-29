@@ -1,7 +1,6 @@
-/*$(document).ready(function () {
-    // Alert categories: https://getbootstrap.com/docs/4.0/components/alerts/
-    category = "danger";
-    msg = "An example flash message generated using jquery";
-    x = $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
-})
-*/
+function msgFlash(flash_message, status){
+    var category = (status === "success") ? "success" : ((status === "fail") ? "danger" : "warning");
+    $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+flash_message+'</div>');
+    $("#flasher").delay(5000).fadeOut();
+}
+
