@@ -1,14 +1,17 @@
 $(document).ready(function(){
   if ((document.cookie).includes("lsfSearchResults=")) {
-    runFormSearchQuery(Cookies.get('lsfSearchResults'));
-    setFormSearchValues(JSON.parse(Cookies.get('lsfSearchResults')))
+    cookieStr = Cookies.get('lsfSearchResults')
+    createDataTable(cookieStr)
+    setFormSearchValues(JSON.parse(cookieStr))
+
   } else {
       $('#formSearchTable').hide();
       $("#download").prop('disabled', true);
       $('#collapseSearch').collapse(false)
   }
+
   $('#formSearchButton').on('click', function(){
-    runFormSearchQuery(cookieData='');
+    runFormSearchQuery();
 
   });
   $('#addUserToDept').on('click', function() {
@@ -55,18 +58,18 @@ $(document).ready(function(){
 // listening for preset button clicks.
 $('#mySupervisees').on('click', function(){
   $("input:checkbox").removeAttr("checked");
-  runFormSearchQuery(cookieData='', "mySupervisees");
+  runFormSearchQuery("mySupervisees");
 });
 $('#evaluationsMissing').on('click', function(){
   $("input:checkbox").removeAttr("checked");
-  runFormSearchQuery(cookieData='', "missingEvals");
+  runFormSearchQuery("missingEvals");
 });
 $('#superviseesPendingForms').on('click', function(){
   $("input:checkbox").removeAttr("checked");
-  runFormSearchQuery(cookieData='', "pendingForms");
+  runFormSearchQuery("pendingForms");
 });
 $('#currentTerm').on('click', function(){
-  runFormSearchQuery(cookieData='', "currentTerm");
+  runFormSearchQuery("currentTerm");
 });
 });
 
@@ -77,62 +80,62 @@ function clearDropdown(){
   });
 };
 
-function runFormSearchQuery(cookieData='', button) {
+function runFormSearchQuery(button) {
 
-  var termCode = $("#termSelect").val();
-  var departmentID = $("#departmentSelect").val();
-  var supervisorID = $("#supervisorSelect").val();
-  var studentID = $("#studentSelect").val();
-  var formStatusList = [];
-  var formTypeList = [];
-  var evaluationList = [];
+  let termCode, departmentID, supervisorID, studentID;
+  let formStatusList = [];
+  let formTypeList = [];
+  let evaluationList = [];
 
-  $("input:checkbox[name='formStatus']:checked").each(function(){
-      formStatusList.push($(this).val());
-  });
+  switch(button) {
+      case "mySupervisees":
+          termCode = "currentTerm"
+          departmentID = ""
+          supervisorID = "currentUser"
+          studentID = ""
+          formStatusList = []
+          formType  = []
+          evaluationList = []
+          break;
 
-  $("input:checkbox[name='formType']:checked").each(function(){
-      formTypeList.push($(this).val());
-  });
+      case "missingEvals":
+          termCode = "currentTerm"
+          departmentID = ""
+          supervisorID = "currentUser"
+          studentID = ""
+          formStatusList = ["Approved", "Approved Reluctantly"]
+          formType  = []
+          evaluationList = ["evalMissing", "evalMidyearMissing"]
+          break;
 
-  $("input:checkbox[name='evaluations']:checked").each(function(){
-      evaluationList.push($(this).val());
-  });
+      case "pendingForms":
+          termCode = "currentTerm"
+          departmentID = ""
+          supervisorID = "currentUser"
+          studentID = ""
+          formStatusList = ["Pending"]
+          formType  = []
+          evaluationList = []
+          break;
 
-  if (button) {
-    if (button=="mySupervisees") {
-      termCode = "currentTerm"
-      departmentID = ""
-      supervisorID = "currentUser"
-      studentID = ""
-      formStatusList = []
-      formType  = []
-      evaluationList = []
-    } else if (button=="missingEvals") {
-      termCode = "currentTerm"
-      departmentID = ""
-      supervisorID = "currentUser"
-      studentID = ""
-      formStatusList = ["Approved", "Approved Reluctantly"]
-      formType  = []
-      evaluationList = ["evalMissing", "evalMidyearMissing"]
-    } else if (button=="pendingForms") {
-      termCode = "currentTerm"
-      departmentID = ""
-      supervisorID = "currentUser"
-      studentID = ""
-      formStatusList = ["Pending"]
-      formType  = []
-      evaluationList = []
-    } else if (button=="currentTerm") {
-      termCode = "currentTerm"
-      departmentID = ""
-      supervisorID = ""
-      studentID = ""
-      formStatusList = []
-      formType  = []
-      evaluationList = []
-    }
+      case "currentTerm":
+          termCode = "currentTerm"
+          departmentID = ""
+          supervisorID = ""
+          studentID = ""
+          formStatusList = []
+          formType  = []
+          evaluationList = []
+          break;
+
+      default:
+          termCode = $("#termSelect").val();
+          departmentID = $("#departmentSelect").val();
+          supervisorID = $("#supervisorSelect").val();
+          studentID = $("#studentSelect").val();
+          formStatusList = $("input:checkbox[name='formStatus']:checked").map((i,el) => el.value).get();
+          formTypeList = $("input:checkbox[name='formType']:checked").map((i,el) => el.value).get();
+          evaluationList = $("input:checkbox[name='evaluations']:checked").map((i,el) => el.value).get();      
   }
   
   queryDict = {'termCode': termCode,
@@ -143,13 +146,9 @@ function runFormSearchQuery(cookieData='', button) {
                'formType': formTypeList,
                'evaluations': evaluationList
              };
+
   setFormSearchValues(queryDict)
-
   data = JSON.stringify(queryDict)
-
-  if (cookieData.length) {
-      data = cookieData
-  }
 
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, {expires: inAnHour})
