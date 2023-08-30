@@ -13,14 +13,14 @@ def getPositionInfo(orgCode):
 
     givenOrgCode = (Department.select(Department.departmentID)
                               .where(Department.ORG == orgCode))
+    
+    deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, LaborStatusForm.termCode_id,  LaborStatusForm.jobType, LaborStatusForm.WLS, LaborStatusForm.POSN_TITLE)
+                                    .where(LaborStatusForm.department_id.in_(givenOrgCode)))        
+    
     laborFormDict = {}
-    for deptCode in givenOrgCode:
-        deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, LaborStatusForm.termCode_id,  LaborStatusForm.jobType, LaborStatusForm.WLS, LaborStatusForm.POSN_TITLE)
-                                    .where(LaborStatusForm.department_id == deptCode))
-        
-        for laborForm in deptLabor:
-            if laborForm.studentSupervisee_id not in laborFormDict:
-                laborFormDict[laborForm.studentSupervisee_id] = []
-            laborFormDict[laborForm.studentSupervisee_id].append((laborForm.termCode_id, laborForm.POSN_TITLE, laborForm.jobType, laborForm.WLS))
+    for laborForm in deptLabor:
+        if laborForm.studentSupervisee_id not in laborFormDict:
+            laborFormDict[laborForm.studentSupervisee_id] = []
+        laborFormDict[laborForm.studentSupervisee_id].append({"termCode":laborForm.termCode_id, "positionTitle": laborForm.POSN_TITLE, "jobType":laborForm.jobType, "wls":laborForm.WLS})
 
     return jsonify(laborFormDict)
