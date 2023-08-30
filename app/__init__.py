@@ -58,13 +58,13 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
-from app.logic.orgPositionEndpoint import getPositionInfo
+from app.logic.orgPositionEndpoint import getFormsForOrg
 from app.models.department import Department
 @app.route('/api/org/<orgCode>', methods=['GET'])
-def getCeltsPositionInfo(orgCode):
+def getLaborForms(orgCode):
     # TODO: Need to add authentication
     if Department.select(Department.ORG == orgCode).exists(): 
-        return getPositionInfo(orgCode)
+        return getFormsForOrg(orgCode)
     else: 
         print("########## YOU FUCKED UP ##########")
 
