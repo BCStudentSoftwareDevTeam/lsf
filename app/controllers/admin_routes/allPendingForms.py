@@ -244,6 +244,27 @@ def finalUpdateStatus(raw_status):
     form_ids = eval(request.data.decode("utf-8"))
     return saveStatus(new_status, form_ids, currentUser)
 
+@admin.route('/admin/addToBanner', methods=['POST'])
+def addToBanner(form_ids, currenttUser):
+    for id in form_ids:
+            history_type_data = FormHistory.get(FormHistory.formHistoryID == int(id))
+            history_type = str(history_type_data.historyType)
+
+            labor_forms = FormHistory.get(FormHistory.formHistoryID == int(id), FormHistory.historyType == history_type)
+            labor_forms.status = Status.get(Status.statusName == new_status)
+            labor_forms.reviewedDate = date.today()
+            labor_forms.reviewedBy = currentUser
+
+            # Add to BANNER
+            save_status = True # default true so that we will still save in other cases
+            if new_status == 'Approved' and history_type == "Labor Status Form" and labor_forms.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
+                if labor_forms.formID.POSN_CODE == "SNOLAB":
+                       labor_forms.formID.weeklyHours = 10
+                conn = Banner()
+                save_status = conn.insert(labor_forms)
+
+
+
 def saveStatus(new_status, form_ids, currentUser):
     try:
         if new_status == 'Denied':

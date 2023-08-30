@@ -234,6 +234,10 @@
             </a>
           </div>
       {% endif %}
+      {% if buttonState.evaluation_exists %}
+        <button type="submit" name="submit" value="submit" class="btn btn-primary" onclick="addToBanner()"> Resubmit </button>
+    </div>
+    {% endif %}
     {% endif %}
 
 

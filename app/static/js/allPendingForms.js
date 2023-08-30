@@ -145,6 +145,18 @@ function finalApproval() { //this method changes the status of the lsf from pend
   });
 }
 
+function addToBanner(){
+  $.ajax({
+    type: "POST",
+    url: "/admin/addToBanner",
+    datatype: "json",
+    data: data,
+    contentType: 'application/json',
+
+  });
+}
+
+
 var laborDenialInfo = []; //this arrary is for insertDenial() and finalDenial() methods
 //This method calls AJAX from checkforms methods in the controller
 function insertDenial(val) {
