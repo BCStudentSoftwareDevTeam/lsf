@@ -6,7 +6,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
 
-def getPositionInfo(orgCode):
+def getFormsForOrg(orgCode):
     '''
     Returns relevant labor information for CELTS labor students to be sent to CELTS-Link
     '''
