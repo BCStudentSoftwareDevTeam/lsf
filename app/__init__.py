@@ -1,6 +1,8 @@
 from flask import Flask
 import yaml
 from flask_bootstrap import Bootstrap
+from playhouse.shortcuts import model_to_dict, dict_to_model
+
 
 
 app = Flask(__name__)
@@ -56,12 +58,38 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
+<<<<<<< HEAD
 from app.logic.celtsPositionEndpoint import getCeltsLaborPosition
 @app.route('/api/getPositionInfo', methods=['GET'])
 def getCeltsPositionInfo():
     # TODO: Need to add authentication
     return getCeltsLaborPosition()
 
+=======
+from flask import g
+from app.models.user import User
+from app.login_manager import require_login
+@app.before_request
+def load_user():
+    try: 
+        g.currentUser = dict_to_model(User, session['currentUser'])
+    except Exception as e:
+        user = require_login()
+        session['currentUser'] = model_to_dict(user)
+        g.currentUser = user
+
+from app.models.term import Term
+from app.login_manager import getOpenTerm
+@app.before_request
+def load_openTerm():
+    try: 
+        g.openTerm = dict_to_model(Term, session['openTerm'])
+    except Exception as e:
+        term = getOpenTerm()
+        session['openTerm'] = model_to_dict(term)
+        g.openTerm = term
+        
+>>>>>>> 7d73bc27aa535316150038f7f8aa7b9e6c747ab2
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])

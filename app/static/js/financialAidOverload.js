@@ -33,13 +33,6 @@ function overloadSubmission(formHistoryKey){
   }
 }
 
-// for showing different messages with flash
-function msgFlash(flash_message, status){
-    category = (status === "success") ? "success" : "danger";
-    $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
-    $("#flasher").delay(5000).fadeOut();
-
-}
 var statusName = null
 function openApproveDenyModal(status){
   statusName = status
