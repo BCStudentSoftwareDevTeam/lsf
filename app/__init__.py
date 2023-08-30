@@ -58,11 +58,15 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
-from app.logic.celtsPositionEndpoint import getCeltsLaborPosition
-@app.route('/api/getPositionInfo', methods=['GET'])
-def getCeltsPositionInfo():
+from app.logic.orgPositionEndpoint import getPositionInfo
+from app.models.department import Department
+@app.route('/api/org/<orgCode>', methods=['GET'])
+def getCeltsPositionInfo(orgCode):
     # TODO: Need to add authentication
-    return getCeltsLaborPosition()
+    if Department.select(Department.ORG == orgCode).exists(): 
+        return getPositionInfo(orgCode)
+    else: 
+        print("########## YOU FUCKED UP ##########")
 
 @app.context_processor
 def inject_environment():
