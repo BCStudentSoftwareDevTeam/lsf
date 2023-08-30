@@ -4,6 +4,7 @@ from app import app
 
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
+from app.models.formHistory import FormHistory
 
 def getPositionInfo(orgCode):
     '''
@@ -13,9 +14,11 @@ def getPositionInfo(orgCode):
 
     givenOrgCode = (Department.select(Department.departmentID)
                               .where(Department.ORG == orgCode))
-    
+
     deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, LaborStatusForm.termCode_id,  LaborStatusForm.jobType, LaborStatusForm.WLS, LaborStatusForm.POSN_TITLE)
-                                    .where(LaborStatusForm.department_id.in_(givenOrgCode)))        
+                                    .join(FormHistory)
+                                    .where(LaborStatusForm.department_id.in_(givenOrgCode), FormHistory.status_id == "Approved")
+                                    .order_by(LaborStatusForm.termCode_id))        
     
     laborFormDict = {}
     for laborForm in deptLabor:
