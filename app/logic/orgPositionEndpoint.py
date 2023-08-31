@@ -15,15 +15,27 @@ def getFormsForOrg(orgCode):
     givenOrgCode = (Department.select(Department.departmentID)
                               .where(Department.ORG == orgCode))
 
-    deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, LaborStatusForm.termCode_id,  LaborStatusForm.jobType, LaborStatusForm.WLS, LaborStatusForm.POSN_TITLE)
-                                    .join(FormHistory)
-                                    .where(LaborStatusForm.department_id.in_(givenOrgCode), FormHistory.status_id == "Approved")
-                                    .order_by(LaborStatusForm.termCode_id))        
+    deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, 
+                                        LaborStatusForm.termCode_id, 
+                                        LaborStatusForm.startDate, 
+                                        LaborStatusForm.endDate,  
+                                        LaborStatusForm.jobType, 
+                                        LaborStatusForm.WLS, 
+                                        LaborStatusForm.POSN_TITLE)
+                                .join(FormHistory)
+                                .where(LaborStatusForm.department_id.in_(givenOrgCode), 
+                                       FormHistory.status_id == "Approved")
+                                .order_by(LaborStatusForm.termCode_id))        
     
     laborFormDict = {}
     for laborForm in deptLabor:
         if laborForm.studentSupervisee_id not in laborFormDict:
             laborFormDict[laborForm.studentSupervisee_id] = []
-        laborFormDict[laborForm.studentSupervisee_id].append({"termCode":laborForm.termCode_id, "positionTitle": laborForm.POSN_TITLE, "jobType":laborForm.jobType, "wls":laborForm.WLS})
+        laborFormDict[laborForm.studentSupervisee_id].append({"termCode":laborForm.termCode_id, 
+                                                              "laborStart":laborForm.startDate, 
+                                                              "laborEnd":laborForm.endDate, 
+                                                              "positionTitle": laborForm.POSN_TITLE, 
+                                                              "jobType":laborForm.jobType, 
+                                                              "wls":laborForm.WLS})
 
     return jsonify(laborFormDict)
