@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, abort
 import yaml
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
@@ -63,11 +63,34 @@ from app.models.department import Department
 @app.route('/api/org/<orgCode>', methods=['GET'])
 def getLaborForms(orgCode):
     # TODO: Need to add authentication
-    if Department.select(Department.ORG == orgCode).exists(): 
+    if Department.select().where(Department.ORG == orgCode).exists():
         return getFormsForOrg(orgCode)
     else: 
-        print("########## YOU FUCKED UP ##########")
+        abort(404)
+    
+from flask import g
+from app.models.user import User
+from app.login_manager import require_login
+@app.before_request
+def load_user():
+    try: 
+        g.currentUser = dict_to_model(User, session['currentUser'])
+    except Exception as e:
+        user = require_login()
+        session['currentUser'] = model_to_dict(user)
+        g.currentUser = user
 
+from app.models.term import Term
+from app.login_manager import getOpenTerm
+@app.before_request
+def load_openTerm():
+    try: 
+        g.openTerm = dict_to_model(Term, session['openTerm'])
+    except Exception as e:
+        term = getOpenTerm()
+        session['openTerm'] = model_to_dict(term)
+        g.openTerm = term
+        
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])
