@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, abort
 import yaml
 from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
@@ -63,11 +63,11 @@ from app.models.department import Department
 @app.route('/api/org/<orgCode>', methods=['GET'])
 def getLaborForms(orgCode):
     # TODO: Need to add authentication
-    if Department.select(Department.ORG == orgCode).exists(): 
+    if Department.select().where(Department.ORG == orgCode).exists():
         return getFormsForOrg(orgCode)
     else: 
-        print("########## YOU FUCKED UP ##########")
-
+        abort(404)
+    
 from flask import g
 from app.models.user import User
 from app.login_manager import require_login
