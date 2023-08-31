@@ -17,11 +17,11 @@ def getFormsForOrg(orgCode):
 
     deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, 
                                         LaborStatusForm.termCode_id, 
+                                        LaborStatusForm.POSN_TITLE,
                                         LaborStatusForm.startDate, 
                                         LaborStatusForm.endDate,  
                                         LaborStatusForm.jobType, 
-                                        LaborStatusForm.WLS, 
-                                        LaborStatusForm.POSN_TITLE)
+                                        LaborStatusForm.WLS)
                                 .join(FormHistory)
                                 .where(LaborStatusForm.department_id.in_(givenOrgCode), 
                                        FormHistory.status_id == "Approved")
