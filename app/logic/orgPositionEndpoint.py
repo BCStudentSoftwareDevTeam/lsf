@@ -31,10 +31,10 @@ def getFormsForOrg(orgCode):
     for laborForm in deptLabor:
         if laborForm.studentSupervisee_id not in laborFormDict:
             laborFormDict[laborForm.studentSupervisee_id] = []
-        laborFormDict[laborForm.studentSupervisee_id].append({"termCode":laborForm.termCode_id, 
+        laborFormDict[laborForm.studentSupervisee_id].append({"positionTitle": laborForm.POSN_TITLE, 
+                                                              "termCode":laborForm.termCode_id, 
                                                               "laborStart":laborForm.startDate, 
                                                               "laborEnd":laborForm.endDate, 
-                                                              "positionTitle": laborForm.POSN_TITLE, 
                                                               "jobType":laborForm.jobType, 
                                                               "wls":laborForm.WLS})
 
