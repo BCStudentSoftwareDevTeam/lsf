@@ -246,9 +246,11 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
                                            createdBy    = currentUser,
                                            createdDate  = date.today(),
                                            status       = status.statusName)
+        
         if fieldName == "weeklyHours":
             newWeeklyHours = fieldsChanged[fieldName]['newValue']
             createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory,host=host)
+
         return adjustedFormHistory.formHistoryID
 
 def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
@@ -270,6 +272,7 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
         newTotalHours = int(newWeeklyHours)
     else:
         newTotalHours = previousTotalHours + int(newWeeklyHours)
+
 
     if previousTotalHours <= 15 and newTotalHours > 15:
         newLaborOverloadForm = OverloadForm.create(studentOverloadReason = "None")

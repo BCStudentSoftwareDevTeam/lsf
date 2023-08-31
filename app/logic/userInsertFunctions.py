@@ -95,7 +95,7 @@ def updateUserFromTracy(user):
         baseObj.save()
 
     except Exception as e:
-        print("We don't want to break our login if an old tracy user doesn't exist or something")
+        print( f"We don't want to break our login if an old tracy user doesn't exist or something")
 
     return user
 
@@ -135,9 +135,6 @@ def createSupervisorFromTracy(username=None, bnumber=None):
 
         Raises InvalidUserException if this does not succeed.
     """
-    if not username and not bnumber:
-        raise ValueError("No arguments provided to createSupervisorFromTracy()")
-
     if bnumber:
         try:
             tracyUser = Tracy().getSupervisorFromID(bnumber)
@@ -162,7 +159,8 @@ def createSupervisorFromTracy(username=None, bnumber=None):
                                  CPO = tracyUser.CPO,
                                  ORG = tracyUser.ORG,
                                  DEPT_NAME = tracyUser.DEPT_NAME)
-    else:
+    except Exception as e:
+        print(e)
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))
 
 def getOrCreateStudentRecord(username=None, bnumber=None):

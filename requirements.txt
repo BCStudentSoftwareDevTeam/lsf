@@ -43,13 +43,13 @@ pathtools==0.1.2
 peewee==3.9.6
 peewee-migrations==0.3.18
 pluggy==0.13.1
-py==1.9.0
+py==1.11.0
 pyasn1==0.4.8
 pycparser==2.19
 PyMySQL==0.9.3
-pyodbc==4.0.30
+pyodbc==4.0.39
 pyparsing==2.4.7
-pytest==7.2.0
+pytest==7.4.0
 pytest-base-url==1.4.2
 pytest-html==2.1.1
 pytest-metadata==1.10.0

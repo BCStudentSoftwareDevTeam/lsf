@@ -94,3 +94,7 @@ a.hover_indicator:active {
 .mailtoIcon{
   font-size: smaller;
 }
+
+.form-check-label{
+  font-weight: normal;
+}

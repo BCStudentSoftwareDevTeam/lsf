@@ -54,12 +54,21 @@ def sle(statusKey):
 
     laborHistoryForm = FormHistory.select().where((FormHistory.formID == int(statusKey))).where(FormHistory.historyType == "Labor Status Form")[-1]
     if request.form.get("resetConfirmation"):
-        deleteExistingForm = (StudentLaborEvaluation.delete().where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)).execute()
+        # Delete the most recently submitted evaluation for this formhistory
+        newest = (StudentLaborEvaluation.select()
+                    .where(StudentLaborEvaluation.formHistoryID == laborHistoryForm.formHistoryID)
+                    .order_by(StudentLaborEvaluation.date_submitted.desc(nulls="LAST"), StudentLaborEvaluation.ID.desc())
+                    ).get()
+        if newest:
+            newest.delete_instance()
+
         return redirect("/sle/" + str(laborHistoryForm.formID.laborStatusFormID))
+
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
-    elif currentUser.student == None and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
+
+    elif not currentUser.isLaborAdmin and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
@@ -181,10 +190,10 @@ def sle(statusKey):
         # Only approved evaluations get an SLE, so send them home.
         return redirect("/")
 
-    if existing_final_evaluation:
+    if existing_final_evaluation and existing_final_evaluation.date_submitted:
         submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
     else:
-        submittedDate = None 
+        submittedDate = None
 
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
