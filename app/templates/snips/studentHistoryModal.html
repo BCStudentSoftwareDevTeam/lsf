@@ -232,10 +232,10 @@
               <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Show Evaluation
               </button>
             </a>
+            <a id="submitToBanner"><button type="submit" name="submit" value="submit" class="btn btn-primary" onclick="finalApproval()">Submit to Banner</button></a>
           </div>
       {% endif %}
       {% if buttonState.evaluation_exists %}
-        <button type="submit" name="submit" value="submit" class="btn btn-primary" onclick="addToBanner()"> Resubmit </button>
     </div>
     {% endif %}
     {% endif %}
