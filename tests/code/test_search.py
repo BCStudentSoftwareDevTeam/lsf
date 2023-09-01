@@ -3,6 +3,7 @@ from app.models import mainDB
 from app.models.department import Department
 from app.models.student import Student
 from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.user import User
@@ -108,6 +109,9 @@ def test_getDepartmentsForSupervisors():
 
         nonSupervisorDept = Department.create(DEPT_NAME="nonSupervisorDept", ACCOUNT="6740", ORG="9992", departmentCompliance = 1)
 
+        supervisorTableTestDept = Department.create(DEPT_NAME="testTable", ACCOUNT="6740", ORG="9998", departmentCompliance = 1)
+
+
         # Supervisor create so we can check when our superUser is the creator but tempSuper is the supervisor.
         tempSuper = Supervisor.create(ID = "B00000002",
                                            PIDM = 75,
@@ -196,5 +200,22 @@ def test_getDepartmentsForSupervisors():
         departments = [i.DEPT_NAME for i in departments]
         assert supervisorDept.DEPT_NAME in departments
         assert nonSupervisorDept.DEPT_NAME in departments
+
+        supervisorDeptTable = SupervisorDepartment.create(supervisor=supervisorUser.supervisor.ID,
+                                                    department=supervisorTableTestDept)
+
+        # check to make sure we get both the departments that a user interacted with and departments in the tavle
+        departments = list(getDepartmentsForSupervisor(supervisorUser))
+        departments = [i.DEPT_NAME for i in departments]
+        assert supervisorDeptTable.department.DEPT_NAME in departments
+        assert len(departments) == 3
+
+        # add existing department to table
+        SupervisorDepartment.create(supervisor=supervisorUser.supervisor.ID,
+                                    department=supervisorDept)
+
+        # make sure that a department is not duplicated if it is in the table and a user has forms for its
+        departments = list(getDepartmentsForSupervisor(supervisorUser))
+        assert len(departments) == 3
 
         transaction.rollback()

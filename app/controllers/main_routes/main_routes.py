@@ -1,11 +1,13 @@
 import sys
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
 from peewee import JOIN, prefetch
+from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
@@ -42,9 +44,9 @@ def supervisorPortal():
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
         return render_template('errors/403.html'), 403
-
+    
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-
+    allSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
@@ -53,28 +55,30 @@ def supervisorPortal():
 
     else:
 
-        departments = list(getDepartmentsForSupervisor(currentUser))
+        departments = getDepartmentsForSupervisor(currentUser)
 
         # convert department objects to strings
         departments = [department for department in departments]
+        deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select()
-                            .join_from(Supervisor, LaborStatusForm)
-                            .join_from(LaborStatusForm, Department)
-                            .where(Department.DEPT_NAME.in_(departments))
-                            .distinct())
-
+                                 .join_from(Supervisor, LaborStatusForm)
+                                 .join_from(LaborStatusForm, Department)
+                                 .where(Department.DEPT_NAME.in_(deptNames))
+                                 .distinct())
+        
         students = (Student.select()
-                    .join_from(Student, LaborStatusForm)
-                    .join_from(LaborStatusForm, Department)
-                    .where(Department.DEPT_NAME.in_(departments))
-                    .distinct())
+                           .join_from(Student, LaborStatusForm)
+                           .join_from(LaborStatusForm, Department)
+                           .where(Department.DEPT_NAME.in_(deptNames))
+                           .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
                             terms = terms,
                             supervisors = supervisors,
+                            allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
                             department = None,
@@ -88,6 +92,11 @@ def getDatatableData(request):
     '''
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
+    global sleJoin
+    if sleJoin:
+        sleJoin = False
+    
+    currentUser = require_login()
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
     rowsPerPage = int(request.form.get('length', -1))
@@ -108,10 +117,15 @@ def getDatatableData(request):
                             8: FormHistory.status,
                             9: FormHistory.historyType,
                             10: StudentLaborEvaluation.ID}
-
     termCode = queryFilterDict.get('termCode', "")
+    if termCode == "currentTerm":
+        termCode = g.openTerm
+    elif termCode == "activeTerms":
+        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= datetime.now()))
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
+    if supervisorId == "currentUser":
+        supervisorId = g.currentUser.supervisor
     studentId = queryFilterDict.get('studentID', "")
     formStatusList = queryFilterDict.get('formStatus', "") # form status radios
     formTypeList = queryFilterDict.get('formType', "") # form type radios
@@ -124,61 +138,69 @@ def getDatatableData(request):
                      FormHistory.status: formStatusList,
                      FormHistory.historyType: formTypeList,
                      StudentLaborEvaluation.ID: evaluationStatus}
-
     clauses = []
-
-    global sleJoin
+    
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
-            # "is" is used to compare the two peewee objects as opposed to "==" operator.
-            if field is FormHistory.historyType:
-                for val in value:
-                    clauses.append(field == val)
-            elif field is FormHistory.status:
-                for val in value:
-                    clauses.append(field == val)
+            if type(value) is list:
+                clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
-                sleJoin = value[0]       # LSF exists but SLE does not (LOJ)
+                sleJoin = value[0]       
             else:
                 clauses.append(field == value)
-
+   
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
-    expression = reduce(operator.and_, clauses)
-
     global formSearchResults
     formSearchResults = (FormHistory.select()
-                        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                        .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
-                        .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
-                        .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
-                        .join(User, on=(FormHistory.createdBy == User.userID))
-                        .where(expression))
+                                    .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                                    .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                                    .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
+                                    .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
+                                    .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
+                                    .join(User, on=(FormHistory.createdBy == User.userID)))
+    if clauses:
+        formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
+    if not currentUser.isLaborAdmin:
+        supervisorDepartments = getDepartmentsForSupervisor(currentUser)
+        formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
     if sleJoin:
-        if sleJoin == "evalMidyearMissing" or sleJoin == "evalMidyearComplete":
-            #grab all the midyear evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == True, StudentLaborEvaluation.is_submitted == True)
-        else:
-            #grab all the final evaluationStatus
-            evalResults = StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID).where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, StudentLaborEvaluation.is_midyear_evaluation == False, StudentLaborEvaluation.is_submitted == True)
+        midYearEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                    .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                           StudentLaborEvaluation.is_midyear_evaluation == True, 
+                                                           StudentLaborEvaluation.is_submitted == True))
+        
+        allEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                       StudentLaborEvaluation.is_submitted == True))
+        
+        finalEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
+                                                  .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
+                                                         StudentLaborEvaluation.is_midyear_evaluation == False, 
+                                                         StudentLaborEvaluation.is_submitted == True))
         if sleJoin == "evalMidyearMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+            formSearchResults = formSearchResults.where(FormHistory.formHistoryID.not_in(midYearEvaluations))
         elif sleJoin == "evalMidyearComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(midYearEvaluations))
         elif sleJoin == "evalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(allEvaluations))
         elif sleJoin == "evalComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(evalResults))
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(allEvaluations))
+        elif sleJoin == "allEvalMissing":
+            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(finalEvaluations))
 
-    recordsTotal = formSearchResults.count()
-
+        if sleJoin =="evalMidyearMissing" or sleJoin == "evalMissing" or sleJoin == "allEvalMissing":
+             formSearchResults = formSearchResults.select().where(FormHistory.status == "Approved" or FormHistory.status == "Approved Reluctantly")
+    
+    recordsTotal = len(formSearchResults)
+    
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
     if order == "desc":
         filteredSearchResults = formSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
+    
     else:
         filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
 
@@ -273,13 +295,27 @@ def getFormattedData(filteredSearchResults):
         formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
 
         # Evaluation status
-        # TODO Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
+        # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
 
         formattedData.append(record)
 
     return formattedData
 
+@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
+def addUserToDept():
+    userDeptData = request.form
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisor'], department = userDeptData['department'])
+    try:
+        if supervisorDeptRecord:
+            return "False"
 
+        else:
+            SupervisorDepartment.create(supervisor=userDeptData['supervisor'], department=userDeptData['department'])
+            return "True"
+    
+    except Exception as e:
+        print(f'Could not add user to department: {e}')
+        return "", 500
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
