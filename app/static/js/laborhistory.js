@@ -36,7 +36,11 @@ function redirection(laborStatusKey){
   // console.log(laborStatusKey);
 }
 
-function mailPositionToLabor(){
+$("#modal").on('transitionend', function(){ //Had to search for css element visibility changes to make this work
+  $('#emailLabor').on('click', mailToLabor);
+})
+
+function mailToLabor(){
   let subject = `Labor Position Information for ${$('#studentDetails').text()}`
   subject= subject.replace(/\s+/g, ' ')
   let body = `Student Name:${$('#studentDetails').text()}%0D%0A`+
@@ -47,9 +51,10 @@ function mailPositionToLabor(){
              `Position (WLS): ${$('#laborPosition').text()}%0D%0A`+
              `Start Date: ${$('#laborStartDate').text()}%0D%0A`+
              `End Date: ${$('#laborEndDate').text()}`
-  body = body.replace(/\s+/g, ' ')
+  body = body.replace(/(\s+|\&)/g, function(match) { //regex searches for whitespace characters or ampersand and replaces them accordingly
+    return match === "&" ? "%26" : ' ';
+  });
   window.location.href = `mailto:labor@berea.edu?subject=${subject}&body=${body}`;
-
 }
 
 function fillPDF(laborStatusKey){

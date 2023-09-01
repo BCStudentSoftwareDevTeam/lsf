@@ -1,4 +1,4 @@
-#modalid {
+#studentLaborDetailsModal {
   overflow: auto;
   height:350px;
   overflow:auto;
@@ -71,7 +71,4 @@
 
 .mailtoIcon{
   font-size: smaller;
-}
-#easyEmail{
-  float:right;
 }

@@ -14,9 +14,8 @@
       <div class="original-name">Originally filed under "{{statusForm.studentName}}"</div>
       {% endif %}
   </span>
-  <div class="btn btn-primary" id="easyEmail" onClick="mailPositionToLabor()"><span>Email Labor</span></div>
 </div>
-<div class="modal-body" id="modalid">
+<div class="modal-body" id="studentLaborDetailsModal">
 
   <dl class="row">
     <dt class="col-sm-3">Term</dt>
@@ -205,11 +204,12 @@
     {% else %}
       <div class = "col-sm-{{12/buttonState.num_buttons}}">
 
+      <a href="#"><button class="btn btn-primary" id="emailLabor">Email Labor</button></a>
       {% if buttonState.rehire %}
         <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{statusForm.laborStatusFormID}})">Rehire</button></a>
       {% endif %}
       {% if buttonState.withdraw %}
-        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick = "withdrawform({{statusForm.laborStatusFormID}})">Withdraw</button>
+        <button type="button" class="btn btn-danger"  data-dismiss="modal" onclick = "withdrawform({{statusForm.laborStatusFormID}})">Withdraw</button>
       {% endif %}
       {% if buttonState.correction %}
         <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Modify</button></a>
