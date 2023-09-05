@@ -50,7 +50,7 @@ def supervisorPortal():
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
-        supervisors = Supervisor.select().order_by(Supervisor.preferred_name, Supervisor.legal_name)
+        supervisors = Supervisor.select().order_by(Supervisor.isActive.desc(), Supervisor.preferred_name, Supervisor.legal_name)
         students = Student.select().order_by(Student.preferred_name, Student.legal_name)
 
     else:
