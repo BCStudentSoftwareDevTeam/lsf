@@ -64,3 +64,8 @@ def getDepartmentsForSupervisor(currentUser):
     # removes duplicate departments
     alldepts = list(set(alldepts))
     return alldepts
+
+def getSupervisorsForDepartment(currentDepartment):
+    supervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.deparment == currentDepartment)
+    supervisors = [supervisor for supervisor in supervisors]
+    
