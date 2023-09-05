@@ -242,26 +242,50 @@ def finalUpdateStatus(raw_status):
         print("Unknown status: ", raw_status)
         return jsonify({"success": False})
     form_ids = eval(request.data.decode("utf-8"))
+ 
     return saveStatus(new_status, form_ids, currentUser)
 
-@admin.route('/admin/addToBanner', methods=['POST'])
-def addToBanner(form_ids, currenttUser):
-    for id in form_ids:
-            history_type_data = FormHistory.get(FormHistory.formHistoryID == int(id))
-            history_type = str(history_type_data.historyType)
+# Add a new route for submitting to Banner
+@app.route('/admin/submitToBanner', methods=['POST'])
+def submitToBanner():
+    form_ids = eval(request.data.decode("utf-8"))
+    print(form_ids)
+    form_ids = form_ids[:1]
 
-            labor_forms = FormHistory.get(FormHistory.formHistoryID == int(id), FormHistory.historyType == history_type)
-            labor_forms.status = Status.get(Status.statusName == new_status)
-            labor_forms.reviewedDate = date.today()
-            labor_forms.reviewedBy = currentUser
 
-            # Add to BANNER
-            save_status = True # default true so that we will still save in other cases
-            if new_status == 'Approved' and history_type == "Labor Status Form" and labor_forms.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
+    currentUser = require_login()
+    if not currentUser:  # Not logged in
+        return render_template('errors/403.html'), 403
+    if not currentUser.isLaborAdmin:  # Not an admin
+        return render_template('errors/403.html'), 403
+
+    try:
+        if not form_ids:
+            return jsonify({"success": False, "error": "No form IDs provided"}), 400  # Return an error if form_ids is empty
+
+        for form_id in form_ids:
+            labor_forms = FormHistory.get(FormHistory.formHistoryID == form_id)
+            history_type = str(labor_forms.historyType)
+
+            # Check if it's an Adjustment Form or CS dummy position
+            if history_type == "Labor Status Form" and labor_forms.formID.POSN_CODE != "S12345":
                 if labor_forms.formID.POSN_CODE == "SNOLAB":
-                       labor_forms.formID.weeklyHours = 10
+                    labor_forms.formID.weeklyHours = 10
                 conn = Banner()
                 save_status = conn.insert(labor_forms)
+
+                if save_status:
+                    labor_forms.save()
+                else:
+                    print("Unable to submit to Banner for formHistoryID {}.".format(form_id))
+                    return jsonify({"success": False}), 500
+
+        return jsonify({"success": True})  # Return success JSON response
+
+    except Exception as e:
+        print("Error preparing form for submission to Banner:", e)
+        return jsonify({"success": False}), 500
+
 
 
 

@@ -145,16 +145,35 @@ function finalApproval() { //this method changes the status of the lsf from pend
   });
 }
 
-function addToBanner(){
+function submitToBanner() {
+  $(".btn").prop("disabled", true);
+  $(".close").prop("disabled", true);
+  $("#submitToBannerButton").text("Processing...");
+  var data = JSON.stringify(labor_details_ids);
   $.ajax({
     type: "POST",
-    url: "/admin/addToBanner",
-    datatype: "json",
-    data: data,
+    url: "/admin/submitToBanner",  // Remove the trailing slash
+    data: data,  // Pass the JSON data in the request body
     contentType: 'application/json',
+    success: function(response) {
+      if (response) {
+        if (response.success) {
+          $(".btn").prop("disabled", false);
+          $(".close").prop("disabled", false);
+          $("#submitToBannerButton").text("Submit to Banner");
 
+          // Handle success as needed
+          alert("Form submitted to Banner successfully!");
+        } else {
+          // Handle submission failure
+          alert("Failed to submit form to Banner.");
+        }
+      }
+    }
   });
 }
+
+
 
 
 var laborDenialInfo = []; //this arrary is for insertDenial() and finalDenial() methods
