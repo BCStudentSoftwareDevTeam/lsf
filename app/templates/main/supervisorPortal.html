@@ -80,9 +80,9 @@
                 <label for="supervisorSelect">Supervisor</label>
                 <div class="dropdown">
                   <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search='true' title="All supervisors">
-                    <option value="">All supervisors test</option>
+                    <option value="">All supervisors</option>
                     {% for supervisor in supervisors  %}
-                      <option value="{{supervisor.ID}}" data-content=" {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
+                      <option value="{{supervisor.ID}}" data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
                         {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}} 
                       </option>
                     {% endfor %}
