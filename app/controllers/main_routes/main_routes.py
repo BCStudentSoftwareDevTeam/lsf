@@ -64,7 +64,8 @@ def supervisorPortal():
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
-                                 .distinct())
+                                 .distinct()
+                                 .order_by(Supervisor.isActive.desc(), Supervisor.preferred_name, Supervisor.legal_name))
         
         students = (Student.select()
                            .join_from(Student, LaborStatusForm)
