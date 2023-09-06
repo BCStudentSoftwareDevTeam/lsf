@@ -58,7 +58,6 @@ def supervisorPortal():
         departments = getDepartmentsForSupervisor(currentUser)
 
         # convert department objects to strings
-        departments = [department for department in departments]
         deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select()
