@@ -242,52 +242,42 @@ def finalUpdateStatus(raw_status):
         print("Unknown status: ", raw_status)
         return jsonify({"success": False})
     form_ids = eval(request.data.decode("utf-8"))
- 
     return saveStatus(new_status, form_ids, currentUser)
 
-# Add a new route for submitting to Banner
-@app.route('/admin/submitToBanner', methods=['POST'])
-def submitToBanner():
-    form_ids = eval(request.data.decode("utf-8"))
-    print(form_ids)
-    form_ids = form_ids[:1]
+@admin.route('/admin/addToBanner/<form_id>', methods=['POST'])
+def submitToBanner(form_id):
+    print(form_id)
+    print("Hell000000")
 
-
+    ''' This method adds a form to Banner if it's not already approved '''
     currentUser = require_login()
     if not currentUser:  # Not logged in
-        return render_template('errors/403.html'), 403
+        return jsonify({"success": False, "message": "User not logged in"}), 403
     if not currentUser.isLaborAdmin:  # Not an admin
-        return render_template('errors/403.html'), 403
+        return jsonify({"success": False, "message": "User is not an admin"}), 403
 
     try:
-        if not form_ids:
-            return jsonify({"success": False, "error": "No form IDs provided"}), 400  # Return an error if form_ids is empty
+        form_history = FormHistory.get(FormHistory.formHistoryID == int(form_id))
+        if form_history.status.statusName == "Approved":
+            print("-------------------------yes-------------------")
+            # Add to Banner only if the form is approved
 
-        for form_id in form_ids:
-            labor_forms = FormHistory.get(FormHistory.formHistoryID == form_id)
-            history_type = str(labor_forms.historyType)
+            history_type_data = FormHistory.get(FormHistory.formHistoryID == int(form_id))
+            history_type = str(history_type_data.historyType)
 
-            # Check if it's an Adjustment Form or CS dummy position
-            if history_type == "Labor Status Form" and labor_forms.formID.POSN_CODE != "S12345":
-                if labor_forms.formID.POSN_CODE == "SNOLAB":
-                    labor_forms.formID.weeklyHours = 10
-                conn = Banner()
-                save_status = conn.insert(labor_forms)
-
-                if save_status:
-                    labor_forms.save()
-                else:
-                    print("Unable to submit to Banner for formHistoryID {}.".format(form_id))
-                    return jsonify({"success": False}), 500
-
-        return jsonify({"success": True})  # Return success JSON response
-
+            labor_form = FormHistory.get(FormHistory.formHistoryID == int(form_id), FormHistory.historyType == history_type)
+    
+            conn = Banner()
+            save_status = conn.insert(labor_form)
+            if save_status:
+                return jsonify({"success": True, "message": "Form added to Banner"})
+            else:
+                return jsonify({"success": False, "message": "Unable to add form to Banner"}), 500
+        else:
+            return jsonify({"success": False, "message": "Form has not been approved yet"})
     except Exception as e:
-        print("Error preparing form for submission to Banner:", e)
-        return jsonify({"success": False}), 500
-
-
-
+        print("Error adding form to Banner:", e)
+        return jsonify({"success": False, "message": "Error adding form to Banner"}), 500
 
 def saveStatus(new_status, form_ids, currentUser):
     try:

@@ -234,7 +234,7 @@
           </a>
         </div>
       {% endif %}
-      <button id="submitToBannerButton" type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitToBanner()">Submit to Banner</button>
+      <button type="button" class="btn btn-primary" onclick="submitToBanner({{statusForm.laborStatusFormID}})">Submit to Banner</button>
       <div id="result"></div>
       
     {% endif %}
