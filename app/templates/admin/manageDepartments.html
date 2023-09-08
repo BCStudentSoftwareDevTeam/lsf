@@ -45,7 +45,7 @@
             <tbody>
               {% for department in department %}
               <tr>
-                <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                <td scope="row"><a href="#" class="supervisorDeptModal" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a> <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                 <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
                   <button type="button"
                           id="dept_btn_{{department.departmentID}}"
@@ -62,9 +62,21 @@
         <div class="col-md-2"></div>
     </div>
 </div>
-<div class="modal fade" id="manageDepartmentSupervisorModal" role="dialogue" >
+<div class="modal" id="manageDepartmentSupervisorModal" tabindex="-1" role="dialogue" >
   <div class="modal-dialog modal-dialog-scrollable" role="document">
-    <div id="manadgeSupervisorContent" class="modal-content">
+    
+    
+    <div id="manageSupervisorContent" class="modal-content">
+      <div class="modal-header">
+        <div class="changing-content"></div>
+        <div class="btn btn-danger" id="closeManageDepartmentSupervisorModal">
+          <span>X</span>
+        </div>
+      </div>
+
+      <div class="modal-body ">
+        <div class="changing-content"></div>
+      </div>
     </div>
   </div>
 </div>

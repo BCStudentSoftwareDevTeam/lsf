@@ -7,7 +7,37 @@ $(document).ready( function(){
     x.DataTable({
         pageLength: 25
     });
+    $('#departmentsTable').on('draw.dt', function() {
+      $('.supervisorDeptModal').on('click', function(){
+        console.log(this.id)
+        getSupervisorDepartments(this.id)
+        console.log("Beans")
+        $('#manageDepartmentSupervisorModal').modal('show')
+      })
+    })
+    $('#manageDepartmentSupervisorModal').on('blur', emptyManageDepartmentSupervisorModal)
+    $('#closeManageDepartmentSupervisorModal').on('click', emptyManageDepartmentSupervisorModal)
 });
+
+function emptyManageDepartmentSupervisorModal() {
+  $('#manageDepartmentSupervisorModal').modal('hide')
+  $('.changing-content').empty()
+}
+
+function getSupervisorDepartments(departmentID) {
+  $.ajax({
+    method: "GET",
+    url: `/admin/manageDepartments/${departmentID}`,
+    success: function(departmentsAndSupervisors) {
+      let currentDepartment=departmentsAndSupervisors[0]
+      let supervisors=departmentsAndSupervisors[1]
+      $('#manageSupervisorContent .modal-header .changing-content').append("<p>"+currentDepartment['DEPT_NAME']+"</p>")
+      for (let i=0; i<supervisors.length; i++) {
+        $('#manageSupervisorContent .modal-body .changing-content').append(`<p>${supervisors[i]['ID']} ${supervisors[i]['preferred_name']} ${supervisors[i]['LAST_NAME']}</p>`)
+      }
+    }
+  })
+}
 
 function status(department, dept_name) {
 /*

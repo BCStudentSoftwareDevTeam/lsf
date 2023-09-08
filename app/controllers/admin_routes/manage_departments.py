@@ -1,6 +1,7 @@
 from app.controllers.admin_routes import *
 from app.models.user import *
 from app.login_manager import require_login
+from app.logic.search import getSupervisorsForDepartment
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
 #from app.models.manageDepartments import *
@@ -9,6 +10,7 @@ from flask_bootstrap import bootstrap_find_resource
 from app.models.department import *
 from flask import request, redirect
 from flask import jsonify
+from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
 
 @admin.route('/admin/manageDepartments', methods=['GET'])
@@ -41,6 +43,27 @@ def manage_departments():
         print("Error Loading all Departments", e)
         return render_template('errors/500.html'), 500
 
+@admin.route("/admin/manageDepartments/<currentDepartment>", methods=['GET'])
+def getSupervisorsinDepartment(currentDepartment):
+    print("/"*100)
+    try:
+        currentUser = require_login()
+        if not currentUser:                    # Not logged in
+            return render_template('errors/403.html')
+        if not currentUser.isLaborAdmin:       # Not an admin
+            if currentUser.student: # logged in as a student
+                return redirect('/laborHistory/' + currentUser.student.ID)
+            elif currentUser.supervisor:
+                return render_template('errors/403.html'), 403
+        
+        supervisors = getSupervisorsForDepartment(currentDepartment)
+        currentDepartment=Department.get_by_id(currentDepartment)
+        print("/"*1000)
+        supervisors= [model_to_dict(supervisor) for supervisor in supervisors]
+        print(supervisors)
+        return jsonify([model_to_dict(currentDepartment), supervisors])
+    except Exception as e:
+        return render_template('errors/500.html'), 500
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
