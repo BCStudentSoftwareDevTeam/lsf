@@ -246,8 +246,6 @@ def finalUpdateStatus(raw_status):
 
 @admin.route('/admin/addToBanner/<form_id>', methods=['POST'])
 def submitToBanner(form_id):
-    print(form_id)
-
     ''' This method adds a form to Banner if it's already approved '''
     currentUser = require_login()
     if not currentUser:                    # Not logged in
