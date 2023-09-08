@@ -247,37 +247,34 @@ def finalUpdateStatus(raw_status):
 @admin.route('/admin/addToBanner/<form_id>', methods=['POST'])
 def submitToBanner(form_id):
     print(form_id)
-    print("Hell000000")
 
-    ''' This method adds a form to Banner if it's not already approved '''
+    ''' This method adds a form to Banner if it's already approved '''
     currentUser = require_login()
-    if not currentUser:  # Not logged in
-        return jsonify({"success": False, "message": "User not logged in"}), 403
-    if not currentUser.isLaborAdmin:  # Not an admin
-        return jsonify({"success": False, "message": "User is not an admin"}), 403
+    if not currentUser:                    # Not logged in
+        return render_template('errors/403.html'), 403
+    if not currentUser.isLaborAdmin:       # Not an admin
+        return render_template('errors/403.html'), 403
 
     try:
-        form_history = FormHistory.get(FormHistory.formHistoryID == int(form_id))
+        form_history = FormHistory.get(FormHistory.formID == int(form_id))
+        
+        # Add to Banner only if the form is approved
         if form_history.status.statusName == "Approved":
-            print("-------------------------yes-------------------")
-            # Add to Banner only if the form is approved
-
-            history_type_data = FormHistory.get(FormHistory.formHistoryID == int(form_id))
+            history_type_data = FormHistory.get(FormHistory.formID == int(form_id))
             history_type = str(history_type_data.historyType)
-
-            labor_form = FormHistory.get(FormHistory.formHistoryID == int(form_id), FormHistory.historyType == history_type)
+            labor_form = FormHistory.get(FormHistory.formID == int(form_id), FormHistory.historyType == history_type)
     
             conn = Banner()
             save_status = conn.insert(labor_form)
             if save_status:
-                return jsonify({"success": True, "message": "Form added to Banner"})
+                return jsonify({"success": True})
             else:
-                return jsonify({"success": False, "message": "Unable to add form to Banner"}), 500
+                return jsonify({"success": False}), 500
         else:
-            return jsonify({"success": False, "message": "Form has not been approved yet"})
+            return jsonify({"success": False})
     except Exception as e:
         print("Error adding form to Banner:", e)
-        return jsonify({"success": False, "message": "Error adding form to Banner"}), 500
+        return jsonify({"success": False}), 500
 
 def saveStatus(new_status, form_ids, currentUser):
     try:

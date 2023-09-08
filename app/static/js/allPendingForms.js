@@ -145,6 +145,9 @@ function finalApproval() { //this method changes the status of the lsf from pend
   });
 }
 
+function studentHistoryModalClose(){
+  modal.style.display = "none";
+}
 
 function submitToBanner(formId) {
   $.ajax({
@@ -152,14 +155,16 @@ function submitToBanner(formId) {
     url: "/admin/addToBanner/" + formId,
     success: function(response) {
       if (response.success) {
-        alert(response.message);
+        msgFlash("Form submitted to banner successfully ", "success");
+        studentHistoryModalClose();
       } else {
-        alert("Error: " + response.message);
+        msgFlash("Form failed to submit to banner", "fail");
+        studentHistoryModalClose();
+
       }
     }
   });
 }
-
 
 var laborDenialInfo = []; //this arrary is for insertDenial() and finalDenial() methods
 //This method calls AJAX from checkforms methods in the controller
