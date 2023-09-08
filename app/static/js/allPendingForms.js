@@ -160,7 +160,6 @@ function submitToBanner(formId) {
       } else {
         msgFlash("Form failed to submit to banner", "fail");
         studentHistoryModalClose();
-
       }
     }
   });
