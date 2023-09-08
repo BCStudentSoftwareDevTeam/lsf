@@ -46,30 +46,58 @@
           </ul>
 
           <br>
+          <div id='activeTable'>
+            <table class="table table-striped table-bordered" id="activeDepartmentsTable">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for department in department %}
+                <tr>
+                  <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                  <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
+                    <button type="button"
+                            id="dept_btn_{{department.departmentID}}"
+                            name="deptName"
+                            class="{% if department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
+                            onclick="status({{department.departmentID}}, '{{department.DEPT_NAME}}')"
+                            value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{% else %}Not in Compliance{% endif %}</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
-          <table class="table table-striped table-bordered" id="departmentsTable">
-            <thead>
-              <tr>
-                <th>Department</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for department in department %}
-              <tr>
-                <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
-                <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
-                  <button type="button"
-                          id="dept_btn_{{department.departmentID}}"
-                          name="deptName"
-                          class="{% if department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
-                          onclick="status({{department.departmentID}}, '{{department.DEPT_NAME}}')"
-                          value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{% else %}Not in Compliance{% endif %}</button>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div id='inactiveTable'>
+            <table class="table table-striped table-bordered" id="inactiveDepartmentsTable">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for department in department %} <!-- Beans: Need to change this once we split the input into two separate lists. -->
+                <tr>
+                  <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                  <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
+                    <button type="button"
+                            id="dept_btn_{{department.departmentID}}"
+                            name="deptName"
+                            class="{% if department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
+                            onclick="status({{department.departmentID}}, '{{department.DEPT_NAME}}')"
+                            value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{% else %}Not in Compliance{% endif %}</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
         </div>
         <div class="col-md-2"></div>
     </div>

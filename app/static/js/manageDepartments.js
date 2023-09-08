@@ -2,10 +2,15 @@
 $("#admin").collapse("show");
 
 $(document).ready( function(){
-    x = $('#departmentsTable');
+    x = $('#activeDepartmentsTable');
     //console.log(x);
     x.DataTable({
         pageLength: 25
+    });
+
+    y = $('#inactiveDepartmentsTable');
+    y.DataTable({
+      pageLength: 25
     });
 });
 
