@@ -32,10 +32,15 @@ def manage_departments():
         for dept in departmentTracy:
             d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
             d.save()
-        department = Department.select()
+
+
+        departmentActive = Department.select().where(Department.isActive)
+        departmentInactive = Department.select().where(Department.isActive == False)
+        
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
-                                department = department
+                                departmentActive = departmentActive,
+                                departmentInactive = departmentInactive
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)

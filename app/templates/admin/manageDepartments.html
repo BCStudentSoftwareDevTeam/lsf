@@ -55,7 +55,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for department in department %}
+                {% for department in departmentActive %}
                 <tr>
                   <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                   <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
@@ -81,7 +81,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for department in department %} <!-- Beans: Need to change this once we split the input into two separate lists. -->
+                {% for department in departmentInactive %} <!-- Beans: Need to change this once we split the input into two separate lists. -->
                 <tr>
                   <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                   <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
