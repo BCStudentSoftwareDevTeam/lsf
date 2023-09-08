@@ -12,6 +12,20 @@ $(document).ready( function(){
     y.DataTable({
       pageLength: 25
     });
+
+    $("#activeTab").on("click", function() {
+      $("#activeTab").addClass("active");
+      $("#inactiveTab").removeClass("active");
+      $("#activeTable").show();
+      $("#inactiveTable").hide();
+    })
+
+    $("#inactiveTab").on("click", function() {
+      $("#activeTab").removeClass("active");
+      $("#inactiveTab").addClass("active");
+      $("#activeTable").hide();
+      $("#inactiveTable").show();
+    })
 });
 
 function status(department, dept_name) {
