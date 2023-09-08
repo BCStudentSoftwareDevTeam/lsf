@@ -221,18 +221,18 @@
         <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Adjustment Form</button></a>
       {% endif %}
       {% if buttonState.evaluate %}
-        <a id="sle" href="#">
-          <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Evaluate
-          </button>
-          </a>
-        </div>
+            <a id="sle" href="#">
+              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Evaluate
+              </button>
+            </a>
+          </div>
       {% endif %}
       {% if buttonState.evaluation_exists %}
-        <a id="sle" href="#">
-          <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Show Evaluation
-          </button>
-          </a>
-        </div>
+            <a id="sle" href="#">
+              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Show Evaluation
+              </button>
+            </a>
+          </div>
       {% endif %}
       <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitToBanner({{statusForm.laborStatusFormID}})">Submit to Banner</button>      
     {% endif %}
