@@ -50,7 +50,7 @@ def createUser(username, student=None, supervisor=None):
 
     return user
 
-def updateDBRecords():
+def updatePersonRecords():
     """
     This function will update all student and supervisor records according to
     Tracy data.

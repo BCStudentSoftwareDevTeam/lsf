@@ -1,6 +1,7 @@
-from app.logic.userInsertFunctions import updateDBRecords
+from app.logic.userInsertFunctions import updatePersonRecords
 
-studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed = updateDBRecords()
+
+studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed = updatePersonRecords()
 print("Students updated: " + str(studentsUpdated))
 print("Students failed: " + str(studentsFailed))
 print("Supervisors updated: " + str(supervisorsUpdated))
