@@ -10,6 +10,7 @@ from app.models.term import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.department import *
+from app.models.Tracy.stuposn import STUPOSN
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date
@@ -75,6 +76,8 @@ def updatePersonRecords():
             supervisorsFailed = supervisorsFailed + 1
     return studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed
 
+
+
 def updateUserFromTracy(user):
     """
         Takes user object and determines if it is a student user or a supervisor user and will
@@ -128,6 +131,31 @@ def updateSupervisorRecord(supervisor):
     supervisor.ORG = tracyUser.ORG
     supervisor.DEPT_NAME = tracyUser.DEPT_NAME
     supervisor.save()
+
+def updatePositionRecords():
+    departmentsInDB = Department.select()
+    departmentsUpdated = 0
+    departmentsFailed = 0
+
+    for department in departmentsInDB:
+        try:
+            updateDepartmentRecord(department)
+            departmentsUpdated += 1
+        except Exception as e:
+            departmentsFailed += 1
+
+    return departmentsUpdated, departmentsFailed
+
+
+def updateDepartmentRecord(department):
+    tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == Department.ORG) & (STUPOSN.ACCOUNT == Department.ACCOUNT)).first()
+
+    if tracyDepartment is None:
+        raise InvalidQueryException(" Department ({department.ORG}, {department.ACCOUNT})  not found ")
+    
+    department.DEPT_NAME = tracyDepartment.DEPT_NAME
+    department.save()
+
 
 def createSupervisorFromTracy(username=None, bnumber=None):
     """
