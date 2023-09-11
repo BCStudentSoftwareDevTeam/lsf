@@ -258,8 +258,7 @@ def submitToBanner(form_id):
         
         # Add to Banner only if the form is approved
         if form_history.status.statusName == "Approved":
-            history_type_data = FormHistory.get(FormHistory.formID == int(form_id))
-            history_type = str(history_type_data.historyType)
+            history_type = str(form_history.historyType)
             labor_form = FormHistory.get(FormHistory.formID == int(form_id), FormHistory.historyType == history_type)
     
             conn = Banner()
