@@ -136,9 +136,10 @@ def updatePositionRecords():
     departmentsInDB = Department.select()
     departmentsUpdated = 0
     departmentsFailed = 0
-
+    
     for department in departmentsInDB:
         try:
+            department.isActive = False
             updateDepartmentRecord(department)
             departmentsUpdated += 1
         except Exception as e:
@@ -148,12 +149,14 @@ def updatePositionRecords():
 
 
 def updateDepartmentRecord(department):
-    tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == Department.ORG) & (STUPOSN.ACCOUNT == Department.ACCOUNT)).first()
+    tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == department.ORG) & (STUPOSN.ACCOUNT == department.ACCOUNT)).first()
 
     if tracyDepartment is None:
         raise InvalidQueryException(" Department ({department.ORG}, {department.ACCOUNT})  not found ")
+        
     
     department.DEPT_NAME = tracyDepartment.DEPT_NAME
+    department.isActive = bool(tracyDepartment)
     department.save()
 
 
