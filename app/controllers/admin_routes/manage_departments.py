@@ -34,13 +34,13 @@ def manage_departments():
             d.save()
 
 
-        departmentActive = Department.select().where(Department.isActive)
-        departmentInactive = Department.select().where(Department.isActive == False)
+        activeDepartments = Department.select().where(Department.isActive)
+        inactiveDepartments = Department.select().where(Department.isActive == False)
         
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
-                                departmentActive = departmentActive,
-                                departmentInactive = departmentInactive
+                                activeDepartments = activeDepartments,
+                                inactiveDepartments = inactiveDepartments
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
