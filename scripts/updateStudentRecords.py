@@ -1,14 +1,17 @@
 from app.logic.userInsertFunctions import updatePersonRecords, updatePositionRecords
 
 
-studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed = updatePersonRecords()
-print("Students updated: " + str(studentsUpdated))
+studentsFound, studentsNotFound, studentsFailed, supervisorsFound, supervisorsNotFound, supervisorsFailed = updatePersonRecords()
+print("Students updated: " + str(studentsFound))
+print("Students not found: " + str(studentsNotFound))
 print("Students failed: " + str(studentsFailed))
-print("Supervisors updated: " + str(supervisorsUpdated))
+print("Supervisors updated: " + str(supervisorsFound))
+print("Supervisors not found: " + str(supervisorsNotFound))
 print("Supervisors failed: " + str(supervisorsFailed))
-print("Total Person updates: " + str(studentsUpdated + supervisorsUpdated))
+print("Total Person updates: " + str(studentsFound + supervisorsFound))
 print("Total Person fails: " + str(studentsFailed + supervisorsFailed))
-departmentsUpdated, departmentsFailed = updatePositionRecords()
+departmentsUpdated, departmentsNotFound, departmentsFailed = updatePositionRecords()
 print("Departments updated: " + str(departmentsUpdated))
+print("Departments not found: " + str(departmentsNotFound))
 print("Departments failed: " + str(departmentsFailed))
 

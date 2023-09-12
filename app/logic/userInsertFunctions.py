@@ -58,23 +58,29 @@ def updatePersonRecords():
     """
     studentsInDB = Student.select()
     supervisorsInDB = Supervisor.select()
-    studentsUpdated = 0
+    studentsFound = 0
+    studentsNotFound = 0
     studentsFailed = 0
-    supervisorsUpdated = 0
+    supervisorsFound = 0
+    supervisorsNotFound = 0
     supervisorsFailed = 0
     for student in studentsInDB:
         try:
             updateStudentRecord(student)
-            studentsUpdated = studentsUpdated + 1
+            studentsFound = studentsFound + 1
+        except InvalidQueryException as e:
+            studentsNotFound = studentsNotFound + 1
         except Exception as e:
             studentsFailed = studentsFailed + 1
     for supervisor in supervisorsInDB:
         try:
             updateSupervisorRecord(supervisor)
-            supervisorsUpdated = supervisorsUpdated + 1
+            supervisorsFound = supervisorsFound + 1
+        except InvalidQueryException as e:
+            supervisorsNotFound = supervisorsNotFound + 1
         except Exception as e:
             supervisorsFailed = supervisorsFailed + 1
-    return studentsUpdated, studentsFailed, supervisorsUpdated, supervisorsFailed
+    return studentsFound, studentsNotFound, studentsFailed, supervisorsFound, supervisorsNotFound, supervisorsFailed
 
 
 
@@ -135,28 +141,30 @@ def updateSupervisorRecord(supervisor):
 def updatePositionRecords():
     departmentsInDB = Department.select()
     departmentsUpdated = 0
+    departmentsNotFound = 0
     departmentsFailed = 0
     
     for department in departmentsInDB:
         try:
-            department.isActive = False
             updateDepartmentRecord(department)
             departmentsUpdated += 1
+        except InvalidQueryException as e:
+            departmentsNotFound += 1
         except Exception as e:
             departmentsFailed += 1
 
-    return departmentsUpdated, departmentsFailed
+    return departmentsUpdated, departmentsNotFound, departmentsFailed
 
 
 def updateDepartmentRecord(department):
     tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == department.ORG) & (STUPOSN.ACCOUNT == department.ACCOUNT)).first()
 
+    department.isActive = bool(tracyDepartment)
     if tracyDepartment is None:
         raise InvalidQueryException(" Department ({department.ORG}, {department.ACCOUNT})  not found ")
         
     
     department.DEPT_NAME = tracyDepartment.DEPT_NAME
-    department.isActive = bool(tracyDepartment)
     department.save()
 
 
