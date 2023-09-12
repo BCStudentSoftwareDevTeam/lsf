@@ -15,15 +15,15 @@ $(document).ready( function(){
 
     $("#activeTab").on("click", function() {
       $("#activeTab").addClass("active");
-      $("#inactiveTab").removeClass("active");
       $("#activeTable").show();
+      $("#inactiveTab").removeClass("active");
       $("#inactiveTable").hide();
     })
 
     $("#inactiveTab").on("click", function() {
       $("#activeTab").removeClass("active");
-      $("#inactiveTab").addClass("active");
       $("#activeTable").hide();
+      $("#inactiveTab").addClass("active");
       $("#inactiveTable").show();
     })
 });

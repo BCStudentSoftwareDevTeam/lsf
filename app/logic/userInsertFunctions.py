@@ -161,7 +161,7 @@ def updateDepartmentRecord(department):
 
     department.isActive = bool(tracyDepartment)
     if tracyDepartment is None:
-        raise InvalidQueryException(" Department ({department.ORG}, {department.ACCOUNT})  not found ")
+        raise InvalidQueryException("Department ({department.ORG}, {department.ACCOUNT}) not found")
         
     
     department.DEPT_NAME = tracyDepartment.DEPT_NAME
