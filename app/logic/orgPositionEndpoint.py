@@ -5,6 +5,7 @@ from app import app
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
+from app.models.term import Term
 
 def getFormsForOrg(orgCode):
     '''
@@ -16,12 +17,14 @@ def getFormsForOrg(orgCode):
                               .where(Department.ORG == orgCode))
 
     deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, 
-                                        LaborStatusForm.termCode_id, 
+                                        LaborStatusForm.termCode, 
                                         LaborStatusForm.POSN_TITLE,
                                         LaborStatusForm.startDate, 
                                         LaborStatusForm.endDate,  
                                         LaborStatusForm.jobType, 
-                                        LaborStatusForm.WLS)
+                                        LaborStatusForm.WLS,
+                                        )
+                                .join(Term).switch(LaborStatusForm)
                                 .join(FormHistory)
                                 .where(LaborStatusForm.department_id.in_(givenOrgCode), 
                                        FormHistory.status_id == "Approved")
@@ -36,6 +39,7 @@ def getFormsForOrg(orgCode):
                                                               "laborStart":laborForm.startDate, 
                                                               "laborEnd":laborForm.endDate, 
                                                               "jobType":laborForm.jobType, 
-                                                              "wls":laborForm.WLS})
+                                                              "wls":laborForm.WLS,
+                                                              "termName": laborForm.termCode.termName})
 
     return jsonify(laborFormDict)
