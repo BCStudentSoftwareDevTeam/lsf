@@ -58,16 +58,9 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
-from app.logic.orgPositionEndpoint import getFormsForOrg
-from app.models.department import Department
-@app.route('/api/org/<orgCode>', methods=['GET'])
-def getLaborForms(orgCode):
-    # TODO: Need to add authentication
-    if Department.select().where(Department.ORG == orgCode).exists():
-        return getFormsForOrg(orgCode)
-    else: 
-        abort(404)
-    
+from app.controllers.api_routes import api_bp as api_bp
+app.register_blueprint(api_bp)
+
 from flask import g
 from app.models.user import User
 from app.login_manager import require_login
