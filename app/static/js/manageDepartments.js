@@ -2,14 +2,13 @@
 $("#admin").collapse("show");
 
 $(document).ready( function(){
-    x = $('#activeDepartmentsTable');
-    //console.log(x);
-    x.DataTable({
+    activeDepartmentsTable = $('#activeDepartmentsTable');
+    activeDepartmentsTable.DataTable({
         pageLength: 25
     });
 
-    y = $('#inactiveDepartmentsTable');
-    y.DataTable({
+    inactiveDepartmentsTable = $('#inactiveDepartmentsTable');
+    inactiveDepartmentsTable.DataTable({
       pageLength: 25
     });
 
