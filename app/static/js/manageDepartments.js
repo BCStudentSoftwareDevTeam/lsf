@@ -7,17 +7,20 @@ $(document).ready( function(){
     x.DataTable({
         pageLength: 25
     });
-    $('#departmentsTable').on('draw.dt', function() {
-      $('.supervisorDeptModal').on('click', function(){
-        console.log(this.id)
-        getSupervisorDepartments(this.id)
-        console.log("Beans")
-        $('#manageDepartmentSupervisorModal').modal('show')
-      })
-    })
+
+    attachModalsToDepartment()
+    $('#departmentsTable').on('draw.dt', attachModalsToDepartment)
     $('#manageDepartmentSupervisorModal').on('blur', emptyManageDepartmentSupervisorModal)
     $('#closeManageDepartmentSupervisorModal').on('click', emptyManageDepartmentSupervisorModal)
+    
 });
+
+function attachModalsToDepartment() {
+    $('.supervisorDeptModal').on('click', function(){
+        getSupervisorDepartments(this.id)
+        $('#manageDepartmentSupervisorModal').modal('show')
+    })
+}
 
 function emptyManageDepartmentSupervisorModal() {
   $('#manageDepartmentSupervisorModal').modal('hide')
