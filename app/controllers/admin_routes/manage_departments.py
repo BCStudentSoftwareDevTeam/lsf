@@ -1,5 +1,6 @@
 from app.controllers.admin_routes import *
 from app.models.user import *
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.login_manager import require_login
 from app.logic.search import getSupervisorsForDepartment
 from app.controllers.admin_routes import admin
@@ -31,13 +32,15 @@ def manage_departments():
                 return render_template('errors/403.html'), 403
 
         departmentTracy = Tracy().getDepartments()
+        allSupervisors= Supervisor.select()
         for dept in departmentTracy:
             d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
             d.save()
         department = Department.select()
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
-                                department = department
+                                department = department,
+                                allSupervisors = allSupervisors
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
@@ -45,7 +48,6 @@ def manage_departments():
 
 @admin.route("/admin/manageDepartments/<currentDepartment>", methods=['GET'])
 def getSupervisorsinDepartment(currentDepartment):
-    print("/"*100)
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -58,12 +60,26 @@ def getSupervisorsinDepartment(currentDepartment):
         
         supervisors = getSupervisorsForDepartment(currentDepartment)
         currentDepartment=Department.get_by_id(currentDepartment)
-        print("/"*1000)
         supervisors= [model_to_dict(supervisor) for supervisor in supervisors]
-        print(supervisors)
         return jsonify([model_to_dict(currentDepartment), supervisors])
     except Exception as e:
         return render_template('errors/500.html'), 500
+    
+@admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
+def removeSupervisorFromDepartment():
+    supervisorDeptRecord=request.form
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = supervisorDeptRecord['supervisor'], department = supervisorDeptRecord['department'])
+    try:
+        if supervisorDeptRecord:
+            supervisorDeptRecord.delete_instance()
+            return "True"
+
+        else:
+            return "False"
+    
+    except Exception as e:
+        print(f'Could not add user to department: {e}')
+        return "", 500
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():

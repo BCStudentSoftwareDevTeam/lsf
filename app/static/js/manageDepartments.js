@@ -10,36 +10,98 @@ $(document).ready( function(){
 
     attachModalsToDepartment()
     $('#departmentsTable').on('draw.dt', attachModalsToDepartment)
-    $('#manageDepartmentSupervisorModal').on('blur', emptyManageDepartmentSupervisorModal)
-    $('#closeManageDepartmentSupervisorModal').on('click', emptyManageDepartmentSupervisorModal)
-    
+    $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
+      $('#manageDepartmentSupervisorModal').modal('hide')
+      $('.changing-content').empty()  
+    })
+    $('#manageDepartmentSupervisorModal').on('shown.bs.modal', function() {
+      $('.removeSupervisorFromDepartment').on('click', removeSupervisorFromDepartment)
+    })
 });
 
+
+function updateModal(departmentID) {
+  $('.changing-content').empty() 
+  getSupervisorDepartments(departmentID)
+}
+
 function attachModalsToDepartment() {
-    $('.supervisorDeptModal').on('click', function(){
-        getSupervisorDepartments(this.id)
-        $('#manageDepartmentSupervisorModal').modal('show')
+    $('.supervisorDeptModal').on('click', function() {
+      getSupervisorDepartments(this.id)
     })
 }
 
-function emptyManageDepartmentSupervisorModal() {
-  $('#manageDepartmentSupervisorModal').modal('hide')
-  $('.changing-content').empty()
-}
+
+
+// Stole from Finn's work review to ensure functionality
+$("#addSupervisorsToDepartmentSubmit").on('click', function () {
+  let supervisor = $('#supervisorModalSelect :selected').val()
+  let department = $('#departmentModalSelect').data('department-id')
+  let data = {"supervisor": supervisor, "department": department}
+  $.ajax({
+    method: "POST",
+    url: `/supervisorPortal/addUserToDept`,
+    data: data,
+    success: function(response) {
+      if (response == "True") {
+        msgFlash("Supervisor has been added to department.", 'success')
+      } else {
+        msgFlash("Supervisor is already a member of this department.", "warning")
+      }
+    },
+    error: function() {
+      msgFlash("Failed to add supervisor, please try again.", "fail")
+    },
+  })
+})
+
+
 
 function getSupervisorDepartments(departmentID) {
-  $.ajax({
+    $.ajax({
     method: "GET",
     url: `/admin/manageDepartments/${departmentID}`,
     success: function(departmentsAndSupervisors) {
       let currentDepartment=departmentsAndSupervisors[0]
       let supervisors=departmentsAndSupervisors[1]
-      $('#manageSupervisorContent .modal-header .changing-content').append("<p>"+currentDepartment['DEPT_NAME']+"</p>")
+      $('#manageSupervisorContent .modal-header .changing-content')
+            .append(`<h2 id="departmentModalSelect" data-department-id="${currentDepartment['departmentID']}">
+                          ${currentDepartment['DEPT_NAME']}
+                     </h2>`)
       for (let i=0; i<supervisors.length; i++) {
-        $('#manageSupervisorContent .modal-body .changing-content').append(`<p>${supervisors[i]['ID']} ${supervisors[i]['preferred_name']} ${supervisors[i]['LAST_NAME']}</p>`)
-      }
+        $('#manageSupervisorContent .modal-body .changing-content')
+              .append(`<div class="row form-group">
+                        <div class="col">${supervisors[i]['ID']} ${supervisors[i]['preferred_name']} ${supervisors[i]['LAST_NAME']}</div>
+                        <div class='btn btn-danger col removeSupervisorFromDepartment' 
+                          data-supervisor="${supervisors[i]['ID']}" 
+                          data-department="${currentDepartment['departmentID']}" 
+                          id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
+                      </div>`)}
+      $('#manageDepartmentSupervisorModal').modal('show')
     }
-  })
+    })
+  }
+
+function removeSupervisorFromDepartment () {
+  let department = $(`#${this.id}`).data('department')
+  let supervisor = $(`#${this.id}`).data('supervisor')
+  let data = {"supervisor": supervisor, "department": department}
+  $.ajax({
+    method: "POST",
+    url: "/admin/manageDepartments/removeSupervisorFromDepartment",
+    data: data,
+    success: function(response) {
+        if (response == "True") {
+          msgFlash("Supervisor has been removed from department.", 'success')
+          updateModal(department)
+        } else {
+          msgFlash("Supervisor is not a member of this department.", "warning")
+        }
+      },
+      error: function() {
+        msgFlash("Failed to remove supervisor, please try again.", "fail")
+      },
+    })
 }
 
 function status(department, dept_name) {
