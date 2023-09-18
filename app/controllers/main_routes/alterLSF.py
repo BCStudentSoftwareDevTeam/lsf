@@ -142,10 +142,8 @@ def submitAlteredLSF(laborStatusKey):
         currentDate = datetime.now().strftime("%Y-%m-%d")
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
-        print(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
         formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)
-        print(formStatus)
         formHistoryIDs = []
         lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
         for fieldName in fieldsChanged:
@@ -176,7 +174,6 @@ def submitAlteredLSF(laborStatusKey):
                                                                                                     student.studentSupervisee.FIRST_NAME,
                                                                                                     student.studentSupervisee.LAST_NAME)
         flash(message, "danger")
-        raise e
         print("An error occured during form submission:", e)
         return jsonify({"Success": False}), 500
 
@@ -251,7 +248,7 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
                                            status       = status.statusName)
         
         if fieldName == "weeklyHours":
-            newWeeklyHours = fieldsChanged[fieldName]['newValue']
+            newWeeklyHours = int(fieldsChanged[fieldName]['newValue'])
             createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedforms.adjustedFormID, adjustedFormHistory,host=host)
 
         return adjustedFormHistory.formHistoryID
@@ -270,12 +267,8 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
     if allTermForms:
         for statusForm in allTermForms:
             previousTotalHours += statusForm.weeklyHours
-    print(f"previousTotalHours (Calculated from allTermForms): {previousTotalHours}") # beans
     changeInHours = newWeeklyHours - lsf.weeklyHours
     newTotalHours = previousTotalHours + changeInHours
-    print(f"newWeeklyHours (The one that's a parameter): {newWeeklyHours}") # beans
-    print(f"NewTotalHours (Calculated via adding the change in hours {changeInHours}): {newTotalHours}") # beans
-    print('*'*1000)
 
     if previousTotalHours <= 15 and newTotalHours > 15:  # If we weren't overloading and now we are
         newLaborOverloadForm = OverloadForm.create(studentOverloadReason = "None")
@@ -308,8 +301,6 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
 
     # This will delete an overload form after the hours are changed
     elif previousTotalHours > 15 and newTotalHours <= 15:  # If we were overloading and now we aren't
-            print("We're going to delete your overload form now!")
-            print('*'*1000)
             deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
             deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm.overloadFormID)
             deleteOverloadForm.delete_instance()
