@@ -1,4 +1,5 @@
-from flask import Flask, abort
+from flask import Flask
+from flask_restful import Api
 import yaml
 from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
@@ -7,6 +8,7 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+api = Api(app)
 # login = LoginManager(app)  #FIXME: needs configured with our dev/prod environment handlers
 
 def load_config(file):
@@ -58,8 +60,8 @@ app.register_blueprint(admin_bp)
 from app.controllers.errors_routes import error as errors_bp
 app.register_blueprint(errors_bp)
 
-from app.controllers.api_routes import api_bp as api_bp
-app.register_blueprint(api_bp)
+from app.controllers.api_routes.routes import initializeApiRoutes
+initializeApiRoutes(api)
 
 from flask import g
 from app.models.user import User
