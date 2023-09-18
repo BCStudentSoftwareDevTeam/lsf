@@ -7,7 +7,6 @@ from app.models.formHistory import FormHistory
 from app.models.term import Term
 
 def getLaborInformation(orgCode = "", bNumber = ""):
-    #TODO: need to add tests. 
 
     if not orgCode:
         # The default right now is just to search within CELTS Departments, so setting it 
