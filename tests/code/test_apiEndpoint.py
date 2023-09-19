@@ -8,4 +8,5 @@ def test_getLaborInformation():
     with app.test_request_context():
 
         bla = getLaborInformation(bNumber = "B00841417")
+        # returns a request object, need to create a mock get request and then unpack?
         print(bla)
