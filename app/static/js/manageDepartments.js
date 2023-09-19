@@ -13,9 +13,7 @@ $(document).ready( function(){
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
       $('#manageDepartmentSupervisorModal').modal('hide')
       $('.changing-content').empty()  
-    })
-    $('#manageDepartmentSupervisorModal').on('shown.bs.modal', function() {
-      $('.removeSupervisorFromDepartment').on('click', removeSupervisorFromDepartment)
+      clearDropdown()
     })
 });
 
@@ -39,6 +37,7 @@ $("#addSupervisorsToDepartmentSubmit").on('click', function() {
   let department = $('#departmentModalSelect').data('department-id')
   let data = {"supervisor": supervisor, "department": department}
   addSupervisorToDepartment(data)
+  updateModal(department)
 })
 
 
@@ -55,15 +54,17 @@ function getSupervisorDepartments(departmentID) {
                           ${currentDepartment['DEPT_NAME']}
                      </h2>`)
       for (let i=0; i<supervisors.length; i++) {
+        let supervisorFirstName= supervisors[i]['preferred_name'] ? supervisors[i]['preferred_name'] : supervisors[i]['legal_name']
         $('#manageSupervisorContent .modal-body .changing-content')
-              .append(`<div class="row form-group">
-                        <div class="col">${supervisors[i]['ID']} ${supervisors[i]['preferred_name']} ${supervisors[i]['LAST_NAME']}</div>
-                        <div class='btn btn-danger col removeSupervisorFromDepartment' 
+              .append(`<div class="row">
+                        <div class="col-xs-10">${supervisors[i]['ID']} ${supervisorFirstName} ${supervisors[i]['LAST_NAME']}</div>
+                        <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
                           data-supervisor="${supervisors[i]['ID']}" 
                           data-department="${currentDepartment['departmentID']}" 
                           id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
-                      </div>`)}
+                      </div><br>`)}
       $('#manageDepartmentSupervisorModal').modal('show')
+      $('.removeSupervisorFromDepartment').on('click', removeSupervisorFromDepartment)
     }
     })
   }
