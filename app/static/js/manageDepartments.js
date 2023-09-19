@@ -34,25 +34,11 @@ function attachModalsToDepartment() {
 
 
 // Stole from Finn's work review to ensure functionality
-$("#addSupervisorsToDepartmentSubmit").on('click', function () {
+$("#addSupervisorsToDepartmentSubmit").on('click', function() {
   let supervisor = $('#supervisorModalSelect :selected').val()
   let department = $('#departmentModalSelect').data('department-id')
   let data = {"supervisor": supervisor, "department": department}
-  $.ajax({
-    method: "POST",
-    url: `/supervisorPortal/addUserToDept`,
-    data: data,
-    success: function(response) {
-      if (response == "True") {
-        msgFlash("Supervisor has been added to department.", 'success')
-      } else {
-        msgFlash("Supervisor is already a member of this department.", "warning")
-      }
-    },
-    error: function() {
-      msgFlash("Failed to add supervisor, please try again.", "fail")
-    },
-  })
+  addSupervisorToDepartment(data)
 })
 
 
