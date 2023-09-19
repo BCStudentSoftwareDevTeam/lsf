@@ -32,7 +32,7 @@ def manage_departments():
                 return render_template('errors/403.html'), 403
 
         departmentTracy = Tracy().getDepartments()
-        allSupervisors= Supervisor.select()
+        allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         for dept in departmentTracy:
             d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
             d.save()

@@ -9,7 +9,10 @@ $(document).ready( function(){
     });
 
     attachModalsToDepartment()
-    $('#departmentsTable').on('draw.dt', attachModalsToDepartment)
+    $('#departmentsTable').on('draw.dt', function() {
+      updateModal()
+      attachModalsToDepartment()
+    })
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
       $('#manageDepartmentSupervisorModal').modal('hide')
       $('.changing-content').empty()  
