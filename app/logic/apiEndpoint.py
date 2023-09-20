@@ -1,4 +1,5 @@
 from flask import jsonify
+from datetime import datetime
 from app.config.loadConfig import*
 
 from app.models.laborStatusForm import LaborStatusForm
@@ -32,17 +33,15 @@ def getLaborInformation(orgCode = "", bNumber = ""):
 
     if bNumber: 
         deptLabor = deptLabor.where(LaborStatusForm.studentSupervisee_id == bNumber)        
-
     laborFormDict = {}
     for laborForm in deptLabor:
         if laborForm.studentSupervisee_id not in laborFormDict:
             laborFormDict[laborForm.studentSupervisee_id] = []
         laborFormDict[laborForm.studentSupervisee_id].append({"positionTitle": laborForm.POSN_TITLE, 
                                                               "termCode":laborForm.termCode_id, 
-                                                              "laborStart":laborForm.startDate, 
-                                                              "laborEnd":laborForm.endDate, 
+                                                              "laborStart":datetime.strftime(laborForm.startDate, "%Y-%m-%d"), 
+                                                              "laborEnd":datetime.strftime(laborForm.endDate, "%Y-%m-%d") , 
                                                               "jobType":laborForm.jobType, 
                                                               "wls":laborForm.WLS,
                                                               "termName": laborForm.termCode.termName})
-
     return jsonify(laborFormDict)
