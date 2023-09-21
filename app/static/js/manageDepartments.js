@@ -8,13 +8,11 @@ $(document).ready( function(){
         pageLength: 25
     });
 
-    attachModalsToDepartment()
+    attachModalToDepartment()
     $('#departmentsTable').on('draw.dt', function() {
-      updateModal()
-      attachModalsToDepartment()
+      attachModalToDepartment()
     })
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
-      $('#manageDepartmentSupervisorModal').modal('hide')
       $('.changing-content').empty()  
       clearDropdown()
     })
@@ -23,12 +21,14 @@ $(document).ready( function(){
 
 function updateModal(departmentID) {
   $('.changing-content').empty() 
-  getSupervisorDepartments(departmentID)
+  getSupervisorsInDepartment(departmentID)
 }
 
-function attachModalsToDepartment() {
+function attachModalToDepartment() {
+    $('.supervisorDeptModal').off()
     $('.supervisorDeptModal').on('click', function() {
-      getSupervisorDepartments(this.id)
+      console.log(this.id)
+      getSupervisorsInDepartment(this.id)
     })
 }
 
@@ -45,7 +45,7 @@ $("#addSupervisorsToDepartmentSubmit").on('click', function() {
 
 
 
-function getSupervisorDepartments(departmentID) {
+function getSupervisorsInDepartment(departmentID) {
     $.ajax({
     method: "GET",
     url: `/admin/manageDepartments/${departmentID}`,
@@ -53,19 +53,23 @@ function getSupervisorDepartments(departmentID) {
       let currentDepartment=departmentsAndSupervisors[0]
       let supervisors=departmentsAndSupervisors[1]
       $('#manageSupervisorContent .modal-header .changing-content')
-            .append(`<h2 id="departmentModalSelect" data-department-id="${currentDepartment['departmentID']}">
+       .replaceWith(`<h2 class='changing-content' id="departmentModalSelect" data-department-id="${currentDepartment['departmentID']}">
                           ${currentDepartment['DEPT_NAME']}
                      </h2>`)
+      
+      let supervisorContent = '<div class="changing-content">'
       for (let i=0; i<supervisors.length; i++) {
         let supervisorFirstName= supervisors[i]['preferred_name'] ? supervisors[i]['preferred_name'] : supervisors[i]['legal_name']
-        $('#manageSupervisorContent .modal-body .changing-content')
-              .append(`<div class="row">
-                        <div class="col-xs-10">${supervisors[i]['ID']} ${supervisorFirstName} ${supervisors[i]['LAST_NAME']}</div>
-                        <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
-                          data-supervisor="${supervisors[i]['ID']}" 
-                          data-department="${currentDepartment['departmentID']}" 
-                          id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
-                      </div><br>`)}
+        supervisorContent += (`<span class="row">
+                                <div class="col-xs-10">${supervisors[i]['ID']} ${supervisorFirstName} ${supervisors[i]['LAST_NAME']}</div>
+                                <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
+                                  data-supervisor="${supervisors[i]['ID']}" 
+                                  data-department="${currentDepartment['departmentID']}" 
+                                  id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
+                               </span>`)}
+      supervisorContent.concat("</div>")
+      $('#manageSupervisorContent .modal-body .changing-content').replaceWith(supervisorContent)
+      
       $('#manageDepartmentSupervisorModal').modal('show')
       $('.removeSupervisorFromDepartment').on('click', removeSupervisorFromDepartment)
     }
