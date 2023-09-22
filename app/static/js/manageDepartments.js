@@ -18,32 +18,27 @@ $(document).ready( function(){
 });
 
 
-function updateModal(departmentID) {
-  setTimeout(getSupervisorsInDepartment(departmentID), 100)
-  
-}
-
 function attachModalToDepartment() {
     $('.supervisorDeptModal').off('click')
     $('.supervisorDeptModal').on('click', function() {
       $('#manageSupervisorContent .modal-header .department-name')
-       .replaceWith(`<h2 class='department-name' id="departmentModalSelect" data-department-id="${this.id}">
-                          ${$(`#${this.id}`).html()}
-                     </h2>`)
+                .replaceWith(`<h2 class='department-name' id="departmentModalSelect" data-department-id="${this.id}">
+                                    ${$(`#${this.id}`).html()}
+                              </h2>`)
       getSupervisorsInDepartment(this.id)
     })
 }
 
 
-$("#supervisorModalSelect").on('change', function() {
+$("#supervisorModalSelect").on('change', async function() {
   let supervisor = $('#supervisorModalSelect :selected').val()
   let department = $('#departmentModalSelect').data('department-id')
   let data = {"supervisor": supervisor, "department": department}
-  addSupervisorToDepartment(data)
-  updateModal(department)
+  await addSupervisorToDepartment(data)
+  getSupervisorsInDepartment(department)
 })
 
-
+  
 
 function getSupervisorsInDepartment(departmentID) {
     $.ajax({
@@ -83,7 +78,7 @@ function removeSupervisorFromDepartment () {
     success: function(response) {
         if (response == "True") {
           msgFlash("Supervisor has been removed from department.", 'success')
-          updateModal(department)
+          getSupervisorsInDepartment(department)
         } else {
           msgFlash("Supervisor is not a member of this department.", "warning")
         }

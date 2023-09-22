@@ -10,6 +10,7 @@
 {{super()}}
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.21/b-1.6.2/datatables.min.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/manageDepartments.js') }}?u={{lastStaticUpdate}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
