@@ -28,6 +28,10 @@ h1 {
   height:10px;
   width:20px;
 }
-.complianceBtn{
+/* .complianceBtn{
   style="width:150px;
+} */
+
+#flasher{
+	z-index: 999999;
 }

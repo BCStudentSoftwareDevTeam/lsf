@@ -13,29 +13,28 @@ $(document).ready( function(){
       attachModalToDepartment()
     })
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
-      $('.changing-content').empty()  
       clearDropdown()
     })
 });
 
 
 function updateModal(departmentID) {
-  $('.changing-content').empty() 
   getSupervisorsInDepartment(departmentID)
 }
 
 function attachModalToDepartment() {
-    $('.supervisorDeptModal').off()
+    $('.supervisorDeptModal').off('click')
     $('.supervisorDeptModal').on('click', function() {
-      console.log(this.id)
+      $('#manageSupervisorContent .modal-header .department-name')
+       .replaceWith(`<h2 class='department-name' id="departmentModalSelect" data-department-id="${this.id}">
+                          ${$(`#${this.id}`).html()}
+                     </h2>`)
       getSupervisorsInDepartment(this.id)
     })
 }
 
 
-
-// Stole from Finn's work review to ensure functionality
-$("#addSupervisorsToDepartmentSubmit").on('click', function() {
+$("#supervisorModalSelect").on('change', function() {
   let supervisor = $('#supervisorModalSelect :selected').val()
   let department = $('#departmentModalSelect').data('department-id')
   let data = {"supervisor": supervisor, "department": department}
@@ -52,10 +51,6 @@ function getSupervisorsInDepartment(departmentID) {
     success: function(departmentsAndSupervisors) {
       let currentDepartment=departmentsAndSupervisors[0]
       let supervisors=departmentsAndSupervisors[1]
-      $('#manageSupervisorContent .modal-header .changing-content')
-       .replaceWith(`<h2 class='changing-content' id="departmentModalSelect" data-department-id="${currentDepartment['departmentID']}">
-                          ${currentDepartment['DEPT_NAME']}
-                     </h2>`)
       
       let supervisorContent = '<div class="changing-content">'
       for (let i=0; i<supervisors.length; i++) {
@@ -67,7 +62,7 @@ function getSupervisorsInDepartment(departmentID) {
                                   data-department="${currentDepartment['departmentID']}" 
                                   id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
                                </span>`)}
-      supervisorContent.concat("</div>")
+      supervisorContent += ("</div>")
       $('#manageSupervisorContent .modal-body .changing-content').replaceWith(supervisorContent)
       
       $('#manageDepartmentSupervisorModal').modal('show')
