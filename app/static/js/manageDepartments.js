@@ -19,7 +19,8 @@ $(document).ready( function(){
 
 
 function updateModal(departmentID) {
-  getSupervisorsInDepartment(departmentID)
+  setTimeout(getSupervisorsInDepartment(departmentID), 100)
+  
 }
 
 function attachModalToDepartment() {

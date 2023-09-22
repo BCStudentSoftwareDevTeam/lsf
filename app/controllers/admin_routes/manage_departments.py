@@ -70,6 +70,15 @@ def removeSupervisorFromDepartment():
     supervisorDeptRecord=request.form
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = supervisorDeptRecord['supervisor'], department = supervisorDeptRecord['department'])
     try:
+        currentUser = require_login()
+        if not currentUser:                    # Not logged in
+            return render_template('errors/403.html')
+        if not currentUser.isLaborAdmin:       # Not an admin
+            if currentUser.student: # logged in as a student
+                return redirect('/laborHistory/' + currentUser.student.ID)
+            elif currentUser.supervisor:
+                return render_template('errors/403.html'), 403
+            
         if supervisorDeptRecord:
             supervisorDeptRecord.delete_instance()
             return "True"
