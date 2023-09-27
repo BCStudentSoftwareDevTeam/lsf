@@ -135,6 +135,8 @@ def submitAlteredLSF(laborStatusKey):
     """
     Submits an altered LSF form and creates a formHistory entry if appropriate
     """
+    print("We're in the route correctly") # beans
+    print('*'*1000)
     try:
         currentUser = require_login()
         if not currentUser:        # Not logged in
@@ -143,11 +145,11 @@ def submitAlteredLSF(laborStatusKey):
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
-        formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)
+        formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)  # Beans, TODO: it seems like this wouldn't work if there are more than one form history values in for the form. For example, an lsf and an overload form would both have the same labor status key. Which one do we want the status for?
         formHistoryIDs = []
         lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
         for fieldName in fieldsChanged:
-            if formStatus =="Pending":
+            if formStatus =="Pending" or formStatus == "Pre-Student Approval":
                 modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
             elif formStatus =="Approved":
                 changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
@@ -179,6 +181,8 @@ def submitAlteredLSF(laborStatusKey):
 
 
 def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
+    print("modifying lsf") # beans
+    print('*'*1000)
     if fieldName == "supervisorNotes":
         noteEntry = Notes.create(formID           = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -209,6 +213,8 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         newWeeklyHours = int(fieldsChanged[fieldName]['newValue'])
         createOverloadForm(newWeeklyHours, lsf, currentUser, host=host)
         lsf.weeklyHours = newWeeklyHours
+        print(f"Updated the new weekly hours to {newWeeklyHours}") # beans
+        print('*'*1000)
         lsf.save()
 
     if fieldName == "contractHours":
@@ -225,6 +231,8 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
 
 
 def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
+    print("adjusting lsf") # beans
+    print('*'*1000)
     if fieldName == "supervisorNotes":
         newNoteEntry = Notes.create(formID        = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -304,3 +312,4 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
             deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
             deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm.overloadFormID)
             deleteOverloadForm.delete_instance()
+            FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
