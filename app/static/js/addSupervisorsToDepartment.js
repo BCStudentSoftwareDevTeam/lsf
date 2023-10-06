@@ -1,5 +1,5 @@
-function addSupervisorToDepartment(supervisorID, departmentID) {
-    $.ajax({
+function addSupervisorToDepartment(supervisorID, departmentID, callback=None) {
+    return $.ajax({
       method: "POST",
       url: `/supervisorPortal/addUserToDept`,
       data: {"supervisorID": supervisorID, "departmentID": departmentID},
@@ -11,12 +11,16 @@ function addSupervisorToDepartment(supervisorID, departmentID) {
           msgFlash("Supervisor is already a member of this department.", "warning")
           clearDropdown()
         }
+        if (callback){
+          callback()
+        }
       },
       error: function() {
         msgFlash("Failed to add supervisor, please try again.", "fail")
         clearDropdown()
       },
     })
+
 }
 
 function clearDropdown(){

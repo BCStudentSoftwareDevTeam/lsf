@@ -77,8 +77,8 @@ def removeSupervisorFromDepartment():
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
         
-        supervisorDeptRecord = request.form
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = supervisorDeptRecord['supervisorID'], department = supervisorDeptRecord['departmentID'])
+        formData = request.form
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = formData['supervisorID'], department = formData['departmentID'])
     
         if supervisorDeptRecord:
             supervisorDeptRecord.delete_instance()

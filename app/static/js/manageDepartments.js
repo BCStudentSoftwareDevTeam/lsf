@@ -33,7 +33,7 @@ function attachModalToDepartment() {
 $("#supervisorModalSelect").on('change', function() {
   let supervisorID = $('#supervisorModalSelect :selected').val()
   let departmentID = $('#departmentModalSelect').data('department-id')
-  $.when(addSupervisorToDepartment(supervisorID, departmentID)).done(getSupervisorsInDepartment(departmentID))
+  addSupervisorToDepartment(supervisorID, departmentID, ()=>getSupervisorsInDepartment(departmentID))
   
 })
 
