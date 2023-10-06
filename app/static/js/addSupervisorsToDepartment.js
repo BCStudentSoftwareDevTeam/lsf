@@ -1,8 +1,8 @@
-function addSupervisorToDepartment(data) {
+function addSupervisorToDepartment(supervisorID, departmentID) {
     $.ajax({
       method: "POST",
       url: `/supervisorPortal/addUserToDept`,
-      data: data,
+      data: {"supervisorID": supervisorID, "departmentID": departmentID},
       success: function(response) {
         if (response == "True") {
           msgFlash("Supervisor has been added to department.", 'success')

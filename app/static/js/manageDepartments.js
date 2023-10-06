@@ -30,12 +30,11 @@ function attachModalToDepartment() {
 }
 
 
-$("#supervisorModalSelect").on('change', async function() {
-  let supervisor = $('#supervisorModalSelect :selected').val()
-  let department = $('#departmentModalSelect').data('department-id')
-  let data = {"supervisor": supervisor, "department": department}
-  await addSupervisorToDepartment(data)
-  getSupervisorsInDepartment(department)
+$("#supervisorModalSelect").on('change', function() {
+  let supervisorID = $('#supervisorModalSelect :selected').val()
+  let departmentID = $('#departmentModalSelect').data('department-id')
+  $.when(addSupervisorToDepartment(supervisorID, departmentID)).done(getSupervisorsInDepartment(departmentID))
+  
 })
 
   
@@ -70,7 +69,7 @@ function getSupervisorsInDepartment(departmentID) {
 function removeSupervisorFromDepartment () {
   let department = $(`#${this.id}`).data('department')
   let supervisor = $(`#${this.id}`).data('supervisor')
-  let data = {"supervisor": supervisor, "department": department}
+  let data = {"supervisorID": supervisor, "departmentID": department}
   $.ajax({
     method: "POST",
     url: "/admin/manageDepartments/removeSupervisorFromDepartment",

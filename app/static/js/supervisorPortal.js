@@ -19,10 +19,9 @@ $(document).ready(function(){
   })
 
   $('#addUser').on('click', function() {
-      let supervisor = $('#supervisorModalSelect :selected').val()
-      let department = $('#departmentModalSelect :selected').val()
-      let data = {"supervisor": supervisor, "department": department}
-      addSupervisorToDepartment(data)
+      let supervisorID = $('#supervisorModalSelect :selected').val()
+      let departmentID = $('#departmentModalSelect :selected').val()
+      addSupervisorToDepartment(supervisorID, departmentID)
   })
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");

@@ -46,8 +46,8 @@ def manage_departments():
         print("Error Loading all Departments", e)
         return render_template('errors/500.html'), 500
 
-@admin.route("/admin/manageDepartments/<currentDepartment>", methods=['GET'])
-def getSupervisorsinDepartment(currentDepartment):
+@admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
+def getSupervisorsinDepartment(departmentID):
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -58,17 +58,15 @@ def getSupervisorsinDepartment(currentDepartment):
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
         
-        supervisors = getSupervisorsForDepartment(currentDepartment)
-        currentDepartment=Department.get_by_id(currentDepartment)
+        supervisors = getSupervisorsForDepartment(departmentID)
+        departmentID=Department.get_by_id(departmentID)
         supervisors= [model_to_dict(supervisor) for supervisor in supervisors]
-        return jsonify([model_to_dict(currentDepartment), supervisors])
+        return jsonify([model_to_dict(departmentID), supervisors])
     except Exception as e:
         return render_template('errors/500.html'), 500
     
 @admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
 def removeSupervisorFromDepartment():
-    supervisorDeptRecord=request.form
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = supervisorDeptRecord['supervisor'], department = supervisorDeptRecord['department'])
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -78,16 +76,18 @@ def removeSupervisorFromDepartment():
                 return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
-            
+        
+        supervisorDeptRecord = request.form
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = supervisorDeptRecord['supervisorID'], department = supervisorDeptRecord['departmentID'])
+    
         if supervisorDeptRecord:
             supervisorDeptRecord.delete_instance()
             return "True"
-
         else:
             return "False"
     
     except Exception as e:
-        print(f'Could not add user to department: {e}')
+        print(f'Could not remove user from department: {e}')
         return "", 500
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
