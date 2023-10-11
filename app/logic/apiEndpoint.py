@@ -31,7 +31,6 @@ def getLaborInformation(orgCode = "", bNumber = ""):
                                        FormHistory.status_id == "Approved", 
                                        FormHistory.historyType_id == "Labor Status Form")
                                 .order_by(LaborStatusForm.termCode_id))
-    print(deptLabor)
     if bNumber: 
         deptLabor = deptLabor.where(LaborStatusForm.studentSupervisee_id == bNumber)        
     laborFormDict = {}
