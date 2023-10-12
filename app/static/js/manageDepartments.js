@@ -11,6 +11,7 @@ $(document).ready( function(){
     inactiveDepartmentsTable.DataTable({
       pageLength: 25
     });
+    $("#inactiveTable").hide();
 
     $("#activeTab").on("click", function() {
       $("#activeTab").addClass("active");
