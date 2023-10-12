@@ -2,7 +2,7 @@ import sys
 import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
-from peewee import JOIN, prefetch
+from peewee import JOIN, prefetch, fn
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -47,11 +47,15 @@ def supervisorPortal():
     
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     allSupervisors = Supervisor.select()
+    supervisor_first_name = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
+    student_first_name = fn.COALESCE(Student.preferred_name, Student.legal_name)
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
-        supervisors = Supervisor.select().order_by(Supervisor.isActive.desc(), Supervisor.preferred_name, Supervisor.legal_name)
-        students = Student.select().order_by(Student.preferred_name, Student.legal_name)
+        supervisors = (Supervisor.select(Supervisor, supervisor_first_name.alias('first_name'))
+                                 .order_by(Supervisor.isActive.desc(), supervisor_first_name))
+        students = (Student.select(Student, student_first_name.alias('first_name'))
+                           .order_by(student_first_name))
 
     else:
 
@@ -60,17 +64,18 @@ def supervisorPortal():
         # convert department objects to strings
         deptNames = [department.DEPT_NAME for department in departments]
 
-        supervisors = (Supervisor.select()
+        supervisors = (Supervisor.select(Supervisor, supervisor_first_name.alias('first_name'))
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
                                  .distinct()
-                                 .order_by(Supervisor.isActive.desc(), Supervisor.preferred_name, Supervisor.legal_name))
+                                 .order_by(Supervisor.isActive.desc(), supervisor_first_name))
         
-        students = (Student.select()
+        students = (Student.select(Student, student_first_name)
                            .join_from(Student, LaborStatusForm)
                            .join_from(LaborStatusForm, Department)
                            .where(Department.DEPT_NAME.in_(deptNames))
+                           .order_by(student_first_name)
                            .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
