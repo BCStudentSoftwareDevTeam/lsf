@@ -280,6 +280,8 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
 
     if previousTotalHours <= 15 and newTotalHours > 15:  # If we weren't overloading and now we are
         newLaborOverloadForm = OverloadForm.create(studentOverloadReason = "None")
+        print("Overload form created with reason: 'None'") # beans
+        print('*'*1000)
         newFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,
                                             historyType  = "Labor Overload Form",
                                             createdBy    = currentUser,
@@ -287,6 +289,8 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                                             overloadForm = newLaborOverloadForm.overloadFormID,
                                             createdDate  = date.today(),
                                             status       = "Pre-Student Approval")
+        print(f"Form history created with formID: {lsf.laborStatusFormID}") # beans
+        print('*'*1000)
         try:
             if formHistories:
                 formHistories.status = "Pre-Student Approval"
@@ -309,7 +313,9 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
 
     # This will delete an overload form after the hours are changed
     elif previousTotalHours > 15 and newTotalHours <= 15:  # If we were overloading and now we aren't
-            deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
-            deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm.overloadFormID)
-            deleteOverloadForm.delete_instance()
-            FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
+            print(f"Trying to get formhistory with formID '{lsf.laborStatusFormID}' and history type: 'Labor Overload Form'")
+            deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))  # Beans, this has been crashing. It seems that this might be because the historyType starts as a normal Labor Status Form and isn't updated when the form becomes that of an overload
+            print("Found the form history at least") # beans
+            print('*'*1000)
+            deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm_id)
+            deleteOverloadForm.delete_instance()  # This line also deletes the Form History since it's set to cascade up in the model
