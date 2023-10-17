@@ -135,8 +135,6 @@ def submitAlteredLSF(laborStatusKey):
     """
     Submits an altered LSF form and creates a formHistory entry if appropriate
     """
-    print("We're in the route correctly") # beans
-    print('*'*1000)
     try:
         currentUser = require_login()
         if not currentUser:        # Not logged in
@@ -145,7 +143,7 @@ def submitAlteredLSF(laborStatusKey):
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
-        formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)  # Beans, TODO: it seems like this wouldn't work if there are more than one form history values in for the form. For example, an lsf and an overload form would both have the same labor status key. Which one do we want the status for?
+        formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)
         formHistoryIDs = []
         lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
         for fieldName in fieldsChanged:
@@ -181,8 +179,6 @@ def submitAlteredLSF(laborStatusKey):
 
 
 def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
-    print("modifying lsf") # beans
-    print('*'*1000)
     if fieldName == "supervisorNotes":
         noteEntry = Notes.create(formID           = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -213,8 +209,6 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         newWeeklyHours = int(fieldsChanged[fieldName]['newValue'])
         createOverloadForm(newWeeklyHours, lsf, currentUser, host=host)
         lsf.weeklyHours = newWeeklyHours
-        print(f"Updated the new weekly hours to {newWeeklyHours}") # beans
-        print('*'*1000)
         lsf.save()
 
     if fieldName == "contractHours":
@@ -231,8 +225,6 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
 
 
 def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
-    print("adjusting lsf") # beans
-    print('*'*1000)
     if fieldName == "supervisorNotes":
         newNoteEntry = Notes.create(formID        = lsf.laborStatusFormID,
                                          createdBy     = currentUser,
@@ -280,8 +272,6 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
 
     if previousTotalHours <= 15 and newTotalHours > 15:  # If we weren't overloading and now we are
         newLaborOverloadForm = OverloadForm.create(studentOverloadReason = "None")
-        print("Overload form created with reason: 'None'") # beans
-        print('*'*1000)
         newFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,
                                             historyType  = "Labor Overload Form",
                                             createdBy    = currentUser,
@@ -289,8 +279,6 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                                             overloadForm = newLaborOverloadForm.overloadFormID,
                                             createdDate  = date.today(),
                                             status       = "Pre-Student Approval")
-        print(f"Form history created with formID: {lsf.laborStatusFormID}") # beans
-        print('*'*1000)
         try:
             if formHistories:
                 formHistories.status = "Pre-Student Approval"
@@ -314,8 +302,6 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
     # This will delete an overload form after the hours are changed
     elif previousTotalHours > 15 and newTotalHours <= 15:  # If we were overloading and now we aren't
             print(f"Trying to get formhistory with formID '{lsf.laborStatusFormID}' and history type: 'Labor Overload Form'")
-            deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))  # Beans, this has been crashing. It seems that this might be because the historyType starts as a normal Labor Status Form and isn't updated when the form becomes that of an overload
-            print("Found the form history at least") # beans
-            print('*'*1000)
+            deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
             deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm_id)
-            deleteOverloadForm.delete_instance()  # This line also deletes the Form History since it's set to cascade up in the model
+            deleteOverloadForm.delete_instance()  # This line also deletes the Form History since it's set to cascade up in the model file
