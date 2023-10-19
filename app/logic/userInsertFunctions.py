@@ -139,11 +139,10 @@ def updateSupervisorRecord(supervisor):
     supervisor.save()
 
 def updatePositionRecords():
-    departmentsInDB = Department.select()
+    departmentsInDB = list(Department.select())
     departmentsUpdated = 0
     departmentsNotFound = 0
     departmentsFailed = 0
-    
     for department in departmentsInDB:
         try:
             updateDepartmentRecord(department)
