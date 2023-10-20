@@ -47,7 +47,7 @@ def manage_departments():
         return render_template('errors/500.html'), 500
 
 @admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
-def getSupervisorsinDepartment(departmentID):
+def getSupervisorsInDepartment(departmentID):
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
