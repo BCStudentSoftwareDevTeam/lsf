@@ -139,6 +139,13 @@ def updateSupervisorRecord(supervisor):
     supervisor.save()
 
 def updatePositionRecords():
+    remoteDepartments = Tracy().getDepartments()  # Create local copies of new departments in Tracy
+    departmentsPulledFromTracy = 0
+    for dept in remoteDepartments:
+        d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
+        departmentsPulledFromTracy += 1 if created else 0
+        d.save()
+
     departmentsInDB = list(Department.select())
     departmentsUpdated = 0
     departmentsNotFound = 0
@@ -152,7 +159,7 @@ def updatePositionRecords():
         except Exception as e:
             departmentsFailed += 1
 
-    return departmentsUpdated, departmentsNotFound, departmentsFailed
+    return departmentsPulledFromTracy, departmentsUpdated, departmentsNotFound, departmentsFailed
 
 
 def updateDepartmentRecord(department):
