@@ -65,6 +65,6 @@ def getDepartmentsForSupervisor(currentUser):
     alldepts = list(set(alldepts))
     return alldepts
 
-def getSupervisorsForDepartment(currentDepartment):
-    departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == currentDepartment).order_by(Supervisor.LAST_NAME).execute()
+def getSupervisorsForDepartment(departmentId):
+    departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()
     return departmentSupervisors

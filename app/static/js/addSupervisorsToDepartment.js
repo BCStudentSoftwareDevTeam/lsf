@@ -6,10 +6,10 @@ function addSupervisorToDepartment(supervisorID, departmentID, callback=None) {
       success: function(response) {
         if (response == "True") {
           msgFlash("Supervisor has been added to department.", 'success')
-          clearDropdown()
+          clearDropdowns()
         } else {
           msgFlash("Supervisor is already a member of this department.", "warning")
-          clearDropdown()
+          clearDropdowns()
         }
         if (callback){
           callback()
@@ -17,13 +17,13 @@ function addSupervisorToDepartment(supervisorID, departmentID, callback=None) {
       },
       error: function() {
         msgFlash("Failed to add supervisor, please try again.", "fail")
-        clearDropdown()
+        clearDropdowns()
       },
     })
 
 }
 
-function clearDropdown(){
+function clearDropdowns(){
     $('select.selectpicker').each(function() {
       $(`#${this.id} option:eq(0)`).prop("selected", true);
       $(`#${this.id}`).selectpicker("refresh");

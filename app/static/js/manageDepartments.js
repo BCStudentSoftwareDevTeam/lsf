@@ -13,7 +13,7 @@ $(document).ready( function(){
       attachModalToDepartment()
     })
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
-      clearDropdown()
+      clearDropdowns()
     })
 });
 

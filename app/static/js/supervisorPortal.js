@@ -25,7 +25,7 @@ $(document).ready(function(){
   })
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");
-    clearDropdown()
+    clearDropdowns()
     });
     
   $( function() {
