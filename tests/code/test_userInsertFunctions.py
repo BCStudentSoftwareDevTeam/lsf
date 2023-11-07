@@ -12,7 +12,7 @@ from app.logic.userInsertFunctions import *
 @pytest.mark.integration
 def test_createSupervisorFromTracy():
     # Test fail conditions
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidUserException):
         supervisor = createSupervisorFromTracy()
 
     with pytest.raises(InvalidUserException):
