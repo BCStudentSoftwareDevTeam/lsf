@@ -47,15 +47,15 @@ def supervisorPortal():
     
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     allSupervisors = Supervisor.select()
-    supervisor_first_name = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
-    student_first_name = fn.COALESCE(Student.preferred_name, Student.legal_name)
+    supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
+    studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
-        supervisors = (Supervisor.select(Supervisor, supervisor_first_name.alias('first_name'))
-                                 .order_by(Supervisor.isActive.desc(), supervisor_first_name))
-        students = (Student.select(Student, student_first_name.alias('first_name'))
-                           .order_by(student_first_name))
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName.alias('first_name'))
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName))
+        students = (Student.select(Student, studentFirstName.alias('first_name'))
+                           .order_by(studentFirstName))
 
     else:
 
@@ -64,18 +64,18 @@ def supervisorPortal():
         # convert department objects to strings
         deptNames = [department.DEPT_NAME for department in departments]
 
-        supervisors = (Supervisor.select(Supervisor, supervisor_first_name.alias('first_name'))
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName.alias('first_name'))
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
                                  .distinct()
-                                 .order_by(Supervisor.isActive.desc(), supervisor_first_name))
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName))
         
-        students = (Student.select(Student, student_first_name)
+        students = (Student.select(Student, studentFirstName)
                            .join_from(Student, LaborStatusForm)
                            .join_from(LaborStatusForm, Department)
                            .where(Department.DEPT_NAME.in_(deptNames))
-                           .order_by(student_first_name)
+                           .order_by(studentFirstName)
                            .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
