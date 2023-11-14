@@ -142,7 +142,8 @@ def updatePositionRecords():
     remoteDepartments = Tracy().getDepartments()  # Create local copies of new departments in Tracy
     departmentsPulledFromTracy = 0
     for dept in remoteDepartments:
-        d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
+        d, created = Department.get_or_create(ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
+        Department.DEPT_NAME = dept.DEPT_NAME
         departmentsPulledFromTracy += 1 if created else 0
         d.save()
 
