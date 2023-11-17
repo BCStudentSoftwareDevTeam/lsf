@@ -33,7 +33,7 @@ def getLaborInformation(*, orgCode = "2084", bNumber = ""):
                                         )
                                 .join(Term).switch(LaborStatusForm)
                                 .join(FormHistory)
-                                .where(LaborStatusForm.department_id.in_(orgDepartmentCode), 
+                                .where(LaborStatusForm.department_id.in_(orgDepartments), 
                                        FormHistory.status_id == "Approved", 
                                        FormHistory.historyType_id == "Labor Status Form")
                                 .order_by(LaborStatusForm.termCode_id))
