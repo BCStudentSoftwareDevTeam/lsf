@@ -13,7 +13,7 @@ class LaborFormsForDepartmentApi(Resource):
         appConfig = get_secret_cfg()
         requestersIp = request.remote_addr
 
-        if app.config['ENV'] == 'production' and not requestersIp == appConfig['VALID_REQUEST_IP']:
+        if app.config['ENV'] == 'production' and requestersIp != appConfig['VALID_REQUEST_IP']:
             abort(403)
 
         if Department.select().where(Department.ORG == orgCode).exists():
@@ -27,7 +27,7 @@ class LaborFormsForStudentApi(Resource):
         appConfig = get_secret_cfg()
         requestersIp = request.remote_addr
 
-        if app.config['ENV'] == 'production' and not requestersIp == appConfig['VALID_REQUEST_IP']:
+        if app.config['ENV'] == 'production' and requestersIp != appConfig['VALID_REQUEST_IP']:
             abort(403)
 
         if Student.select().where(Student.ID == bNumber).exists():
