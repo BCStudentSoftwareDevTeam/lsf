@@ -49,12 +49,13 @@ def supervisorPortal():
     allSupervisors = Supervisor.select()
     supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
+
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName.alias('first_name'))
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .order_by(Supervisor.isActive.desc(), supervisorFirstName))
-        students = (Student.select(Student, studentFirstName.alias('first_name'))
+        students = (Student.select(Student, studentFirstName)
                            .order_by(studentFirstName))
 
     else:
