@@ -128,7 +128,7 @@ def updateSupervisorRecord(supervisor):
     supervisor.CPO = tracyUser.CPO
     supervisor.ORG = tracyUser.ORG
     supervisor.DEPT_NAME = tracyUser.DEPT_NAME
-    supervisor.isActive = bool(tracyUser)
+    supervisor.isActive = True
     supervisor.save()
 
 def createSupervisorFromTracy(username=None, bnumber=None):
