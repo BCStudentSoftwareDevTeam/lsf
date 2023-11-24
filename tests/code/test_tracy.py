@@ -90,7 +90,7 @@ class Test_Tracy:
     @pytest.mark.integration
     def test_getDepartments(self, tracy):
         departments = tracy.getDepartments()
-        assert ['Biology','Computer Science','Mathematics','Technology and Applied Design'] == [d.DEPT_NAME for d in departments]
+        assert ['Biology','Computer Science','English','Mathematics','Technology and Applied Design'] == [d.DEPT_NAME for d in departments]
         assert '2107' == departments[0].ORG
         assert '6740' == departments[0].ACCOUNT
 

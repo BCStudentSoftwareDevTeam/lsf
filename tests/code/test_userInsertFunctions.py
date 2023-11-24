@@ -4,6 +4,7 @@ from app.models.Tracy.stustaff import STUSTAFF
 from app.models import mainDB
 from app.models.student import Student
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.Tracy import db
 from app.models.Tracy.studata import STUDATA
 from app.logic.tracy import Tracy
@@ -207,7 +208,7 @@ def test_updateStudentFromTracy():
     dbuser.student.save()
 
 @pytest.mark.integration
-def test_updateStudentDBRecords():
+def test_updateDBRecords():
     with mainDB.atomic() as transaction:
         incorrectStudent = Student.create(ID="B00751360", PIDM=2345, legal_name="NotTyler", LAST_NAME="Parton")
         updateRecordIncorrectly = Supervisor.update(legal_name="NotMadina").where(Supervisor.ID == "B00769499").execute()
@@ -217,5 +218,11 @@ def test_updateStudentDBRecords():
 
         assert incorrectStudent.FIRST_NAME == "Tyler"
         assert incorrectSupervisor.FIRST_NAME == "Madina"
+
+        incorrectDepartment = Department.create(DEPT_NAME="English", ACCOUNT="0000", ORG="0000", departmentCompliance = 1)
+        updateDepartment(incorrectDepartment)
+
+        assert "0000" != incorrectDepartment.ACCOUNT
+        assert "0000" != incorrectDepartment.ORG
 
         transaction.rollback()
