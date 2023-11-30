@@ -66,6 +66,25 @@ UPDATE laborstatusform SET department_id=160 WHERE department_id=27;
 UPDATE department SET departmentCompliance=1 WHERE departmentID=160;
 DELETE FROM department WHERE departmentID=27;
 
+-- Make id 135 the official id for all `Marketing and Communications`
+UPDATE laborstatusform SET department_id=135 WHERE department_id=81;
+UPDATE department SET departmentCompliance=1 WHERE departmentID=135;
+DELETE FROM department WHERE departmentID=81;
+
+-- Make id 176 the official id for all `Student Support Services 9/20-8/21`
+UPDATE laborstatusform SET department_id=176 WHERE department_id=166;
+UPDATE department SET departmentCompliance=1 WHERE departmentID=176;
+DELETE FROM department WHERE departmentID=166;
+
+-- Make id 142 the official id for all `Finance Office - Student Payroll - SSC/Cashiering`
+UPDATE laborstatusform SET department_id=142 WHERE department_id=9;
+UPDATE department SET departmentCompliance=1 WHERE departmentID=142;
+DELETE FROM department WHERE departmentID=9;
+
+-- Make id 154 the official id for all `Residence Halls - Grounds-Adams`
+UPDATE laborstatusform SET department_id=154 WHERE department_id=53;
+UPDATE department SET departmentCompliance=1 WHERE departmentID=154;
+DELETE FROM department WHERE departmentID=53;
 
 /*
 -- Make id  the official id for all ``
