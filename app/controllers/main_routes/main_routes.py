@@ -65,7 +65,7 @@ def supervisorPortal():
         # convert department objects to strings
         deptNames = [department.DEPT_NAME for department in departments]
 
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName.alias('first_name'))
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
