@@ -135,7 +135,7 @@ def checkForPrimaryOrSecondLSFBreak(termCode, student, isOneLSF=None):
 @main_bp.route("/laborstatusform/getcompliance/<department>", methods=["GET"])
 def checkCompliance(department):
     """ Gets the compliance status of a department. """
-    depts = Department.select().where(Department.ORG == department)
+    depts = Department.select().where(Department.ORG == department, Department.isActive == True)
     deptDict = {}
     for dept in depts:
         deptDict['Department'] = {'Department Compliance': dept.departmentCompliance}
