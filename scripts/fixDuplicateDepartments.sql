@@ -86,6 +86,11 @@ UPDATE laborstatusform SET department_id=154 WHERE department_id=53;
 UPDATE department SET departmentCompliance=1 WHERE departmentID=154;
 DELETE FROM department WHERE departmentID=53;
 
+-- Make id 117 the official id for all `Student Engagement Fee`
+UPDATE laborstatusform SET department_id=117 WHERE department_id=156;
+UPDATE department SET departmentCompliance=1 WHERE departmentID=117;
+DELETE FROM department WHERE departmentID=156;
+
 /*
 -- Make id  the official id for all ``
 UPDATE laborstatusform SET department_id= WHERE department_id=;
