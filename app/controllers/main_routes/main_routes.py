@@ -48,17 +48,14 @@ def supervisorPortal():
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     allSupervisors = Supervisor.select()
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = Department.select().order_by(Department.DEPT_NAME.asc())
+        departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments]
         supervisors = Supervisor.select().order_by(Supervisor.preferred_name, Supervisor.legal_name)
         students = Student.select().order_by(Student.preferred_name, Student.legal_name)
 
     else:
-
-        departments = getDepartmentsForSupervisor(currentUser)
-
-        # convert department objects to strings
-        departments = [department for department in departments]
+        departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
+        departments = [department for department in departments] 
         deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select()
