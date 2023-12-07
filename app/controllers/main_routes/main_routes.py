@@ -54,9 +54,9 @@ def supervisorPortal():
         departments = Department.select().order_by(Department.DEPT_NAME.asc())
         departments = [department for department in departments]
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName, Supervisor.LAST_NAME))
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
         students = (Student.select(Student, studentFirstName)
-                           .order_by(studentFirstName, Student.LAST_NAME))
+                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
 
     else:
 
@@ -70,13 +70,13 @@ def supervisorPortal():
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
                                  .distinct()
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName, Supervisor.LAST_NAME))
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
         
         students = (Student.select(Student, studentFirstName)
                            .join_from(Student, LaborStatusForm)
                            .join_from(LaborStatusForm, Department)
                            .where(Department.DEPT_NAME.in_(deptNames))
-                           .order_by(studentFirstName, Student.LAST_NAME)
+                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME)
                            .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
