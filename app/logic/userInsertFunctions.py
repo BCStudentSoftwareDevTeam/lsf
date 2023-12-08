@@ -71,9 +71,10 @@ def updatePersonRecords():
         except InvalidQueryException as e:
             studentsNotFound = studentsNotFound + 1
         except Exception as e:
-            studentsFailed = studentsFailed + 1
+            studentsFailed += 1
     for supervisor in supervisorsInDB:
         try:
+            supervisor.isActive = False
             updateSupervisorRecord(supervisor)
             supervisorsFound = supervisorsFound + 1
         except InvalidQueryException as e:
@@ -136,6 +137,7 @@ def updateSupervisorRecord(supervisor):
     supervisor.CPO = tracyUser.CPO
     supervisor.ORG = tracyUser.ORG
     supervisor.DEPT_NAME = tracyUser.DEPT_NAME
+    supervisor.isActive = True
     supervisor.save()
 
 def updatePositionRecords():

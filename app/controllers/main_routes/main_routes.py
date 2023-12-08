@@ -2,7 +2,7 @@ import sys
 import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
-from peewee import JOIN, prefetch
+from peewee import JOIN, prefetch, fn
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -47,27 +47,34 @@ def supervisorPortal():
     
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
     allSupervisors = Supervisor.select()
+    supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
+    studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
+
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments]
-        supervisors = Supervisor.select().order_by(Supervisor.preferred_name, Supervisor.legal_name)
-        students = Student.select().order_by(Student.preferred_name, Student.legal_name)
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
+        students = (Student.select(Student, studentFirstName)
+                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
 
     else:
         departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments] 
         deptNames = [department.DEPT_NAME for department in departments]
 
-        supervisors = (Supervisor.select()
+        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
                                  .where(Department.DEPT_NAME.in_(deptNames))
-                                 .distinct())
+                                 .distinct()
+                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
         
-        students = (Student.select()
+        students = (Student.select(Student, studentFirstName)
                            .join_from(Student, LaborStatusForm)
                            .join_from(LaborStatusForm, Department)
                            .where(Department.DEPT_NAME.in_(deptNames))
+                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME)
                            .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
