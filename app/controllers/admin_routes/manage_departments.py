@@ -28,14 +28,14 @@ def manage_departments():
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
 
-        departmentTracy = Tracy().getDepartments()
-        for dept in departmentTracy:
-            d, created = Department.get_or_create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG = dept.ORG)
-            d.save()
-        department = Department.select()
+
+        activeDepartments = Department.select().where(Department.isActive == True)
+        inactiveDepartments = Department.select().where(Department.isActive == False)
+        
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
-                                department = department
+                                activeDepartments = activeDepartments,
+                                inactiveDepartments = inactiveDepartments
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)

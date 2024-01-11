@@ -2,11 +2,30 @@
 $("#admin").collapse("show");
 
 $(document).ready( function(){
-    x = $('#departmentsTable');
-    //console.log(x);
-    x.DataTable({
+    activeDepartmentsTable = $('#activeDepartmentsTable');
+    activeDepartmentsTable.DataTable({
         pageLength: 25
     });
+
+    inactiveDepartmentsTable = $('#inactiveDepartmentsTable');
+    inactiveDepartmentsTable.DataTable({
+      pageLength: 25
+    });
+    $("#inactiveTable").hide();
+
+    $("#activeTab").on("click", function() {
+      $("#activeTab").addClass("active");
+      $("#activeTable").show();
+      $("#inactiveTab").removeClass("active");
+      $("#inactiveTable").hide();
+    })
+
+    $("#inactiveTab").on("click", function() {
+      $("#activeTab").removeClass("active");
+      $("#activeTable").hide();
+      $("#inactiveTab").addClass("active");
+      $("#inactiveTable").show();
+    })
 });
 
 function status(department, dept_name) {
