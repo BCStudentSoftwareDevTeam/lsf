@@ -57,8 +57,23 @@ def laborhistory(id, departmentName = None):
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
         #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
-        authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
+        # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
+        termCodeOrders = (("00", 0), ("Default", 1), ("11", 2), ("04", 3), ("01", 4), ("02", 5), ("12", 6), ("05", 7), ("03", 8), ("13", 9))
+        #Beans: The way we're getting the term codes needs some work. Namely splitting the code into year and code.
+        termCode = FormHistory.formID.termCode
+        yearColumn = fn.substring(termCode.cast("text"), 0, 4).cast("integer")
+                    #termCode.cast("text").substring(0,4).cast("integer")
+        codeColumn = fn.substring(termCode.cast("text"), 4, 6).cast("integer")
+                    #termCode.cast("text").substring(4).cast("integer")
+        orderValues = Case(codeColumn, termCodeOrders, 1)
+
+        query = authorizedForms.select(FormHistory, yearColumn.alias('year_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
+        print(query)
+        test = list(query)
+        print(test) # beans
+        print('*'*1000)
+
         
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',
