@@ -51,7 +51,7 @@ def supervisorPortal():
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
 
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = Department.select().order_by(Department.DEPT_NAME.asc())
+        departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments]
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
@@ -59,10 +59,8 @@ def supervisorPortal():
                            .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
 
     else:
-
-        departments = getDepartmentsForSupervisor(currentUser)
-
-        # convert department objects to strings
+        departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
+        departments = [department for department in departments] 
         deptNames = [department.DEPT_NAME for department in departments]
 
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)

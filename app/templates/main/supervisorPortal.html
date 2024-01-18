@@ -67,12 +67,17 @@
                 <label for="departmentSelect">Department</label>
                 <div>
                   <select class="selectpicker" id="departmentSelect" data-live-search='true' title="Department">
-                    {% if departments|count != 1%}
+                    {% if departments|count != 1 %}
                       <option value="" selected>All departments</option>
                     {% endif %}
                     {% for department in departments %}
                       <!-- We want to either select the first option, or the option that matches the department -->
-                      <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                      {% if department.isActive %}
+                        <option value="{{department.departmentID}}" data-content="{{department.DEPT_NAME}}">
+                      {% else %}
+                        <option value="{{department.departmentID}}" data-content="<div class='text-muted'>{{department.DEPT_NAME}} <small>--INACTIVE--</small></div>">
+                      {% endif %}
+                        </option>
                     {% endfor %}
                   </select>
                 </div>

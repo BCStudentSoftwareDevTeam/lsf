@@ -48,7 +48,6 @@ def getDepartmentsForSupervisor(currentUser):
     """
     # query the SupervisorDepartment table to see if any entries exist for the currentUser
     supervisorDepts = Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
-    supervisorDepts = [dept for dept in supervisorDepts]
 
     # queries all forms to see what departments the user has interacted with
     departments = (Department.select(Department)
@@ -58,11 +57,7 @@ def getDepartmentsForSupervisor(currentUser):
                     .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME)
                     .distinct()
                     )
-    departments = [dept for dept in departments]
-    alldepts = departments + supervisorDepts
-
-    # removes duplicate departments
-    alldepts = list(set(alldepts))
+    alldepts = departments.union(supervisorDepts)
     return alldepts
 
 def getSupervisorsForDepartment(departmentId):
