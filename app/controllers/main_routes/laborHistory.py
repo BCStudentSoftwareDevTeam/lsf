@@ -34,8 +34,8 @@ def laborhistory(id, departmentName = None):
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
         studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
-        FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
-        authorizedForms = set(studentForms)
+        FormHistory.historyType.historyTypeName == "Labor Status Form")
+        authorizedForms = studentForms.distinct()
         if not currentUser.isLaborAdmin:
             # View only your own form history
             if currentUser.student and not currentUser.supervisor:
@@ -51,12 +51,15 @@ def laborhistory(id, departmentName = None):
                                   .join( Department) \
                                   .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
                                   .distinct()
-                authorizedForms = set(studentForms).intersection(set(supervisorForms).union(set(deptForms)))
+                authorizedForms = studentForms.intersect(supervisorForms.union(deptForms))
 
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        authorizedForms = sorted(authorizedForms,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
+        #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
+        authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
+        #Beans: The following is the tentative order_by statement we'll be putting into a function
+        
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',
     				            title=('Labor History'),

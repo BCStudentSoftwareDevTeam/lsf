@@ -23,7 +23,7 @@
       <table class="table" id="positionTable" >
         {% for form in authorizedForms %}
         <tr>
-          <!-- If a user is a labor admin, then the value boolean is true, and allows admin access to all of a student's labor history. -->
+          {# If a user is a labor admin, then the value boolean is true, and allows admin access to all of a student's labor history. #}
           {% if currentUser.isLaborAdmin or form.formID.POSN_CODE != "S12345" or student %}
           <td id="{{form.formID.laborStatusFormID}}" class="modalLink" value="true">
             <a href="#" tabindex="0"><span class="h4">{{form.formID.termCode.termName}} - {{form.formID.department.DEPT_NAME}} Dept.</span></a>
