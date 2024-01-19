@@ -244,6 +244,35 @@ def finalUpdateStatus(raw_status):
     form_ids = eval(request.data.decode("utf-8"))
     return saveStatus(new_status, form_ids, currentUser)
 
+@admin.route('/admin/addToBanner/<form_id>', methods=['POST'])
+def submitToBanner(form_id):
+    ''' This method adds a form to Banner if it's already approved '''
+    currentUser = require_login()
+    if not currentUser:                    # Not logged in
+        return render_template('errors/403.html'), 403
+    if not currentUser.isLaborAdmin:       # Not an admin
+        return render_template('errors/403.html'), 403
+
+    try:
+        form_history = FormHistory.get(FormHistory.formID == int(form_id))
+        
+        # Add to Banner only if the form is approved
+        if form_history.status.statusName == "Approved":
+            history_type = str(form_history.historyType)
+            labor_form = FormHistory.get(FormHistory.formID == int(form_id), FormHistory.historyType == history_type)
+    
+            conn = Banner()
+            save_status = conn.insert(labor_form)
+            if save_status:
+                return jsonify({"success": True})
+            else:
+                return jsonify({"success": False}), 500
+        else:
+            return jsonify({"success": False})
+    except Exception as e:
+        print("Error adding form to Banner:", e)
+        return jsonify({"success": False}), 500
+
 def saveStatus(new_status, form_ids, currentUser):
     try:
         if new_status == 'Denied':
