@@ -50,8 +50,8 @@ function updateDatabase(overloadFormHistoryID){
      url: "/studentOverloadApp/update/" + overloadFormHistoryID,
      method: "POST",
      data: {"overloadReason": $("#notes").val()},
-     success: function() {
-        window.location.href = '/';
+     success: function(bnumber) {
+       window.location.replace("/laborHistory/" + bnumber);
      },
      error: function(e) {
          console.log(e)

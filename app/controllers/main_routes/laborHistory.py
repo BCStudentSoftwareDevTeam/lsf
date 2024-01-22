@@ -30,7 +30,7 @@ from app.logic.userInsertFunctions import getOrCreateStudentRecord
 def laborhistory(id, departmentName = None):
     try:
         currentUser = require_login()
-        if not currentUser:                    # Not logged in
+        if not currentUser:
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
         studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
