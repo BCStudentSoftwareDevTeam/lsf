@@ -62,16 +62,17 @@ def laborhistory(id, departmentName = None):
         termCodeOrders = (("00", 0), ("Default", 1), ("11", 2), ("04", 3), ("01", 4), ("02", 5), ("12", 6), ("05", 7), ("03", 8), ("13", 9))
         #Beans: The way we're getting the term codes needs some work. Namely splitting the code into year and code.
         termCode = FormHistory.formID.termCode
-        yearColumn = fn.substring(termCode.cast("text"), 0, 4).cast("integer")
-                    #termCode.cast("text").substring(0,4).cast("integer")
-        codeColumn = fn.substring(termCode.cast("text"), 4, 6).cast("integer")
-                    #termCode.cast("text").substring(4).cast("integer")
+        yearColumn = fn.substring(termCode.cast("char"), 1, 4)
+        codeColumn = fn.substring(termCode.cast("char"), 5, 6)
+        
         orderValues = Case(codeColumn, termCodeOrders, 1)
-
-        query = authorizedForms.select(FormHistory, yearColumn.alias('year_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
+        query = authorizedForms.select(FormHistory, termCode.alias('user_added_term_code'), yearColumn.alias('year_column'), codeColumn.alias('code_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
         print(query)
         test = list(query)
-        print(test) # beans
+        print(test[0]) # beans
+        print(test[0]['user_added_term_code'], f"of type {type(test[0]['user_added_term_code'])}") # beans
+        print(test[0].year_column, f"of type {type(test[0].year_column)}") # beans
+        print(test[0].code_column, f"of type {type(test[0].code_column)}") # beans
         print('*'*1000)
 
         
