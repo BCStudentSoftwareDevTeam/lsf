@@ -59,22 +59,14 @@ def laborhistory(id, departmentName = None):
         #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
-        termCodeOrders = (("00", 0), ("Default", 1), ("11", 2), ("04", 3), ("01", 4), ("02", 5), ("12", 6), ("05", 7), ("03", 8), ("13", 9))
-        #Beans: The way we're getting the term codes needs some work. Namely splitting the code into year and code.
+        termCodeOrders = ((0, 0), ("Default", 1), (11, 2), (4, 3), (1, 4), (2, 5), (12, 6), (5, 7), (3, 8), (13, 9))
         termCode = FormHistory.formID.termCode
         yearColumn = fn.substring(termCode.cast("char"), 1, 4)
         codeColumn = fn.substring(termCode.cast("char"), 5, 6)
         
         orderValues = Case(codeColumn, termCodeOrders, 1)
-        query = authorizedForms.select(FormHistory, termCode.alias('user_added_term_code'), yearColumn.alias('year_column'), codeColumn.alias('code_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
-        print(query)
-        test = list(query)
-        print(test[0]) # beans
-        print(test[0]['user_added_term_code'], f"of type {type(test[0]['user_added_term_code'])}") # beans
-        print(test[0].year_column, f"of type {type(test[0].year_column)}") # beans
-        print(test[0].code_column, f"of type {type(test[0].code_column)}") # beans
-        print('*'*1000)
-
+        query = authorizedForms.select(FormHistory).select(termCode.alias('user_added_term_code'), yearColumn.alias('year_column'), codeColumn.alias('code_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
+        
         
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',
