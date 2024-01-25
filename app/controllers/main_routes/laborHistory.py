@@ -59,14 +59,13 @@ def laborhistory(id, departmentName = None):
         #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
-        termCodeOrders = ((0, 0), ("Default", 1), (11, 2), (4, 3), (1, 4), (2, 5), (12, 6), (5, 7), (3, 8), (13, 9))
-        termCode = FormHistory.formID.termCode
-        yearColumn = fn.substring(termCode.cast("char"), 1, 4)
-        codeColumn = fn.substring(termCode.cast("char"), 5, 6)
         
-        orderValues = Case(codeColumn, termCodeOrders, 1)
-        query = authorizedForms.select(FormHistory).select(termCode.alias('user_added_term_code'), yearColumn.alias('year_column'), codeColumn.alias('code_column'), orderValues.alias('order_value')).order_by(yearColumn, orderValues)
-        
+        query = authorizedForms.select(FormHistory)
+        query = FormHistory.order_by_date(query)
+        # print(query) # beans
+        authorizedForms = list(query)
+        # print(f"{authorizedForms.seasonalCode}") # beans
+        # print('*'*1000)
         
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',
@@ -80,6 +79,7 @@ def laborhistory(id, departmentName = None):
 
     except Exception as e:
         print("Error Loading Student Labor History", e)
+        raise e
         return render_template('errors/500.html'), 500
 
 @main_bp.route("/laborHistory/download" , methods=['POST'])

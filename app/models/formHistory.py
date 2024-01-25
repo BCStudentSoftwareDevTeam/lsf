@@ -26,3 +26,14 @@ class FormHistory(baseModel):
 
     def __str__(self):
         return str(self.__dict__)
+    
+    @staticmethod
+    def order_by_date(query):
+        termCodeOrders = ((0, 0), ("Default", 1), (11, 2), (4, 3), (1, 4), (2, 5), (12, 6), (5, 7), (3, 8), (13, 9))
+        termCode = FormHistory.formID.termCode
+        yearColumn = fn.substring(termCode.cast("char"), 1, 4)
+        seasonalColumn = fn.substring(termCode.cast("char"), 5, 6)
+        orderValues = Case(seasonalColumn, termCodeOrders, 1)
+        return query.select(FormHistory, seasonalColumn.alias('seasonalCode'), yearColumn.alias('yearCode'), orderValues.alias('orderValue')).order_by(yearColumn, orderValues)
+
+
