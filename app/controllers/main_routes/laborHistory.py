@@ -60,8 +60,7 @@ def laborhistory(id, departmentName = None):
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
         
-        query = authorizedForms.select(FormHistory)
-        query = FormHistory.order_by_date(query)
+        query = FormHistory.order_by_date(authorizedForms)
         # print(query) # beans
         authorizedForms = list(query)
         # print(f"{authorizedForms.seasonalCode}") # beans
