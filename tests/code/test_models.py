@@ -48,7 +48,7 @@ def test_form_history_model():
         # [Beans] form history object: formID, historyType, createdBy, createdDate, status
         #                                                            Scott Heggen
         irrelevantFhObjData = {'historyType': 'Labor Status Form', 'createdBy': 1, 'createdDate': '2024-01-30', 'status': 'Pending'}
-        formHistoryObj = FormHistory.create(formID = lsf, **irrelevantFhObjData)
+        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "banned", **irrelevantFhObjData)
         return lsf, formHistoryObj
     
     
@@ -59,12 +59,14 @@ def test_form_history_model():
         # Test that ties are broken correctly
 
         # Create the forms out of order
-        outOfOrderSemesterCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
-        for semesterCode in outOfOrderSemesterCodes:
-            createLSFandFormHistoryObj(termCode=int(f'2025{semesterCode}'))
-
+        outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
+        for seasonCode in outOfOrderSeasonCodes:
+            createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
+        newForms = FormHistory.select().where(rejectReason = "banned") 
 
         transaction.rollback()
+
+    
     
     
     
