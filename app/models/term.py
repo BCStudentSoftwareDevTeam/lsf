@@ -42,7 +42,7 @@ class Term(baseModel):
         # TODO: beans, We'd like to use simply e.termCode here but for some reason we cannot select for it.
         # To solve the immediate problem, we're trying to use a peewee object way of looking at it by going through
         # .formID first but we're getting another error about departments now. We should try to comment out the line
-        # that calls this function to order them at all to ensure that the problem is what we're doing here
+        # that calls this function to order them at all to ensure that the problem is what we're doing here.
 
         # Sort by seasonal code
         result = sorted(queryResult, key=lambda e: seasonalCodeToOrderValue[str(e.formID.termCode)[4:]], reverse=reverse)
