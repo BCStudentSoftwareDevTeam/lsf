@@ -83,7 +83,7 @@
               <tbody>
                 {% for department in inactiveDepartments %}
                 <tr>
-                  <td scope="row">{{department.DEPT_NAME}} <small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                    <td scope="row"><a href="#" class="supervisorDeptModal" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                 </tr>
                 {% endfor %}
               </tbody>
