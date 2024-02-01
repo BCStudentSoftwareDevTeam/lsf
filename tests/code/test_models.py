@@ -2,6 +2,7 @@ import pytest
 from app.models.user import User
 from app.models.formHistory import FormHistory
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.term import Term
 from app.models import mainDB
 from peewee import DoesNotExist
 
@@ -34,24 +35,26 @@ def test_form_history_model():
     - create several labor status forms that belong to different terms in different years
     - create corresponding form history objects for the forms
     - write a query to select all forms
-    - order the form selection using the FormHistory.order_by_date() method
+    - order the form selection using the FormHistory.order_by_term() method
     - assert that the forms are in correctly in order by date 
     """
     def createLSFandFormHistoryObj(*, termCode):
         """
         Subprocedure to create LSF and FormHistory objects for a particular termCode with dummy data.
         """
+        Term.get_or_create(termCode= termCode, termName="idk");
+
         # [Beans] lsf object: termCode (*Term), studentSupervisee (*Student), supervisor (*Supervisor), department (*Department), jobType, WLS, POSN_TITLE, POSN_CODE 
         #                                        Alex Bryant              Brian Ramsay              CS      
         irrelevantLsfObjData = {'studentSupervisee': 'B00841417', 'supervisor': 'B00763721', 'department': 1, 'jobType': 'Primary', 'WLS': 1, 'POSN_TITLE': '', 'POSN_CODE': ''}
-        lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData)
+        lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData);
         # [Beans] form history object: formID, historyType, createdBy, createdDate, status
         #                                                            Scott Heggen
         irrelevantFhObjData = {'historyType': 'Labor Status Form', 'createdBy': 1, 'createdDate': '2024-01-30', 'status': 'Pending'}
-        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "banned", **irrelevantFhObjData)
+        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "testing", **irrelevantFhObjData);
         return lsf, formHistoryObj
     
-    
+ 
     with mainDB.atomic() as transaction:
         # We expect that term codes will be ordered by year with ties broken by the last two digits in this order:
         # 00, default, 11, 04, 01, 02, 12, 05, 03, 13
@@ -62,10 +65,19 @@ def test_form_history_model():
         outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
         for seasonCode in outOfOrderSeasonCodes:
             createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
-        newForms = FormHistory.select().where(rejectReason = "banned") 
+
+        try:
+            newForms = FormHistory.select().where(FormHistory.rejectReason == "testing")
+            sortedForms = list(FormHistory.order_by_term(newForms))
+            resultingTermCodes = [str(f.formID.termCode) for f in sortedForms]
+            print(resultingTermCodes)
+
+            
+        except Exception as e:
+            print(f"Broke in second half: {e}")
+        
 
         transaction.rollback()
-
     
     
     

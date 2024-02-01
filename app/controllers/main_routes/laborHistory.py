@@ -27,13 +27,13 @@ from app.logic.userInsertFunctions import getOrCreateStudentRecord
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
 @main_bp.route('/laborHistory/<departmentName>/<id>', methods=['GET'])
-def laborhistory(id, departmentName = None):
+def laborhistory(id, departmentName=None):
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
+        studentForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
         FormHistory.historyType.historyTypeName == "Labor Status Form")
         authorizedForms = studentForms.distinct()
         if not currentUser.isLaborAdmin:
@@ -42,11 +42,11 @@ def laborhistory(id, departmentName = None):
                 if currentUser.student.ID != id:
                     return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.student:
-                supervisorForms = FormHistory.select() \
+                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode) \
                                   .join_from(FormHistory, LaborStatusForm) \
                                   .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                   .distinct()
-                deptForms = FormHistory.select() \
+                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode) \
                                   .join(LaborStatusForm) \
                                   .join( Department) \
                                   .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
@@ -60,8 +60,9 @@ def laborhistory(id, departmentName = None):
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
         
-        query = FormHistory.order_by_date(authorizedForms)
-        # print(query) # beans
+        query = FormHistory.order_by_term(authorizedForms)
+        print(f"{query}") # beans
+        print('*'*1000)
         authorizedForms = list(query)
         # print(f"{authorizedForms.seasonalCode}") # beans
         # print('*'*1000)
