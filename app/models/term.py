@@ -1,4 +1,5 @@
 from app.models import *
+from collections import defaultdict
 
 
 class Term(baseModel):
@@ -14,3 +15,36 @@ class Term(baseModel):
     isAcademicYear          = BooleanField(default=False)
     isFinalEvaluationOpen   = BooleanField(default=False)
     isMidyearEvaluationOpen = BooleanField(default=False)
+
+
+    @staticmethod
+    def order_by_term(queryResult, *, reverse=False):
+        """
+        Accepts the results of a query where each object has had a `termCode` column selected.
+        Sorts by the Term Code in logical order based first on year and then by the seasonalCode
+        
+        seasonalCode := last two digits of the term code which maps arbitrarily to the name of the term, break, etc.
+        """
+        print(dir(queryResult[0])) # beans
+        print("*"*100)
+        seasonalCodeToOrderValue = defaultdict(lambda: 1)
+        seasonalCodeToOrderValue.update({
+            '00' : 0,
+            '11' : 2,
+            '04' : 3,
+            '01' : 4,
+            '02' : 5,
+            '12' : 6,
+            '05' : 7,
+            '03' : 8,
+            '13' : 9,
+        })
+        # TODO: beans, We'd like to use simply e.termCode here but for some reason we cannot select for it.
+        # To solve the immediate problem, we're trying to use a peewee object way of looking at it by going through
+        # .formID first but we're getting another error about departments now. We should try to comment out the line
+        # that calls this function to order them at all to ensure that the problem is what we're doing here
+
+        # Sort by seasonal code
+        result = sorted(queryResult, key=lambda e: seasonalCodeToOrderValue[str(e.formID.termCode)[4:]], reverse=reverse)
+        # Sort by year
+        return sorted(result, key=lambda e: str(e.formID.termCode)[:4], reverse=reverse)

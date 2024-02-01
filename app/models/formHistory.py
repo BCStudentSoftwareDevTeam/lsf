@@ -27,26 +27,3 @@ class FormHistory(baseModel):
     def __str__(self):
         return str(self.__dict__)
     
-    @staticmethod
-    def order_by_term(query, reverse=False):
-        """
-        Accepts the results of a query where each object has had a `termCode` column selected.
-        Sorts by the Term Code in logical order based first on year and then by the seasonalCode
-        
-        seasonalCode := last two digits of the term code which maps arbitrarily to the name of the term, break, etc.
-        """
-        termCodeOrders = ((0, 0), ("Default", 1), (11, 2), (4, 3), (1, 4), (2, 5), (12, 6), (5, 7), (3, 8), (13, 9))
-        termCode = FormHistory.formID.termCode
-        yearColumn = fn.substring(termCode.cast("char"), 1, 4)
-        seasonalColumn = fn.substring(termCode.cast("char"), 5, 6)
-        orderValues = Case(seasonalColumn, termCodeOrders, 1)
-        return (query
-                    #  .select(FormHistory, 
-                    #          seasonalColumn.alias('seasonalCode'), 
-                    #          yearColumn.alias('yearCode'), 
-                    #          orderValues.alias('orderValue'))
-                     #.join(LaborStatusForm, JOIN.LEFT_OUTER, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                     .order_by(yearColumn.desc() if reverse else yearColumn, 
-                               orderValues.desc() if reverse else orderValues))
-
-

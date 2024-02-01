@@ -4,7 +4,7 @@ from app.models.formHistory import FormHistory
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 from app.models import mainDB
-from peewee import DoesNotExist
+from peewee import DoesNotExist, JOIN
 
 @pytest.mark.integration
 def test_user_model():
@@ -67,12 +67,12 @@ def test_form_history_model():
             createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
 
         try:
-            newForms = FormHistory.select().where(FormHistory.rejectReason == "testing")
-            sortedForms = list(FormHistory.order_by_term(newForms))
+            newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
+            sortedForms = Term.order_by_term(newForms)
             resultingTermCodes = [str(f.formID.termCode) for f in sortedForms]
             print(resultingTermCodes)
 
-            
+
         except Exception as e:
             print(f"Broke in second half: {e}")
         
