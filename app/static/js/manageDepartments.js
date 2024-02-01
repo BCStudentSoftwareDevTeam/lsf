@@ -29,7 +29,7 @@ $(document).ready( function(){
     })
     
     attachModalToDepartment()
-    $('#activeTable').on('draw.dt', function() {
+    $('.deptTable').on('draw.dt', function() {
       attachModalToDepartment()
     })
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
