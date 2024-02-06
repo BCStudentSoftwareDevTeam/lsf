@@ -58,18 +58,18 @@ def test_term_model():
     with mainDB.atomic() as transaction:
         # We expect that term codes will be ordered by year with ties broken by the last two digits in this order:
         # '13', '03', '12', '02', '01', '04', '11', [default], '00'
-        correctlyOrderedSeasonCodes = ['13', '03', '05', '12', '02', '01', '04', '11', '99', '00']
+        sortedSeasonCodes = ['13', '03', '05', '12', '02', '01', '04', '11', '99', '00']
 
         # Create the forms out of order
-        unorderedSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
-        for seasonCode in unorderedSeasonCodes:
+        unsortedSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
+        for seasonCode in unsortedSeasonCodes:
             createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
 
         newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
         sortedForms = Term.order_by_term(newForms.objects())
         resultingTermCodes = [str(f.termCode) for f in sortedForms]
         resultingSeasonalCodes = [termCode[4:] for termCode in resultingTermCodes]
-        assert resultingSeasonalCodes == correctlyOrderedSeasonCodes
+        assert resultingSeasonalCodes == sortedSeasonCodes
 
 
         # Test that the year has more weight in the sort than the seasonal code
