@@ -20,13 +20,13 @@ class Term(baseModel):
     @staticmethod
     def order_by_term(queryResult, *, reverse=False):
         """
-        Accepts the results of a query where each object has had a `termCode` column selected.
+        Accepts the results of a query where each object has a `termCode` attribute.
+        To bring selected columns from other tables into an objects direct attributes
+        use the .objects() method on the query.
         Sorts by the Term Code in logical order based first on year and then by the seasonalCode
         
         seasonalCode := last two digits of the term code which maps arbitrarily to the name of the term, break, etc.
         """
-        print(dir(queryResult[0])) # beans
-        print("*"*100)
         seasonalCodeToOrderValue = defaultdict(lambda: 1)
         seasonalCodeToOrderValue.update({
             '00' : 0,
@@ -45,6 +45,6 @@ class Term(baseModel):
         # that calls this function to order them at all to ensure that the problem is what we're doing here.
 
         # Sort by seasonal code
-        result = sorted(queryResult, key=lambda e: seasonalCodeToOrderValue[str(e.formID.termCode)[4:]], reverse=reverse)
+        result = sorted(queryResult, key=lambda e: seasonalCodeToOrderValue[str(e.termCode)[4:]], reverse=reverse)
         # Sort by year
-        return sorted(result, key=lambda e: str(e.formID.termCode)[:4], reverse=reverse)
+        return sorted(result, key=lambda e: str(e.termCode)[:4], reverse=reverse)

@@ -33,7 +33,7 @@ def laborhistory(id, departmentName=None):
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode)
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode'))
                                    .join_from(FormHistory, LaborStatusForm)
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
@@ -45,11 +45,11 @@ def laborhistory(id, departmentName=None):
                 if currentUser.student.ID != id:
                     return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.student:
-                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode) \
+                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode')) \
                                   .join_from(FormHistory, LaborStatusForm) \
                                   .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                   .distinct()
-                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode) \
+                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode')) \
                                   .join(LaborStatusForm) \
                                   .join( Department) \
                                   .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
@@ -65,9 +65,9 @@ def laborhistory(id, departmentName=None):
         
         print(f"{authorizedForms}") # beans
         print('*'*1000)
-        print(f"{list(authorizedForms)[0]}") # beans
+        print(authorizedForms.objects()[0]) # beans
         print('*'*1000)
-        authorizedForms = Term.order_by_term(list(authorizedForms))
+        authorizedForms = Term.order_by_term(list(authorizedForms.objects()))
         # print(f"{authorizedForms.seasonalCode}") # beans
         # print('*'*1000)
         
