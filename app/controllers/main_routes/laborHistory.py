@@ -63,14 +63,9 @@ def laborhistory(id, departmentName=None):
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
         
-        print(f"{authorizedForms}") # beans
-        print('*'*1000)
-        print(authorizedForms.objects()[0]) # beans
-        print('*'*1000)
-        authorizedForms = Term.order_by_term(list(authorizedForms.objects()))
-        # print(f"{authorizedForms.seasonalCode}") # beans
-        # print('*'*1000)
         
+        authorizedForms = Term.order_by_term(list(authorizedForms.objects()))
+
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',
     				            title=('Labor History'),

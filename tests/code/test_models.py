@@ -29,7 +29,7 @@ def test_user_model():
 
 
 @pytest.mark.integration
-def test_form_history_model():
+def test_term_model():
     """
     Beans (what we need to do):
     - create several labor status forms that belong to different terms in different years
@@ -57,24 +57,24 @@ def test_form_history_model():
  
     with mainDB.atomic() as transaction:
         # We expect that term codes will be ordered by year with ties broken by the last two digits in this order:
-        # 00, default, 11, 04, 01, 02, 12, 05, 03, 13
-
-        # Test that ties are broken correctly
+        # '13', '03', '12', '02', '01', '04', '11', [default], '00'
+        correctlyOrderedSeasonCodes = ['13', '03', '05', '12', '02', '01', '04', '11', '99', '00']
 
         # Create the forms out of order
         outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
         for seasonCode in outOfOrderSeasonCodes:
             createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
 
-        try:
-            newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
-            sortedForms = Term.order_by_term(newForms)
-            resultingTermCodes = [str(f.formID.termCode) for f in sortedForms]
-            print(resultingTermCodes)
+        newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
+        sortedForms = Term.order_by_term(newForms.objects())
+        resultingTermCodes = [str(f.termCode) for f in sortedForms]
+        resultingSeasonalCodes = [termCode[4:] for termCode in resultingTermCodes]
+        assert resultingSeasonalCodes == correctlyOrderedSeasonCodes
 
 
-        except Exception as e:
-            print(f"Broke in second half: {e}")
+        # Test that the year has more weight in the sort than the seasonal code
+        
+
         
 
         transaction.rollback()
