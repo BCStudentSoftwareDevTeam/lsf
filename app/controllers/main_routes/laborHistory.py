@@ -63,7 +63,7 @@ def laborhistory(id, departmentName=None):
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
         
-        authorizedForms = Term.order_by_term(list(authorizedForms.objects()))
+        authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template( 'main/formHistory.html',

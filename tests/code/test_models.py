@@ -58,7 +58,7 @@ def test_term_model():
     with mainDB.atomic() as transaction:
         # We expect that term codes will be ordered by year with ties broken by the last two digits in this order:
         # '13', '03', '12', '02', '01', '04', '11', [default], '00'
-        correctlyOrderedSeasonCodes = ['13', '03', '05', '12', '02', '01', '04', '11', '99', '00']
+        correctlyOrderedSeasonCodes = ['00', '99', '11', '04', '01', '02', '12', '05', '03', '13']
 
         # Create the forms out of order
         outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
@@ -74,8 +74,8 @@ def test_term_model():
         
         transaction.rollback()
 
-         # Test that the year has more weight in the sort than the seasonal code
-        sortedTermCodes = [202313, 202302, 202311, 202403, 202412, 202400]
+        # Test that the year has more weight in the sort than the seasonal code
+        sortedTermCodes = [202311, 202302, 202313, 202400, 202412, 202403]
         unsortedTermCodes = [202302, 202403, 202313, 202311, 202400, 202412]
         for termCodes in unsortedTermCodes:
             createLSFandFormHistoryObj(termCode=int(termCodes))

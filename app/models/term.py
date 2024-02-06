@@ -23,21 +23,23 @@ class Term(baseModel):
         Accepts the results of a query where each object has a `termCode` attribute.
         To bring selected columns from other tables into an objects direct attributes
         use the .objects() method on the query.
+
         Sorts by the Term Code in logical order based first on year and then by the seasonalCode
         
         seasonalCode := last two digits of the term code which maps arbitrarily to the name of the term, break, etc.
         """
-        seasonalCodeToOrderValue = defaultdict(lambda: 8)
+        seasonalCodeToOrderValue = defaultdict(lambda: 1)
         seasonalCodeToOrderValue.update({
-            '13' : 0,
-            '03' : 1,
-            '05' : 2,
-            '12' : 3,
-            '02' : 4,
-            '01' : 5,
-            '04' : 6,
-            '11' : 7,
-            '00' : 9,
+            '00' : 0,
+            '11' : 2,
+            '04' : 3,
+            '01' : 4,
+            '02' : 5,
+            '12' : 6,
+            '05' : 7,
+            '03' : 8,
+            '13' : 9,
+
         })
 
         # Sort by seasonal code
