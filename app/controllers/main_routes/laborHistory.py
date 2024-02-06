@@ -33,7 +33,7 @@ def laborhistory(id, departmentName=None):
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode'))
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
                                    .join_from(FormHistory, LaborStatusForm)
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
@@ -45,16 +45,16 @@ def laborhistory(id, departmentName=None):
                 if currentUser.student.ID != id:
                     return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.student:
-                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode')) \
+                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType) \
                                   .join_from(FormHistory, LaborStatusForm) \
                                   .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
                                   .distinct()
-                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode.alias('termCode')) \
+                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType) \
                                   .join(LaborStatusForm) \
                                   .join( Department) \
                                   .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
                                   .distinct()
-                authorizedForms = studentForms.intersect(supervisorForms.union(deptForms))
+                authorizedForms = studentForms.intersect(supervisorForms.union(deptForms)).order_by(LaborStatusForm.jobType)
 
 
                 if len(authorizedForms) == 0:
@@ -62,7 +62,6 @@ def laborhistory(id, departmentName=None):
         #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
         # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
         #Beans: The following is the tentative order_by statement we'll be putting into a function
-        
         
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()))
 
