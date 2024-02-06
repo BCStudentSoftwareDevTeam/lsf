@@ -59,9 +59,7 @@ def laborhistory(id, departmentName=None):
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        #Beans: The ordering of these authorizedforms is what we're fixing. The plan is to create a function that tacks on an order_by statement to a query
-        # authorizedForms = sorted(list(authorizedForms),key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
-        #Beans: The following is the tentative order_by statement we'll be putting into a function
+        
         
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
 

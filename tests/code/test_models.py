@@ -30,25 +30,15 @@ def test_user_model():
 
 @pytest.mark.integration
 def test_term_model():
-    """
-    Beans (what we need to do):
-    - create several labor status forms that belong to different terms in different years
-    - create corresponding form history objects for the forms
-    - write a query to select all forms
-    - order the form selection using the FormHistory.order_by_term() method
-    - assert that the forms are in correctly in order by date 
-    """
     def createLSFandFormHistoryObj(*, termCode):
         """
         Subprocedure to create LSF and FormHistory objects for a particular termCode with dummy data.
         """
         Term.get_or_create(termCode= termCode, termName="idk");
 
-        # [Beans] lsf object: termCode (*Term), studentSupervisee (*Student), supervisor (*Supervisor), department (*Department), jobType, WLS, POSN_TITLE, POSN_CODE 
         #                                        Alex Bryant              Brian Ramsay              CS      
         irrelevantLsfObjData = {'studentSupervisee': 'B00841417', 'supervisor': 'B00763721', 'department': 1, 'jobType': 'Primary', 'WLS': 1, 'POSN_TITLE': '', 'POSN_CODE': ''}
         lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData);
-        # [Beans] form history object: formID, historyType, createdBy, createdDate, status
         #                                                            Scott Heggen
         irrelevantFhObjData = {'historyType': 'Labor Status Form', 'createdBy': 1, 'createdDate': '2024-01-30', 'status': 'Pending'}
         formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "testing", **irrelevantFhObjData);
@@ -56,8 +46,8 @@ def test_term_model():
     
  
     with mainDB.atomic() as transaction:
-        # We expect that term codes will be ordered by year with ties broken by the last two digits in this order:
-        # '13', '03', '12', '02', '01', '04', '11', [default], '00'
+        # Test that term codes will be ordered by year with ties broken by the last two digits in this order:
+        #                                   default
         correctlyOrderedSeasonCodes = ['00', '99', '11', '04', '01', '02', '12', '05', '03', '13']
 
         # Create the forms out of order
