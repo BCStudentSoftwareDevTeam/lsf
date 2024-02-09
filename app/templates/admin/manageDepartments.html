@@ -58,7 +58,7 @@
               <tbody>
                 {% for department in activeDepartments %}
                 <tr>
-                  <td scope="row"><a href="#" class="supervisorDeptModal" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                  <td scope="row"><a href="javascript:{}" class=" " id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                   <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
                     <button type="button"
                             id="dept_btn_{{department.departmentID}}"
@@ -83,7 +83,7 @@
               <tbody>
                 {% for department in inactiveDepartments %}
                 <tr>
-                    <td scope="row"><a href="#" class="supervisorDeptModal" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                    <td scope="row"><a href="javascript:{}" class="departmentName" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -108,14 +108,14 @@
         
       </div>
 
-      <div class="modal-body ">
+      <div class="modal-body">
         <div class="form-group">
         <label for="supervisorModalSelect">Select a supervisor to add:</label>
-        <div class="dropdown"><select class="selectpicker"
+        <div class='dropdown'><select class='selectpicker'
           name='supervisorId'
           id='supervisorModalSelect'
           data-live-search='true'
-          title="Supervisor">
+          title='Supervisor'>
         {% for supervisor in allSupervisors  %}
           <option value="{{supervisor.ID}}"
                   data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">

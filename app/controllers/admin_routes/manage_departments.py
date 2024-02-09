@@ -47,7 +47,6 @@ def manage_departments():
 
 @admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
 def getSupervisorsInDepartment(departmentID):
-    try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html')
@@ -58,11 +57,9 @@ def getSupervisorsInDepartment(departmentID):
                 return render_template('errors/403.html'), 403
         
         supervisors = getSupervisorsForDepartment(departmentID)
-        departmentID=Department.get_by_id(departmentID)
-        supervisors= [model_to_dict(supervisor) for supervisor in supervisors]
-        return jsonify([model_to_dict(departmentID), supervisors])
-    except Exception as e:
-        return render_template('errors/500.html'), 500
+        selectedDepartment = Department.get_by_id(departmentID)
+        supervisors = [model_to_dict(supervisor) for supervisor in supervisors]
+        return jsonify([model_to_dict(selectedDepartment), supervisors])
     
 @admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
 def removeSupervisorFromDepartment():

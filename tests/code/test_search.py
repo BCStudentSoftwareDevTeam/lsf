@@ -229,8 +229,10 @@ def test_getSupervisorsForDepartment():
 
         supervisors = getSupervisorsForDepartment(1)
         assert len(supervisors) == 2
-    
+
+        testDept = Department.create(DEPT_NAME="supervisorDept", ACCOUNT="6740", ORG="2114", departmentCompliance = 1)
+        supervisors = getSupervisorsForDepartment(testDept)
+        assert len(supervisors) == 0
         transaction.rollback()
     
-    supervisors = getSupervisorsForDepartment(1)
-    assert len(supervisors) == 0
+    
