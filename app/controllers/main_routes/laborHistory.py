@@ -75,7 +75,6 @@ def laborhistory(id, departmentName=None):
 
     except Exception as e:
         print("Error Loading Student Labor History", e)
-        raise e
         return render_template('errors/500.html'), 500
 
 @main_bp.route("/laborHistory/download" , methods=['POST'])
