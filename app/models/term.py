@@ -21,8 +21,8 @@ class Term(baseModel):
     def order_by_term(queryResult, *, reverse=False):
         """
         Accepts the results of a query where each object has a `termCode` attribute.
-        To bring selected columns from other tables into an objects direct attributes
-        use the .objects() method on the query.
+        To collapse selected columns from other tables into an objects direct attributes
+        use the .objects() method on the query. See peewee documentation for more details.
 
         Sorts by the Term Code in logical order based first on year and then by the seasonalCode
         
