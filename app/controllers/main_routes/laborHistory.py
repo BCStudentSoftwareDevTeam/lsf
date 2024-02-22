@@ -45,15 +45,15 @@ def laborhistory(id, departmentName=None):
                 if currentUser.student.ID != id:
                     return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.student:
-                supervisorForms = FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType) \
-                                  .join_from(FormHistory, LaborStatusForm) \
-                                  .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
-                                  .distinct()
-                deptForms = FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType) \
-                                  .join(LaborStatusForm) \
-                                  .join( Department) \
-                                  .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
-                                  .distinct()
+                supervisorForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+                                              .join_from(FormHistory, LaborStatusForm)
+                                              .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                                              .distinct())
+                deptForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+                                        .join(LaborStatusForm)
+                                        .join(Department)
+                                        .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME)
+                                        .distinct())
                 authorizedForms = studentForms.intersect(supervisorForms.union(deptForms)).order_by(LaborStatusForm.jobType)
 
 
@@ -64,7 +64,7 @@ def laborhistory(id, departmentName=None):
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
-        return render_template( 'main/formHistory.html',
+        return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
                                 username=currentUser.username,
