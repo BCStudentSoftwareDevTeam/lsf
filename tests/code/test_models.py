@@ -34,17 +34,18 @@ def test_term_model():
         """
         Subprocedure to create LSF and FormHistory objects for a particular termCode with dummy data.
         """
-        Term.get_or_create(termCode= termCode, termName="idk");
+        createLSFandFormHistoryObj.callCounter += 1
+        Term.get_or_create(termCode=termCode, termName=f"dummyTerm{createLSFandFormHistoryObj.callCounter}")
 
         #                                        Alex Bryant              Brian Ramsay              CS      
         irrelevantLsfObjData = {'studentSupervisee': 'B00841417', 'supervisor': 'B00763721', 'department': 1, 'jobType': 'Primary', 'WLS': 1, 'POSN_TITLE': '', 'POSN_CODE': ''}
-        lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData);
+        lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData)
         #                                                            Scott Heggen
         irrelevantFhObjData = {'historyType': 'Labor Status Form', 'createdBy': 1, 'createdDate': '2024-01-30', 'status': 'Pending'}
-        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "testing", **irrelevantFhObjData);
+        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "testing", **irrelevantFhObjData)
         return lsf, formHistoryObj
+    createLSFandFormHistoryObj.callCounter = 0
     
- 
     with mainDB.atomic() as transaction:
         # Test that term codes will be ordered by year with ties broken by the last two digits in this order:
         #                                   default
