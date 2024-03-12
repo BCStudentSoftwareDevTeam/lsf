@@ -58,7 +58,7 @@
               <tbody>
                 {% for department in activeDepartments %}
                 <tr>
-                  <td scope="row"><a href="javascript:{}" class=" " id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
+                  <td scope="row"><a href="javascript:{}" class="departmentName" id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}}, {{department.ACCOUNT}})</small></td>
                   <td id="dept_{{department.departmentID}}" scope="row" data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
                     <button type="button"
                             id="dept_btn_{{department.departmentID}}"
