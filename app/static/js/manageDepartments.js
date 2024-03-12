@@ -63,8 +63,7 @@ function showSupervisorsInDepartment(departmentID) {
     $.ajax({
     method: "GET",
     url: `/admin/manageDepartments/${departmentID}`,
-    success: function(departmentsAndSupervisors) {
-      let [currentDepartment, supervisors] = departmentsAndSupervisors      
+    success: function(supervisors) {   
       let supervisorContent = '<div class="changing-content">'
       for (let i=0; i<supervisors.length; i++) {
         let supervisorFirstName = supervisors[i]['preferred_name'] ? supervisors[i]['preferred_name'] : supervisors[i]['legal_name']
@@ -72,8 +71,8 @@ function showSupervisorsInDepartment(departmentID) {
                                 <div class="col-xs-10">${supervisors[i]['ID']} ${supervisorFirstName} ${supervisors[i]['LAST_NAME']}</div>
                                 <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
                                   data-supervisor="${supervisors[i]['ID']}" 
-                                  data-department="${currentDepartment['departmentID']}" 
-                                  id="${supervisors[i]['ID']}-${currentDepartment['departmentID']}">Remove</div>
+                                  data-department="${departmentID}" 
+                                  id="${supervisors[i]['ID']}-${departmentID}">Remove</div>
                                </span>`)}
       supervisorContent += ("</div>")
       $('#manageSupervisorContent .modal-body .changing-content').replaceWith(supervisorContent)

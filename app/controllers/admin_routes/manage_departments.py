@@ -57,9 +57,8 @@ def getSupervisorsInDepartment(departmentID):
                 return render_template('errors/403.html'), 403
         
         supervisors = getSupervisorsForDepartment(departmentID)
-        selectedDepartment = Department.get_by_id(departmentID)
         supervisors = [model_to_dict(supervisor) for supervisor in supervisors]
-        return jsonify([model_to_dict(selectedDepartment), supervisors])
+        return jsonify(supervisors)
     
 @admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
 def removeSupervisorFromDepartment():
