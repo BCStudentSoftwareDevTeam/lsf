@@ -19,31 +19,13 @@ $(document).ready(function(){
   })
 
   $('#addUser').on('click', function() {
-      let supervisor = $('#supervisorModalSelect :selected').val()
-      let department = $('#departmentModalSelect :selected').val()
-      let data = {"supervisor": supervisor, "department": department}
-      $.ajax({
-        method: "POST",
-        url: "/supervisorPortal/addUserToDept",
-        data: data,
-        success: function(response) {
-          if (response == "True") {
-            msgFlash("Supervisor has been added to department.", 'success')
-            clearDropdown()
-          } else {
-            msgFlash("Supervisor is already a member of this department.", "warning")
-            clearDropdown()
-          }
-        },
-        error: function() {
-          msgFlash("Failed to add supervisor, please try again.", "fail")
-          clearDropdown()
-        },
-    })
+      let supervisorID = $('#supervisorModalSelect :selected').val()
+      let departmentID = $('#departmentModalSelect :selected').val()
+      addSupervisorToDepartment(supervisorID, departmentID)
   })
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");
-    clearDropdown()
+    clearDropdowns()
     });
     
   $( function() {
@@ -73,12 +55,7 @@ $('#currentTerm').on('click', function(){
 });
 });
 
-function clearDropdown(){
-  $('select.selectpicker').each(function() {
-    $(`#${this.id} option:eq(0)`).prop("selected", true);
-    $(`#${this.id}`).selectpicker("refresh");
-  });
-};
+
 
 function runFormSearchQuery(button) {
 

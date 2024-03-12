@@ -29,5 +29,9 @@ h1 {
   width:20px;
 }
 .complianceBtn{
-  style="width:150px;
+  width:150px;
+}
+
+#flasher{
+	z-index: 999999;
 }
