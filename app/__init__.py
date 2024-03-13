@@ -62,29 +62,6 @@ app.register_blueprint(errors_bp)
 
 from app.controllers.api_routes.routes import initializeApiRoutes
 initializeApiRoutes(api)
-
-from flask import g
-from app.models.user import User
-from app.login_manager import require_login
-@app.before_request
-def load_user():
-    try: 
-        g.currentUser = dict_to_model(User, session['currentUser'])
-    except Exception as e:
-        user = require_login()
-        session['currentUser'] = model_to_dict(user)
-        g.currentUser = user
-
-from app.models.term import Term
-from app.login_manager import getOpenTerm
-@app.before_request
-def load_openTerm():
-    try: 
-        g.openTerm = dict_to_model(Term, session['openTerm'])
-    except Exception as e:
-        term = getOpenTerm()
-        session['openTerm'] = model_to_dict(term)
-        g.openTerm = term
         
 @app.context_processor
 def inject_environment():
