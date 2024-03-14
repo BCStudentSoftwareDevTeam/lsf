@@ -141,6 +141,7 @@ def index(department = None):
                         value.append(request.form.get(name))
             except NameError as e:
                 print("The runtime error happens because a department has not yet been selected.")
+
             for form in currentSupervisees:
                 name = str(form.formID.laborStatusFormID)
                 if request.form.get(name):

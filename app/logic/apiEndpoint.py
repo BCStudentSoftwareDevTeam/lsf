@@ -20,7 +20,7 @@ def getLaborInformation(*, orgCode = "2084", bNumber = ""):
     """
 
     orgDepartments = (Department.select(Department.departmentID)
-                                   .where(Department.ORG == orgCode))
+                                .where(Department.ORG == orgCode))
     
     deptLabor = (LaborStatusForm.select(LaborStatusForm.studentSupervisee_id, 
                                         LaborStatusForm.termCode, 
