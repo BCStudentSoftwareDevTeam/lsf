@@ -2,8 +2,9 @@ import datetime
 import re
 import types
 from fpdf import FPDF
+from urllib.parse import urlparse
 
-from flask import render_template , flash, redirect, url_for, request, g, jsonify, current_app, send_file, json, make_response
+from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
 from app.models.user import *
@@ -24,41 +25,49 @@ from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
+from app.logic.utils import setReferrerPath
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
 @main_bp.route('/laborHistory/<departmentName>/<id>', methods=['GET'])
-def laborhistory(id, departmentName = None):
+def laborhistory(id, departmentName=None):
+    setReferrerPath()
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = FormHistory.select().join_from(FormHistory, LaborStatusForm).join_from(FormHistory, HistoryType).where(FormHistory.formID.studentSupervisee == student,
-        FormHistory.historyType.historyTypeName == "Labor Status Form").order_by(FormHistory.formID.startDate.desc())
-        authorizedForms = set(studentForms)
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+                                   .join_from(FormHistory, LaborStatusForm)
+                                   .join_from(FormHistory, HistoryType)
+                                   .where(FormHistory.formID.studentSupervisee == student, 
+                                          FormHistory.historyType.historyTypeName == "Labor Status Form"))
+        authorizedForms = studentForms.distinct()
         if not currentUser.isLaborAdmin:
             # View only your own form history
             if currentUser.student and not currentUser.supervisor:
                 if currentUser.student.ID != id:
                     return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.student:
-                supervisorForms = FormHistory.select() \
-                                  .join_from(FormHistory, LaborStatusForm) \
-                                  .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)) \
-                                  .distinct()
-                deptForms = FormHistory.select() \
-                                  .join(LaborStatusForm) \
-                                  .join( Department) \
-                                  .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME) \
-                                  .distinct()
-                authorizedForms = set(studentForms).intersection(set(supervisorForms).union(set(deptForms)))
+                supervisorForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+                                              .join_from(FormHistory, LaborStatusForm)
+                                              .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
+                                              .distinct())
+                deptForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+                                        .join(LaborStatusForm)
+                                        .join(Department)
+                                        .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME)
+                                        .distinct())
+                authorizedForms = studentForms.intersect(supervisorForms.union(deptForms)).order_by(LaborStatusForm.jobType)
 
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        authorizedForms = sorted(authorizedForms,key=lambda f:f.reviewedDate if f.reviewedDate else f.createdDate, reverse=True)
+        
+        
+        authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
+
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
-        return render_template( 'main/formHistory.html',
+        return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
                                 username=currentUser.username,

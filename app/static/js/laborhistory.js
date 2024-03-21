@@ -1,6 +1,6 @@
-function goback(departmentName){
-  if (departmentName != "None") {
-    window.location.href = '/main/department/' + departmentName
+function goback(referrerPath){
+  if (referrerPath) {
+    window.location.href = referrerPath
   } else {
     window.location.href = '/';
   }

@@ -1,3 +1,6 @@
+from flask import session, request
+from urllib.parse import urlparse
+
 
 def makeThirdPartyLink(recipient, host, formHistoryId):
     route = ""
@@ -9,3 +12,6 @@ def makeThirdPartyLink(recipient, host, formHistoryId):
         route = "studentOverloadApp"
 
     return f"http://{host}/{route}/{formHistoryId}"
+
+def setReferrerPath():
+    session['referrerPath'] = urlparse(request.referrer).path or ''

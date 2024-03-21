@@ -23,6 +23,7 @@ class FormHistory(baseModel):
     status              = ForeignKeyField(Status)                       # Foreign key to Status # Approved, Denied, Pending
     rejectReason        = TextField(null=True)                          # This should not be null IF that status is rejected
 
-
+    
     def __str__(self):
         return str(self.__dict__)
+    
