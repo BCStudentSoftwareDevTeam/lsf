@@ -2,8 +2,9 @@ import datetime
 import re
 import types
 from fpdf import FPDF
+from urllib.parse import urlparse
 
-from flask import render_template , flash, redirect, url_for, request, g, jsonify, current_app, send_file, json, make_response
+from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
 from app.models.user import *
@@ -24,10 +25,12 @@ from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
+from app.logic.utils import setReferrerPath
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
 @main_bp.route('/laborHistory/<departmentName>/<id>', methods=['GET'])
 def laborhistory(id, departmentName=None):
+    setReferrerPath()
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in

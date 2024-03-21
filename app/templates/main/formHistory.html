@@ -45,6 +45,6 @@
 </div>
 <!-- Modal End -->
   {% if currentUser.supervisor or currentUser.isLaborAdmin %}
-    <div align= "left"><button class='btn btn-danger' id="returnbutton" onclick="goback('{{departmentName}}')">Return</button></div>
+    <div align= "left"><button class='btn btn-danger' id="returnbutton" onclick="goback('{{session.referrerPath}}')">Return</button></div>
   {% endif %}
 {% endblock %}
