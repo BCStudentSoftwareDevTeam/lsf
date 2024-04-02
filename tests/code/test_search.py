@@ -8,7 +8,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from peewee import DoesNotExist
-from app.logic.search import limitSearchByUserDepartment, studentDbToDict,getDepartmentsForSupervisor
+from app.logic.search import limitSearchByUserDepartment, studentDbToDict, getDepartmentsForSupervisor, getSupervisorsForDepartment
 
 @pytest.mark.integration
 def test_limitSearchByUserDepartment():
@@ -219,3 +219,20 @@ def test_getDepartmentsForSupervisors():
         assert len(departments) == 3
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getSupervisorsForDepartment():
+    with mainDB.atomic() as transaction:
+
+        SupervisorDepartment.create(supervisor = 'B00763721', department = 1) 
+        SupervisorDepartment.create(supervisor = 'B12361006', department = 1)
+
+        supervisors = getSupervisorsForDepartment(1)
+        assert len(supervisors) == 2
+
+        testDept = Department.create(DEPT_NAME="supervisorDept", ACCOUNT="6740", ORG="2114", departmentCompliance = 1)
+        supervisors = getSupervisorsForDepartment(testDept)
+        assert len(supervisors) == 0
+        transaction.rollback()
+    
+    

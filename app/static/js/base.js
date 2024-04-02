@@ -3,4 +3,3 @@ function msgFlash(flash_message, status){
     $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+flash_message+'</div>');
     $("#flasher").delay(5000).fadeOut();
 }
-

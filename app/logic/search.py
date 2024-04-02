@@ -59,3 +59,7 @@ def getDepartmentsForSupervisor(currentUser):
                     )
     alldepts = departments.union(supervisorDepts)
     return alldepts
+
+def getSupervisorsForDepartment(departmentId):
+    departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()
+    return departmentSupervisors
