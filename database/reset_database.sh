@@ -14,6 +14,11 @@ if [ "$1" == "from-backup" ]; then
 	BACKUP=1
 fi
 
+HOST="" 
+if [ -v USING_CONTAINER ]; then 
+    HOST="-h db"
+fi
+
 echo "Dropping databases"
 mysql -u root -proot --execute="DROP DATABASE \`lsf\`; DROP USER 'lsf_user';"
 mysql -u root -proot --execute="DROP DATABASE \`UTE\`; DROP USER 'tracy_user';"
