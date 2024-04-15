@@ -6,11 +6,11 @@
     "workspaceFolder": "/home/vscode/${localWorkspaceFolderBasename}",
     "remoteUser": "vscode",
 
-    "forwardPorts": [5000,3307],
+    "forwardPorts": [5000,3308],
     
     "remoteEnv": {
         "FLASK_DEBUG": "1",
-        "APP_ENV": "development",
+        "FLASK_ENV": "development",
         "USING_CONTAINER": "1",
         "MYSQL_HOST": "db",
         "MYSQL_PWD": "password"
