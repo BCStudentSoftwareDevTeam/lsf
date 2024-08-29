@@ -75,16 +75,6 @@ function runFormSearchQuery(button) {
           evaluationList = []
           break;
 
-      case "missingEvals":
-          termCode = "currentTerm"
-          departmentID = ""
-          supervisorID = "currentUser"
-          studentID = ""
-          formStatusList = ["Approved", "Approved Reluctantly"]
-          formType  = []
-          evaluationList = ["evalMissing", "evalMidyearMissing"]
-          break;
-
       case "pendingForms":
           termCode = "currentTerm"
           departmentID = ""
@@ -112,7 +102,6 @@ function runFormSearchQuery(button) {
           studentID = $("#studentSelect").val();
           formStatusList = $("input:checkbox[name='formStatus']:checked").map((i,el) => el.value).get();
           formTypeList = $("input:checkbox[name='formType']:checked").map((i,el) => el.value).get();
-          evaluationList = $("input:checkbox[name='evaluations']:checked").map((i,el) => el.value).get();      
   }
   
   queryDict = {'termCode': termCode,
