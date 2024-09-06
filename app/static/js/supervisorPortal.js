@@ -90,7 +90,7 @@ function runFormSearchQuery(button) {
           departmentID = ""
           supervisorID = "currentUser"
           studentID = ""
-          formStatusList = ["Pending"]
+          formStatusList = ["Pending", "Pre-Student Approval"]
           formType  = []
           evaluationList = []
           break;
