@@ -143,7 +143,6 @@ def getDatatableData(request):
                      FormHistory.historyType: formTypeList,
                      StudentLaborEvaluation.ID: evaluationStatus}
     clauses = []
-    
     # WHERE clause conditions are dynamically generated using model fields and selectpicker values
     for field, value in fieldValueMap.items():
         if value != "" and value:
@@ -153,7 +152,6 @@ def getDatatableData(request):
                 sleJoin = value[0]       
             else:
                 clauses.append(field == value)
-   
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
     global formSearchResults
     formSearchResults = (FormHistory.select()
