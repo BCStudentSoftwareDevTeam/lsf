@@ -5,6 +5,10 @@
 
 }
 
+.tooltip-right::after {
+  min-width: 100px;
+}
+
 #header {
   text-align: center;
   font-weight: 650;
