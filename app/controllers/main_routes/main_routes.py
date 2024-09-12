@@ -205,8 +205,6 @@ def getDatatableData(request):
     
     else:
         filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-    print(colIndexColNameMap[sortColIndex])
-    print("__________________________________________ FASFDDASF FIlterd search results", filteredSearchResults)
     formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
@@ -276,7 +274,7 @@ def getFormattedData(filteredSearchResults):
               form.formID.studentSupervisee.ID,
               form.formID.studentSupervisee.STU_EMAIL))
 
-        record.append(f'{positionField}<br>{form.formID.jobType}')
+        record.append(f'{form.formID.jobType}<br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
