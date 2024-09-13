@@ -25,7 +25,6 @@ def studentOverloadApp(formHistoryId):
             return render_template('errors/403.html'), 403
         if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
-
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()
@@ -144,7 +143,6 @@ def updateDatabase(overloadFormHistoryID):
             overloadFormHistory.save()
             originalFormHistory.status = newStatus
             originalFormHistory.save()
-
             overloadForm = overloadFormHistory.overloadForm
             overloadForm.studentOverloadReason = overloadReason
             overloadForm.save()
@@ -152,8 +150,8 @@ def updateDatabase(overloadFormHistoryID):
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
-
-        return ""
+        currentUser = require_login()
+        return (currentUser.student.ID)
 
     except Exception as e:
         print("ERROR: " + str(e))

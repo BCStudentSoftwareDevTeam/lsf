@@ -33,7 +33,7 @@ def laborhistory(id, departmentName=None):
     setReferrerPath()
     try:
         currentUser = require_login()
-        if not currentUser:                    # Not logged in
+        if not currentUser:
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
         studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
