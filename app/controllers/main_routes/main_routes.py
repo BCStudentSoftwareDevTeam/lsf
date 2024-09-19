@@ -108,6 +108,8 @@ def getDatatableData(request):
     order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
+    print(queryFilterDict.get('sortBy', ""))
+    print(datetime.now())
     # Dictionary to match column indices with column names in the DB
     # It is used for identifying the column that needs to be sorted
     colIndexColNameMap = {  0: Term.termCode,
@@ -167,34 +169,6 @@ def getDatatableData(request):
         supervisorDepartments = getDepartmentsForSupervisor(currentUser)
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
-    if sleJoin:
-        midYearEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                    .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                           StudentLaborEvaluation.is_midyear_evaluation == True, 
-                                                           StudentLaborEvaluation.is_submitted == True))
-        
-        allEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                       StudentLaborEvaluation.is_submitted == True))
-        
-        finalEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                  .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                         StudentLaborEvaluation.is_midyear_evaluation == False, 
-                                                         StudentLaborEvaluation.is_submitted == True))
-        if sleJoin == "evalMidyearMissing":
-            formSearchResults = formSearchResults.where(FormHistory.formHistoryID.not_in(midYearEvaluations))
-        elif sleJoin == "evalMidyearComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(midYearEvaluations))
-        elif sleJoin == "evalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(allEvaluations))
-        elif sleJoin == "evalComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(allEvaluations))
-        elif sleJoin == "allEvalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(finalEvaluations))
-
-        if sleJoin =="evalMidyearMissing" or sleJoin == "evalMissing" or sleJoin == "allEvalMissing":
-             formSearchResults = formSearchResults.select().where(FormHistory.status == "Approved" or FormHistory.status == "Approved Reluctantly")
-    
     recordsTotal = len(formSearchResults)
     
     # Sorting a column in descending order when a specific column is chosen
@@ -205,7 +179,7 @@ def getDatatableData(request):
     
     else:
         filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getFormattedData(filteredSearchResults)
+    formattedData = getFormattedData(formSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)
