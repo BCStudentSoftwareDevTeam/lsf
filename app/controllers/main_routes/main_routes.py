@@ -104,7 +104,7 @@ def getDatatableData(request):
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
     rowsPerPage = int(request.form.get('length', -1))
-    sortColIndex = int(request.form.get("order[0][column]", -1))
+    sortColIndex = int(request.form.get("order[0][column]", 0)) # default to student if sorting a kajillion or more times.
     order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
@@ -174,12 +174,12 @@ def getDatatableData(request):
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
     if order == "desc":
-        filteredSearchResults = formSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex].desc()).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
     
     else:
-        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getFormattedData(formSearchResults)
+        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex].asc()).limit(rowsPerPage).offset(rowNumber)
+    formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)
