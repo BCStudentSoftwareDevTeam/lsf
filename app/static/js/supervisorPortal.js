@@ -16,6 +16,7 @@ $(document).ready(function(){
   });
   $('#addUserToDept').on('click', function() {
       $("#addSupervisorToDeptModal").modal("show");
+      $('#addUser').prop('disabled', true)
   })
 
   $('#addUser').on('click', function() {
