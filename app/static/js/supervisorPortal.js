@@ -26,6 +26,9 @@ $(document).ready(function () {
   })
   $('#departmentModalSelect').on('change', disableButtonHandler)
   $('#supervisorModalSelect').on('change', disableButtonHandler)
+  $('#firstName').on('click', runFormSearchQuery)
+  $('#lastName').on('click', runFormSearchQuery)
+
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");
     clearDropdowns()
