@@ -108,18 +108,18 @@ def getDatatableData(request):
     order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
-
+    sortByOptions = queryFilterDict.get('sortBy', {})
     # Allows to switch between first and last names for the column filters
-
-    print(queryFilterDict.get('sortBy')[0])
+    print(queryFilterDict)
+    print(sortByOptions)
     print(datetime.now())
     # Dictionary to match column indices with column names in the DB
     # It is used for identifying the column that needs to be sorted
-    if queryFilterDict.get('sortBy')[0] == 'first name':
+    if sortByOptions.get('firstName', False) == True:
         colIndexColNameMap = {  0: Term.termCode,
                                 1: Department.DEPT_NAME,
-                                2: Supervisor.FIRST_NAME,
-                                3: Student.FIRST_NAME,
+                                2: Supervisor.FIRST_NAME.__str__(),
+                                3: Student.FIRST_NAME.__str__(),
                                 4: LaborStatusForm.POSN_CODE,
                                 5: LaborStatusForm.weeklyHours,
                                 6: LaborStatusForm.startDate,

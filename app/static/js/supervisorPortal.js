@@ -70,7 +70,7 @@ function runFormSearchQuery(button) {
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
-  let sortByList = [];
+  let sortByMap = getSortOptions();
 
   switch (button) {
     case "mySupervisees":
@@ -79,7 +79,6 @@ function runFormSearchQuery(button) {
       supervisorID = "currentUser"
       studentID = ""
       formStatusList = []
-      sortByList = []
       break;
 
     case "pendingForms":
@@ -88,7 +87,6 @@ function runFormSearchQuery(button) {
       supervisorID = "currentUser"
       studentID = ""
       formStatusList = ["Pending", "Pre-Student Approval"]
-      sortByList = []
       break;
 
     case "currentTerm":
@@ -98,7 +96,6 @@ function runFormSearchQuery(button) {
       studentID = ""
       formStatusList = []
       formTypeList = []
-      sortByList = []
       break;
 
     default:
@@ -108,7 +105,6 @@ function runFormSearchQuery(button) {
       studentID = $("#studentSelect").val();
       formStatusList = $("input:checkbox[name='formStatus']:checked").map((i, el) => el.value).get();
       formTypeList = $("input:checkbox[name='formType']:checked").map((i, el) => el.value).get();
-      sortByList = $("input:checkbox[name='sortBy']:checked").map((i, el) => el.value).get();
   }
 
   queryDict = {
@@ -118,7 +114,7 @@ function runFormSearchQuery(button) {
     'studentID': studentID,
     'formStatus': formStatusList,
     'formType': formTypeList,
-    'sortBy': sortByList,
+    'sortBy': sortByMap,
   };
 
   setFormSearchValues(queryDict)
@@ -128,6 +124,16 @@ function runFormSearchQuery(button) {
   Cookies.set('lsfSearchResults', data, { expires: inAnHour })
 
   createDataTable(data)
+}
+
+function getSortOptions() {
+  sortingValuesList = $("input:checkbox[name='sortBy']").map(
+    (index, el) => {return {id: el.id, checked: el.checked }}).get();
+  const sortByMap = sortingValuesList.reduce((res, obj) => {
+    res.set(obj.id, obj.checked);
+    return res;
+  }, new Map());
+  return sortByMap
 }
 
 function createDataTable(data) {
