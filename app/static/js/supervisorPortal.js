@@ -26,8 +26,14 @@ $(document).ready(function () {
   })
   $('#departmentModalSelect').on('change', disableButtonHandler)
   $('#supervisorModalSelect').on('change', disableButtonHandler)
-  $('#firstName').on('click', runFormSearchQuery)
-  $('#lastName').on('click', runFormSearchQuery)
+  $('#firstName').on('click', function () {
+    $("#lastName").removeAttr("checked");
+    runFormSearchQuery()
+  })
+  $('#lastName').on('click', function () {
+    $("#firstName").removeAttr("checked");
+    runFormSearchQuery()
+  })
 
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");
@@ -127,13 +133,12 @@ function runFormSearchQuery(button) {
 }
 
 function getSortOptions() {
-  sortingValuesList = $("input:checkbox[name='sortBy']").map(
-    (index, el) => {return {id: el.id, checked: el.checked }}).get();
-  const sortByMap = sortingValuesList.reduce((res, obj) => {
-    res.set(obj.id, obj.checked);
-    return res;
-  }, new Map());
-  return sortByMap
+  sortingValuesDict = {}
+  $("input:checkbox[name='sortBy']").each(function() {
+    sortingValuesDict[this.id] = this.checked;
+  });
+  console.log(sortingValuesDict)
+  return sortingValuesDict
 }
 
 function createDataTable(data) {

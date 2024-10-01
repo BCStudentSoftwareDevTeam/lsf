@@ -110,37 +110,21 @@ def getDatatableData(request):
     queryFilterDict = json.loads(queryFilterData)
     sortByOptions = queryFilterDict.get('sortBy', {})
     # Allows to switch between first and last names for the column filters
-    print(queryFilterDict)
-    print(sortByOptions)
-    print(datetime.now())
+    print("I AM RUNNING")
     # Dictionary to match column indices with column names in the DB
     # It is used for identifying the column that needs to be sorted
-    if sortByOptions.get('firstName', False) == True:
-        colIndexColNameMap = {  0: Term.termCode,
-                                1: Department.DEPT_NAME,
-                                2: Supervisor.FIRST_NAME.__str__(),
-                                3: Student.FIRST_NAME.__str__(),
-                                4: LaborStatusForm.POSN_CODE,
-                                5: LaborStatusForm.weeklyHours,
-                                6: LaborStatusForm.startDate,
-                                7: User.username,
-                                8: FormHistory.status,
-                                9: FormHistory.historyType,
-                                10: StudentLaborEvaluation.ID}
-    else:
-        colIndexColNameMap = {  0: Term.termCode,
-                                1: Department.DEPT_NAME,
-                                2: Supervisor.LAST_NAME,
-                                3: Student.LAST_NAME,
-                                4: LaborStatusForm.POSN_CODE,
-                                5: LaborStatusForm.weeklyHours,
-                                6: LaborStatusForm.startDate,
-                                7: User.username,
-                                8: FormHistory.status,
-                                9: FormHistory.historyType,
-                                10: StudentLaborEvaluation.ID}
-    
-    print(colIndexColNameMap[2])
+    colIndexColNameMap = {  0: Term.termCode,
+                            1: Department.DEPT_NAME,
+                            2: Supervisor.preferred_name | Supervisor.legal_name if sortByOptions.get('firstName', False) == True else Supervisor.LAST_NAME,
+                            3: Student.preferred_name | Student.legal_name if sortByOptions.get('firstName', False) == True else Student.LAST_NAME,
+                            4: LaborStatusForm.POSN_CODE,
+                            5: LaborStatusForm.weeklyHours,
+                            6: LaborStatusForm.startDate,
+                            7: User.username,
+                            8: FormHistory.status,
+                            9: FormHistory.historyType,
+                            10: StudentLaborEvaluation.ID}
+
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
         termCode = g.openTerm
