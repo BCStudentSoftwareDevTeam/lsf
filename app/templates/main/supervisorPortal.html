@@ -222,14 +222,37 @@
     </div>
   </div>
 <br>
-<input type="checkbox" value="first name" name="sortBy" id="firstName"/>
+
+<!-- <input type="checkbox" class=" form-check-input" value="first name" name="sortBy" id="firstName"/>
 <label class="form-check-label" for="firstName" value="first name">
   First Name  
 </label> 
 <input type="checkbox" value="last name" name="sortBy" id="lastName"/>
 <label class="form-check-label" for="lastName" value="last name">
   Last Name  
-</label> 
+</label>  -->
+<select class="selectpicker" title="Column">
+  <option value="0">Term</option>
+  <option value="1">Department</option>
+  <option value="2">Supervisor</option>
+  <option value="3">Student</option>
+  <option value="4">Position (WLS)</option>
+  <option value="5">Hrs.</option>
+  <option value="">Length</option>
+  <option value="">Created</option>
+  <option value="">Form Type (Status)</option>
+
+</select>
+<select class="selectpicker" title="Field">
+  <option>First Name</option>
+  <option>Last Name</option>
+</select>
+
+<select id="ordering" class="selectpicker" title="Order">
+  <option>Asc</option>
+  <option>Desc</option>
+</select>
+
 <table id="formSearchTable" class="table table-striped table-bordered pt-3" style="display:none" width="100%">
   <thead>
     <th>Term</th>
