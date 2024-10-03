@@ -35,7 +35,7 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  $('#clearSelectionsButton').on('click', function(){
+  $('#clearSelectionsButton').on('click', function (){
     $("input:checkbox").removeAttr("checked");
     clearDropdowns()
   });
@@ -61,7 +61,23 @@ $(document).ready(function () {
   $('#currentTerm').on('click', function () {
     runFormSearchQuery("currentTerm");
   });
+  $('#columnPicker').on('change', function () {
+    let value = $('#columnPicker :selected').val()
+    console.log(value)
+  })
 });
+const columnFieldMap = {
+  'Term': ['Term'],
+  'Department': ['Department'], 
+  'Supervisor': ['First name', 'Last Name'],
+  'Student': ['First name', 'Last Name'],
+  'Position (WLS)': ['Position Type', 'WLS', 'Position Code'],
+  'Hrs.': ['Hours'],
+  'Length': ['Length'],
+  'Created By': ['Created By'],
+  'Form Type (Status)': ['Form Type', 'Status']
+};
+
 
 function disableButtonHandler() {
   if ($('#departmentModalSelect :selected').val() == "" ||  $('#supervisorModalSelect :selected').val() == "") {
