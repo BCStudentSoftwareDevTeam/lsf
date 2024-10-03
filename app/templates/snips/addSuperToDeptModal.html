@@ -32,7 +32,9 @@
                     title="Department">
               {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
-                <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                {% if department.DEPT_NAME != "" %}
+                  <option value="{{department.departmentID}}">{{department.DEPT_NAME}}</option>
+                {% endif %}
               {% endfor %}
             </select>
             </div>
