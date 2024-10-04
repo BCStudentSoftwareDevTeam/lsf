@@ -108,23 +108,29 @@ def getDatatableData(request):
     order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
-    sortByOptions = queryFilterDict.get('sortBy', {})
+    sortBy = queryFilterDict.get('sortBy', "")
     # Allows to switch between first and last names for the column filters
-    print("I AM RUNNING")
     # Dictionary to match column indices with column names in the DB
     # It is used for identifying the column that needs to be sorted
-    colIndexColNameMap = {  0: Term.termCode,
-                            1: Department.DEPT_NAME,
-                            2: Supervisor.preferred_name | Supervisor.legal_name if sortByOptions.get('firstName', False) == True else Supervisor.LAST_NAME,
-                            3: Student.preferred_name | Student.legal_name if sortByOptions.get('firstName', False) == True else Student.LAST_NAME,
-                            4: LaborStatusForm.POSN_CODE,
-                            5: LaborStatusForm.weeklyHours,
-                            6: LaborStatusForm.startDate,
-                            7: User.username,
-                            8: FormHistory.status,
-                            9: FormHistory.historyType,
-                            10: StudentLaborEvaluation.ID}
 
+    sortValueColumnMap = {
+        "Term": Term.termCode,
+        "Department": Department.DEPT_NAME,
+        "supervisorFirstName": Supervisor.FIRST_NAME,
+        "supervisorLastName": Supervisor.LAST_NAME,
+        "studentFirstName": Student.FIRST_NAME,
+        "studentLastName": Student.LAST_NAME,
+        "positionCode": LaborStatusForm.POSN_CODE,
+        "positionWLS": LaborStatusForm.WLS,
+        "hours": LaborStatusForm.weeklyHours,
+        "length": LaborStatusForm.startDate,
+        "createdBy": User.username, 
+        "formStatus": FormHistory.status,
+        "formType": FormHistory.historyType,
+    }
+    
+    print(sortValueColumnMap[sortBy])
+    
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
         termCode = g.openTerm
@@ -176,11 +182,11 @@ def getDatatableData(request):
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
     if order == "desc":
-        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex].desc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
     
     else:
-        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex].asc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
