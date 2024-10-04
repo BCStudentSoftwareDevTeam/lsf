@@ -42,10 +42,6 @@ $('#mySupervisees').on('click', function(){
   $("input:checkbox").removeAttr("checked");
   runFormSearchQuery("mySupervisees");
 });
-$('#evaluationsMissing').on('click', function(){
-  $("input:checkbox").removeAttr("checked");
-  runFormSearchQuery("missingEvals");
-});
 $('#superviseesPendingForms').on('click', function(){
   $("input:checkbox").removeAttr("checked");
   runFormSearchQuery("pendingForms");
@@ -75,22 +71,12 @@ function runFormSearchQuery(button) {
           evaluationList = []
           break;
 
-      case "missingEvals":
-          termCode = "currentTerm"
-          departmentID = ""
-          supervisorID = "currentUser"
-          studentID = ""
-          formStatusList = ["Approved", "Approved Reluctantly"]
-          formType  = []
-          evaluationList = ["evalMissing", "evalMidyearMissing"]
-          break;
-
       case "pendingForms":
           termCode = "currentTerm"
           departmentID = ""
           supervisorID = "currentUser"
           studentID = ""
-          formStatusList = ["Pending"]
+          formStatusList = ["Pending", "Pre-Student Approval"]
           formType  = []
           evaluationList = []
           break;

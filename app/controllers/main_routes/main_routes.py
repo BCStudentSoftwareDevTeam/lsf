@@ -112,8 +112,8 @@ def getDatatableData(request):
     # It is used for identifying the column that needs to be sorted
     colIndexColNameMap = {  0: Term.termCode,
                             1: Department.DEPT_NAME,
-                            2: Supervisor.FIRST_NAME,
-                            3: Student.FIRST_NAME,
+                            2: Supervisor.LAST_NAME,
+                            3: Student.LAST_NAME,
                             4: LaborStatusForm.POSN_CODE,
                             5: LaborStatusForm.weeklyHours,
                             6: LaborStatusForm.startDate,
@@ -205,7 +205,6 @@ def getDatatableData(request):
     
     else:
         filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-
     formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
