@@ -18,11 +18,11 @@ $(document).ready(function () {
     $("#addSupervisorToDeptModal").modal("show");
   })
 
-  $('#addUser').on('click', function() {
-      let supervisorID = $('#supervisorModalSelect :selected').val()
-      let departmentID = $('#departmentModalSelect :selected').val()
+  $('#addUser').on('click', function () {
+    let supervisorID = $('#supervisorModalSelect :selected').val()
+    let departmentID = $('#departmentModalSelect :selected').val()
 
-      addSupervisorToDepartment(supervisorID, departmentID)
+    addSupervisorToDepartment(supervisorID, departmentID)
   })
   $('#departmentModalSelect').on('change', disableButtonHandler)
   $('#supervisorModalSelect').on('change', disableButtonHandler)
@@ -35,7 +35,7 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  $('#clearSelectionsButton').on('click', function (){
+  $('#clearSelectionsButton').on('click', function () {
     $("input:checkbox").removeAttr("checked");
     clearDropdowns()
   });
@@ -62,13 +62,25 @@ $(document).ready(function () {
     runFormSearchQuery("currentTerm");
   });
   $('#columnPicker').on('change', function () {
-    let value = $('#columnPicker :selected').val()
-    console.log(value)
+    let column = $('#columnPicker :selected').text()
+    let fields = columnFieldMap[column]
+    $('#fieldPicker').empty();
+    fields.forEach((field) => {
+      var option = $('<option>', {
+        value: field,
+        text: field
+      });
+      $('#fieldPicker').append(option)
+    })
+    if (fields.length === 1) {
+      $('#fieldPicker').val(fields[0]).change()
+    }
+    $('.selectpicker').selectpicker('refresh')
   })
 });
 const columnFieldMap = {
   'Term': ['Term'],
-  'Department': ['Department'], 
+  'Department': ['Department'],
   'Supervisor': ['First name', 'Last Name'],
   'Student': ['First name', 'Last Name'],
   'Position (WLS)': ['Position Type', 'WLS', 'Position Code'],
@@ -80,7 +92,7 @@ const columnFieldMap = {
 
 
 function disableButtonHandler() {
-  if ($('#departmentModalSelect :selected').val() == "" ||  $('#supervisorModalSelect :selected').val() == "") {
+  if ($('#departmentModalSelect :selected').val() == "" || $('#supervisorModalSelect :selected').val() == "") {
     $('#addUser').prop('disabled', true)
   }
   else {
@@ -150,7 +162,7 @@ function runFormSearchQuery(button) {
 
 function getSortOptions() {
   sortingValuesDict = {}
-  $("input:checkbox[name='sortBy']").each(function() {
+  $("input:checkbox[name='sortBy']").each(function () {
     sortingValuesDict[this.id] = this.checked;
   });
   console.log(sortingValuesDict)
