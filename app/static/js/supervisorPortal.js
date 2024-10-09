@@ -16,13 +16,17 @@ $(document).ready(function(){
   });
   $('#addUserToDept').on('click', function() {
       $("#addSupervisorToDeptModal").modal("show");
+      $('#addUser').prop('disabled', true)
   })
 
   $('#addUser').on('click', function() {
       let supervisorID = $('#supervisorModalSelect :selected').val()
       let departmentID = $('#departmentModalSelect :selected').val()
+
       addSupervisorToDepartment(supervisorID, departmentID)
   })
+  $('#departmentModalSelect').on('change', disableButtonHandler)
+  $('#supervisorModalSelect').on('change', disableButtonHandler)
   $('#clearSelectionsButton').on('click', function(){
     $("input:checkbox").removeAttr("checked");
     clearDropdowns()
@@ -51,8 +55,14 @@ $('#currentTerm').on('click', function(){
 });
 });
 
-
-
+function disableButtonHandler() {
+  if ($('#departmentModalSelect :selected').val() == "" ||  $('#supervisorModalSelect :selected').val() == "") {
+    $('#addUser').prop('disabled', true)
+  }
+  else {
+    $('#addUser').prop('disabled', false)
+  }
+}
 function runFormSearchQuery(button) {
 
   let termCode, departmentID, supervisorID, studentID;

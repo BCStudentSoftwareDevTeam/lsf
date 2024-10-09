@@ -28,13 +28,18 @@
   <h1>Supervisor Portal</h1>
 </div>
 <br>
-<div align="right">
-  <button class="btn btn-info" type="button" id="addUserToDept">Add User to Dept.</button>
-</div>
 <br>
-<div class="row col-md-12" align="center">
-  <button class="btn btn-primary" type="button" id="mySupervisees">My Current Supervisees</button>
-  <button class="btn btn-primary" type="button" id="superviseesPendingForms">My Pending Forms</button>
+<div style="display: flex;">
+  <div class="row col-md-12">
+    <button class="btn btn-primary" type="button" id="mySupervisees">My Current Supervisees</button>
+    <button class="btn btn-primary" type="button" id="superviseesPendingForms">My Pending Forms</button>
+  </div>
+  <div class="row col-md-8" align="right">
+    <form method="POST" action="/supervisorPortal/download" style="margin: 0; display: inline;">
+      <button class="btn btn-success" type="submit" id="download">Download Results</button>
+    </form>
+    <button class="btn btn-info" type="button" id="addUserToDept">Add User to Dept.</button>
+  </div>
 </div>
 <br>
 <br>
@@ -105,13 +110,12 @@
                     <option value="">All students</option>
                     {% for student in students %}
                       <option value="{{student.ID}}" data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
-                        {{student.FIRST_NAME}} {{student.LAST_NAME}}
+                        {{student.FIRST_NAME}} {{student.LAST_NAME}} ({{student.ID}})
                       </option>
                     {% endfor %}
                   </select>
                 </div>
               </div>
-              <br><br>
               <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch" id="formSearchButton">Search</button>
               <button type="button" class="btn btn-danger" id="clearSelectionsButton">Clear Selections</button>
               <br><br>
@@ -156,26 +160,46 @@
                 <div class="form-check">
                   <input class="form-check-input" name="formType" type="checkbox" value="Labor Status Form" id="original">
                   <label class="form-check-label" for="original">
-                    Original  
+                    <span class="tooltip-right" data-tooltip="A labor contract">Original
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                      </svg>
+                    </span>  
                   </label> 
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" name="formType" type="checkbox" value="Labor Adjustment Form" id="adjusted">
                   <label class="form-check-label" for="adjusted">
-                    Adjusted
-                    </label> 
+                    <span class="tooltip-right" data-tooltip="A change to a labor contract">Adjusted
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                      </svg>
+                    </span>
+                  </label> 
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" name="formType" type="checkbox" value="Labor Release Form" id="release">
                   <label class="form-check-label" for="release">
-                    Release
-                    </label> 
+                    <span class="tooltip-right flex" data-tooltip="A labor contract being ended early">Release
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                      </svg>
+                    </span>
+                  </label> 
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" name="formType" type="checkbox" value="Labor Overload Form" id="overload">
                   <label class="form-check-label" for="overload">
-                    Overload
-                    </label> 
+                    <span class="tooltip-right" data-tooltip="A labor contract above 15 hours per week">Overload
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                      </svg>
+                    </span>
+                  </label> 
                 </div>
               </div>
             </div>
@@ -186,11 +210,7 @@
     </div>
   </div>
 <br>
-<div align="right">
-  <form method="POST" action="/supervisorPortal/download">
-    <button class="btn btn-success" style="margin-bottom:-46px;" type="submit" id="download">Download</button>
-  </form>
-</div>
+
 <table id="formSearchTable" class="table table-striped table-bordered pt-3" style="display:none" width="100%">
   <thead>
     <th>Term</th>

@@ -218,7 +218,7 @@ def getFormattedData(filteredSearchResults):
     '''
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
-    studentHTML = '<a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a>'
+    studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
     formTypeStatus = '<span href="#" aria-label=""> {}</span>'
@@ -271,9 +271,10 @@ def getFormattedData(filteredSearchResults):
                 form.formID.laborStatusFormID,
               form.formID.studentSupervisee.ID,
               f'{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME}',
+              form.formID.studentSupervisee.ID,
               form.formID.studentSupervisee.STU_EMAIL))
 
-        record.append(f'{positionField}<br>{form.formID.jobType}')
+        record.append(f'{form.formID.jobType}<br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
