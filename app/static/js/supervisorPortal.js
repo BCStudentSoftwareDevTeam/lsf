@@ -17,7 +17,9 @@ $(document).ready(function () {
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
   })
-
+  $("#sortByButton").on('click', function () {
+    runFormSearchQuery()
+  })
   $('#addUser').on('click', function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
     let departmentID = $('#departmentModalSelect :selected').val()
@@ -67,8 +69,8 @@ $(document).ready(function () {
     $('#fieldPicker').empty();
     fields.forEach((field) => {
       var option = $('<option>', {
-        value: field,
-        text: field
+        value: field[1],
+        text: field[0]
       });
       $('#fieldPicker').append(option)
     })
@@ -82,15 +84,15 @@ $(document).ready(function () {
   })
 });
 const columnFieldMap = {
-  'Term': ['Term'],
-  'Department': ['Department'],
-  'Supervisor': ['First name', 'Last Name'],
-  'Student': ['First name', 'Last Name'],
-  'Position (WLS)': ['Position Type', 'WLS', 'Position Code'],
-  'Hrs.': ['Hours'],
-  'Length': ['Length'],
-  'Created By': ['Created By'],
-  'Form Type (Status)': ['Form Type', 'Status']
+  'Term': ['Term', 'term'],
+  'Department': [['Department', 'department']],
+  'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
+  'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
+  'Position (WLS)': [['Position Type', 'positionType'], ['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
+  'Hrs.': [['Hours', 'hours']],
+  'Length': [['Length', 'length']],
+  'Created By': [['Created By', 'createdBy']],
+  'Form Type (Status)': [['Form Type', 'formType'], ['Status', 'formStatus']]
 };
 
 
@@ -102,12 +104,13 @@ function disableButtonHandler() {
     $('#addUser').prop('disabled', false)
   }
 }
+
 function runFormSearchQuery(button) {
 
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
-  let sortByMap = getSortOptions();
+  let sortBy = $('#fieldPicker :selected').val() 
 
   switch (button) {
     case "mySupervisees":
@@ -151,9 +154,8 @@ function runFormSearchQuery(button) {
     'studentID': studentID,
     'formStatus': formStatusList,
     'formType': formTypeList,
-    'sortBy': sortByMap,
+    'sortBy': sortBy,
   };
-
   setFormSearchValues(queryDict)
   data = JSON.stringify(queryDict)
 
@@ -161,14 +163,6 @@ function runFormSearchQuery(button) {
   Cookies.set('lsfSearchResults', data, { expires: inAnHour })
 
   createDataTable(data)
-}
-
-function getSortOptions() {
-  sortingValuesDict = {}
-  $("input:checkbox[name='sortBy']").each(function () {
-    sortingValuesDict[this.id] = this.checked;
-  });
-  return sortingValuesDict
 }
 
 function createDataTable(data) {
