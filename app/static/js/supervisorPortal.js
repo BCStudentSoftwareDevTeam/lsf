@@ -110,7 +110,14 @@ function runFormSearchQuery(button) {
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
-  let sortBy = $('#fieldPicker :selected').val() 
+  var isDisabled = $('fieldPicker').prop('disabled');
+  let sortBy
+  if (isDisabled == true) {
+    sortBy = $('#columnPicker :selected').val() 
+  } else {
+    sortBy = $('#fieldPicker :selected').val() 
+  }
+  let order = $('#orderPicker :selected').val()
 
   switch (button) {
     case "mySupervisees":
@@ -155,6 +162,7 @@ function runFormSearchQuery(button) {
     'formStatus': formStatusList,
     'formType': formTypeList,
     'sortBy': sortBy,
+    'order': order
   };
   setFormSearchValues(queryDict)
   data = JSON.stringify(queryDict)
