@@ -73,7 +73,10 @@ $(document).ready(function () {
       $('#fieldPicker').append(option)
     })
     if (fields.length === 1) {
-      $('#fieldPicker').val(fields[0]).change()
+      $('#fieldPicker').prop('disabled', true);
+
+    } else {
+      $('#fieldPicker').prop('disabled', false);
     }
     $('.selectpicker').selectpicker('refresh')
   })
@@ -165,7 +168,6 @@ function getSortOptions() {
   $("input:checkbox[name='sortBy']").each(function () {
     sortingValuesDict[this.id] = this.checked;
   });
-  console.log(sortingValuesDict)
   return sortingValuesDict
 }
 
@@ -183,7 +185,10 @@ function createDataTable(data) {
     paging: true,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
     pageLength: 25,
-    aaSorting: [[0, 'desc']],
+    columnDefs: [{
+      targets: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      orderable: false,
+    }],
     ajax: {
       url: "/",
       type: "POST",
