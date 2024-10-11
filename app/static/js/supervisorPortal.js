@@ -16,6 +16,7 @@ $(document).ready(function () {
   });
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
+    $('#addUser').prop('disabled', true)
   })
   $("#sortByButton").on('click', function () {
     runFormSearchQuery()
@@ -113,9 +114,9 @@ function runFormSearchQuery(button) {
   var isDisabled = $('fieldPicker').prop('disabled');
   let sortBy
   if (isDisabled == true) {
-    sortBy = $('#columnPicker :selected').val() 
+    sortBy = $('#columnPicker :selected').val()
   } else {
-    sortBy = $('#fieldPicker :selected').val() 
+    sortBy = $('#fieldPicker :selected').val()
   }
   let order = $('#orderPicker :selected').val()
 
