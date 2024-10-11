@@ -2,7 +2,7 @@ import sys
 import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
-from peewee import JOIN, prefetch, fn
+from peewee import fn, Case
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -157,14 +157,21 @@ def getDatatableData(request):
 
     recordsTotal = len(formSearchResults)
     
+
+    # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
+    # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
+    # stored in last_name
+    supervisorFirstNameCase = fn.COALESCE(fn.NULLIF(Supervisor.preferred_name, ''), fn.NULLIF(Supervisor.legal_name, ''), Supervisor.LAST_NAME)
+    studentFirstNameCase = fn.COALESCE(fn.NULLIF(Student.preferred_name, ''), fn.NULLIF(Student.legal_name, ''), Student.LAST_NAME)
+
     # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
     # to actual peewee objects we can sort by later
     sortValueColumnMap = {
         "term": Term.termCode,
         "department": Department.DEPT_NAME,
-        "supervisorFirstName": Supervisor.legal_name, # Supervisor.FIRST_NAME exists but since it does not exist 
+        "supervisorFirstName": supervisorFirstNameCase,
         "supervisorLastName": Supervisor.LAST_NAME,
-        "studentFirstName": Student.legal_name,
+        "studentFirstName": studentFirstNameCase,
         "studentLastName": Student.LAST_NAME,
         "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
@@ -211,7 +218,7 @@ def getFormattedData(filteredSearchResults):
         # Supervisor
         supervisorField = supervisorHTML.format(
                             form.formID.supervisor.ID,
-                            f'{form.formID.supervisor.FIRST_NAME} {form.formID.supervisor.LAST_NAME}',
+                            f'{form.formID.supervisor.preferred_name if form.formID.supervisor.preferred_name else form.formID.supervisor.legal_name } {form.formID.supervisor.LAST_NAME}',
                             form.formID.supervisor.EMAIL)
         # Position
         positionField = positionHTML.format(
@@ -244,7 +251,7 @@ def getFormattedData(filteredSearchResults):
         record.append(studentHTML.format(
                 form.formID.laborStatusFormID,
               form.formID.studentSupervisee.ID,
-              f'{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME}',
+              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
               form.formID.studentSupervisee.ID,
               form.formID.studentSupervisee.STU_EMAIL))
 
