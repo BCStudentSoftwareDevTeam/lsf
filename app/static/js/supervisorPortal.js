@@ -65,6 +65,7 @@ $(document).ready(function () {
     runFormSearchQuery("currentTerm");
   });
   $('#columnPicker').on('change', function () {
+    $("#columnPicker").selectpicker("val", this.val);
     let column = $('#columnPicker :selected').text()
     let fields = columnFieldMap[column]
     $('#fieldPicker').empty();
@@ -85,7 +86,7 @@ $(document).ready(function () {
   })
 });
 const columnFieldMap = {
-  'Term': ['Term', 'term'],
+  'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
@@ -111,16 +112,14 @@ function runFormSearchQuery(button) {
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
-  var isDisabled = $('fieldPicker').prop('disabled');
+  var isDisabled = $('#fieldPicker').prop('disabled');
   let sortBy
   if (isDisabled == true) {
-    sortBy = $('#columnPicker :selected').val()
+    sortBy = $('#columnPicker').val()
   } else {
-    sortBy = $('#fieldPicker :selected').val()
+    sortBy = $('#fieldPicker').val()
   }
-  let order = $('#orderPicker :selected').val()
-
-  console.log(order, sortBy)
+  let order = $('#orderPicker').val()
 
   switch (button) {
     case "mySupervisees":

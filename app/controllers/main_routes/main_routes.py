@@ -115,7 +115,7 @@ def getDatatableData(request):
     # It is used for identifying the column that needs to be sorted
     supervisorFirstName = Supervisor.preferred_name if Supervisor.preferred_name else Supervisor.FIRST_NAME
     studentFirstName = Student.preferred_name if Student.preferred_name else Student.FIRST_NAME
-
+    
     sortValueColumnMap = {
         "term": Term.termCode,
         "department": Department.DEPT_NAME,
@@ -183,9 +183,7 @@ def getDatatableData(request):
     
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
-
-    print(order, sortBy)
-    if order == "Desc":
+    if order == "DESC":
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
     
