@@ -120,6 +120,8 @@ function runFormSearchQuery(button) {
   }
   let order = $('#orderPicker :selected').val()
 
+  console.log(order, sortBy)
+
   switch (button) {
     case "mySupervisees":
       termCode = "currentTerm"

@@ -104,22 +104,26 @@ def getDatatableData(request):
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
     rowsPerPage = int(request.form.get('length', -1))
-    sortColIndex = int(request.form.get("order[0][column]", 0)) # default to student if sorting a kajillion or more times.
-    order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "")
+    if not sortBy:
+        sortBy = "supervisorLastName"
+    order = queryFilterDict.get('order', "")
     # Allows to switch between first and last names for the column filters
     # Dictionary to match column indices with column names in the DB
     # It is used for identifying the column that needs to be sorted
+    supervisorFirstName = Supervisor.preferred_name if Supervisor.preferred_name else Supervisor.FIRST_NAME
+    studentFirstName = Student.preferred_name if Student.preferred_name else Student.FIRST_NAME
 
     sortValueColumnMap = {
-        "Term": Term.termCode,
-        "Department": Department.DEPT_NAME,
-        "supervisorFirstName": Supervisor.FIRST_NAME,
+        "term": Term.termCode,
+        "department": Department.DEPT_NAME,
+        "supervisorFirstName": supervisorFirstName,
         "supervisorLastName": Supervisor.LAST_NAME,
-        "studentFirstName": Student.FIRST_NAME,
+        "studentFirstName": studentFirstName,
         "studentLastName": Student.LAST_NAME,
+        "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
         "hours": LaborStatusForm.weeklyHours,
@@ -128,8 +132,6 @@ def getDatatableData(request):
         "formStatus": FormHistory.status,
         "formType": FormHistory.historyType,
     }
-    
-    print(sortValueColumnMap[sortBy])
     
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
@@ -181,7 +183,9 @@ def getDatatableData(request):
     
     # Sorting a column in descending order when a specific column is chosen
     # Initially, it sorts by the Term column as specified in supervisorPortal.js
-    if order == "desc":
+
+    print(order, sortBy)
+    if order == "Desc":
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     # Sorting a column in ascending order when a specific column is chosen
     
