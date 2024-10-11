@@ -106,32 +106,8 @@ def getDatatableData(request):
     rowsPerPage = int(request.form.get('length', -1))
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
-    sortBy = queryFilterDict.get('sortBy', "")
-    if not sortBy:
-        sortBy = "supervisorLastName"
+    sortBy = queryFilterDict.get('sortBy', "supervisorLastName")
     order = queryFilterDict.get('order', "")
-    # Allows to switch between first and last names for the column filters
-    # Dictionary to match column indices with column names in the DB
-    # It is used for identifying the column that needs to be sorted
-    supervisorFirstName = Supervisor.preferred_name if Supervisor.preferred_name else Supervisor.FIRST_NAME
-    studentFirstName = Student.preferred_name if Student.preferred_name else Student.FIRST_NAME
-    
-    sortValueColumnMap = {
-        "term": Term.termCode,
-        "department": Department.DEPT_NAME,
-        "supervisorFirstName": supervisorFirstName,
-        "supervisorLastName": Supervisor.LAST_NAME,
-        "studentFirstName": studentFirstName,
-        "studentLastName": Student.LAST_NAME,
-        "positionType": LaborStatusForm.POSN_TITLE,
-        "positionCode": LaborStatusForm.POSN_CODE,
-        "positionWLS": LaborStatusForm.WLS,
-        "hours": LaborStatusForm.weeklyHours,
-        "length": LaborStatusForm.startDate,
-        "createdBy": User.username, 
-        "formStatus": FormHistory.status,
-        "formType": FormHistory.historyType,
-    }
     
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
@@ -181,12 +157,27 @@ def getDatatableData(request):
 
     recordsTotal = len(formSearchResults)
     
-    # Sorting a column in descending order when a specific column is chosen
-    # Initially, it sorts by the Term column as specified in supervisorPortal.js
+    # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
+    # to actual peewee objects we can sort by later
+    sortValueColumnMap = {
+        "term": Term.termCode,
+        "department": Department.DEPT_NAME,
+        "supervisorFirstName": Supervisor.legal_name, # Supervisor.FIRST_NAME exists but since it does not exist 
+        "supervisorLastName": Supervisor.LAST_NAME,
+        "studentFirstName": Student.legal_name,
+        "studentLastName": Student.LAST_NAME,
+        "positionType": LaborStatusForm.POSN_TITLE,
+        "positionCode": LaborStatusForm.POSN_CODE,
+        "positionWLS": LaborStatusForm.WLS,
+        "hours": LaborStatusForm.weeklyHours,
+        "length": LaborStatusForm.startDate,
+        "createdBy": User.username, 
+        "formStatus": FormHistory.status,
+        "formType": FormHistory.historyType,
+    }
+
     if order == "DESC":
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
-    # Sorting a column in ascending order when a specific column is chosen
-    
     else:
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults)
@@ -206,7 +197,6 @@ def getFormattedData(filteredSearchResults):
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
     formTypeStatus = '<span href="#" aria-label=""> {}</span>'
-    hiddenLSFID = "<div id={} data-id hidden></div>"
     formattedData = []
     for form in filteredSearchResults:
         # The order in which you append the items to 'record' matters and it should match the order of columns on the table!

@@ -19,6 +19,11 @@ $(document).ready(function () {
     $('#addUser').prop('disabled', true)
   })
   $("#sortByButton").on('click', function () {
+    var isDisabled = $('#fieldPicker').prop('disabled');
+    if (!isDisabled && $('#fieldPicker').val() == '') {
+      msgFlash("Cannot sort without selecting a field.", 'warning')
+      return
+    } 
     runFormSearchQuery()
   })
   $('#addUser').on('click', function () {
@@ -65,9 +70,11 @@ $(document).ready(function () {
     runFormSearchQuery("currentTerm");
   });
   $('#columnPicker').on('change', function () {
-    $("#columnPicker").selectpicker("val", this.val);
     let column = $('#columnPicker :selected').text()
     let fields = columnFieldMap[column]
+
+    // clear the options from the current field picker and replace 
+    // them with the ones from the columnFieldMap 
     $('#fieldPicker').empty();
     fields.forEach((field) => {
       var option = $('<option>', {
@@ -76,6 +83,9 @@ $(document).ready(function () {
       });
       $('#fieldPicker').append(option)
     })
+    
+    // if there is only one field then that means we can disable the fieldPicker and rely
+    // on the column instead
     if (fields.length === 1) {
       $('#fieldPicker').prop('disabled', true);
 
@@ -85,6 +95,9 @@ $(document).ready(function () {
     $('.selectpicker').selectpicker('refresh')
   })
 });
+
+// this is a mapping which maps the column option to its field options.
+// many do not have multiple fields so the field is just the column itself (e.g. term)
 const columnFieldMap = {
   'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
@@ -108,16 +121,16 @@ function disableButtonHandler() {
 }
 
 function runFormSearchQuery(button) {
-
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
   var isDisabled = $('#fieldPicker').prop('disabled');
-  let sortBy
-  if (isDisabled == true) {
+  let sortBy = $('#fieldPicker').val()
+
+  // if the fieldPicker is disabled that means we should take the value
+  // from the columnPicker instead
+  if (isDisabled) {
     sortBy = $('#columnPicker').val()
-  } else {
-    sortBy = $('#fieldPicker').val()
   }
   let order = $('#orderPicker').val()
 
@@ -180,20 +193,26 @@ function createDataTable(data) {
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
   $("#download").prop('disabled', false);
   $('#formSearchTable').show();
-  var formSearchInit = $('#formSearchTable').DataTable({
+
+  // default ordering upon initialization is term
+  $('#formSearchTable').DataTable({
     responsive: true,
     destroy: true,
-    searching: false,
+    searching: false, // we may want to enable this at some point, think it may require custom logic on our end, though.
     processing: true,
     serverSide: true,
     paging: true,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
     pageLength: 25,
     columnDefs: [{
-      targets: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      // this disables built in ordering on columns with these IDs 
+      // (may be a way to do without specifying each individually but idk)
+      targets: [0, 1, 2, 3, 4, 5, 6, 7, 8], 
       orderable: false,
     }],
     ajax: {
+      // we fetch the data and do the ordering server side which means all logic is done
+      // in Python and the datatable just displays the results
       url: "/",
       type: "POST",
       data: { 'data': data },
