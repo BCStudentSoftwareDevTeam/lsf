@@ -23,9 +23,17 @@ $(document).ready(function () {
     if (!isDisabled && $('#fieldPicker').val() == '') {
       msgFlash("Cannot sort without selecting a field.", 'warning')
       return
-    } 
+    }
     runFormSearchQuery()
   })
+
+  if ($('#formSearchTable').is(':hidden')) {
+    $('#columnPicker').selectpicker('hide')
+    $('#fieldPicker').selectpicker('hide')
+    $('#orderPicker').selectpicker('hide')
+    $('#sortByButton').hide()
+  }
+
   $('#addUser').on('click', function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
     let departmentID = $('#departmentModalSelect :selected').val()
@@ -83,7 +91,7 @@ $(document).ready(function () {
       });
       $('#fieldPicker').append(option)
     })
-    
+
     // if there is only one field then that means we can disable the fieldPicker and rely
     // on the column instead
     if (fields.length === 1) {
@@ -189,10 +197,13 @@ function runFormSearchQuery(button) {
 }
 
 function createDataTable(data) {
-
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
   $("#download").prop('disabled', false);
   $('#formSearchTable').show();
+  $('#columnPicker').selectpicker('show')
+  $('#fieldPicker').selectpicker('show')
+  $('#orderPicker').selectpicker('show')
+  $('#sortByButton').show()
 
   // default ordering upon initialization is term
   $('#formSearchTable').DataTable({
@@ -207,7 +218,7 @@ function createDataTable(data) {
     columnDefs: [{
       // this disables built in ordering on columns with these IDs 
       // (may be a way to do without specifying each individually but idk)
-      targets: [0, 1, 2, 3, 4, 5, 6, 7, 8], 
+      targets: [0, 1, 2, 3, 4, 5, 6, 7, 8],
       orderable: false,
     }],
     ajax: {
