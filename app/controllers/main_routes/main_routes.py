@@ -106,8 +106,10 @@ def getDatatableData(request):
     rowsPerPage = int(request.form.get('length', -1))
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
-    sortBy = queryFilterDict.get('sortBy', "supervisorLastName")
-    order = queryFilterDict.get('order', "")
+    sortBy = queryFilterDict.get('sortBy', "term")
+    if sortBy == "":
+        sortBy = "term"
+    order = queryFilterDict.get('order', "ASC")
     
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
