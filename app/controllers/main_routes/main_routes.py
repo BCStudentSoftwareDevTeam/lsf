@@ -184,7 +184,7 @@ def getDatatableData(request):
     }
 
     if order == "DESC":
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchRcesults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     else:
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults)
@@ -210,16 +210,24 @@ def getFormattedData(filteredSearchResults):
         record = []
         # Term
         record.append(form.formID.termCode.termName)
-        # Department
-        record.append(departmentHTML.format(
-              form.formID.department.ORG,
-              form.formID.department.ACCOUNT,
-              form.formID.department.DEPT_NAME))
+        # Student
+        record.append(studentHTML.format(
+                form.formID.laborStatusFormID,
+              form.formID.studentSupervisee.ID,
+              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
+              form.formID.studentSupervisee.ID,
+              form.formID.studentSupervisee.STU_EMAIL))
         # Supervisor
         supervisorField = supervisorHTML.format(
                             form.formID.supervisor.ID,
                             f'{form.formID.supervisor.preferred_name if form.formID.supervisor.preferred_name else form.formID.supervisor.legal_name } {form.formID.supervisor.LAST_NAME}',
                             form.formID.supervisor.EMAIL)
+        # Department
+        record.append(departmentHTML.format(
+              form.formID.department.ORG,
+              form.formID.department.ACCOUNT,
+              form.formID.department.DEPT_NAME))
+        
         # Position
         positionField = positionHTML.format(
                         form.formID.POSN_TITLE,
@@ -247,13 +255,7 @@ def getFormattedData(filteredSearchResults):
                 hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
 
         record.append(supervisorField)
-        # Student
-        record.append(studentHTML.format(
-                form.formID.laborStatusFormID,
-              form.formID.studentSupervisee.ID,
-              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
-              form.formID.studentSupervisee.ID,
-              form.formID.studentSupervisee.STU_EMAIL))
+        
 
         record.append(f'{form.formID.jobType}<br>{positionField}')
         record.append(hoursField)
