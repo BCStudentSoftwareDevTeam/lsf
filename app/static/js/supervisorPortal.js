@@ -14,12 +14,13 @@ $(document).ready(function () {
     runFormSearchQuery();
   });
   $('#switchViewButton').on('click', function () {
-    let buttonVal = this.val()
+    let buttonVal = $('#switchViewButton').val()
     if (buttonVal == 'advanced') {
-      this.val('simple')
-      this.html('Switch To Advanced View')
+      $('#switchViewButton').val('simple')
+      $('#switchViewButton').html('Switch To Advanced View')
     } else {
-      
+      $('#switchViewButton').val('advanced')
+      $('#switchViewButton').html('Switch To Simple View')
     }
     runFormSearchQuery();
   });
@@ -188,6 +189,8 @@ function runFormSearchQuery(button) {
   }
 
   queryDict = {
+    // this may seem counterintuitive but since the value
+    // switches on button press it is technically the opposite of the current view
     'view': view,
     'termCode': termCode,
     'departmentID': departmentID,
@@ -206,7 +209,7 @@ function runFormSearchQuery(button) {
   if (view == 'advanced') {
     createDataTable(data)
   } {
-    fetchSimpleView(data)
+    // fetchSimpleView(data)
   }
 }
 
@@ -233,6 +236,7 @@ function createDataTable(data) {
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
   $("#download").prop('disabled', false);
   $('#formSearchTable').show();
+  $('#simpleView').hide()
   $('#columnPicker').selectpicker('show')
   $('#fieldPicker').selectpicker('show')
   $('#orderPicker').selectpicker('show')
