@@ -12,7 +12,16 @@ $(document).ready(function () {
 
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
-
+  });
+  $('#switchViewButton').on('click', function () {
+    let buttonVal = this.val()
+    if (buttonVal == 'advanced') {
+      this.val('simple')
+      this.html('Switch To Advanced View')
+    } else {
+      
+    }
+    runFormSearchQuery();
   });
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
@@ -129,6 +138,7 @@ function disableButtonHandler() {
 }
 
 function runFormSearchQuery(button) {
+  let view = $('#switchViewButton').val()
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
@@ -178,6 +188,7 @@ function runFormSearchQuery(button) {
   }
 
   queryDict = {
+    'view': view,
     'termCode': termCode,
     'departmentID': departmentID,
     'supervisorID': supervisorID,
@@ -192,8 +203,30 @@ function runFormSearchQuery(button) {
 
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, { expires: inAnHour })
+  if (view == 'advanced') {
+    createDataTable(data)
+  } {
+    fetchSimpleView(data)
+  }
+}
 
-  createDataTable(data)
+function fetchSimpleView(data) {
+  data = JSON.stringify(queryDict)
+  return $.ajax({
+    method: "POST",
+    url: `/`,
+    data: data,
+    success: function (response) {
+      renderSimpleView(response)
+    },
+    error: function () {
+    },
+  })
+}
+
+function renderSimpleView(html) {
+  $('#formSearchTable').hide();
+  $('#simpleView').html(html)
 }
 
 function createDataTable(data) {
