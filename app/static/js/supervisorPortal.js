@@ -214,7 +214,9 @@ function runFormSearchQuery(button) {
 }
 
 function fetchSimpleView(data) {
-  console.log("simple", data)
+  $('#formSearchTable').hide();
+  $('#formSearchTable_wrapper').hide();
+ 
   return $.ajax({
     method: "POST",
     url: `/`,
@@ -229,8 +231,9 @@ function fetchSimpleView(data) {
 }
 
 function renderSimpleView(html) {
-  $('#formSearchTable').hide();
-  $('#simpleViewBody').html(html)
+  $('#simpleView').show();
+  console.log(html)
+  $('#simpleViewBody').html(html.data)
 }
 
 function createDataTable(data) {
