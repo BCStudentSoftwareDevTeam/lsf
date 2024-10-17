@@ -189,76 +189,29 @@ def getDatatableData(request):
         filteredSearchRcesults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     else:
         filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getSimpleFormattedData(filteredSearchResults)
+    formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)
-def getSimpleFormattedData(filteredSearchResults):
+
+def getFormattedData(filteredSearchResults, view ='advanced'):
     '''
     Putting the data in the correct format to be used by the JS file.
     Because this implementation is using server-side processing of datatables,
     the HTML for the datatables are also formatted here.
     '''
-
-    studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
-    positionHTML = '<span href="#" aria-label="{}"> {}</span>'
-    formTypeStatus = '<span href="#" aria-label=""> {}</span>'
-    formattedData = []
-    for form in filteredSearchResults:
-        # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-        record = []
-        
-        # Student
-        record.append(studentHTML.format( 
-              form.formID.laborStatusFormID,
-              form.formID.studentSupervisee.ID,
-              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
-              form.formID.studentSupervisee.ID,
-              form.formID.studentSupervisee.STU_EMAIL))
-        
-        # Term
-        record.append(form.formID.termCode.termName)
-
-        # Position
-        positionField = positionHTML.format(form.formID.POSN_TITLE, f'{form.formID.POSN_CODE} ({form.formID.WLS})')
-
-        # Adjustment Form Specific Data
-        checkAdjustment(form)
-        if (form.adjustedForm):
-            if form.adjustedForm.fieldAdjusted == "position":
-                newPosition = positionHTML.format(
-                              form.adjustedForm.oldValue,
-                              form.adjustedForm.newValue)
-                positionField = f'<s aria-label="true">{positionField}</s><br>{newPosition}'
-
-            if form.adjustedForm.fieldAdjusted == "weeklyHours"  or  form.adjustedForm.fieldAdjusted == "contractHours":
-                newHours = form.adjustedForm.newValue
-                hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
-
-        record.append(f'{form.formID.termCode.termName} - {form.formID.jobType}<br>{positionField}')
-
-        # Form Type
-        formTypeNameMapping = {
-            "Labor Status Form": "Original",
-            "Labor Adjustment Form": "Adjusted",
-            "Labor Overload Form": "Overload",
-            "Labor Release Form": "Release"}
-        originalFormTypeName = form.historyType.historyTypeName
-        mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
-        # formType(Status)
-        formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
-
-        formattedData.append(record)
-
-    return formattedData
-
-
-def getFormattedData(filteredSearchResults):
-    '''
-    Putting the data in the correct format to be used by the JS file.
-    Because this implementation is using server-side processing of datatables,
-    the HTML for the datatables are also formatted here.
-    '''
+    if view == "simple":
+        formattedData = ""
+        for form in filteredSearchResults:
+            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+            formattedData += f"""<td> <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
+                            <span class="h4">{form.formID.studentSupervisee.FIRST_NAME}{form.formID.studentSupervisee.LAST_NAME}({form.formID.studentSupervisee.ID})</span>
+                            </a>
+                            <span class="pushRight h5">{form.status}</span>
+                            <br>
+                            <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
+                            </td>"""
+        return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
