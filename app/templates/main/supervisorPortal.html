@@ -243,37 +243,35 @@
   </div>
 </div>
 <br>
+<div style="position: relative; z-index: 1;">
+  <div class="container-fluid" style="margin-bottom: -40px;" align="right">
+    <label for="columnPicker">Sorting Options:</label>
+    <select id="columnPicker" name="columnPicker" class="selectpicker" title="Column">
+      <option value="term">Term</option>
+      <option value="department">Department</option>
+      <option value="supervisor">Supervisor</option>
+      <option value="student">Student</option>
+      <option value="position">Position (WLS)</option>
+      <option value="hours">Hrs.</option>
+      <option value="length">Length</option>
+      <option value="createdBy">Created By</option>
+      <option value="form">Form Type (Status)</option>
+    </select>
 
-<!-- <input type="checkbox" class=" form-check-input" value="first name" name="sortBy" id="firstName"/>
-<label class="form-check-label" for="firstName" value="first name">
-  First Name  
-</label> 
-<input type="checkbox" value="last name" name="sortBy" id="lastName"/>
-<label class="form-check-label" for="lastName" value="last name">
-  Last Name  
-</label>  -->
-<select id="columnPicker" class="selectpicker" title="Sort Column">
-  <option value="term">Term</option>
-  <option value="department">Department</option>
-  <option value="supervisor">Supervisor</option>
-  <option value="student">Student</option>
-  <option value="position">Position (WLS)</option>
-  <option value="hours">Hrs.</option>
-  <option value="length">Length</option>
-  <option value="createdBy">Created By</option>
-  <option value="form">Form Type (Status)</option>
+    <select id="fieldPicker" class="selectpicker" title="Field">
+      <option value="term">Term</option>
+    </select>
 
-</select>
-<select id="fieldPicker" class="selectpicker" title="Field">
-  <option value="term">Term</option>
-</select>
+    <select id="orderPicker" class="selectpicker" title="Order">
+      <option selected value="ASC">Asc</option>
+      <option value="DESC">Desc</option>
+    </select>
 
-<select id="orderPicker" class="selectpicker" title="Order">
-  <option selected value="ASC">Asc</option>
-  <option value="DESC">Desc</option>
-</select>
+    <button class="btn btn-primary" id="sortByButton">Sort</button>
+  </div>
+</div>
 
-<button class="btn btn-primary" id="sortByButton">Sort</button>
+
 <table id="formSearchTable" class="table table-striped table-bordered pt-3" style="display:none" width="100%">
   <thead>
     <th>Term</th>
