@@ -224,6 +224,8 @@ def getFormattedData(filteredSearchResults):
                             form.formID.supervisor.ID,
                             f'{form.formID.supervisor.preferred_name if form.formID.supervisor.preferred_name else form.formID.supervisor.legal_name } {form.formID.supervisor.LAST_NAME}',
                             form.formID.supervisor.EMAIL)
+        record.append(supervisorField)
+        
         # Department
         record.append(departmentHTML.format(
               form.formID.department.ORG,
@@ -256,7 +258,7 @@ def getFormattedData(filteredSearchResults):
                 newHours = form.adjustedForm.newValue
                 hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
 
-        record.append(supervisorField)
+        
         
 
         record.append(f'{form.formID.jobType}<br>{positionField}')
