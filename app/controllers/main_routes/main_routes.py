@@ -2,7 +2,7 @@ import sys
 import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
-from peewee import JOIN, prefetch, fn
+from peewee import fn, Case
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -104,23 +104,13 @@ def getDatatableData(request):
     draw = int(request.form.get('draw', -1))
     rowNumber = int(request.form.get('start', -1))
     rowsPerPage = int(request.form.get('length', -1))
-    sortColIndex = int(request.form.get("order[0][column]", -1))
-    order = request.form.get('order[0][dir]')
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
-    # Dictionary to match column indices with column names in the DB
-    # It is used for identifying the column that needs to be sorted
-    colIndexColNameMap = {  0: Term.termCode,
-                            1: Department.DEPT_NAME,
-                            2: Supervisor.LAST_NAME,
-                            3: Student.LAST_NAME,
-                            4: LaborStatusForm.POSN_CODE,
-                            5: LaborStatusForm.weeklyHours,
-                            6: LaborStatusForm.startDate,
-                            7: User.username,
-                            8: FormHistory.status,
-                            9: FormHistory.historyType,
-                            10: StudentLaborEvaluation.ID}
+    sortBy = queryFilterDict.get('sortBy', "term")
+    if sortBy == "":
+        sortBy = "term"
+    order = queryFilterDict.get('order', "ASC")
+    
     termCode = queryFilterDict.get('termCode', "")
     if termCode == "currentTerm":
         termCode = g.openTerm
@@ -167,48 +157,101 @@ def getDatatableData(request):
         supervisorDepartments = getDepartmentsForSupervisor(currentUser)
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
-    if sleJoin:
-        midYearEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                    .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                           StudentLaborEvaluation.is_midyear_evaluation == True, 
-                                                           StudentLaborEvaluation.is_submitted == True))
-        
-        allEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                       StudentLaborEvaluation.is_submitted == True))
-        
-        finalEvaluations = (StudentLaborEvaluation.select(StudentLaborEvaluation.formHistoryID)
-                                                  .where(StudentLaborEvaluation.formHistoryID.formID.termCode == termCode, 
-                                                         StudentLaborEvaluation.is_midyear_evaluation == False, 
-                                                         StudentLaborEvaluation.is_submitted == True))
-        if sleJoin == "evalMidyearMissing":
-            formSearchResults = formSearchResults.where(FormHistory.formHistoryID.not_in(midYearEvaluations))
-        elif sleJoin == "evalMidyearComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(midYearEvaluations))
-        elif sleJoin == "evalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(allEvaluations))
-        elif sleJoin == "evalComplete":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.in_(allEvaluations))
-        elif sleJoin == "allEvalMissing":
-            formSearchResults = formSearchResults.select().where(FormHistory.formHistoryID.not_in(finalEvaluations))
-
-        if sleJoin =="evalMidyearMissing" or sleJoin == "evalMissing" or sleJoin == "allEvalMissing":
-             formSearchResults = formSearchResults.select().where(FormHistory.status == "Approved" or FormHistory.status == "Approved Reluctantly")
-    
     recordsTotal = len(formSearchResults)
     
-    # Sorting a column in descending order when a specific column is chosen
-    # Initially, it sorts by the Term column as specified in supervisorPortal.js
-    if order == "desc":
-        filteredSearchResults = formSearchResults.order_by(-colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-    # Sorting a column in ascending order when a specific column is chosen
-    
+
+    # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
+    # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
+    # stored in last_name
+    supervisorFirstNameCase = fn.COALESCE(fn.NULLIF(Supervisor.preferred_name, ''), fn.NULLIF(Supervisor.legal_name, ''), Supervisor.LAST_NAME)
+    studentFirstNameCase = fn.COALESCE(fn.NULLIF(Student.preferred_name, ''), fn.NULLIF(Student.legal_name, ''), Student.LAST_NAME)
+
+    # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
+    # to actual peewee objects we can sort by later
+    sortValueColumnMap = {
+        "term": Term.termCode,
+        "department": Department.DEPT_NAME,
+        "supervisorFirstName": supervisorFirstNameCase,
+        "supervisorLastName": Supervisor.LAST_NAME,
+        "studentFirstName": studentFirstNameCase,
+        "studentLastName": Student.LAST_NAME,
+        "positionType": LaborStatusForm.POSN_TITLE,
+        "positionCode": LaborStatusForm.POSN_CODE,
+        "positionWLS": LaborStatusForm.WLS,
+        "hours": LaborStatusForm.weeklyHours,
+        "length": LaborStatusForm.startDate,
+        "createdBy": User.username, 
+        "formStatus": FormHistory.status,
+        "formType": FormHistory.historyType,
+    }
+
+    if order == "DESC":
+        filteredSearchRcesults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
     else:
-        filteredSearchResults = formSearchResults.order_by(colIndexColNameMap[sortColIndex]).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getFormattedData(filteredSearchResults)
+        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
+    formattedData = getSimpleFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)
+def getSimpleFormattedData(filteredSearchResults):
+    '''
+    Putting the data in the correct format to be used by the JS file.
+    Because this implementation is using server-side processing of datatables,
+    the HTML for the datatables are also formatted here.
+    '''
+
+    studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
+    positionHTML = '<span href="#" aria-label="{}"> {}</span>'
+    formTypeStatus = '<span href="#" aria-label=""> {}</span>'
+    formattedData = []
+    for form in filteredSearchResults:
+        # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+        record = []
+        
+        # Student
+        record.append(studentHTML.format( 
+              form.formID.laborStatusFormID,
+              form.formID.studentSupervisee.ID,
+              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
+              form.formID.studentSupervisee.ID,
+              form.formID.studentSupervisee.STU_EMAIL))
+        
+        # Term
+        record.append(form.formID.termCode.termName)
+
+        # Position
+        positionField = positionHTML.format(form.formID.POSN_TITLE, f'{form.formID.POSN_CODE} ({form.formID.WLS})')
+
+        # Adjustment Form Specific Data
+        checkAdjustment(form)
+        if (form.adjustedForm):
+            if form.adjustedForm.fieldAdjusted == "position":
+                newPosition = positionHTML.format(
+                              form.adjustedForm.oldValue,
+                              form.adjustedForm.newValue)
+                positionField = f'<s aria-label="true">{positionField}</s><br>{newPosition}'
+
+            if form.adjustedForm.fieldAdjusted == "weeklyHours"  or  form.adjustedForm.fieldAdjusted == "contractHours":
+                newHours = form.adjustedForm.newValue
+                hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
+
+        record.append(f'{form.formID.termCode.termName} - {form.formID.jobType}<br>{positionField}')
+
+        # Form Type
+        formTypeNameMapping = {
+            "Labor Status Form": "Original",
+            "Labor Adjustment Form": "Adjusted",
+            "Labor Overload Form": "Overload",
+            "Labor Release Form": "Release"}
+        originalFormTypeName = form.historyType.historyTypeName
+        mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
+        # formType(Status)
+        formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
+
+        formattedData.append(record)
+
+    return formattedData
+
 
 def getFormattedData(filteredSearchResults):
     '''
@@ -222,23 +265,32 @@ def getFormattedData(filteredSearchResults):
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
     formTypeStatus = '<span href="#" aria-label=""> {}</span>'
-    hiddenLSFID = "<div id={} data-id hidden></div>"
     formattedData = []
     for form in filteredSearchResults:
         # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
         record = []
         # Term
         record.append(form.formID.termCode.termName)
+        # Student
+        record.append(studentHTML.format(
+                form.formID.laborStatusFormID,
+              form.formID.studentSupervisee.ID,
+              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
+              form.formID.studentSupervisee.ID,
+              form.formID.studentSupervisee.STU_EMAIL))
+        # Supervisor
+        supervisorField = supervisorHTML.format(
+                            form.formID.supervisor.ID,
+                            f'{form.formID.supervisor.preferred_name if form.formID.supervisor.preferred_name else form.formID.supervisor.legal_name } {form.formID.supervisor.LAST_NAME}',
+                            form.formID.supervisor.EMAIL)
+        record.append(supervisorField)
+        
         # Department
         record.append(departmentHTML.format(
               form.formID.department.ORG,
               form.formID.department.ACCOUNT,
               form.formID.department.DEPT_NAME))
-        # Supervisor
-        supervisorField = supervisorHTML.format(
-                            form.formID.supervisor.ID,
-                            f'{form.formID.supervisor.FIRST_NAME} {form.formID.supervisor.LAST_NAME}',
-                            form.formID.supervisor.EMAIL)
+        
         # Position
         positionField = positionHTML.format(
                         form.formID.POSN_TITLE,
@@ -265,14 +317,8 @@ def getFormattedData(filteredSearchResults):
                 newHours = form.adjustedForm.newValue
                 hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
 
-        record.append(supervisorField)
-        # Student
-        record.append(studentHTML.format(
-                form.formID.laborStatusFormID,
-              form.formID.studentSupervisee.ID,
-              f'{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME}',
-              form.formID.studentSupervisee.ID,
-              form.formID.studentSupervisee.STU_EMAIL))
+        
+        
 
         record.append(f'{form.formID.jobType}<br>{positionField}')
         record.append(hoursField)
