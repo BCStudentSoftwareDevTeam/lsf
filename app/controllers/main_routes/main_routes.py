@@ -204,14 +204,14 @@ def getFormattedData(filteredSearchResults, view ='advanced'):
     if view == "simple":
         formattedData = ""
         for form in filteredSearchResults:
-             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            formattedData += f"""<td> <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
+            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+            formattedData += f"""<tr> <td> <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
                             <span class="h4">{form.formID.studentSupervisee.FIRST_NAME}{form.formID.studentSupervisee.LAST_NAME}({form.formID.studentSupervisee.ID})</span>
                             </a>
                             <span class="pushRight h5">{form.status}</span>
                             <br>
                             <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
-                            </td>"""
+                            </td> </tr>"""
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
