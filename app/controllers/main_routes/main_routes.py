@@ -101,9 +101,9 @@ def getDatatableData(request):
         sleJoin = False
     
     currentUser = require_login()
-    draw = int(request.form.get('draw', -1))
-    rowNumber = int(request.form.get('start', -1))
-    rowsPerPage = int(request.form.get('length', -1))
+    draw = int(request.form.get('draw', 10))
+    rowNumber = int(request.form.get('start', 10))
+    rowsPerPage = int(request.form.get('length', 10))
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
@@ -200,10 +200,11 @@ def getFormattedData(filteredSearchResults, view ='advanced'):
     Because this implementation is using server-side processing of datatables,
     the HTML for the datatables are also formatted here.
     '''
+    print('RAHHHH', filteredSearchResults)
     if view == "simple":
         formattedData = ""
         for form in filteredSearchResults:
-            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
             formattedData += f"""<td> <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
                             <span class="h4">{form.formID.studentSupervisee.FIRST_NAME}{form.formID.studentSupervisee.LAST_NAME}({form.formID.studentSupervisee.ID})</span>
                             </a>

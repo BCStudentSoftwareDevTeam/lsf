@@ -206,20 +206,21 @@ function runFormSearchQuery(button) {
 
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, { expires: inAnHour })
-  if (view == 'advanced') {
+  if (view === 'advanced') {
     createDataTable(data)
-  } {
-    // fetchSimpleView(data)
+  } else {
+    fetchSimpleView(data)
   }
 }
 
 function fetchSimpleView(data) {
-  data = JSON.stringify(queryDict)
+  console.log("simple", data)
   return $.ajax({
     method: "POST",
     url: `/`,
-    data: data,
+    data: { 'data': data }, 
     success: function (response) {
+      console.log(response)
       renderSimpleView(response)
     },
     error: function () {
@@ -229,7 +230,7 @@ function fetchSimpleView(data) {
 
 function renderSimpleView(html) {
   $('#formSearchTable').hide();
-  $('#simpleView').html(html)
+  $('#simpleViewBody').html(html)
 }
 
 function createDataTable(data) {
