@@ -220,30 +220,45 @@ function runFormSearchQuery(button) {
 function fetchSimpleView(data) {
   $('#formSearchTable').hide();
   $('#formSearchTable_wrapper').hide();
- 
-  return $.ajax({
-    method: "POST",
-    url: `/`,
-    data: { 'data': data }, 
-    success: function (response) {
-      console.log(response)
-      renderSimpleView(response)
-    },
-    error: function () {
-    },
-  })
+  $('#simpleView').show();
+
+  $('#simpleView').DataTable({
+    responsive: true,
+    destroy: true,
+    searching: false, // we may want to enable this at some point, think it may require custom logic on our end, though.
+    processing: true,
+    serverSide: true,
+    paging: true,
+    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+    pageLength: 25,
+    columnDefs: [{
+      // this disables built in ordering on columns with these IDs 
+      // (may be a way to do without specifying each individually but idk)
+      targets: [0],
+      orderable: false,
+    }],
+    ajax: {
+      // we fetch the data and do the ordering server side which means all logic is done
+      // in Python and the datatable just displays the results
+      url: "/",
+      type: "POST",
+      data: { 'data': data },
+      dataSrc: "data",
+    }
+  });
 }
 
-function renderSimpleView(html) {
-  $('#simpleView').show();
-  $('#simpleViewBody').html(html.data)
-}
+// function renderSimpleView(html) {
+//   $('#simpleView').show();
+//   $('#simpleViewBody').html(html.data)
+// }
 
 function createDataTable(data) {
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
   $("#download").prop('disabled', false);
   $('#formSearchTable').show();
   $('#simpleView').hide()
+  $('#simpleView_wrapper').hide();
   $('#columnPicker').selectpicker('show')
   $('#fieldPicker').selectpicker('show')
   $('#orderPicker').selectpicker('show')

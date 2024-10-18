@@ -201,21 +201,18 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     the HTML for the datatables are also formatted here.
     '''
     if view == "simple":
-        formattedData = ""
+        formattedData = []
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            formattedData += f"""
-                <tr> 
-                    <td> 
-                        <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
-                            <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
-                        </a>
-                        <span class="pushRight">{form.status}</span>
-                        <br>
-                        <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
-                    </td>
-                </tr>
-            """
+            formattedData.append([f"""
+                <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
+                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+                </a>
+                <span class="pushRight">{form.status}</span>
+                <br>
+                <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
+            """])
+        print(formattedData)
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
@@ -304,7 +301,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
 
         formattedData.append(record)
-
     return formattedData
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
