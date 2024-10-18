@@ -1,7 +1,11 @@
 $(document).ready(function () {
   if ((document.cookie).includes("lsfSearchResults=")) {
     cookieStr = Cookies.get('lsfSearchResults')
-    createDataTable(cookieStr)
+    if ($('#switchViewButton').val() == 'advanced') {
+      createDataTable(cookieStr)
+    } else {
+      fetchSimpleView(cookieStr)
+    }
     setFormSearchValues(JSON.parse(cookieStr))
 
   } else {
@@ -232,7 +236,6 @@ function fetchSimpleView(data) {
 
 function renderSimpleView(html) {
   $('#simpleView').show();
-  console.log(html)
   $('#simpleViewBody').html(html.data)
 }
 

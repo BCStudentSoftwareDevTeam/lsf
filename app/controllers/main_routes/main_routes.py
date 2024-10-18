@@ -101,9 +101,9 @@ def getDatatableData(request):
         sleJoin = False
     
     currentUser = require_login()
-    draw = int(request.form.get('draw', 10))
-    rowNumber = int(request.form.get('start', 10))
-    rowsPerPage = int(request.form.get('length', 10))
+    draw = int(request.form.get('draw', 0))
+    rowNumber = int(request.form.get('start', 0))
+    rowsPerPage = int(request.form.get('length', 25))
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
@@ -194,24 +194,28 @@ def getDatatableData(request):
 
     return jsonify(formsDict)
 
-def getFormattedData(filteredSearchResults, view ='advanced'):
+def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     Putting the data in the correct format to be used by the JS file.
     Because this implementation is using server-side processing of datatables,
     the HTML for the datatables are also formatted here.
     '''
-    print('RAHHHH', filteredSearchResults)
     if view == "simple":
         formattedData = ""
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            formattedData += f"""<tr> <td> <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
-                            <span class="h4">{form.formID.studentSupervisee.FIRST_NAME}{form.formID.studentSupervisee.LAST_NAME}({form.formID.studentSupervisee.ID})</span>
-                            </a>
-                            <span class="pushRight h5">{form.status}</span>
-                            <br>
-                            <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
-                            </td> </tr>"""
+            formattedData += f"""
+                <tr> 
+                    <td> 
+                        <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
+                            <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+                        </a>
+                        <span class="pushRight">{form.status}</span>
+                        <br>
+                        <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
+                    </td>
+                </tr>
+            """
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
