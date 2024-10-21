@@ -210,9 +210,8 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} - {form.formID.department.DEPT_NAME}</span>
+                <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} ({form.formID.jobType}) - {form.formID.department.DEPT_NAME}</span>
             """])
-        print(formattedData)
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'

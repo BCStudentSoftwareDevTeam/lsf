@@ -1,12 +1,16 @@
 $(document).ready(function () {
   if ((document.cookie).includes("lsfSearchResults=")) {
     cookieStr = Cookies.get('lsfSearchResults')
-    if ($('#switchViewButton').val() == 'advanced') {
+    cookieJSON = JSON.parse(cookieStr)
+    // using the cookies, make sure the view is properly set as well
+    if (cookieJSON.view == 'advanced') {
       createDataTable(cookieStr)
+      switchViewButton('simple')
     } else {
       fetchSimpleView(cookieStr)
+      switchViewButton('advanced')
     }
-    setFormSearchValues(JSON.parse(cookieStr))
+    setFormSearchValues(cookieJSON)
 
   } else {
     $('#formSearchTable').hide();
@@ -18,14 +22,12 @@ $(document).ready(function () {
     runFormSearchQuery();
   });
   $('#switchViewButton').on('click', function () {
-    let buttonVal = $('#switchViewButton').val()
-    if (buttonVal == 'advanced') {
-      $('#switchViewButton').val('simple')
-      $('#switchViewButton').html('Switch To Advanced View')
-    } else {
-      $('#switchViewButton').val('advanced')
-      $('#switchViewButton').html('Switch To Simple View')
-    }
+    // toggle the view and button value
+    buttonVal = $("#switchViewButton").val()
+    switchViewButton(buttonVal)
+
+    // we can just rerun the form search query as it pulls down the value
+    // of the button to determine what button to render
     runFormSearchQuery();
   });
   $('#addUserToDept').on('click', function () {
@@ -41,12 +43,12 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  if ($('#formSearchTable').is(':hidden')) {
-    $('#columnPicker').selectpicker('hide')
-    $('#fieldPicker').selectpicker('hide')
-    $('#orderPicker').selectpicker('hide')
-    $('#sortByButton').hide()
-  }
+  // if ($('#formSearchTable').is(':hidden')) {
+  //   $('#columnPicker').selectpicker('hide')
+  //   $('#fieldPicker').selectpicker('hide')
+  //   $('#orderPicker').selectpicker('hide')
+  //   $('#sortByButton').hide()
+  // }
 
   $('#addUser').on('click', function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
@@ -120,7 +122,7 @@ $(document).ready(function () {
 
 // this is a mapping which maps the column option to its field options.
 // many do not have multiple fields so the field is just the column itself (e.g. term)
-const columnFieldMap = {
+const advancedColumnFieldMap = {
   'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
@@ -130,6 +132,14 @@ const columnFieldMap = {
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],
   'Form Type (Status)': [['Form Type', 'formType'], ['Status', 'formStatus']]
+};
+
+const simpleColumnFieldMap = {
+  'Term': [['Term', 'term']],
+  'Department': [['Department', 'department']],
+  'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
+  'Position (WLS)': [['Position Type', 'positionType']],
+  'Form Status': [['Status', 'formStatus']]
 };
 
 
@@ -217,10 +227,43 @@ function runFormSearchQuery(button) {
   }
 }
 
+function switchViewButton(view) {
+  if (view == 'advanced') {
+    $('#switchViewButton').val('simple')
+    $('#switchViewButton').html('Switch To Advanced View')
+    $('#columnPicker').empty();
+    let columns = Object.keys(simpleColumnFieldMap)
+    columns.forEach((column) => {
+      var option = $('<option>', {
+        value: column,
+        text: column
+      });
+      $('#columnPicker').append(option)
+    })
+  } else {
+    $('#switchViewButton').val('advanced')
+    $('#switchViewButton').html('Switch To Simple View')
+    $('#columnPicker').empty();
+    let columns = Object.keys(advancedColumnFieldMap)
+    columns.forEach((column) => {
+      var option = $('<option>', {
+        value: column,
+        text: column
+      });
+      $('#columnPicker').append(option)
+    })
+  }
+  $('.selectpicker').selectpicker('refresh')
+}
+
 function fetchSimpleView(data) {
   $('#formSearchTable').hide();
   $('#formSearchTable_wrapper').hide();
   $('#simpleView').show();
+  $('#columnPicker').selectpicker('show')
+  $('#fieldPicker').selectpicker('show')
+  $('#orderPicker').selectpicker('show')
+  $('#sortByButton').show()
 
   $('#simpleView').DataTable({
     responsive: true,
@@ -230,7 +273,7 @@ function fetchSimpleView(data) {
     serverSide: true,
     paging: true,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-    pageLength: 25,
+    pageLength: 50,
     columnDefs: [{
       // this disables built in ordering on columns with these IDs 
       // (may be a way to do without specifying each individually but idk)
@@ -247,11 +290,6 @@ function fetchSimpleView(data) {
     }
   });
 }
-
-// function renderSimpleView(html) {
-//   $('#simpleView').show();
-//   $('#simpleViewBody').html(html.data)
-// }
 
 function createDataTable(data) {
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
@@ -273,7 +311,7 @@ function createDataTable(data) {
     serverSide: true,
     paging: true,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-    pageLength: 25,
+    pageLength: 50,
     columnDefs: [{
       // this disables built in ordering on columns with these IDs 
       // (may be a way to do without specifying each individually but idk)

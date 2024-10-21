@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css"
   href="{{url_for('static', filename ='css/allPendingForms.css')}}?u={{lastStaticUpdate}}">
 <link rel="stylesheet" type="text/css"
-href="{{url_for('static', filename ='css/formHistory.css')}}?u={{lastStaticUpdate}}">
+  href="{{url_for('static', filename ='css/formHistory.css')}}?u={{lastStaticUpdate}}">
 <link rel="stylesheet" type="text/css"
   href="{{url_for('static', filename ='css/pendingNotesModal.css')}}?u={{lastStaticUpdate}}">
 {% endblock %}
@@ -45,17 +45,17 @@ href="{{url_for('static', filename ='css/formHistory.css')}}?u={{lastStaticUpdat
 </div>
 <br>
 <br>
-<div style="display: flex;">
-  <div class="row col-md-12">
+<div style="display: flex; justify-content: space-between;">
+  <div class="row" style="margin-left: 2px;">
     <button class="btn btn-primary" type="button" id="mySupervisees">My Current Supervisees</button>
     <button class="btn btn-primary" type="button" id="superviseesPendingForms">My Pending Forms</button>
   </div>
-  <div class="container-fluid" align="right">
+  <div class="" align="right">
     <form method="POST" action="/supervisorPortal/download" style="margin: 0; display: inline;">
       <button class="btn btn-success" type="submit" id="download">Download Results</button>
     </form>
-    <button class="btn btn-info" type="button" id="addUserToDept">Add User to Dept.</button>
     <button id="switchViewButton" class="btn btn-primary" value="simple">Switch To Advanced View</button>
+    <button class="btn btn-info" type="button" id="addUserToDept">Add User to Dept.</button>
   </div>
 </div>
 <br>
@@ -247,7 +247,7 @@ href="{{url_for('static', filename ='css/formHistory.css')}}?u={{lastStaticUpdat
 </div>
 <br>
 <div style="position: relative; z-index: 1;">
-  <div class="container-fluid" style="margin-bottom: -40px;" align="right">
+  <div class="container-fluid" style="margin-bottom: -40px; float: right;">
     <label for="columnPicker">Sorting Options:</label>
     <select id="columnPicker" name="columnPicker" class="selectpicker" title="Column">
       <option value="term">Term</option>
@@ -290,7 +290,7 @@ href="{{url_for('static', filename ='css/formHistory.css')}}?u={{lastStaticUpdat
 </table>
 
 <!-- Placeholder div for simple view -->
-<table id="simpleView" class="table" width="100%">
+<table id="simpleView" class="table" width="60%">
   <thead>
     <th></th>
   </thead>
