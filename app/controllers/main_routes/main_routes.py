@@ -49,7 +49,7 @@ def supervisorPortal():
     allSupervisors = Supervisor.select()
     supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
-
+    department = None
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments]
@@ -62,6 +62,8 @@ def supervisorPortal():
         departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments] 
         deptNames = [department.DEPT_NAME for department in departments]
+
+        supervisorPrimaryDepartment = Department.select().join(SupervisorDepartment) # count up all forms for a supervisor in department and get the max
 
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .join_from(Supervisor, LaborStatusForm)
@@ -85,7 +87,7 @@ def supervisorPortal():
                             allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
-                            department = None,
+                            department = department,
                             currentUser = currentUser
                             )
 
@@ -108,7 +110,7 @@ def getDatatableData(request):
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
     if sortBy == "":
-        sortBy = "term"
+        sortBy = "Term"
     order = queryFilterDict.get('order', "ASC")
     
     termCode = queryFilterDict.get('termCode', "")
@@ -168,9 +170,10 @@ def getDatatableData(request):
 
     # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
     # to actual peewee objects we can sort by later
+    # the casing is weird because the columns that don't have any fields are are not capitalized
     sortValueColumnMap = {
-        "term": Term.termCode,
-        "department": Department.DEPT_NAME,
+        "Term": Term.termCode,
+        "Department": Department.DEPT_NAME,
         "supervisorFirstName": supervisorFirstNameCase,
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
@@ -178,9 +181,9 @@ def getDatatableData(request):
         "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
-        "hours": LaborStatusForm.weeklyHours,
+        "Hrs.": LaborStatusForm.weeklyHours,
         "length": LaborStatusForm.startDate,
-        "createdBy": User.username, 
+        "Created By": User.username, 
         "formStatus": FormHistory.status,
         "formType": FormHistory.historyType,
     }
@@ -205,8 +208,10 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
             formattedData.append([f"""
-                <a href="/laborHistory/{form.formID.studentSupervisee.ID}" value=0> 
-                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+                <a>
+                    <span onclick=loadLaborHistoryModal({form.formID.laborStatusFormID}) value=0> 
+                        <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+                    </span>
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>

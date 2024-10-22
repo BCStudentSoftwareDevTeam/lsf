@@ -103,15 +103,13 @@ $(document).ready(function () {
     } else {
       fields = simpleColumnFieldMap[column]
     }
-
     // clear the options from the current field picker and replace 
     // them with the ones from the columnFieldMap 
     $('#fieldPicker').empty();
     fields.forEach((field) => {
-      console.log('field')
       var option = $('<option>', {
-        value: field[1],
-        text: field[0]
+        value: field[0],
+        text: field[1]
       });
       $('#fieldPicker').append(option)
     })
