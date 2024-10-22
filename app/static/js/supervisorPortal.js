@@ -173,7 +173,7 @@ function runFormSearchQuery(button) {
       departmentID = ""
       supervisorID = "currentUser"
       studentID = ""
-      formStatusList = []
+      formStatusList = ["Approved", "Approved Reluctantly"]
       break;
 
     case "pendingForms":
