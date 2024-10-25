@@ -108,8 +108,8 @@ $(document).ready(function () {
     $('#fieldPicker').empty();
     fields.forEach((field) => {
       var option = $('<option>', {
-        value: field[0],
-        text: field[1]
+        value: field[1],
+        text: field[0]
       });
       $('#fieldPicker').append(option)
     })
