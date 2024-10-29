@@ -168,6 +168,12 @@ def getDatatableData(request):
     supervisorFirstNameCase = fn.COALESCE(fn.NULLIF(Supervisor.preferred_name, ''), fn.NULLIF(Supervisor.legal_name, ''), Supervisor.LAST_NAME)
     studentFirstNameCase = fn.COALESCE(fn.NULLIF(Student.preferred_name, ''), fn.NULLIF(Student.legal_name, ''), Student.LAST_NAME)
 
+    # If the term is a break, it gives contracted hours. Otherwise, the hours are weekly
+    if Term.isBreak:
+        workHours = LaborStatusForm.contractHours
+    else:
+        workHours = LaborStatusForm.weeklyHours
+
     # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
     # to actual peewee objects we can sort by later
     # the casing is weird because the columns that don't have any fields are are not capitalized
@@ -181,7 +187,7 @@ def getDatatableData(request):
         "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
-        "hours": LaborStatusForm.weeklyHours,
+        "hours": workHours,
         "length": LaborStatusForm.startDate,
         "createdBy": User.username, 
         "formStatus": FormHistory.status,
@@ -195,6 +201,7 @@ def getDatatableData(request):
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
+    print(sortBy)
     return jsonify(formsDict)
 
 def getFormattedData(filteredSearchResults, view ='simple'):
