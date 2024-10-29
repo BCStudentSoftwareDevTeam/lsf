@@ -43,12 +43,10 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  // if ($('#formSearchTable').is(':hidden')) {
-  //   $('#columnPicker').selectpicker('hide')
-  //   $('#fieldPicker').selectpicker('hide')
-  //   $('#orderPicker').selectpicker('hide')
-  //   $('#sortByButton').hide()
-  // }
+  if ($('#columnPicker').val() == '') {
+    $('#fieldPicker').prop('disabled', true)
+    $('.selectpicker').selectpicker('refresh')
+  }
 
   $('#addUser').on('click', function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
