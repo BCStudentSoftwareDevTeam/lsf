@@ -172,8 +172,8 @@ def getDatatableData(request):
     # to actual peewee objects we can sort by later
     # the casing is weird because the columns that don't have any fields are are not capitalized
     sortValueColumnMap = {
-        "Term": Term.termCode,
-        "Department": Department.DEPT_NAME,
+        "term": Term.termCode,
+        "department": Department.DEPT_NAME,
         "supervisorFirstName": supervisorFirstNameCase,
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
@@ -181,9 +181,9 @@ def getDatatableData(request):
         "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
-        "Hrs.": LaborStatusForm.weeklyHours,
+        "hours": LaborStatusForm.weeklyHours,
         "length": LaborStatusForm.startDate,
-        "Created By": User.username, 
+        "createdBy": User.username, 
         "formStatus": FormHistory.status,
         "formType": FormHistory.historyType,
     }

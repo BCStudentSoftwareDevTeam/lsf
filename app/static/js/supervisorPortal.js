@@ -144,7 +144,7 @@ const simpleColumnFieldMap = {
   'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position (WLS)': [['Position Type', 'positionType']],
+  'Position Type': [['Position Type', 'positionType']],
   'Form Status': [['Status', 'formStatus']]
 };
 
@@ -241,7 +241,7 @@ function switchViewButton(view) {
     let columns = Object.keys(simpleColumnFieldMap)
     columns.forEach((column) => {
       var option = $('<option>', {
-        value: column,
+        value: simpleColumnFieldMap[column][0][1],
         text: column
       });
       $('#columnPicker').append(option)
