@@ -131,7 +131,7 @@ const advancedColumnFieldMap = {
   'Department': [['Department', 'department']],
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position (WLS)': [['Position Type', 'positionType'], ['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
+  'Position (WLS)': [['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
   'Hrs.': [['Hours', 'hours']],
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],

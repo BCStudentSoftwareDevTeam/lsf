@@ -184,7 +184,6 @@ def getDatatableData(request):
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
         "studentLastName": Student.LAST_NAME,
-        "positionType": LaborStatusForm.POSN_TITLE,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
         "hours": workHours,
