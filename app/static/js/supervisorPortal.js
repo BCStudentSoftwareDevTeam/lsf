@@ -27,7 +27,7 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  if ($('#formSearchTable').val() == true) {
+  if ($('#columnPicker').val() == '') {
     $('#fieldPicker').prop('disabled', true)
     $('.selectpicker').selectpicker('refresh')
   }
