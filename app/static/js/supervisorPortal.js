@@ -253,7 +253,7 @@ function switchViewButton(view) {
     let columns = Object.keys(advancedColumnFieldMap)
     columns.forEach((column) => {
       var option = $('<option>', {
-        value: column,
+        value: advancedColumnFieldMap[column][0][1],
         text: column
       });
       $('#columnPicker').append(option)
