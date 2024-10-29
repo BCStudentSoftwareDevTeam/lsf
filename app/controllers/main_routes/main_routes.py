@@ -184,8 +184,9 @@ def getDatatableData(request):
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
         "studentLastName": Student.LAST_NAME,
-        "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
+        "positionTitle": LaborStatusForm.POSN_TITLE,
+        "positionType": LaborStatusForm.jobType,
         "hours": workHours,
         "length": LaborStatusForm.startDate,
         "createdBy": User.username, 
@@ -258,8 +259,8 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         # Position
         positionField = positionHTML.format(
-                        form.formID.POSN_TITLE,
-                        f'{form.formID.POSN_CODE} ({form.formID.WLS})')
+                        form.formID.jobType,
+                        f'{form.formID.jobType} ({form.formID.WLS})')
         # Hours
         hoursField = form.formID.weeklyHours if form.formID.weeklyHours else form.formID.contractHours
         # Adjustment Form Specific Data
@@ -285,7 +286,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         
 
-        record.append(f'{form.formID.jobType}<br>{positionField}')
+        record.append(f'{form.formID.POSN_TITLE}<br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),

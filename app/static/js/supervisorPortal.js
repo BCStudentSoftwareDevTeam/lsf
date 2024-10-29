@@ -131,7 +131,7 @@ const advancedColumnFieldMap = {
   'Department': [['Department', 'department']],
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position (WLS)': [['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
+  'Position (WLS)': [['WLS', 'positionWLS'], ['Position Type', 'positionType'], ['Position Title', 'positionTitle']],
   'Hrs.': [['Hours', 'hours']],
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],
@@ -142,7 +142,7 @@ const simpleColumnFieldMap = {
   'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position Type': [['Position Type', 'positionType']],
+  'Position': [['Position Type', 'positionType'], ['Position Title', 'positionTitle']],
   'Form Status': [['Status', 'formStatus']]
 };
 
