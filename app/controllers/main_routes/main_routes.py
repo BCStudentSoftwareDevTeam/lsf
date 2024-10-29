@@ -110,7 +110,7 @@ def getDatatableData(request):
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
     if sortBy == "":
-        sortBy = "Term"
+        sortBy = "term"
     order = queryFilterDict.get('order', "ASC")
     
     termCode = queryFilterDict.get('termCode', "")
