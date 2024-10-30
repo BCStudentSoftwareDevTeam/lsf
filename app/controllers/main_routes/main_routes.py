@@ -158,19 +158,12 @@ def getDatatableData(request):
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
     recordsTotal = len(formSearchResults)
-    
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
     # stored in last_name
     supervisorFirstNameCase = fn.COALESCE(fn.NULLIF(Supervisor.preferred_name, ''), fn.NULLIF(Supervisor.legal_name, ''), Supervisor.LAST_NAME)
     studentFirstNameCase = fn.COALESCE(fn.NULLIF(Student.preferred_name, ''), fn.NULLIF(Student.legal_name, ''), Student.LAST_NAME)
-
-    # If the term is a break, it gives contracted hours. Otherwise, the hours are weekly
-    if Term.isBreak:
-        workHours = LaborStatusForm.contractHours
-    else:
-        workHours = LaborStatusForm.weeklyHours
 
     # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
     # to actual peewee objects we can sort by later
@@ -183,7 +176,6 @@ def getDatatableData(request):
         "studentLastName": Student.LAST_NAME,
         "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
-        "hours": workHours,
         "length": LaborStatusForm.startDate,
         "createdBy": User.username, 
         "formStatus": FormHistory.status,
@@ -197,7 +189,6 @@ def getDatatableData(request):
     formattedData = getFormattedData(filteredSearchResults)
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
-    print(sortBy)
     return jsonify(formsDict)
 
 def getFormattedData(filteredSearchResults):

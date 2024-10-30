@@ -6,13 +6,14 @@ $(document).ready(function () {
 
   } else {
     $('#formSearchTable').hide();
+    $('#sortOptions').hide();
     $("#download").prop('disabled', true);
     $('#collapseSearch').collapse(false)
   }
 
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
-
+    $('#sortOptions').show();
   });
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
@@ -110,7 +111,6 @@ const columnFieldMap = {
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
   'Position (WLS)': [['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
-  'Hrs.': [['Hours', 'hours']],
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],
   'Form Type (Status)': [['Form Type', 'formType'], ['Status', 'formStatus']]
