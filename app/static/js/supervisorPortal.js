@@ -14,6 +14,7 @@ $(document).ready(function () {
 
   } else {
     $('#formSearchTable').hide();
+    $('#sortOptions').hide();
     $("#download").prop('disabled', true);
     $('#collapseSearch').collapse(false)
   }
@@ -21,6 +22,7 @@ $(document).ready(function () {
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
   });
+
   $('#switchViewButton').on('click', function () {
     // toggle the view and button value
     buttonVal = $("#switchViewButton").val()
@@ -29,7 +31,9 @@ $(document).ready(function () {
     // we can just rerun the form search query as it pulls down the value
     // of the button to determine what button to render
     runFormSearchQuery();
+    $('#sortOptions').show();
   });
+  
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
     $('#addUser').prop('disabled', true)
@@ -132,7 +136,6 @@ const advancedColumnFieldMap = {
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
   'Position (WLS)': [['WLS', 'positionWLS'], ['Position Type', 'positionType'], ['Position Title', 'positionTitle']],
-  'Hrs.': [['Hours', 'hours']],
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],
   'Form Type (Status)': [['Form Type', 'formType'], ['Status', 'formStatus']]
