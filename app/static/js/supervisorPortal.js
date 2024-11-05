@@ -60,14 +60,6 @@ $(document).ready(function () {
   })
   $('#departmentModalSelect').on('change', disableButtonHandler)
   $('#supervisorModalSelect').on('change', disableButtonHandler)
-  $('#firstName').on('click', function () {
-    $("#lastName").removeAttr("checked");
-    runFormSearchQuery()
-  })
-  $('#lastName').on('click', function () {
-    $("#firstName").removeAttr("checked");
-    runFormSearchQuery()
-  })
 
   $('#clearSelectionsButton').on('click', function () {
     $("input:checkbox").removeAttr("checked");
