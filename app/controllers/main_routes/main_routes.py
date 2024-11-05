@@ -187,9 +187,9 @@ def getDatatableData(request):
     }
 
     if order == "DESC":
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).desc()).limit(rowsPerPage).offset(rowNumber)
     else:
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
