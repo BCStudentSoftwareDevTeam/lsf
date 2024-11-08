@@ -21,6 +21,7 @@ $(document).ready(function () {
 
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
+    $('#sortOptions').show();
   });
 
   $('#switchViewButton').on('click', function () {
@@ -153,6 +154,7 @@ function runFormSearchQuery(button) {
   let formTypeList = [];
   var isDisabled = $('#fieldPicker').prop('disabled');
   let sortBy = $('#fieldPicker').val()
+  
 
   // if the fieldPicker is disabled that means we should take the value
   // from the columnPicker instead
