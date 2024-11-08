@@ -14,6 +14,7 @@ $(document).ready(function () {
 
   } else {
     $('#formSearchTable').hide();
+    $('#sortOptions').hide();
     $("#download").prop('disabled', true);
     $('#collapseSearch').collapse(false)
   }
@@ -21,6 +22,7 @@ $(document).ready(function () {
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
   });
+
   $('#switchViewButton').on('click', function () {
     // toggle the view and button value
     buttonVal = $("#switchViewButton").val()
@@ -29,7 +31,9 @@ $(document).ready(function () {
     // we can just rerun the form search query as it pulls down the value
     // of the button to determine what button to render
     runFormSearchQuery();
+    $('#sortOptions').show();
   });
+  
   $('#addUserToDept').on('click', function () {
     $("#addSupervisorToDeptModal").modal("show");
     $('#addUser').prop('disabled', true)
@@ -43,12 +47,10 @@ $(document).ready(function () {
     runFormSearchQuery()
   })
 
-  // if ($('#formSearchTable').is(':hidden')) {
-  //   $('#columnPicker').selectpicker('hide')
-  //   $('#fieldPicker').selectpicker('hide')
-  //   $('#orderPicker').selectpicker('hide')
-  //   $('#sortByButton').hide()
-  // }
+  if ($('#columnPicker').val() == '') {
+    $('#fieldPicker').prop('disabled', true)
+    $('.selectpicker').selectpicker('refresh')
+  }
 
   $('#addUser').on('click', function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
@@ -58,14 +60,6 @@ $(document).ready(function () {
   })
   $('#departmentModalSelect').on('change', disableButtonHandler)
   $('#supervisorModalSelect').on('change', disableButtonHandler)
-  $('#firstName').on('click', function () {
-    $("#lastName").removeAttr("checked");
-    runFormSearchQuery()
-  })
-  $('#lastName').on('click', function () {
-    $("#firstName").removeAttr("checked");
-    runFormSearchQuery()
-  })
 
   $('#clearSelectionsButton').on('click', function () {
     $("input:checkbox").removeAttr("checked");
@@ -128,8 +122,7 @@ const advancedColumnFieldMap = {
   'Department': [['Department', 'department']],
   'Supervisor': [['First name', 'supervisorFirstName'], ['Last Name', 'supervisorLastName']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position (WLS)': [['Position Type', 'positionType'], ['WLS', 'positionWLS'], ['Position Code', 'positionCode']],
-  'Hrs.': [['Hours', 'hours']],
+  'Position (WLS)': [['WLS', 'positionWLS'], ['Position Type', 'positionType'], ['Position Title', 'positionTitle']],
   'Length': [['Length', 'length']],
   'Created By': [['Created By', 'createdBy']],
   'Form Type (Status)': [['Form Type', 'formType'], ['Status', 'formStatus']]
@@ -139,7 +132,7 @@ const simpleColumnFieldMap = {
   'Term': [['Term', 'term']],
   'Department': [['Department', 'department']],
   'Student': [['First name', 'studentFirstName'], ['Last Name', 'studentLastName']],
-  'Position (WLS)': [['Position Type', 'positionType']],
+  'Position': [['Position Type', 'positionType'], ['Position Title', 'positionTitle']],
   'Form Status': [['Status', 'formStatus']]
 };
 
@@ -234,7 +227,7 @@ function switchViewButton(view) {
     let columns = Object.keys(simpleColumnFieldMap)
     columns.forEach((column) => {
       var option = $('<option>', {
-        value: column,
+        value: simpleColumnFieldMap[column][0][1],
         text: column
       });
       $('#columnPicker').append(option)
@@ -246,7 +239,7 @@ function switchViewButton(view) {
     let columns = Object.keys(advancedColumnFieldMap)
     columns.forEach((column) => {
       var option = $('<option>', {
-        value: column,
+        value: advancedColumnFieldMap[column][0][1],
         text: column
       });
       $('#columnPicker').append(option)

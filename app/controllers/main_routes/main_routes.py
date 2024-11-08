@@ -110,7 +110,7 @@ def getDatatableData(request):
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
     if sortBy == "":
-        sortBy = "Term"
+        sortBy = "term"
     order = queryFilterDict.get('order', "ASC")
     
     termCode = queryFilterDict.get('termCode', "")
@@ -160,7 +160,6 @@ def getDatatableData(request):
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
     recordsTotal = len(formSearchResults)
-    
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
@@ -172,26 +171,25 @@ def getDatatableData(request):
     # to actual peewee objects we can sort by later
     # the casing is weird because the columns that don't have any fields are are not capitalized
     sortValueColumnMap = {
-        "Term": Term.termCode,
-        "Department": Department.DEPT_NAME,
+        "term": Term.termCode,
+        "department": Department.DEPT_NAME,
         "supervisorFirstName": supervisorFirstNameCase,
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
         "studentLastName": Student.LAST_NAME,
-        "positionType": LaborStatusForm.POSN_TITLE,
-        "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
-        "Hrs.": LaborStatusForm.weeklyHours,
+        "positionTitle": LaborStatusForm.POSN_TITLE,
+        "positionType": LaborStatusForm.jobType,
         "length": LaborStatusForm.startDate,
-        "Created By": User.username, 
+        "createdBy": User.username, 
         "formStatus": FormHistory.status,
         "formType": FormHistory.historyType,
     }
 
     if order == "DESC":
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).desc()).limit(rowsPerPage).offset(rowNumber)
     else:
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
@@ -252,8 +250,8 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         # Position
         positionField = positionHTML.format(
-                        form.formID.POSN_TITLE,
-                        f'{form.formID.POSN_CODE} ({form.formID.WLS})')
+                        form.formID.jobType,
+                        f'{form.formID.jobType} ({form.formID.WLS})')
         # Hours
         hoursField = form.formID.weeklyHours if form.formID.weeklyHours else form.formID.contractHours
         # Adjustment Form Specific Data
@@ -279,7 +277,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         
 
-        record.append(f'{form.formID.jobType}<br>{positionField}')
+        record.append(f'{form.formID.POSN_TITLE}<br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
