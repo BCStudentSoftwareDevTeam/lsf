@@ -96,13 +96,8 @@ $(document).ready(function () {
   $('#columnPicker').on('change', function () {
     let column = $('#columnPicker :selected').text()
     buttonVal = $("#switchViewButton").val()
-    let fields
-    if (buttonVal == "advanced") {
-      fields = advancedColumnFieldMap[column]
-
-    } else {
-      fields = simpleColumnFieldMap[column]
-    }
+    let fields = buttonVal == "advanced" ? advancedColumnFieldMap[column] : simpleColumnFieldMap[column];
+    
     // clear the options from the current field picker and replace 
     // them with the ones from the columnFieldMap 
     $('#fieldPicker').empty();
@@ -209,8 +204,6 @@ function runFormSearchQuery(button) {
   }
 
   queryDict = {
-    // this may seem counterintuitive but since the value
-    // switches on button press it is technically the opposite of the current view
     'view': view,
     'termCode': termCode,
     'departmentID': departmentID,
