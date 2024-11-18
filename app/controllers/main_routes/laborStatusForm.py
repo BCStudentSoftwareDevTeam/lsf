@@ -27,6 +27,7 @@ from app.controllers.admin_routes.allPendingForms import saveStatus
 def laborStatusForm(laborStatusKey = None):
     """ Render labor Status Form, and pre-populate LaborStatusForm page with the correct information when redirected from Labor History."""
     currentUser = require_login()
+    
     if not currentUser:        # Not logged in
         return render_template('errors/403.html'), 403
     if not currentUser.isLaborAdmin:
