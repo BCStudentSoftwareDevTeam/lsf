@@ -49,7 +49,7 @@ def supervisorPortal():
     allSupervisors = Supervisor.select()
     supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
-
+    department = None
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments]
@@ -62,6 +62,8 @@ def supervisorPortal():
         departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
         departments = [department for department in departments] 
         deptNames = [department.DEPT_NAME for department in departments]
+
+        supervisorPrimaryDepartment = Department.select().join(SupervisorDepartment) # count up all forms for a supervisor in department and get the max
 
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .join_from(Supervisor, LaborStatusForm)
@@ -85,7 +87,7 @@ def supervisorPortal():
                             allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
-                            department = None,
+                            department = department,
                             currentUser = currentUser
                             )
 
@@ -101,9 +103,9 @@ def getDatatableData(request):
         sleJoin = False
     
     currentUser = require_login()
-    draw = int(request.form.get('draw', -1))
-    rowNumber = int(request.form.get('start', -1))
-    rowsPerPage = int(request.form.get('length', -1))
+    draw = int(request.form.get('draw', 0))
+    rowNumber = int(request.form.get('start', 0))
+    rowsPerPage = int(request.form.get('length', 25))
     queryFilterData = request.form.get('data')
     queryFilterDict = json.loads(queryFilterData)
     sortBy = queryFilterDict.get('sortBy', "term")
@@ -167,6 +169,7 @@ def getDatatableData(request):
 
     # this maps all of the values we expect to receive from the sorting dropdowns in the frontend 
     # to actual peewee objects we can sort by later
+    # the casing is weird because the columns that don't have any fields are are not capitalized
     sortValueColumnMap = {
         "term": Term.termCode,
         "department": Department.DEPT_NAME,
@@ -174,8 +177,9 @@ def getDatatableData(request):
         "supervisorLastName": Supervisor.LAST_NAME,
         "studentFirstName": studentFirstNameCase,
         "studentLastName": Student.LAST_NAME,
-        "positionCode": LaborStatusForm.POSN_CODE,
         "positionWLS": LaborStatusForm.WLS,
+        "positionTitle": LaborStatusForm.POSN_TITLE,
+        "positionType": LaborStatusForm.jobType,
         "length": LaborStatusForm.startDate,
         "createdBy": User.username, 
         "formStatus": FormHistory.status,
@@ -183,20 +187,35 @@ def getDatatableData(request):
     }
 
     if order == "DESC":
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].desc()).limit(rowsPerPage).offset(rowNumber)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).desc()).limit(rowsPerPage).offset(rowNumber)
     else:
-        filteredSearchResults = formSearchResults.order_by(sortValueColumnMap[sortBy].asc()).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getFormattedData(filteredSearchResults)
+        filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
+    formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)
 
-def getFormattedData(filteredSearchResults):
+def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     Putting the data in the correct format to be used by the JS file.
     Because this implementation is using server-side processing of datatables,
     the HTML for the datatables are also formatted here.
     '''
+    if view == "simple":
+        formattedData = []
+        for form in filteredSearchResults:
+            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+            formattedData.append([f"""
+                <a>
+                    <span onclick=loadLaborHistoryModal({form.formID.laborStatusFormID}) value=0> 
+                        <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+                    </span>
+                </a>
+                <span class="pushRight">{form.status}</span>
+                <br>
+                <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} ({form.formID.jobType}) - {form.formID.department.DEPT_NAME}</span>
+            """])
+        return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
@@ -209,20 +228,30 @@ def getFormattedData(filteredSearchResults):
         record = []
         # Term
         record.append(form.formID.termCode.termName)
-        # Department
-        record.append(departmentHTML.format(
-              form.formID.department.ORG,
-              form.formID.department.ACCOUNT,
-              form.formID.department.DEPT_NAME))
+        # Student
+        record.append(studentHTML.format(
+                form.formID.laborStatusFormID,
+              form.formID.studentSupervisee.ID,
+              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
+              form.formID.studentSupervisee.ID,
+              form.formID.studentSupervisee.STU_EMAIL))
         # Supervisor
         supervisorField = supervisorHTML.format(
                             form.formID.supervisor.ID,
                             f'{form.formID.supervisor.preferred_name if form.formID.supervisor.preferred_name else form.formID.supervisor.legal_name } {form.formID.supervisor.LAST_NAME}',
                             form.formID.supervisor.EMAIL)
+        record.append(supervisorField)
+        
+        # Department
+        record.append(departmentHTML.format(
+              form.formID.department.ORG,
+              form.formID.department.ACCOUNT,
+              form.formID.department.DEPT_NAME))
+        
         # Position
         positionField = positionHTML.format(
-                        form.formID.POSN_TITLE,
-                        f'{form.formID.POSN_CODE} ({form.formID.WLS})')
+                        form.formID.jobType,
+                        f'{form.formID.jobType} ({form.formID.WLS})')
         # Hours
         hoursField = form.formID.weeklyHours if form.formID.weeklyHours else form.formID.contractHours
         # Adjustment Form Specific Data
@@ -245,16 +274,10 @@ def getFormattedData(filteredSearchResults):
                 newHours = form.adjustedForm.newValue
                 hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
 
-        record.append(supervisorField)
-        # Student
-        record.append(studentHTML.format(
-                form.formID.laborStatusFormID,
-              form.formID.studentSupervisee.ID,
-              f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
-              form.formID.studentSupervisee.ID,
-              form.formID.studentSupervisee.STU_EMAIL))
+        
+        
 
-        record.append(f'{form.formID.jobType}<br>{positionField}')
+        record.append(f'{form.formID.POSN_TITLE}<br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
@@ -280,7 +303,6 @@ def getFormattedData(filteredSearchResults):
         # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
 
         formattedData.append(record)
-
     return formattedData
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
