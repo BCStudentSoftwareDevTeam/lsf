@@ -221,31 +221,30 @@ function runFormSearchQuery(button) {
   }
 }
 
+function resetColumns(columnFieldMap) {
+  // clear the current columnPicker options and populate it with new ones
+  // from either the simple or advanced columnFieldMap
+  $('#columnPicker').empty();
+  let columns = Object.keys(columnFieldMap)
+  columns.forEach((column) => {
+    var option = $('<option>', {
+      value: columnFieldMap[column][0][1],
+      text: column
+    });
+    $('#columnPicker').append(option)
+  })
+}
+
 function switchViewButton(view) {
   if (view == 'advanced') {
     $('#switchViewButton').val('simple')
     $('#switchViewButton').html('Switch To Advanced View')
-    $('#columnPicker').empty();
-    let columns = Object.keys(simpleColumnFieldMap)
-    columns.forEach((column) => {
-      var option = $('<option>', {
-        value: simpleColumnFieldMap[column][0][1],
-        text: column
-      });
-      $('#columnPicker').append(option)
-    })
+    resetColumns(simpleColumnFieldMap) 
+
   } else {
     $('#switchViewButton').val('advanced')
     $('#switchViewButton').html('Switch To Simple View')
-    $('#columnPicker').empty();
-    let columns = Object.keys(advancedColumnFieldMap)
-    columns.forEach((column) => {
-      var option = $('<option>', {
-        value: advancedColumnFieldMap[column][0][1],
-        text: column
-      });
-      $('#columnPicker').append(option)
-    })
+    resetColumns(advancedColumnFieldMap) 
   }
   $('.selectpicker').selectpicker('refresh')
 }
