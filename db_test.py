@@ -1,14 +1,19 @@
 import pyodbc
+from app import load_config
 
-details = {
-    "user": "ute_limited",
-    "password": "REPLACE",
-    "server": "timemachine1sql.berea.edu",
-    "db": "UTE"
-}
+cfg = load_config('app/config/secret_config.yaml')
+details = cfg['tracy']
+
+# details = {
+#     "user": "ute_limited",
+#     "password": "REPLACE",
+#     "server": "timemachine1sql.berea.edu",
+#     "db": "UTE"
+# }
 
 # works
-pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],details['db'],details['user'],details['password'])
+pyodbc_uri = f"DRIVER=FreeTDS;SERVER={details['mssql_host']};PORT=1433;DATABASE={details['db_name']};UID={details['mssql_user']};PWD={details['mssql_password']};TDS_Version=8.0;"
+             
 # works
 #pyodbc_uri = 'DRIVER=FreeTDS;DSN=tracyDSN;UID={};PWD={};'.format(details['user'], details['password'])
 pyconn = pyodbc.connect(pyodbc_uri)
