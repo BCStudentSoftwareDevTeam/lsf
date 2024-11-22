@@ -211,7 +211,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadLaborHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
+                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
             """])
         return formattedData
 
@@ -274,7 +274,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         
 
-        record.append(f'<a><span onclick=loadLaborHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE}</span></a><br>{positionField}')
+        record.append(f'<a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE}</span></a><br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),
