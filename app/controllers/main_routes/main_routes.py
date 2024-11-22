@@ -206,19 +206,17 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
             formattedData.append([f"""
-                <a>
-                    <span onclick=loadLaborHistoryModal({form.formID.laborStatusFormID}) value=0> 
-                        <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
-                    </span>
+                <a href="/laborHistory/{form.formID.studentSupervisee.ID}">
+                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - {form.formID.POSN_TITLE} ({form.formID.jobType}) - {form.formID.department.DEPT_NAME}</span>
+                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
             """])
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
-    studentHTML = '<div><a><span onclick=loadLaborHistoryModal({}) aria-label="{}">{} </span></a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
+    studentHTML = '<div><a href="/laborHistory/{}">{}</a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
     departmentHTML = '<span href="#" aria-label="{}-{}"> {}</span>'
     positionHTML = '<span href="#" aria-label="{}"> {}</span>'
     formTypeStatus = '<span href="#" aria-label=""> {}</span>'
@@ -230,8 +228,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         record.append(form.formID.termCode.termName)
         # Student
         record.append(studentHTML.format(
-                form.formID.laborStatusFormID,
-              form.formID.studentSupervisee.ID,
+                form.formID.studentSupervisee.ID,
               f'{form.formID.studentSupervisee.preferred_name if form.formID.studentSupervisee.preferred_name else form.formID.studentSupervisee.legal_name} {form.formID.studentSupervisee.LAST_NAME}',
               form.formID.studentSupervisee.ID,
               form.formID.studentSupervisee.STU_EMAIL))
@@ -277,7 +274,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         
         
 
-        record.append(f'{form.formID.POSN_TITLE}<br>{positionField}')
+        record.append(f'<a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE}</span></a><br>{positionField}')
         record.append(hoursField)
         # Contract Dates
         record.append("<br>".join([form.formID.startDate.strftime('%m/%d/%y'),

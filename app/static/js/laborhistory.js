@@ -11,11 +11,11 @@ $('#positionTable tbody tr td').on('click',function(){
    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">You do not have access to this department\'s information.</div>');
    $("#flasher").delay(3000).fadeOut();
  } else {
-   loadLaborHistoryModal(this.id)
+   loadFormHistoryModal(this.id)
  }
 });
 
-function loadLaborHistoryModal(formHistory) {
+function loadFormHistoryModal(formHistory) {
   $("#modal").modal("show");
   $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory);
   setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
