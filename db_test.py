@@ -32,7 +32,7 @@ import sqlalchemy
 
 # No driver name specified
 #uri = "mssql+pyodbc://{}:{}@{}/{}?DRIVER=FreeTDS".format(details['user'], details['password'], details['server'], details['db'])
-uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],  details['db'], details['user'], details['password']))
+uri = "mssql+pyodbc:///?odbc_connect=" + quote(f"DRIVER=FreeTDS;SERVER={details['mssql_host']};PORT=1433;DATABASE={details['db_name']};UID={details['mssql_user']};PWD={details['mssql_password']};TDS_Version=8.0;")
 
 engine = sqlalchemy.create_engine(uri)
 for row in engine.execute('select * from STUPOSN'):
@@ -48,7 +48,7 @@ from app.logic.tracy import Tracy
 cfg = load_config('app/config/secret_config.yaml')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],  details['db'], details['user'], details['password']))
+uri = "mssql+pyodbc:///?odbc_connect=" + quote(f"DRIVER=FreeTDS;SERVER={details['mssql_host']};PORT=1433;DATABASE={details['db_name']};UID={details['mssql_user']};PWD={details['mssql_password']};TDS_Version=8.0;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 db = SQLAlchemy(app)
