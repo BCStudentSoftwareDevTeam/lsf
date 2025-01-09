@@ -136,28 +136,13 @@ class emailHandler():
                 else:
                     self.checkRecipient("Break Labor Status Form Submitted For Student",
                                      "Break Labor Status Form Submitted For Supervisor")
-                emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Break Labor Form Submission")
-                emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
-                message = Message(emailTemplate.subject, recipients=[self.studentEmail])
-                message.html = emailBody
-                self.send(message)
             else:
                 self.checkRecipient("Labor Status Form Submitted For Student",
                                     False,
                                     "Secondary Position Labor Status Form Submitted")
-                emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
-                emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
-                message = Message(emailTemplate.subject, recipients=[self.studentEmail])
-                message.html = emailBody
-                self.send(message)
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
-            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
-            emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
-            message = Message(emailTemplate.subject, recipients=[self.studentEmail])
-            message.html = emailBody
-            self.send(message)
             
 
     def laborStatusFormApproved(self):
