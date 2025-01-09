@@ -4,7 +4,7 @@ from app.models.student import Student
 from app.models.user import User
 from app.models.department import Department
 from app.models.supervisor import Supervisor
-
+from uuid import uuid4
 
 # All caps fields are pulled from TRACY
 class LaborStatusForm (baseModel):
@@ -24,6 +24,10 @@ class LaborStatusForm (baseModel):
     endDate                     = DateField(null=True)
     supervisorNotes             = TextField(null=True)
     laborDepartmentNotes        = TextField(null=True)
+    studentConfirmation         = CharField(default="Pending")
+    confirmationToken           = UUIDField(default=uuid4)
+    studentRejection            = TextField(null=True)
+    studentResponseDate         = DateField(null=True)
 
 
     def __str__(self):

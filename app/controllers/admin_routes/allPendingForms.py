@@ -43,7 +43,7 @@ def allPendingForms(formType):
         pageTitle = ""
         approvalTarget = ""
         completedOverloadFormCounter = 0
-        laborStatusFormCounter = FormHistory.select().where(((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Status Form')).count()
+        laborStatusFormCounter = FormHistory.select().where(((FormHistory.status == "Pending") & (LaborStatusForm.studentConfirmation == "Acce[ted]")|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Status Form')).count()
         adjustedFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
 
@@ -94,6 +94,7 @@ def allPendingForms(formType):
         # We are adding all of these joins so we don't do 10 queries later for every form
         CreatorSup = Supervisor.alias()
         baseQuery = (FormHistory.select(FormHistory, OverloadForm, LaborStatusForm, Supervisor, Student, User, Department, Term, CreatorSup, HistoryType, Status)
+                                .where(LaborStatusForm.studentConfirmation == "Accepted")
                                 .join(OverloadForm, JOIN.LEFT_OUTER).switch()
                                 .join(HistoryType).switch()
                                 .join(LaborStatusForm)
@@ -126,7 +127,7 @@ def allPendingForms(formType):
                                       .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied')))
 
         if currentUser.isLaborAdmin:
-            baseQuery = baseQuery.where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
+            baseQuery = baseQuery.where((FormHistory.status == "Pending") & (LaborStatusForm.studentConfirmation == "Accepted")|(FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
 
@@ -258,6 +259,8 @@ def saveStatus(new_status, form_ids, currentUser):
 
             labor_forms = FormHistory.get(FormHistory.formHistoryID == int(id), FormHistory.historyType == history_type)
             labor_forms.status = Status.get(Status.statusName == new_status)
+            if labor_forms.formID.studentConfirmation != "Accepted":
+                return jsonify({"success": False, "message": "Student confirmation is required before approval"}), 400
             labor_forms.reviewedDate = date.today()
             labor_forms.reviewedBy = currentUser
 
@@ -663,6 +666,10 @@ def modalFormUpdate():
             if rsp['formType'] == 'Overload' and "Approved" in rsp['status'] and historyForm.formID.POSN_CODE != "S12345":
                 conn = Banner()
                 save_form_status = conn.insert(historyForm)
+
+            if historyForm.formID.studentConfirmation != "Accepted":
+                return jsonify({"Success": False, "message": "Cannot approve form without student confirmation"})
+
 
             # if we are able to save
             if save_form_status:

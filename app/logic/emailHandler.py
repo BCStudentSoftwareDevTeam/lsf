@@ -127,6 +127,7 @@ class emailHandler():
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self):
+        confirmationLink = f"{app.config['BASE_URL']}/confirm?token={self.laborStatusForm.confirmationToken}"
         if self.laborStatusForm.jobType == 'Secondary':
             if self.term.isBreak:
                 if len(list(self.positions)) > 1:
@@ -135,13 +136,29 @@ class emailHandler():
                 else:
                     self.checkRecipient("Break Labor Status Form Submitted For Student",
                                      "Break Labor Status Form Submitted For Supervisor")
+                emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Break Labor Form Submission")
+                emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
+                message = Message(emailTemplate.subject, recipients=[self.studentEmail])
+                message.html = emailBody
+                self.send(message)
             else:
                 self.checkRecipient("Labor Status Form Submitted For Student",
                                     False,
                                     "Secondary Position Labor Status Form Submitted")
+                emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
+                emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
+                message = Message(emailTemplate.subject, recipients=[self.studentEmail])
+                message.html = emailBody
+                self.send(message)
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
+            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
+            emailBody = self.replaceText(emailTemplate.body).replace("@@ConfirmationLink@@", confirmationLink)
+            message = Message(emailTemplate.subject, recipients=[self.studentEmail])
+            message.html = emailBody
+            self.send(message)
+            
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':
