@@ -20,17 +20,20 @@ def confirm():
 def confirmSubmit():
     token = request.form.get('token')
     response = request.form.get('response')  # "Accepted" or "Denied"
-    reason = request.form.get('reason') if response == "Denied" else None
     form = LaborStatusForm.get_or_none(LaborStatusForm.confirmationToken == token)
 
     if not form:
-        flash("Invalid confirmation link.", "danger")
+        flash("Invalid confirmation link", "danger")
         return render_template('errors/404.html'), 404
 
-    form.studentConfirmation = response
+    form.studentConfirmation = response == "Accepted"
     form.studentResponseDate = date.today()
-    form.studentRejection = reason
     form.save()
+
+    formHistory = FormHistory.get(FormHistory.formID == form.laborStatusFormID)
+    formHistory.status = "Pending" if response == "Accepted" else "Pre-Student Approval"
+    formHistory.save()
+    
     return redirect("/studentResponse/confirmationResponse")
 
 @main_bp.route('/studentResponse/confirmationResponse', methods=['GET'])

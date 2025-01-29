@@ -1,4 +1,5 @@
 from flask_login import login_required
+from flask_mail import Mail, Message
 from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.models.user import *

@@ -43,9 +43,10 @@ def allPendingForms(formType):
         pageTitle = ""
         approvalTarget = ""
         completedOverloadFormCounter = 0
-        laborStatusFormCounter = FormHistory.select().where(((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Status Form')).count()
-        adjustedFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Adjustment Form')).count()
+        laborStatusFormCounter = FormHistory.select().where((FormHistory.status == "Pending") & (FormHistory.historyType == 'Labor Status Form')).count()
+        adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
+        preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval').count()
 
         if currentUser.isLaborAdmin:
             overloadFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
@@ -90,6 +91,12 @@ def allPendingForms(formType):
             historyType = "Labor Overload Form"
             approvalTarget = ""
             pageTitle = "Approved Overload Forms"
+
+        elif formType == "preStudentApproval":
+            historyType = "Labor Status Form"
+            approvalTarget = ""
+            pageTitle = "Pre-Student Approval"
+            
 
         # We are adding all of these joins so we don't do 10 queries later for every form
         CreatorSup = Supervisor.alias()
@@ -155,6 +162,7 @@ def allPendingForms(formType):
                                 laborStatusFormCounter = laborStatusFormCounter,
                                 adjustedFormCounter  = adjustedFormCounter,
                                 releaseFormCounter = releaseFormCounter,
+                                preStudentApprovalCounter = preStudentApprovalCounter,
                                 completedOverloadFormCounter = completedOverloadFormCounter,
                                 pendingOverloadFormPairs = pendingOverloadFormPairs
                               )

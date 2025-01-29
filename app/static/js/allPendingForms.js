@@ -13,9 +13,12 @@ $(document).ready(function() {
     targetsList = [9]
   }else if ($('#adjustedTab').hasClass('active')) {
     targetsList = [0, 10]
+  } else if ($('#preStudentApprovalTab').hasClass('active')) {
+      targetsList = [7];
   } else {
     targetsList = [0, 9]
   }
+
   // If overload tab has been clicked, then we
   table = $('#pendingForms, #statusForms, #adjustedForms, #releaseForms').DataTable({
     'columnDefs': [{

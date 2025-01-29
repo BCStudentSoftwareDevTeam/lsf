@@ -43,8 +43,13 @@
         <li id='releaseTab' {% if formType == "pendingRelease" %} class="active" {% endif %}>
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingRelease')}}">Pending Release Forms <strong>({{ releaseFormCounter }})</strong></a>
         </li>
-
-      {% endif %}
+        {% endif %}
+        {% if currentUser.isLaborAdmin %}
+          <li id='preStudentApprovalTab' {% if formType == "preStudentApproval" %} class="active" {% endif %}>
+            <a href="{{url_for('admin.allPendingForms', formType='preStudentApproval')}}">
+                Pre-Student Approval <strong>({{ preStudentApprovalCounter }})</strong></a>
+          </li>
+        {% endif %}
         <li class="pull-right">
             <form method="POST" action="/admin/pendingForms/download">
               <button class="btn btn-success" id="download">Download</button>
@@ -60,7 +65,7 @@
           <!-- Made empty header tags because we need to hide the header -->
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
               <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
               {% if formType == "pendingOverload" %}

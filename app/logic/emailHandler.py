@@ -9,6 +9,7 @@ from app.models.formHistory import*
 from app.models.supervisor import*
 from app.models.user import*
 from app.models.status import*
+from app.models.student import*
 from datetime import datetime
 from app.models.emailTracker import *
 from app.logic.tracy import Tracy
@@ -69,6 +70,7 @@ class emailHandler():
                 pass
 
         self.link = ""
+        self.confirmationLink = ""
         self.releaseReason = ""
         self.releaseDate = ""
         self.newAdjustmentField = ""
@@ -126,8 +128,16 @@ class emailHandler():
     # The email templates are stored inside of the emailHandler model, and depending on which email template
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
-    def laborStatusFormSubmitted(self):
-        confirmationLink = f"{app.config['BASE_URL']}/confirm?token={self.laborStatusForm.confirmationToken}"
+    def laborStatusFormSubmitted(self, studentEmailPurpose=False):
+        try:
+            # Ensure studentSupervisee is a valid Student object
+            self.student = Student.get(Student.ID == str(self.laborStatusForm.studentSupervisee.ID))
+            self.studentEmail = self.student.STU_EMAIL
+            print(f"Sending email to: {self.studentEmail}")
+        except Student.DoesNotExist:
+            print("Error: Student record not found.")
+            return
+
         if self.laborStatusForm.jobType == 'Secondary':
             if self.term.isBreak:
                 if len(list(self.positions)) > 1:
@@ -143,6 +153,7 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
+
             
 
     def laborStatusFormApproved(self):
@@ -385,4 +396,5 @@ class emailHandler():
         form = form.replace("@@ReleaseReason@@", self.releaseReason)
         form = form.replace("@@ReleaseDate@@", self.releaseDate)
         form = form.replace("@@link@@", self.link)
+        form = form.replace("@@ConfirmationLink@@", self.confirmationLink)
         return(form)

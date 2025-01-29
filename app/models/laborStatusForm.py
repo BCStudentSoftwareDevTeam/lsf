@@ -24,10 +24,9 @@ class LaborStatusForm (baseModel):
     endDate                     = DateField(null=True)
     supervisorNotes             = TextField(null=True)
     laborDepartmentNotes        = TextField(null=True)
-    # studentConfirmation         = CharField(default="Pending")
-    # confirmationToken           = UUIDField(default=uuid4)
-    # studentRejection            = TextField(null=True)
-    # studentResponseDate         = DateField(null=True)
+    studentConfirmation         = BooleanField(default=None)    # Pending is None, Accepted is True, Denied is False
+    confirmationToken           = UUIDField(default=uuid4)
+    studentResponseDate         = DateField(null=True)
 
 
     def __str__(self):
