@@ -57,6 +57,9 @@
             data-width="100%"
             onchange="populateAction()"
             disabled>
+            {% for value in recipients %}
+              <option value="{{value.audience}}">{{value.audience}}</option>
+            {% endfor %}
     </select>
   </div>
   <div class="form-group col-md-12">

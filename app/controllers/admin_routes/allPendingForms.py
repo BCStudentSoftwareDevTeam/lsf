@@ -133,7 +133,7 @@ def allPendingForms(formType):
                                       .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied')))
 
         if currentUser.isLaborAdmin:
-            baseQuery = baseQuery.where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
+            baseQuery = baseQuery.where((FormHistory.status == "Pending") | (FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
 

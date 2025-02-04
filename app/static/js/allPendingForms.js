@@ -11,10 +11,10 @@ $(document).ready(function() {
     targetsList = [8]
   } else if ($('#overloadTab').hasClass('active')) {
     targetsList = [9]
-  }else if ($('#adjustedTab').hasClass('active')) {
+  } else if ($('#adjustedTab').hasClass('active')) {
     targetsList = [0, 10]
   } else if ($('#preStudentApprovalTab').hasClass('active')) {
-      targetsList = [7];
+      targetsList = [9];
   } else {
     targetsList = [0, 9]
   }

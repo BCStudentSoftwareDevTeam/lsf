@@ -66,10 +66,7 @@
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
               {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
-              <th> Approve <input type="checkbox" id="checkAll"/></th>
-              {% endif %}
-              {% if formType == "pendingOverload" %}
-              <th> Status </th>
+                <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
               <th>Term</th>
               <th>Department</th>
@@ -81,6 +78,9 @@
               {% if formType == "pendingAdjustment" %}
                 <th>Effective Date</th>
               {%endif%}
+              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
+                <th>Status</th>
+              {% endif %}
               <th>Created</th>
               <th></th>
             </tr>
@@ -91,7 +91,7 @@
             <!--  -->
             {% for allForms in formList %}
             <tr id="tableData" class="tableData" align="center">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType !="preStudentApproval" %}
                 {% if allForms.formHistoryID in pendingOverloadFormPairs %}
                   <td> {# REDIRECT #}
                     {% with modalTarget = modalTarget %}
@@ -109,9 +109,9 @@
                 {% endif %}
               {% endif %}
               {% if formType == "pendingOverload" %}
-              <td> {# Status #}
-                {{allForms.status}}
-              </td>
+                <td> {# STATUS #}
+                  {{allForms.formID.status}}
+                </td>
               {% endif %}
               <td> {# TERM #}
                 {{allForms.formID.termCode.termName}}
@@ -160,6 +160,15 @@
               {% if formType == "pendingAdjustment" %}
                 <td> {# EFFECTIVE DATE #}
                      {{allForms.adjustedForm.effectiveDate.strftime('%m/%d/%y')}}
+                </td>
+              {% endif %}
+              {% if formType == "preStudentApproval" %}
+                <td> {# STATUS #}
+                  {% if allForms.formID.studentConfirmation is none %}
+                      Pending
+                  {% elif allForms.formID.studentConfirmation == False %}
+                      Denied
+                  {% endif %}
                 </td>
               {% endif %}
               <td> {# CREATED BY #}

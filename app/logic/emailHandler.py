@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_mail import Mail, Message
 from app.config.loadConfig import*
 from app.models.emailTemplate import*
@@ -134,10 +134,23 @@ class emailHandler():
             self.student = Student.get(Student.ID == str(self.laborStatusForm.studentSupervisee.ID))
             self.studentEmail = self.student.STU_EMAIL
             print(f"Sending email to: {self.studentEmail}")
+
+            # generating a link for confirmation for student
+            confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}" 
+
+            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
+            emailBody = emailTemplate.body.replace("@@ConfirmationLink@@", confirmationLink)
+
+            # creating an email message
+            message = Message(subject=emailTemplate.subject, recipients=[self.studentEmail])
+            message.html = emailBody
+            self.send(message)
+
         except Student.DoesNotExist:
             print("Error: Student record not found.")
             return
 
+        # Submit the forms for secondary, break, and regular
         if self.laborStatusForm.jobType == 'Secondary':
             if self.term.isBreak:
                 if len(list(self.positions)) > 1:
