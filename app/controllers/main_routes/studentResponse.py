@@ -15,7 +15,18 @@ def confirm():
         flash("Invalid confirmation link", "danger")
         return render_template('errors/404.html'), 404
 
-    return render_template('main/studentEmailConfirmation.html', form=form)
+    laborDescription = {
+        "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
+        "student_id": form.studentSupervisee.ID,
+        "supervisor": form.supervisor.FIRST_NAME + " " + form.supervisor.LAST_NAME,
+        "position_code_title": f"{form.POSN_CODE}, {form.POSN_TITLE}",
+        "wls": form.WLS,
+        "department": form.department.DEPT_NAME,
+        "hours_per_week": form.weeklyHours or form.contractHours,
+        "start_date": form.startDate.strftime('%m/%d/%Y'),
+    }
+
+    return render_template('main/studentEmailConfirmation.html', form=form, laborDescription=laborDescription)
 
 @main_bp.route('/studentResponse/submit', methods=['POST'])
 def confirmSubmit():
@@ -33,16 +44,17 @@ def confirmSubmit():
 
     formHistory = FormHistory.get_or_none(FormHistory.formID == form.laborStatusFormID)
 
-    if formHistory:
-        if response == "Accepted":
-            formHistory.status = "Pending"
-            formHistory.save()
-            FormHistory.delete().where(FormHistory.formID == form.laborStatusFormID, FormHistory.status == "Pre-Student Approval").execute()
-        else:
-            formHistory.status = "Pre-Student Approval"
-            formHistory.save()
+    if not formHistory:
+        FormHistory.create(formID=form.laborStatusFormID, status="Pre-Student Approval")
+
+    if response == "Accepted":
+        formHistory.status = "Pending"
+        formHistory.save()
+
+        FormHistory.delete().where(FormHistory.formID == form.laborStatusFormID, FormHistory.status == "Pre-Student Approval").execute()
     else:
-        FormHistory.create(formID = form.laborStatusFormID, status = "Pre-Student Approval")
+        formHistory.status = "Pre-Student Approval"
+        formHistory.save()
         
     
     flash("Thank you for your response.", "success")

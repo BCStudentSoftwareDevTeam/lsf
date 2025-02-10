@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/studentConfirmResponse.js') }}"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<h2>Confirm Your Work Contract</h2>
+<p>Labor Contract Details: </p>
+
+<div class="labor-status-info">
+    <p><strong>Student Name:</strong> {{ laborDescription.student_name }} ({{ laborDescription.student_id }})</p>
+    <p><strong>Supervisor:</strong> {{ laborDescription.supervisor }}</p>
+    <p><strong>Position Code/Title:</strong> {{ laborDescription.position_code_title }}</p>
+    <p><strong>WLS:</strong> {{ laborDescription.wls }}</p>
+    <p><strong>Department Name:</strong> {{ laborDescription.department }}</p>
+    <p><strong>Hours per Week (Total Contracted Hours for Break Periods):</strong> {{ laborDescription.hours_per_week }}</p>
+    <p><strong>Begin Date:</strong> {{ laborDescription.start_date }}</p>
+</div>
+
+<form action="/studentResponse/submit" method="post">
+    <input type="hidden" name="token" value="{{ form.confirmationToken }}">
+    <button type="submit" name="response" value="Accepted" class="btn btn-success">Accept</button>
+    <button type="submit" name="response" value="Denied" class="btn btn-danger">Deny</button>
+</form>
+
+{% endblock %}

@@ -31,7 +31,8 @@ class emailHandler():
             MAIL_USE_SSL=secret_conf['MAIL_USE_SSL'],
             MAIL_DEFAULT_SENDER=secret_conf['MAIL_DEFAULT_SENDER'],
             MAIL_OVERRIDE_ALL=secret_conf['MAIL_OVERRIDE_ALL'],
-            ALWAYS_SEND_MAIL=secret_conf['ALWAYS_SEND_MAIL']
+            ALWAYS_SEND_MAIL=secret_conf['ALWAYS_SEND_MAIL'],
+            STUDENT_EMAIL_CONFIRMATION=secret_conf['STUDENT_EMAIL_CONFIRMATION']
         )
 
         self.mail = Mail(app)
@@ -130,21 +131,21 @@ class emailHandler():
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self, studentEmailPurpose=False):
         try:
-            # Ensure studentSupervisee is a valid Student object
             self.student = Student.get(Student.ID == str(self.laborStatusForm.studentSupervisee.ID))
             self.studentEmail = self.student.STU_EMAIL
-            print(f"Sending email to: {self.studentEmail}")
 
             # generating a link for confirmation for student
-            confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}" 
+            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
 
-            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Form Submission")
-            emailBody = emailTemplate.body.replace("@@ConfirmationLink@@", confirmationLink)
+            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Status Form Submitted For Student")
+            emailBody = emailTemplate.body
 
-            # creating an email message
-            message = Message(subject=emailTemplate.subject, recipients=[self.studentEmail])
-            message.html = emailBody
-            self.send(message)
+            emailBody = emailBody.replace("@@ConfirmationLink@@", self.confirmationLink)
+
+            if not studentEmailPurpose:  
+                message = Message(subject=emailTemplate.subject, recipients=[self.studentEmail])
+                message.html = emailBody
+                self.send(message)
 
         except Student.DoesNotExist:
             print("Error: Student record not found.")
