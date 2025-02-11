@@ -45,7 +45,7 @@ function sendQuery(search_str) {
     if (search_str.length >= 3) {
       $.ajax({
         type: "GET",
-        url: "/admin/search/" + encodeURIComponent(search_str),
+        url: "/main/search/" + encodeURIComponent(search_str),
         contentType: 'application/json',
         success: function(response) {
           let optionString = ""

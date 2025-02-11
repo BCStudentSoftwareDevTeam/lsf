@@ -9,6 +9,7 @@ from wtforms.validators import DataRequired, Length
 from app.models.formHistory import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from werkzeug.exceptions import BadRequestKeyError
+from app.logic.search import getDepartmentsForSupervisor
 from datetime import date
 
 class SLEForm(FlaskForm):
@@ -66,7 +67,8 @@ def sle(statusKey):
     if currentUser.student and currentUser.student.ID != laborHistoryForm.formID.studentSupervisee.ID:
         # current user is not the student
         return render_template('errors/403.html'), 403
-    elif not currentUser.isLaborAdmin and currentUser.supervisor.DEPT_NAME != laborHistoryForm.formID.supervisor.DEPT_NAME:
+
+    elif not currentUser.isLaborAdmin and laborHistoryForm.formID.supervisor.DEPT_NAME not in [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]:
         # current user is not in the same dept as the lsf supervisor
         return render_template('errors/403.html'), 403
 
@@ -192,7 +194,6 @@ def sle(statusKey):
         submittedDate = existing_final_evaluation.date_submitted.strftime("%m-%d-%Y")
     else:
         submittedDate = None
-
 
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,

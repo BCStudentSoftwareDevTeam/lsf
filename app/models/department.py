@@ -7,3 +7,4 @@ class Department(baseModel):
     ACCOUNT                 = CharField(null=True)
     ORG                     = CharField(null=True)
     departmentCompliance    = BooleanField(default=True)    # True if in compliance, false if out of it
+    isActive                = BooleanField(default=False)

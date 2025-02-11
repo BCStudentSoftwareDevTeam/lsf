@@ -10,6 +10,7 @@ from app.models.term import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.department import *
+from app.models.Tracy.stuposn import STUPOSN
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date
@@ -50,7 +51,45 @@ def createUser(username, student=None, supervisor=None):
 
     return user
 
+def updatePersonRecords():
+    """
+    This function will update all student and supervisor records according to
+    Tracy data.
+    """
+    studentsInDB = Student.select()
+    supervisorsInDB = Supervisor.select()
+    studentsFound = 0
+    studentsNotFound = 0
+    studentsFailed = 0
+    supervisorsFound = 0
+    supervisorsNotFound = 0
+    supervisorsFailed = 0
+    for student in studentsInDB:
+        try:
+            updateStudentRecord(student)
+            studentsFound = studentsFound + 1
+        except InvalidQueryException as e:
+            studentsNotFound = studentsNotFound + 1
+        except Exception as e:
+            studentsFailed += 1
+    for supervisor in supervisorsInDB:
+        try:
+            supervisor.isActive = False
+            updateSupervisorRecord(supervisor)
+            supervisorsFound = supervisorsFound + 1
+        except InvalidQueryException as e:
+            supervisorsNotFound = supervisorsNotFound + 1
+        except Exception as e:
+            supervisorsFailed = supervisorsFailed + 1
+    return studentsFound, studentsNotFound, studentsFailed, supervisorsFound, supervisorsNotFound, supervisorsFailed
+
+
+
 def updateUserFromTracy(user):
+    """
+        Takes user object and determines if it is a student user or a supervisor user and will
+        update the DB accordingly.
+    """
     try:
         tracyUser = None
         baseObj = None
@@ -66,10 +105,79 @@ def updateUserFromTracy(user):
         baseObj.save()
 
     except Exception as e:
-        print("We don't want to break our login if an old tracy user doesn't exist or something")
+        print( f"We don't want to break our login if an old tracy user doesn't exist or something")
 
     return user
 
+def updateStudentRecord(student):
+    """This function will update all student fields to match Tracy data."""
+    tracyUser = Tracy().getStudentFromBNumber(student.ID)
+
+    student.legal_name = tracyUser.FIRST_NAME
+    student.LAST_NAME = tracyUser.LAST_NAME
+    student.CLASS_LEVEL = tracyUser.CLASS_LEVEL
+    student.ACADEMIC_FOCUS = tracyUser.ACADEMIC_FOCUS
+    student.MAJOR = tracyUser.MAJOR
+    student.PROBATION = tracyUser.PROBATION
+    student.ADVISOR = tracyUser.ADVISOR
+    student.STU_EMAIL = tracyUser.STU_EMAIL
+    student.STU_CPO = tracyUser.STU_CPO
+    student.LAST_POSN = tracyUser.LAST_POSN
+    student.LAST_SUP_PIDM = tracyUser.LAST_SUP_PIDM
+    student.save()
+
+def updateSupervisorRecord(supervisor):
+    """This function will update all supervisor fields to match Tracy data."""
+    tracyUser = Tracy().getSupervisorFromID(supervisor.ID)
+
+    supervisor.PIDM = tracyUser.PIDM
+    supervisor.legal_name = tracyUser.FIRST_NAME
+    supervisor.LAST_NAME = tracyUser.LAST_NAME
+    supervisor.EMAIL = tracyUser.EMAIL
+    supervisor.CPO = tracyUser.CPO
+    supervisor.ORG = tracyUser.ORG
+    supervisor.DEPT_NAME = tracyUser.DEPT_NAME
+    supervisor.isActive = True
+    supervisor.save()
+
+def updatePositionRecords():
+    remoteDepartments = Tracy().getDepartments()  # Create local copies of new departments in Tracy
+    departmentsPulledFromTracy = 0
+    for dept in remoteDepartments:
+        d = Department.get_or_none(ACCOUNT=dept.ACCOUNT, ORG=dept.ORG)
+        if d:
+            d.DEPT_NAME = dept.DEPT_NAME
+            d.save()
+        else:
+            Department.create(DEPT_NAME=dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG=dept.ORG)
+            departmentsPulledFromTracy += 1
+
+    departmentsInDB = list(Department.select())
+    departmentsUpdated = 0
+    departmentsNotFound = 0
+    departmentsFailed = 0
+    for department in departmentsInDB:
+        try:
+            updateDepartmentRecord(department)
+            departmentsUpdated += 1
+        except InvalidQueryException as e:
+            departmentsNotFound += 1
+        except Exception as e:
+            departmentsFailed += 1
+
+    return departmentsPulledFromTracy, departmentsUpdated, departmentsNotFound, departmentsFailed
+
+
+def updateDepartmentRecord(department):
+    tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == department.ORG) & (STUPOSN.ACCOUNT == department.ACCOUNT)).first()
+
+    department.isActive = bool(tracyDepartment)
+    if tracyDepartment is None:
+        raise InvalidQueryException("Department ({department.ORG}, {department.ACCOUNT}) not found")
+        
+    
+    department.DEPT_NAME = tracyDepartment.DEPT_NAME
+    department.save()
 
 
 def createSupervisorFromTracy(username=None, bnumber=None):
@@ -78,9 +186,6 @@ def createSupervisorFromTracy(username=None, bnumber=None):
 
         Raises InvalidUserException if this does not succeed.
     """
-    if not username and not bnumber:
-        raise ValueError("No arguments provided to createSupervisorFromTracy()")
-
     if bnumber:
         try:
             tracyUser = Tracy().getSupervisorFromID(bnumber)
@@ -105,7 +210,8 @@ def createSupervisorFromTracy(username=None, bnumber=None):
                                  CPO = tracyUser.CPO,
                                  ORG = tracyUser.ORG,
                                  DEPT_NAME = tracyUser.DEPT_NAME)
-    else:
+    except Exception as e:
+        print(e)
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))
 
 def getOrCreateStudentRecord(username=None, bnumber=None):

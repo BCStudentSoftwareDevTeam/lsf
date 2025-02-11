@@ -1,6 +1,10 @@
 import pytest
 from app.models.user import User
-from peewee import DoesNotExist
+from app.models.formHistory import FormHistory
+from app.models.laborStatusForm import LaborStatusForm
+from app.models.term import Term
+from app.models import mainDB
+from peewee import DoesNotExist, JOIN
 
 @pytest.mark.integration
 def test_user_model():
@@ -22,3 +26,55 @@ def test_user_model():
     assert both_user.lastName == "Bryant"
     assert both_user.fullName == "Alex Bryant"
     assert both_user.email == "bryantal@berea.edu"
+
+
+@pytest.mark.integration
+def test_term_model():
+    def createLSFandFormHistoryObj(*, termCode):
+        """
+        Subprocedure to create LSF and FormHistory objects for a particular termCode with dummy data.
+        """
+        createLSFandFormHistoryObj.callCounter += 1
+        Term.get_or_create(termCode=termCode, termName=f"dummyTerm{createLSFandFormHistoryObj.callCounter}")
+
+        #                                        Alex Bryant              Brian Ramsay              CS      
+        irrelevantLsfObjData = {'studentSupervisee': 'B00841417', 'supervisor': 'B00763721', 'department': 1, 'jobType': 'Primary', 'WLS': 1, 'POSN_TITLE': '', 'POSN_CODE': ''}
+        lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData)
+        #                                                            Scott Heggen
+        irrelevantFhObjData = {'historyType': 'Labor Status Form', 'createdBy': 1, 'createdDate': '2024-01-30', 'status': 'Pending'}
+        formHistoryObj = FormHistory.create(formID = lsf, rejectReason = "testing", **irrelevantFhObjData)
+        return lsf, formHistoryObj
+    createLSFandFormHistoryObj.callCounter = 0
+    
+    with mainDB.atomic() as transaction:
+        # Test that term codes will be ordered by year with ties broken by the last two digits in this order:
+        #                                   default
+        correctlyOrderedSeasonCodes = ['00', '99', '11', '04', '01', '02', '12', '05', '03', '13']
+
+        # Create the forms out of order
+        outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
+        for seasonCode in outOfOrderSeasonCodes:
+            createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
+
+        newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
+        sortedForms = Term.order_by_term(newForms.objects())
+        resultingTermCodes = [str(f.termCode) for f in sortedForms]
+        resultingSeasonalCodes = [termCode[4:] for termCode in resultingTermCodes]
+        assert resultingSeasonalCodes == correctlyOrderedSeasonCodes      
+
+        
+        transaction.rollback()
+
+        # Test that the year has more weight in the sort than the seasonal code
+        sortedTermCodes = [202311, 202302, 202313, 202400, 202412, 202403]
+        unsortedTermCodes = [202302, 202403, 202313, 202311, 202400, 202412]
+        for termCodes in unsortedTermCodes:
+            createLSFandFormHistoryObj(termCode=int(termCodes))
+        newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
+        sortedForms = Term.order_by_term(newForms.objects())
+        resultingTermCodes = [f.termCode for f in sortedForms]
+        assert  resultingTermCodes == sortedTermCodes
+        transaction.rollback()
+
+    
+

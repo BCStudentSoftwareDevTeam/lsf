@@ -27,6 +27,7 @@ from app.controllers.admin_routes.allPendingForms import saveStatus
 def laborStatusForm(laborStatusKey = None):
     """ Render labor Status Form, and pre-populate LaborStatusForm page with the correct information when redirected from Labor History."""
     currentUser = require_login()
+    
     if not currentUser:        # Not logged in
         return render_template('errors/403.html'), 403
     if not currentUser.isLaborAdmin:
@@ -45,7 +46,7 @@ def laborStatusForm(laborStatusKey = None):
         selectedFormHistory = FormHistory.get(FormHistory.formID == laborStatusKey)
         creator = selectedFormHistory.createdBy.supervisor.ID
         supervisor = selectedLSForm.supervisor.ID
-        if currentUser.supervisor.ID == supervisor or currentUser.supervisor.ID == creator:
+        if currentUser.supervisor.ID == supervisor or currentUser.supervisor.ID == creator or currentUser.isLaborAdmin:
             forms = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey) # getting labor status form id, to prepopulate laborStatusForm.
         else:
             forms = None
@@ -135,7 +136,7 @@ def checkForPrimaryOrSecondLSFBreak(termCode, student, isOneLSF=None):
 @main_bp.route("/laborstatusform/getcompliance/<department>", methods=["GET"])
 def checkCompliance(department):
     """ Gets the compliance status of a department. """
-    depts = Department.select().where(Department.ORG == department)
+    depts = Department.select().where(Department.ORG == department, Department.isActive == True)
     deptDict = {}
     for dept in depts:
         deptDict['Department'] = {'Department Compliance': dept.departmentCompliance}

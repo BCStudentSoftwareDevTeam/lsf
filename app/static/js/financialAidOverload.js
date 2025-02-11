@@ -33,13 +33,6 @@ function overloadSubmission(formHistoryKey){
   }
 }
 
-// for showing different messages with flash
-function msgFlash(flash_message, status){
-    category = (status === "success") ? "success" : "danger";
-    $("#flash_container").prepend("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
-    $("#flasher").delay(5000).fadeOut();
-
-}
 var statusName = null
 function openApproveDenyModal(status){
   statusName = status
@@ -57,4 +50,22 @@ function openApproveDenyModal(status){
     $(".textarea-required").prop('required', true);
     $("#finOverloadModal").modal("show");
   }
+}
+
+function insertOverloadNote(textareaID, buttonID) {
+  var overloadNote = $("#" + textareaID).val();
+  var data = JSON.stringify(overloadNote);
+  $("#" + buttonID).on('submit', function(e) {
+    e.preventDefault();
+  });
+
+  $.ajax({
+    method: "POST",
+    url: '/admin/notesInsert/' + textareaID,
+    data: data,
+    contentType: 'application/json',
+    success: function(response) {
+        location.reload(true);
+      }
+  });
 }

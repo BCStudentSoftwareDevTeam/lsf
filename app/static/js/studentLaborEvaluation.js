@@ -1,16 +1,19 @@
-$(document).ready(function() {
+$(document).ready(function(){
+    $("#saveForLater").click(function() {
+        window.location.pathname = "/redirectSupervisorPortal";
+    });
+
     $("#finalSubmitButton").click(function() {
         window.location.pathname = "/redirectSupervisorPortal";
-    })
+    });
+
     $( "#resetForm" ).click(function() {
       $("#resetModal").modal("show");
     });
 
     $( "#eraseData" ).click(function() {
-      console.log("Click!")
       $("#formContent").prepend('<textarea name="resetConfirmation" hidden>reset</textarea>')
-    })
-
+    });
 });
 
 $(function () {
@@ -48,7 +51,9 @@ $('.slider').on('input', function() {
   $("#" + this.id + "_help").removeAttr("hidden");
 
   update_sum();
+
 });
+
 
 function update_sum() {
   sum = 0;
@@ -73,7 +78,6 @@ function update_sum() {
 
 $("#finalSubmitButton").click(function() {
   $("#isSubmitted").val("True");
-	console.log($("#isSubmitted").val())
 });
 
 $('#submit_as_final').change(function() {

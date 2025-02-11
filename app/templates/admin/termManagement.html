@@ -90,6 +90,9 @@
                   <!-- checks to see if the start date is not empty -->
                   <td>
                     <div class="input-group date">
+                      {% if term.termStart %}
+                          {% set startDate = term.termStart.strftime('%m/%d/%Y') %}
+                      {% endif %}
                       <input id="start_{{term.termCode}}"
                             onchange="getDate(this, {{term.termCode}});
                                       updateEnd(this, {{term.termCode}});"
@@ -107,6 +110,9 @@
                   </td>
                   <td>
                     <div class="input-group date">
+                      {% if term.termEnd %}
+                          {% set endDate = term.termEnd.strftime('%m/%d/%Y') %}
+                      {% endif %}
                       <input id="end_{{term.termCode}}"
                             onchange="getDate(this, {{term.termCode}});
                                       updateStart(this, {{term.termCode}});"
@@ -114,7 +120,7 @@
                             class="form-control datepicker emptyEnd"
                             placeholder="MM/DD/YYYY"
                             value="{{term.termEnd.strftime('%m/%d/%Y') if term.termEnd else ''}}"
-                            {% if term.termEnd != None %}
+                            {% if term.termEnd  %}
                               data-onload= "updateStart(this, {{term.termCode}})"
                             {% endif %}/>
                       <label class="input-group-addon" for="end_{{term.termCode}}">

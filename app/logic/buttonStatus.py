@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import date
+from app.logic.search import getDepartmentsForSupervisor
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 
@@ -33,7 +34,7 @@ class ButtonStatus:
 
         return: a form history object representing the original LSF form
         '''
-        return FormHistory.get(FormHistory.formID == historyForm.formID, FormHistory.status == "Approved", FormHistory.historyType == "Labor Status Form")
+        return FormHistory.get(FormHistory.formID == historyForm.formID, (FormHistory.status == "Approved") | (FormHistory.status == "Pending"), FormHistory.historyType == "Labor Status Form")
 
     def set_evaluation_button(self, historyForm, currentUser):
         ogHistoryForm = self.get_history_form_from_lsf(historyForm)
@@ -46,7 +47,8 @@ class ButtonStatus:
                 elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
                     self.evaluation_exists = True
         else:
-            if ogHistoryForm.formID.supervisor.DEPT_NAME == currentUser.supervisor.DEPT_NAME or currentUser.isLaborAdmin:
+            currentUserDepartments = [department.DEPT_NAME for department in getDepartmentsForSupervisor(currentUser)]
+            if ogHistoryForm.formID.supervisor.DEPT_NAME in currentUserDepartments or currentUser.isLaborAdmin:
                 if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
                     self.evaluate = True
                 for evaluation in evaluations:

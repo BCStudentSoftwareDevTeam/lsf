@@ -1,24 +1,21 @@
-function goback(departmentName){
-  if (departmentName != "None") {
-    window.location.href = '/main/department/' + departmentName
+function goback(referrerPath){
+  if (referrerPath) {
+    window.location.href = referrerPath
   } else {
     window.location.href = '/';
   }
 }
 
 $('#positionTable tbody tr td').on('click',function(){
-  /*If boolean value is false, flash container letting user know that they do not
-  have access. Else, load student labor history modal.*/
  if (this.getAttribute('value') == 'false') {
    $("#flash_container").html('<div class="alert alert-danger" role="alert" id="flasher">You do not have access to this department\'s information.</div>');
    $("#flasher").delay(3000).fadeOut();
- }
- else {
-   loadLaborHistoryModal(this.id)
+ } else {
+   loadFormHistoryModal(this.id)
  }
 });
 
-function loadLaborHistoryModal(formHistory) {
+function loadFormHistoryModal(formHistory) {
   $("#modal").modal("show");
   $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory);
   setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
@@ -33,7 +30,27 @@ function redirection(laborStatusKey){
   $("#rehire").attr("href", "/laborstatusform/" + laborStatusKey); // will go to the lsf controller
   $("#release").attr("href", "/laborReleaseForm/" + laborStatusKey); // will go to labor release form controller
   $("#sle").attr("href", "/sle/" + laborStatusKey); // will go to student labor evaluations controller
-  // console.log(laborStatusKey);
+}
+
+$("#modal").on('transitionend', function(){ //Had to search for css element visibility changes to make this work
+  $('#emailLabor').on('click', mailToLabor);
+})
+
+function mailToLabor(){
+  let subject = `Labor Position Question about ${$('#studentDetails').text()}`
+  subject= subject.replace(/\s+/g, ' ')
+  let body = `%0D%0A%0D%0AStudent Name:${$('#studentDetails').text()}%0D%0A`+
+             `Term: ${$('#laborTerm').text()}%0D%0A`+
+             `Supervisor: ${$('#laborSupervisor').text()}%0D%0A`+
+             `Department (ID): ${$('#laborDepartment').text()}%0D%0A`+
+             `Job Type (Hours): ${$('#laborJobType').text()}%0D%0A`+
+             `Position (WLS): ${$('#laborPosition').text()}%0D%0A`+
+             `Start Date: ${$('#laborStartDate').text()}%0D%0A`+
+             `End Date: ${$('#laborEndDate').text()}`
+  body = body.replace(/(\s+|\&)/g, function(match) { //regex searches for whitespace characters or ampersand and replaces them accordingly
+    return match === "&" ? "%26" : "%20";
+  });
+  window.location.href = `mailto:labor@berea.edu?subject=${subject}&body=${body}`;
 }
 
 function fillPDF(laborStatusKey){

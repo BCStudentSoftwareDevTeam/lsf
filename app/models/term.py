@@ -1,4 +1,5 @@
 from app.models import *
+from collections import defaultdict
 
 
 class Term(baseModel):
@@ -14,3 +15,34 @@ class Term(baseModel):
     isAcademicYear          = BooleanField(default=False)
     isFinalEvaluationOpen   = BooleanField(default=False)
     isMidyearEvaluationOpen = BooleanField(default=False)
+
+
+    @staticmethod
+    def order_by_term(queryResult, *, reverse=False):
+        """
+        Accepts the results of a query where each object has a `termCode` attribute.
+        To collapse selected columns from other tables into an objects direct attributes
+        use the .objects() method on the query. See peewee documentation for more details.
+
+        Sorts by the Term Code in logical order based first on year and then by the seasonalCode
+        
+        seasonalCode := last two digits of the term code which maps arbitrarily to the name of the term, break, etc.
+        """
+        seasonalCodeToOrderValue = defaultdict(lambda: 1)
+        seasonalCodeToOrderValue.update({
+            '00' : 0,
+            '11' : 2,
+            '04' : 3,
+            '01' : 4,
+            '02' : 5,
+            '12' : 6,
+            '05' : 7,
+            '03' : 8,
+            '13' : 9,
+
+        })
+
+        # Sort by seasonal code
+        result = sorted(queryResult, key=lambda e: seasonalCodeToOrderValue[str(e.termCode)[4:]], reverse=reverse)
+        # Sort by year
+        return sorted(result, key=lambda e: str(e.termCode)[:4], reverse=reverse)

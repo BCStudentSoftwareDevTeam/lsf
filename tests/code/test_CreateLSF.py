@@ -18,7 +18,7 @@ def testCreateLaborStatusForm():
     'stuEndDate': "09/01/2020"
     }
 
-    createLaborStatusForm("B00730361", "B12365892", 1, 202000, lsfDict )
+    createLaborStatusForm(Student.get_by_id("B00730361"), "B12365892", 1, 202000, lsfDict )
     currentUser = User.get(User.userID == 1)
     lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == 3)
     assert lsf.termCode_id == 202000

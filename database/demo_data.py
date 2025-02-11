@@ -100,6 +100,21 @@ tracyStudents = [
                 "STU_CPO":"420",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00751360",
+                "PIDM":"90",
+                "FIRST_NAME":"Tyler",
+                "LAST_NAME":"Parton",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"partont@berea.edu",
+                "STU_CPO":"420",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
                 }
 ]
 
@@ -114,6 +129,9 @@ for student in (localStudents + bothStudents):
     # Set up lsf db data
     del student["PIDM"]
     student['ID'] = student['ID'].strip()
+    student['legal_name'] = student['FIRST_NAME'].strip()
+    del student['FIRST_NAME']
+
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
 print(" * students (TRACY) added")
@@ -217,7 +235,16 @@ staffs = [
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
             },
-
+            {
+            "ID": "B00769499",
+            "PIDM":28,
+            "FIRST_NAME":"Madina",
+            "LAST_NAME" : "Solijonova",
+            "EMAIL"  :"solijonovam@berea.edu",
+            "CPO":"6300",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
             {
             "ID": "B12365892",
             "PIDM":2,
@@ -288,6 +315,8 @@ for staff in staffs:
     db.session.add(STUSTAFF(**staff))
     db.session.commit()
 
+    staff['legal_name'] = staff['FIRST_NAME'].strip()
+    del staff['FIRST_NAME']
     Supervisor.get_or_create(**staff)
 
 # Add non Supervisor staffs to Tracy db

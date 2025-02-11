@@ -5,6 +5,10 @@
 
 }
 
+.tooltip-right::after {
+  min-width: 130px;
+}
+
 #header {
   text-align: center;
   font-weight: 650;
@@ -93,4 +97,8 @@ a.hover_indicator:active {
 
 .mailtoIcon{
   font-size: smaller;
+}
+
+.form-check-label{
+  font-weight: normal;
 }

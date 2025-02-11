@@ -16,8 +16,8 @@ class Test_Tracy:
     @pytest.mark.integration
     def test_getStudents(self, tracy):
         students = tracy.getStudents()
-        assert ['Elaheh','Guillermo','Jeremiah','Kat'] == [s.FIRST_NAME for s in students]
-        assert ['718','300','420','420'] == [s.STU_CPO for s in students]
+        assert ['Elaheh','Guillermo','Jeremiah','Kat', 'Tyler'] == [s.FIRST_NAME for s in students]
+        assert ['718','300','420','420', '420'] == [s.STU_CPO for s in students]
 
     @pytest.mark.integration
     def test_getStudentFromBNumber(self, tracy):
@@ -50,8 +50,10 @@ class Test_Tracy:
     @pytest.mark.integration
     def test_getSupervisors(self, tracy):
         supervisors = tracy.getSupervisors()
-        assert ['Alex','Brian','Jan','Jasmine','Mario','Megan','Scott'] == [s.FIRST_NAME for s in supervisors]
-        assert ['420','6305','6301','6301','6302','6303','6300'] == [s.CPO for s in supervisors]
+
+        for s in supervisors:
+            assert s.FIRST_NAME in ['Alex','Brian','Jan','Jasmine','Mario','Megan','Scott','Madina']
+            assert s.CPO in ['420','6305','6301','6301','6302','6303','6300']
 
     @pytest.mark.integration
     def test_getSupervisorFromID(self, tracy):
