@@ -64,14 +64,13 @@ class ButtonStatus:
         # Student Options
         ############################################################
         if currentUser.student and currentUser.student.ID == historyForm.formID.studentSupervisee.ID:
-            # students get no buttons except "show evaluation"
+            # students get no buttons
             self.rehire = False
             self.release = False
             self.withdraw = False
             self.adjust = False
             self.correction = False
             self.evaluate = False
-            self.set_evaluation_button( historyForm, currentUser)
             self.num_buttons = 1
 
         ############################################################
@@ -85,16 +84,12 @@ class ButtonStatus:
                 if historyForm.status.statusName == "Approved":
                     # Approved release forms can be rehired
                     self.rehire = True
-                    if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
-                        self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 2
 
                 elif historyForm.status.statusName == "Denied":
                     self.rehire = True
                     self.release = True
                     self.adjust = True
-                    if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
-                        self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 4
 
                 elif historyForm.status.statusName == "Pending":
@@ -110,14 +105,10 @@ class ButtonStatus:
                     self.release = True
                     self.adjust = True
 
-                    if currentUser.isLaborAdmin or historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
-                        self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 4
 
                 elif historyForm.status.statusName == "Pending":
                     # Pending adjustment forms get no buttons
-                    if historyForm.formID.supervisor.ID == currentUser.supervisor.ID:
-                        self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 1
 
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -136,7 +127,6 @@ class ButtonStatus:
                     self.num_buttons += 1
 
                 elif historyForm.status.statusName in ["Approved","Approved Reluctantly"]:
-                    self.set_evaluation_button(historyForm, currentUser)
                     self.num_buttons += 1
                     if self.currentDate <= historyForm.formID.endDate:
                         # An approved LSF before the end of the term
