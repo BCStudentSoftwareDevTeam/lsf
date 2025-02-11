@@ -270,7 +270,12 @@ def checkForSecondLSFBreak(termCode, student):
     """
     Checks if a student has more than one labor status form submitted for them during a break term, and sends emails accordingly.
     """
-    positions = LaborStatusForm.select().where(LaborStatusForm.termCode == termCode, LaborStatusForm.studentSupervisee == student)
+    positions = (LaborStatusForm.select()
+                                .join(FormHistory)
+                                .where( LaborStatusForm.termCode == termCode, 
+                                        LaborStatusForm.studentSupervisee == student,
+                                        FormHistory.status_id != "Denied")
+                                .distinct())
     isMoreLSFDict = {}
     storeLSFFormsID = []
     previousSupervisorNames = []
