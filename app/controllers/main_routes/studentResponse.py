@@ -21,6 +21,7 @@ def confirm():
         "supervisor": form.supervisor.FIRST_NAME + " " + form.supervisor.LAST_NAME,
         "position_code_title": f"{form.POSN_CODE}, {form.POSN_TITLE}",
         "wls": form.WLS,
+        "term": form.termCode,
         "department": form.department.DEPT_NAME,
         "hours_per_week": form.weeklyHours or form.contractHours,
         "start_date": form.startDate.strftime('%m/%d/%Y'),
