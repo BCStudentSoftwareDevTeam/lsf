@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, flash
+from flask import Blueprint, request, render_template, redirect, flash, abort
 from datetime import date
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
@@ -13,7 +13,7 @@ def confirm():
 
     if not form:
         flash("Invalid confirmation link", "danger")
-        return render_template('errors/404.html'), 404
+        abort(404)
 
     laborDescription = {
         "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
@@ -36,7 +36,7 @@ def confirmSubmit():
 
     if not form:
         flash("Invalid confirmation link", "danger")
-        return render_template('errors/404.html'), 404
+        abort(404)
 
     form.studentConfirmation = True if response == "Accepted" else False
     form.studentResponseDate = datetime.date.today()
@@ -44,22 +44,12 @@ def confirmSubmit():
 
     formHistory = FormHistory.get_or_none(FormHistory.formID == form.laborStatusFormID)
 
-    if not formHistory:
-        FormHistory.create(formID=form.laborStatusFormID, status="Pre-Student Approval")
-
     if response == "Accepted":
         formHistory.status = "Pending"
-        formHistory.save()
-
-        FormHistory.delete().where(FormHistory.formID == form.laborStatusFormID, FormHistory.status == "Pre-Student Approval").execute()
     else:
         formHistory.status = "Pre-Student Approval"
-        formHistory.save()
-        
     
+    formHistory.save()
+        
     flash("Thank you for your response.", "success")
     return redirect('/')
-
-@main_bp.route('/studentResponse/confirmationResponse', methods=['GET'])
-def confirmationResponse():
-    return render_template('main/confirmationResponse.html')
