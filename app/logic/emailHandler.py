@@ -129,7 +129,7 @@ class emailHandler():
     # The email templates are stored inside of the emailHandler model, and depending on which email template
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
-    def laborStatusFormSubmitted(self, studentEmailPurpose=False):
+    def laborStatusFormSubmitted(self):
         try:
             self.student = Student.get(Student.ID == str(self.laborStatusForm.studentSupervisee.ID))
             self.studentEmail = self.student.STU_EMAIL
@@ -141,11 +141,6 @@ class emailHandler():
             emailBody = emailTemplate.body
 
             emailBody = emailBody.replace("@@ConfirmationLink@@", self.confirmationLink)
-
-            if not studentEmailPurpose:  
-                message = Message(subject=emailTemplate.subject, recipients=[self.studentEmail])
-                message.html = emailBody
-                self.send(message)
 
         except Student.DoesNotExist:
             print("Error: Student record not found.")

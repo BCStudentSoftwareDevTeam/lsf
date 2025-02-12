@@ -25,7 +25,7 @@ class LaborStatusForm (baseModel):
     supervisorNotes             = TextField(null=True)
     laborDepartmentNotes        = TextField(null=True)
     studentConfirmation         = BooleanField(null=True)    # Pending is None, Accepted is True, Denied is False
-    confirmationToken           = UUIDField(default=uuid4)
+    confirmationToken           = UUIDField(default=uuid4, null=True)
     studentResponseDate         = DateField(null=True)
 
 
