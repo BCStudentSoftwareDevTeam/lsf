@@ -29,6 +29,7 @@ class CSVMaker:
         '''
 
         allForms = list(set(requestedLSFs)) # remove duplicates
+        allFormHistories = []
 
         for statusForm in allForms:
             studentFormHistories = []
@@ -38,9 +39,9 @@ class CSVMaker:
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
 
             for historyForm in studentFormHistories:
-                allForms.append(historyForm)
+                allFormHistories.append(historyForm)
 
-        return allForms
+        return allFormHistories
 
 
     def makeCSV(self):

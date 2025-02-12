@@ -190,7 +190,7 @@ def getDatatableData(request):
         filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).desc()).limit(rowsPerPage).offset(rowNumber)
     else:
         filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
-    formattedData = getFormattedData(filteredSearchResults, queryFilterDict['view'])
+    formattedData = getFormattedData(filteredSearchResults, queryFilterDict.get('view'))
     formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
 
     return jsonify(formsDict)

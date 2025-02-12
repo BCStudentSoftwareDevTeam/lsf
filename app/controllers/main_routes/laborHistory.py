@@ -12,7 +12,7 @@ from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.overloadForm import *
 from app.models.department import *
-from app.models.student import *
+from app.models.student import Student 
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
 from app import cfg

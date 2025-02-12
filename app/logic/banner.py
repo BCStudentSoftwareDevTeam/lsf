@@ -5,7 +5,9 @@ from app.config.loadConfig import*
 from app import app
 
 class Banner():
+
     def __init__(self):
+        self.conn = None
         secret_conf = get_secret_cfg()
         banner_cfg = secret_conf["banner"]
 
