@@ -99,8 +99,8 @@
                             type="text"
                             class="form-control datepicker start"
                             placeholder="MM/DD/YYYY"
-                            value="{{startDate}}"
-                            {% if term.termStart != None %}
+                            value="{{term.termStart.strftime('%m/%d/%Y') if term.termStart else ''}}"
+                            {% if term.termStart %}
                               data-onload= "updateEnd(this, {{term.termCode}})"
                             {% endif %}/>
                       <label class="input-group-addon" for="start_{{term.termCode}}">
@@ -119,8 +119,8 @@
                             type="text"
                             class="form-control datepicker emptyEnd"
                             placeholder="MM/DD/YYYY"
-                            value="{{endDate}}"
-                            {% if term.termEnd != None %}
+                            value="{{term.termEnd.strftime('%m/%d/%Y') if term.termEnd else ''}}"
+                            {% if term.termEnd  %}
                               data-onload= "updateStart(this, {{term.termCode}})"
                             {% endif %}/>
                       <label class="input-group-addon" for="end_{{term.termCode}}">

@@ -1,24 +1,4 @@
 $(document).ready(function () {
-  if ((document.cookie).includes("lsfSearchResults=")) {
-    cookieStr = Cookies.get('lsfSearchResults')
-    cookieJSON = JSON.parse(cookieStr)
-    // using the cookies, make sure the view is properly set as well
-    if (cookieJSON.view == 'advanced') {
-      createDataTable(cookieStr)
-      switchViewButton('simple')
-    } else {
-      fetchSimpleView(cookieStr)
-      switchViewButton('advanced')
-    }
-    setFormSearchValues(cookieJSON)
-
-  } else {
-    $('#formSearchTable').hide();
-    $('#sortOptions').hide();
-    $("#download").prop('disabled', true);
-    $('#collapseSearch').collapse(false)
-  }
-
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
     $('#sortOptions').show();
@@ -114,6 +94,32 @@ $(document).ready(function () {
     }
     $('.selectpicker').selectpicker('refresh')
   })
+
+  ////////////////////////////////////////////
+  // check the cookie and GO!
+  if ((document.cookie).includes("lsfSearchResults=")) {
+    cookieStr = Cookies.get('lsfSearchResults')
+    cookieJSON = JSON.parse(cookieStr)
+    // using the cookies, make sure the view is properly set as well
+    if (cookieJSON.view == 'advanced') {
+      createDataTable(cookieStr)
+      switchViewButton('simple')
+    } else {
+      fetchSimpleView(cookieStr)
+      switchViewButton('advanced')
+    }
+    setFormSearchValues(cookieJSON)
+
+  } else {
+    $('#formSearchTable').hide();
+    $('#sortOptions').hide();
+    $("#download").prop('disabled', true);
+    $('#collapseSearch').collapse(false)
+
+    // select current supervisees if nothing selected
+    $('#mySupervisees').trigger("click")
+  }
+
 });
 
 // this is a mapping which maps the column option to its field options.
@@ -170,6 +176,9 @@ function runFormSearchQuery(button) {
       supervisorID = "currentUser"
       studentID = ""
       formStatusList = ["Approved", "Approved Reluctantly"]
+      if (view == "simple") { // avoid duplicates in the table
+        formTypeList = ["Labor Status Form"]
+      }
       break;
 
     case "pendingForms":
@@ -186,7 +195,9 @@ function runFormSearchQuery(button) {
       supervisorID = ""
       studentID = ""
       formStatusList = []
-      formTypeList = []
+      if (view == "simple") { // avoid duplicates in the table
+        formTypeList = ["Labor Status Form"]
+      }
       break;
 
     default:

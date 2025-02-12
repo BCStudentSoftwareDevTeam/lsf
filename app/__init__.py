@@ -5,7 +5,6 @@ from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
 
-
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 api = Api(app)
@@ -43,8 +42,9 @@ if app.config['show_queries']:
                 session['querycount'] = 0
 
             session['querycount'] += 1
-            print("**Running query {}**".format(session['querycount']))
-            print(args[0])
+            if app.config['show_queries']: # check it again in case we selectively disable
+                print("**Running query {}**".format(session['querycount']))
+                print(args[0])
         return old_execute(*args, **kwargs)
     BaseQuery.execute = new_execute
 
