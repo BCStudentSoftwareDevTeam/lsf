@@ -1,18 +1,26 @@
-from flask import Blueprint, request, render_template, redirect, flash, abort
-from datetime import date
-from app.models.laborStatusForm import LaborStatusForm
-from app.models.formHistory import FormHistory
 import datetime
 
-from app.controllers.main_routes import *
+from flask import Blueprint, request, render_template, redirect, flash, abort, g
+from peewee import DoesNotExist
+
+from app.models.laborStatusForm import LaborStatusForm
+from app.models.formHistory import FormHistory
+
+from app.controllers.main_routes import main_bp
 
 @main_bp.route('/studentResponse/confirm', methods=['GET'])
 def confirm():
     token = request.args.get('token')
-    form = LaborStatusForm.get_or_none(LaborStatusForm.confirmationToken == token)
 
-    if not form:
-        flash("Invalid confirmation link", "danger")
+    # Find the form and make sure the logged in user matches the student on the form
+    forms = (LaborStatusForm.select()
+                            .join(FormHistory)
+                            .where(LaborStatusForm.confirmationToken == token,
+                                   LaborStatusForm.studentSupervisee == g.currentUser.student))
+    try:
+        form = forms.get()
+    except DoesNotExist as e:
+        flash("This contract is invalid or has expired.", "danger")
         abort(404)
 
     laborDescription = {
@@ -48,7 +56,8 @@ def confirmSubmit():
     if response == "Accepted":
         formHistory.status = "Pending"
     else:
-        formHistory.status = "Pre-Student Approval"
+        formHistory.status = "Denied"
+        # TODO do we need to email about the denial?
     
     formHistory.save()
         
