@@ -25,6 +25,9 @@
     <p>
     <b>NOTICE:</b> This does not mean your position is active to begin work, only that a labor status form has been submitted to the Labor Department to await approval.
     </p>
+    <p class="alert alert-danger">
+    You have until {{ laborDescription.expiration_date.strftime("%B %d") }} to Accept or Deny this contract. After that date, the form will be denied and your supervisor will have to submit a new contract, if the position is still available.
+    </p>
 </div>
 
 <h3>Labor Contract Details: </h3>
@@ -38,6 +41,7 @@
         {% set hoursDescription = "Total Contracted Hours" if laborDescription.term.isBreak else "Hours per Week" %}
         <p><strong>{{ hoursDescription}}:</strong> {{ laborDescription.hours_per_week }}</p>
         <p><strong>Start Date:</strong> {{ laborDescription.start_date }}</p>
+        <p><strong>End Date:</strong> {{ laborDescription.end_date }}</p>
     </div>
 </div>
 

@@ -15,8 +15,9 @@ def confirm():
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
                             .join(FormHistory)
-                            .where(LaborStatusForm.confirmationToken == token,
-                                   LaborStatusForm.studentSupervisee == g.currentUser.student))
+                            .where(LaborStatusForm.confirmationToken == token
+                                   #,LaborStatusForm.studentSupervisee == g.currentUser.student))
+                            ))
     try:
         form = forms.get()
     except DoesNotExist as e:
@@ -25,6 +26,7 @@ def confirm():
 
     laborDescription = {
         "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
+        "expiration_date": form.studentExpirationDate,
         "student_id": form.studentSupervisee.ID,
         "supervisor": form.supervisor.FIRST_NAME + " " + form.supervisor.LAST_NAME,
         "position_code_title": f"{form.POSN_CODE}, {form.POSN_TITLE}",
@@ -33,6 +35,7 @@ def confirm():
         "department": form.department.DEPT_NAME,
         "hours_per_week": form.weeklyHours or form.contractHours,
         "start_date": form.startDate.strftime('%m/%d/%Y'),
+        "end_date": form.endDate.strftime('%m/%d/%Y'),
     }
 
     return render_template('main/studentEmailConfirmation.html', form=form, laborDescription=laborDescription)

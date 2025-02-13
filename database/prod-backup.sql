@@ -289,7 +289,8 @@ UNLOCK TABLES;
 ALTER TABLE laborstatusform 
   ADD COLUMN `studentConfirmation` int DEFAULT NULL,
   ADD COLUMN `confirmationToken` varchar(40) DEFAULT NULL,
-  ADD COLUMN `studentResponseDate` date DEFAULT NULL;
+  ADD COLUMN `studentResponseDate` date DEFAULT NULL,
+  ADD COLUMN `studentExpirationDate` date DEFAULT NULL;
 
 --
 -- Table structure for table `migratehistory`

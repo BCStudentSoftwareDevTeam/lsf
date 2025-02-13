@@ -1,5 +1,13 @@
+from datetime import datetime, date, timedelta, time
+from functools import reduce
+import operator
+
+from flask import json, jsonify
+from flask import request
+from flask import Flask, redirect, url_for, flash
 from flask_login import login_required
-from app.controllers.main_routes import *
+from peewee import DoesNotExist
+
 from app.models.user import *
 from app.models.status import *
 from app.models.laborStatusForm import *
@@ -11,16 +19,9 @@ from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.department import *
 from app.models.Tracy.stuposn import STUPOSN
-from flask import json, jsonify
-from flask import request
-from datetime import datetime, date
-from flask import Flask, redirect, url_for, flash
 from app.logic.emailHandler import emailHandler
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.utils import makeThirdPartyLink
-from peewee import DoesNotExist
-from functools import reduce
-import operator
 
 class InvalidUserException(Exception):
     pass
@@ -277,6 +278,8 @@ def createStudentFromTracy(username=None, bnumber=None):
     else:
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
 
+def calculateExpirationDate():
+    return datetime.combine(datetime.now() + timedelta(app.config["student_confirmation_days"]),time(23, 59, 59))
 
 def createLaborStatusForm(student, primarySupervisor, department, term, rspFunctional):
     """
@@ -306,7 +309,8 @@ def createLaborStatusForm(student, primarySupervisor, department, term, rspFunct
                                  endDate = endDate,
                                  supervisorNotes = rspFunctional["stuNotes"],
                                  laborDepartmentNotes = rspFunctional["stuLaborNotes"],
-                                 studentName = student.legal_name + " " + student.LAST_NAME
+                                 studentName = student.legal_name + " " + student.LAST_NAME,
+                                 studentExpirationDate = calculateExpirationDate()
                                  )
 
     return lsf
