@@ -15,7 +15,6 @@ from app.models.formHistory import *
 from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
-from app import cfg
 from datetime import datetime, date
 from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN

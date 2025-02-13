@@ -7,7 +7,6 @@ from app.models.formHistory import *
 from flask import json, jsonify
 from flask import request, render_template, flash
 from app.models.overloadForm import *
-from app import cfg
 from app.models.notes import Notes
 from datetime import datetime, date
 from app.models.status import *

@@ -1,22 +1,22 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from app import load_config, app
 import urllib3
 from urllib.parse import quote
 import os
 
-cfg = load_config('app/config/secret_config.yaml')
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-host = cfg['tracy']['host']
+from app import app
+
+host = app.config['tracy']['host']
 if not os.environ.get("USING_CONTAINER", False):
     host = "localhost"
 
 # MySQL database connection
-uri = "mysql+pymysql://{}:{}@{}/{}".format(cfg['tracy']['username'], cfg['tracy']['password'], host, cfg['tracy']['db_name'])
+uri = "mysql+pymysql://{}:{}@{}/{}".format(app.config['tracy']['username'], app.config['tracy']['password'], host, app.config['tracy']['db_name'])
 
 # MSSQL database connection
 if app.config['use_tracy']:
-    uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(cfg['tracy']['mssql_host'],  cfg['tracy']['db_name'], cfg['tracy']['mssql_user'], cfg['tracy']['mssql_password']))
+    uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(app.config['tracy']['mssql_host'],  app.config['tracy']['db_name'], app.config['tracy']['mssql_user'], app.config['tracy']['mssql_password']))
 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

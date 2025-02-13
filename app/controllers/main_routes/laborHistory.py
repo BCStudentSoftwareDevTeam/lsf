@@ -15,7 +15,6 @@ from app.models.department import *
 from app.models.student import Student 
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
-from app import cfg
 from app.controllers.main_routes.download import CSVMaker
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
