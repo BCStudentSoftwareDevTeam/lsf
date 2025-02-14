@@ -927,7 +927,9 @@ CKEDITOR.plugins.add("strinsert",{
     b.push(["<strong>@@Date@@</strong>","Date","Start Date of the labor form"]);
     b.push(["<strong>@@ReleaseReason@@</strong>","Release Reason","Reason why student was released"]);
     b.push(["<strong>@@ReleaseDate@@</strong>","Release Date","Date when student will be released from labor position"]);
-    b.push(["<strong>@@link@@</strong>","Link","Link to form request"]);
+    b.push(["<strong>@@link@@</strong>","Student Overload Link","Link to Student Overload Request page"]);
+    b.push(["<strong>@@StudentConfirmationLink@@</strong>","Student Confirmation Link","Link to Student Form Confirmation page"]);
+    b.push(["<strong>@@StudentConfirmationExpiration@@</strong>","Form Expiration","Expiration date for student confirmation"]);
     a.ui.addRichCombo("strinsert",{
       label:"Insert Placeholder",
       title:"Insert Content",

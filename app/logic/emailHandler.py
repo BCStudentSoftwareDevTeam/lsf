@@ -197,7 +197,7 @@ class emailHandler():
     def LaborOverLoadFormSubmitted(self, link):
         """
         For the student email, the process will work as such:
-        First, the student UI HTML shell will be populated with the neccesary data.
+        First, the student UI HTML shell will be populated with the necessary data.
         Once populated, the HTML shell will be converted into a link. This link
         will then be used to replace the keyword "@@link@@" in the email template.
         Once this is finished, the email can then be sent.
@@ -389,5 +389,6 @@ class emailHandler():
         form = form.replace("@@ReleaseReason@@", self.releaseReason)
         form = form.replace("@@ReleaseDate@@", self.releaseDate)
         form = form.replace("@@link@@", self.link)
-        form = form.replace("@@ConfirmationLink@@", self.confirmationLink)
+        form = form.replace("@@StudentConfirmationLink@@", self.confirmationLink)
+        form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)
