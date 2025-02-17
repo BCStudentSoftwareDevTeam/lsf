@@ -66,3 +66,28 @@ def confirmSubmit():
         
     flash("Thank you for your response.", "success")
     return redirect('/')
+
+@main_bp.route('/studentResponse/checkboxConfirmation', methods=['GET', 'POST'])
+def confirmSubmitWithCheckbox():
+    token = request.form.get('token') if request.method == "POST" else request.args.get('token')
+    response = request.form.get('response')  # "Accepted" or "Denied"
+    checkbox = request.form.get('confirmParticipation') 
+    form = LaborStatusForm.get_or_none(LaborStatusForm.confirmationToken == token)
+
+    if not form:
+        flash("Invalid confirmation link", "danger")
+        abort(404)
+
+    if request.method == "GET":
+        return render_template("checkboxStudentEmailConfirmation.html", form=form)
+
+    if response == "Accepted" and not checkbox:
+        flash("You must confirm your participation before approving.", "danger")
+        return redirect(request.referrer)  
+    
+    form.studentConfirmation = True if response == "Accepted" else False
+    form.studentResponseDate = datetime.date.today()
+    form.save()
+
+    flash("Your response has been recorded successfully!", "success")
+    return redirect("/confirmationSuccess")

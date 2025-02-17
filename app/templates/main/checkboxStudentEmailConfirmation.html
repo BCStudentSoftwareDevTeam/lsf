@@ -1,0 +1,14 @@
+<form action="/studentResponse/checkboxConfirmation" method="post">
+    <input type="hidden" name="token" value="{{ form.confirmationToken }}">
+
+    <div class="form-group">
+        <input type="checkbox" id="laborConfirmationCheckbox" name="confirmParticipation">
+        <label for="laborConfirmationCheckbox">
+            I confirm my participation in the labor program as a <strong>{{ laborDescription.position_code_title }}</strong> for the entire academic year.
+        </label>
+    </div>
+
+    <button type="submit" name="response" value="Accepted" class="btn btn-lg btn-success" id="approveButton" disabled>Accept</button>
+    &nbsp;
+    <button type="submit" name="response" value="Denied" class="btn btn-lg btn-danger">Deny</button>
+</form>
