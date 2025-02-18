@@ -51,16 +51,14 @@ def supervisorPortal():
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
     department = None
     if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
-        departments = [department for department in departments]
+        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
         students = (Student.select(Student, studentFirstName)
                            .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
 
     else:
-        departments = getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())
-        departments = [department for department in departments] 
+        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
         deptNames = [department.DEPT_NAME for department in departments]
 
         supervisorPrimaryDepartment = Department.select().join(SupervisorDepartment) # count up all forms for a supervisor in department and get the max
@@ -156,9 +154,10 @@ def getDatatableData(request):
     if clauses:
         formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
     if not currentUser.isLaborAdmin:
-        supervisorDepartments = getDepartmentsForSupervisor(currentUser)
+        supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
+    print(formSearchResults)
     recordsTotal = len(formSearchResults)
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
