@@ -74,12 +74,26 @@ def confirmSubmitWithCheckbox():
     checkbox = request.form.get('confirmParticipation') 
     form = LaborStatusForm.get_or_none(LaborStatusForm.confirmationToken == token)
 
+    laborDescription = {
+        "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
+        "expiration_date": form.studentExpirationDate,
+        "student_id": form.studentSupervisee.ID,
+        "supervisor": form.supervisor.FIRST_NAME + " " + form.supervisor.LAST_NAME,
+        "position_code_title": f"{form.POSN_CODE}, {form.POSN_TITLE}",
+        "wls": form.WLS,
+        "term": form.termCode,
+        "department": form.department.DEPT_NAME,
+        "hours_per_week": form.weeklyHours or form.contractHours,
+        "start_date": form.startDate.strftime('%m/%d/%Y'),
+        "end_date": form.endDate.strftime('%m/%d/%Y'),
+    }
+
     if not form:
         flash("Invalid confirmation link", "danger")
         abort(404)
 
     if request.method == "GET":
-        return render_template("checkboxStudentEmailConfirmation.html", form=form)
+        return render_template("main/checkboxStudentEmailConfirmation.html", form=form, laborDescription=laborDescription)
 
     if response == "Accepted" and not checkbox:
         flash("You must confirm your participation before approving.", "danger")

@@ -115,16 +115,8 @@ class emailHandler():
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self):
         try:
-            self.student = Student.get(Student.ID == str(self.laborStatusForm.studentSupervisee.ID))
-            self.studentEmail = self.student.STU_EMAIL
-
             # generating a link for confirmation for student
             self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
-
-            emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Status Form Submitted For Student")
-            emailBody = emailTemplate.body
-
-            emailBody = emailBody.replace("@@ConfirmationLink@@", self.confirmationLink)
 
         except Student.DoesNotExist:
             print("Error: Student record not found.")

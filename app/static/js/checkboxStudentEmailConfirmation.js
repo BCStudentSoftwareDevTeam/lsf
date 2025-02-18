@@ -1,8 +1,8 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const checkbox = document.getElementById("laborConfirmationCheckbox");
-    const approveButton = document.getElementById("approveButton");
+document.addEventListener("DOMContentLoaded", function() {
+    let checkbox = document.getElementById("laborConfirmationCheckbox");
+    let acceptButton = document.getElementById("acceptButton");
 
-    checkbox.addEventListener("change", function () {
-        approveButton.disabled = !checkbox.checked;
+    checkbox.addEventListener("change", function() {
+        acceptButton.disabled = !checkbox.checked;
     });
 });
