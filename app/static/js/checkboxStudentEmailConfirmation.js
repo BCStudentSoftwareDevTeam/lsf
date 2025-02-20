@@ -1,8 +1,16 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let checkbox = document.getElementById("laborConfirmationCheckbox");
+    let firstCheckbox = document.getElementById("firstCheckbox");
+    let secondCheckbox = document.getElementById("secondCheckbox");
+    let thirdCheckbox = document.getElementById("thirdCheckbox");
+    let fourthCheckbox = document.getElementById("fourthCheckbox");
     let acceptButton = document.getElementById("acceptButton");
 
-    checkbox.addEventListener("change", function() {
-        acceptButton.disabled = !checkbox.checked;
-    });
+    function checkCheckboxes() {
+        acceptButton.disabled = !(firstCheckbox.checked && secondCheckbox.checked && thirdCheckbox.checked && fourthCheckbox.checked);
+    }
+
+    firstCheckbox.addEventListener("change", checkCheckboxes);
+    secondCheckbox.addEventListener("change", checkCheckboxes);
+    thirdCheckbox.addEventListener("change", checkCheckboxes);
+    fourthCheckbox.addEventListener("change", checkCheckboxes);
 });
