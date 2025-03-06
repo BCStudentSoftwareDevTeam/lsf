@@ -1,4 +1,17 @@
 BEGIN;
+-- Update Denied statuses
+
+INSERT INTO status ('Denied by Admin');
+INSERT INTO status ('Denied by Student');
+
+update overloadform set financialAidApproved_id='Denied by Admin' where financialAidApproved_id='Denied';
+update overloadform set SAASApproved_id='Denied by Admin' where SAASApproved_id='Denied';
+update overloadform set laborApproved_id='Denied by Admin' where laborApproved_id='Denied';
+update formhistory set status_id='Denied by Admin' where status_id='Denied';
+
+DELETE from status where statusName='Denied';
+
+
 -- Update emailtemplate for Labor Status Form Submitted for Student
 UPDATE emailtemplate 
 SET 
@@ -37,5 +50,7 @@ SET
             <p>labor_program@berea.edu</p>
             <p>859-985-3611</p>'
 WHERE purpose = 'Labor Status Form Submitted For Student';
+
+-- TODO Supervisor email template
 
 COMMIT;
