@@ -34,7 +34,7 @@
               </a>
           </div>
       {% endif %}
-      {% if currentUser.supervisor %}
+      {% if currentUser.supervisor or (currentUser.student and currentUser.isLaborAdmin) %}
           <div class="panel panel-default">
             <a class="adminTest" href="/main/search">
                 <div {% if request.path =="/main/search" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="7">
@@ -42,8 +42,12 @@
                   </div>
               </a>
           </div>
+      {% endif %}
+
+      {% if currentUser.supervisor %} 
         </div>
       {% endif %}
+
       {% if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
       <!-- If the current user is an admin, then we want to
           create the 'Administration' tab in the sidebar for them.-->

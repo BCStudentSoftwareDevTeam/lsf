@@ -12,7 +12,8 @@ import re
 @main_bp.route('/main/search',  methods=['GET'])
 def search_page():
     currentUser = require_login()
-    if not currentUser or not currentUser.supervisor:
+    accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
+    if not accessAllowed:
         return render_template('errors/403.html'), 403
 
     return render_template( 'main/search.html' )
@@ -21,7 +22,8 @@ def search_page():
 @main_bp.route('/main/search/<query>',  methods=['GET'])
 def search(query=None):
     currentUser = require_login()
-    if not currentUser or not currentUser.supervisor:
+    accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
+    if not accessAllowed:
         return render_template('errors/403.html'), 403
 
     current_students = []
