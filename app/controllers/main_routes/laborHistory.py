@@ -28,8 +28,7 @@ from app.logic.userInsertFunctions import getOrCreateStudentRecord
 from app.logic.utils import setReferrerPath
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
-@main_bp.route('/laborHistory/<departmentName>/<id>', methods=['GET'])
-def laborhistory(id, departmentName=None):
+def laborhistory(id):
     setReferrerPath()
     try:
         currentUser = require_login()
@@ -52,12 +51,7 @@ def laborhistory(id, departmentName=None):
                                               .join_from(FormHistory, LaborStatusForm)
                                               .where((FormHistory.formID.supervisor == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser))
                                               .distinct())
-                deptForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
-                                        .join(LaborStatusForm)
-                                        .join(Department)
-                                        .where(FormHistory.formID.department.DEPT_NAME == currentUser.supervisor.DEPT_NAME)
-                                        .distinct())
-                authorizedForms = studentForms.intersect(supervisorForms.union(deptForms)).order_by(LaborStatusForm.jobType)
+                authorizedForms = studentForms.intersect(supervisorForms).order_by(LaborStatusForm.jobType)
 
 
                 if len(authorizedForms) == 0:
@@ -73,7 +67,6 @@ def laborhistory(id, departmentName=None):
                                 username=currentUser.username,
                                 laborStatusFormList = laborStatusFormList,
                                 authorizedForms = authorizedForms,
-                                departmentName = departmentName
                               )
 
     except Exception as e:
