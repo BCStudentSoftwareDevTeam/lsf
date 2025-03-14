@@ -41,6 +41,8 @@ def laborhistory(id, departmentName=None):
                                    .where(FormHistory.formID.studentSupervisee == student, 
                                           FormHistory.historyType.historyTypeName == "Labor Status Form"))
         authorizedForms = studentForms.distinct()
+        print("#"*60)
+        print(authorizedForms)
         if not currentUser.isLaborAdmin:
             # View only your own form history
             if currentUser.student and not currentUser.supervisor:

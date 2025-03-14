@@ -401,7 +401,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
         createAJAX = false
       } else {
         $('#required-error').hide();
-        status = 'Denied'
+        status = 'Denied by Admin'
         var denyReason = $('#denyOverloadReason').val()
         overloadModalInfo['denialReason'] = denyReason;
       }
@@ -476,7 +476,7 @@ function submitRelease(formHistoryID) {
         createAJAX = false;
       } else {
         $('.required-error').hide();
-        status = 'Denied';
+        status = 'Denied by Admin';
         var denyReason = $('#denyReleaseReason').val();
         releaseModalInfo['denialReason'] = denyReason;
       }

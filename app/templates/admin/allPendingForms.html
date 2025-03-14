@@ -68,6 +68,9 @@
               {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
                 <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
+              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
+                <th>Status</th>
+              {% endif %}
               <th>Term</th>
               <th>Department</th>
               <th>Supervisor</th>
@@ -78,9 +81,6 @@
               {% if formType == "pendingAdjustment" %}
                 <th>Effective Date</th>
               {%endif%}
-              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
-                <th>Status</th>
-              {% endif %}
               <th>Created</th>
               <th></th>
             </tr>
@@ -108,8 +108,9 @@
                   </td>
                 {% endif %}
               {% endif %}
-              {% if formType == "pendingOverload" %}
+              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
                 <td> {# STATUS #}
+                    {{allForms.status}}
                   {{allForms.formID.status}}
                 </td>
               {% endif %}
@@ -160,15 +161,6 @@
               {% if formType == "pendingAdjustment" %}
                 <td> {# EFFECTIVE DATE #}
                      {{allForms.adjustedForm.effectiveDate.strftime('%m/%d/%y')}}
-                </td>
-              {% endif %}
-              {% if formType == "preStudentApproval" %}
-                <td> {# STATUS #}
-                  {% if allForms.formID.studentConfirmation is none %}
-                      Pending
-                  {% elif allForms.formID.studentConfirmation == False %}
-                      Denied
-                  {% endif %}
                 </td>
               {% endif %}
               <td> {# CREATED BY #}

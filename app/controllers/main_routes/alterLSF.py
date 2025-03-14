@@ -258,7 +258,7 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                    .join_from(LaborStatusForm, FormHistory) \
                    .where((LaborStatusForm.termCode == lsf.termCode) &
                          (LaborStatusForm.studentSupervisee.ID == lsf.studentSupervisee.ID) &
-                         (FormHistory.status != "Denied") &
+                         ~(FormHistory.status % "Denied%") &
                          (FormHistory.historyType == "Labor Status Form"))
 
 

@@ -6,7 +6,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let acceptButton = document.getElementById("acceptButton");
 
     function checkCheckboxes() {
-        acceptButton.disabled = !(firstCheckbox.checked && secondCheckbox.checked && thirdCheckbox.checked && fourthCheckbox.checked);
+        notaccepted = !(firstCheckbox.checked && secondCheckbox.checked && thirdCheckbox.checked && fourthCheckbox.checked);
+        $("input[name='confirmParticipation']").val(notaccepted ? 0 : 1)
+        acceptButton.disabled = notaccepted
     }
 
     firstCheckbox.addEventListener("change", checkCheckboxes);

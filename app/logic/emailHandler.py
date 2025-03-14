@@ -48,7 +48,7 @@ class emailHandler():
                                                      (FormHistory.formID.studentSupervisee == self.laborStatusForm.studentSupervisee) &
                                                      ((FormHistory.formID.termCode == self.laborStatusForm.termCode) | (FormHistory.formID.termCode == ayTermCode)) &
                                                      (FormHistory.historyType.historyTypeName == "Labor Status Form") &
-                                                     (FormHistory.status.statusName != "Denied")).get()
+                                                     ~(FormHistory.status.statusName % "Denied%")).get()
                 self.primaryEmail = self.primaryForm.formID.supervisor.EMAIL
             except DoesNotExist:
                 # This case happens from some of the old data
@@ -382,5 +382,6 @@ class emailHandler():
         form = form.replace("@@ReleaseDate@@", self.releaseDate)
         form = form.replace("@@link@@", self.link)
         form = form.replace("@@StudentConfirmationLink@@", self.confirmationLink)
-        form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
+        if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
+            form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)

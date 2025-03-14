@@ -82,7 +82,7 @@ def formApproval(status):
         if not (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin): # Not an admin
             return render_template('errors/403.html'), 403
         if status == "denied":
-            newStatus = "Denied"
+            newStatus = "Denied by Admin"
         elif status == "approved":
             newStatus = "Approved"
         else:
