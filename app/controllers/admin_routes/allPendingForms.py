@@ -45,10 +45,10 @@ def allPendingForms(formType):
         laborStatusFormCounter = FormHistory.select().where((FormHistory.status == "Pending") & (FormHistory.historyType == 'Labor Status Form')).count()
         adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
-        preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form').count()
+        preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm is None).count()
 
         if currentUser.isLaborAdmin:
-            overloadFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
+            overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
             overloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                              .where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Overload Form'))\
@@ -132,12 +132,17 @@ def allPendingForms(formType):
                                       .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied by Admin')))
 
         if currentUser.isLaborAdmin:
-            if formType == "preStudentApproval":
-                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType)
+            print("#"*30)
+            print(formType)
+            if formType == "pendingOverload":
+                baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
+            elif formType == "preStudentApproval":
+                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm is None)
             elif formType == "pendingLabor":
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
+        print(formList)
 
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
