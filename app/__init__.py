@@ -83,7 +83,8 @@ def load_openTerm():
         g.openTerm = dict_to_model(Term, session['openTerm'])
     except Exception as e:
         term = getOpenTerm()
-        session['openTerm'] = model_to_dict(term)
+        if term:
+            session['openTerm'] = model_to_dict(term)
         g.openTerm = term
         
 @app.context_processor
