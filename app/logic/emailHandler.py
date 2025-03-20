@@ -1,6 +1,5 @@
-from flask import Flask
+from flask import Flask, request
 from flask_mail import Mail, Message
-from app.config.loadConfig import*
 from app.models.emailTemplate import*
 from app.models.laborReleaseForm import*
 from app.models.laborStatusForm import*
@@ -9,6 +8,7 @@ from app.models.formHistory import*
 from app.models.supervisor import*
 from app.models.user import*
 from app.models.status import*
+from app.models.student import*
 from datetime import datetime
 from app.models.emailTracker import *
 from app.logic.tracy import Tracy
@@ -19,20 +19,6 @@ from datetime import datetime, date
 
 class emailHandler():
     def __init__(self, formHistoryKey):
-        secret_conf = get_secret_cfg()
-        app.config.update(
-            MAIL_SERVER=secret_conf['MAIL_SERVER'],
-            MAIL_PORT=secret_conf['MAIL_PORT'],
-            MAIL_USERNAME= secret_conf['MAIL_USERNAME'],
-            MAIL_PASSWORD= secret_conf['MAIL_PASSWORD'],
-            REPLY_TO_ADDRESS= secret_conf['REPLY_TO_ADDRESS'],
-            MAIL_USE_TLS=secret_conf['MAIL_USE_TLS'],
-            MAIL_USE_SSL=secret_conf['MAIL_USE_SSL'],
-            MAIL_DEFAULT_SENDER=secret_conf['MAIL_DEFAULT_SENDER'],
-            MAIL_OVERRIDE_ALL=secret_conf['MAIL_OVERRIDE_ALL'],
-            ALWAYS_SEND_MAIL=secret_conf['ALWAYS_SEND_MAIL']
-        )
-
         self.mail = Mail(app)
 
         self.formHistory = FormHistory.get(FormHistory.formHistoryID == formHistoryKey)
@@ -62,13 +48,14 @@ class emailHandler():
                                                      (FormHistory.formID.studentSupervisee == self.laborStatusForm.studentSupervisee) &
                                                      ((FormHistory.formID.termCode == self.laborStatusForm.termCode) | (FormHistory.formID.termCode == ayTermCode)) &
                                                      (FormHistory.historyType.historyTypeName == "Labor Status Form") &
-                                                     (FormHistory.status.statusName != "Denied")).get()
+                                                     ~(FormHistory.status.statusName % "Denied%")).get()
                 self.primaryEmail = self.primaryForm.formID.supervisor.EMAIL
             except DoesNotExist:
                 # This case happens from some of the old data
                 pass
 
         self.link = ""
+        self.confirmationLink = ""
         self.releaseReason = ""
         self.releaseDate = ""
         self.newAdjustmentField = ""
@@ -127,6 +114,15 @@ class emailHandler():
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self):
+        try:
+            # generating a link for confirmation for student
+            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
+
+        except Student.DoesNotExist:
+            print("Error: Student record not found.")
+            return
+
+        # Submit the forms for secondary, break, and regular
         if self.laborStatusForm.jobType == 'Secondary':
             if self.term.isBreak:
                 if len(list(self.positions)) > 1:
@@ -142,6 +138,8 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
+
+            
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':
@@ -191,7 +189,7 @@ class emailHandler():
     def LaborOverLoadFormSubmitted(self, link):
         """
         For the student email, the process will work as such:
-        First, the student UI HTML shell will be populated with the neccesary data.
+        First, the student UI HTML shell will be populated with the necessary data.
         Once populated, the HTML shell will be converted into a link. This link
         will then be used to replace the keyword "@@link@@" in the email template.
         Once this is finished, the email can then be sent.
@@ -383,4 +381,7 @@ class emailHandler():
         form = form.replace("@@ReleaseReason@@", self.releaseReason)
         form = form.replace("@@ReleaseDate@@", self.releaseDate)
         form = form.replace("@@link@@", self.link)
+        form = form.replace("@@StudentConfirmationLink@@", self.confirmationLink)
+        if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
+            form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)
