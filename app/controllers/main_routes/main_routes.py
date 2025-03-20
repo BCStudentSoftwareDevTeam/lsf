@@ -43,6 +43,9 @@ def supervisorPortal():
     '''
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:
+        if currentUser.student:
+            return redirect(url_for('main.laborhistory',id=currentUser.student.ID))
+
         return render_template('errors/403.html'), 403
     
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
