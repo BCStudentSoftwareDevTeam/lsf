@@ -10,16 +10,12 @@ print("Inserting base data for all environments")
 # Status
 #############################
 stats = [
-            {"statusName":"Pending"
-            },
-            {"statusName":"Approved"
-            },
-            {"statusName":"Denied"
-            },
-            {"statusName":"Approved Reluctantly"
-            },
-            {"statusName":"Pre-Student Approval"
-            }
+            {"statusName":"Pending" },
+            {"statusName":"Approved" },
+            {"statusName":"Denied by Admin" },
+            {"statusName":"Denied by Student" },
+            {"statusName":"Approved Reluctantly" },
+            {"statusName":"Pre-Student Approval" }
         ]
 Status.insert_many(stats).on_conflict_replace().execute()
 print(" * status added")

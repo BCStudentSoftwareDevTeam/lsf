@@ -43,8 +43,13 @@
         <li id='releaseTab' {% if formType == "pendingRelease" %} class="active" {% endif %}>
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingRelease')}}">Pending Release Forms <strong>({{ releaseFormCounter }})</strong></a>
         </li>
-
-      {% endif %}
+        {% endif %}
+        {% if currentUser.isLaborAdmin %}
+          <li id='preStudentApprovalTab' {% if formType == "preStudentApproval" %} class="active" {% endif %}>
+            <a href="{{url_for('admin.allPendingForms', formType='preStudentApproval')}}">
+                Pre-Student Approval <strong>({{ preStudentApprovalCounter }})</strong></a>
+          </li>
+        {% endif %}
         <li class="pull-right">
             <form method="POST" action="/admin/pendingForms/download">
               <button class="btn btn-success" id="download">Download</button>
@@ -60,11 +65,11 @@
           <!-- Made empty header tags because we need to hide the header -->
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
-              <th> Approve <input type="checkbox" id="checkAll"/></th>
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
+                <th> Approve <input type="checkbox" id="checkAll"/></th>
               {% endif %}
-              {% if formType == "pendingOverload" %}
-              <th> Status </th>
+              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
+                <th>Status</th>
               {% endif %}
               <th>Term</th>
               <th>Department</th>
@@ -86,7 +91,7 @@
             <!--  -->
             {% for allForms in formList %}
             <tr id="tableData" class="tableData" align="center">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType !="preStudentApproval" %}
                 {% if allForms.formHistoryID in pendingOverloadFormPairs %}
                   <td> {# REDIRECT #}
                     {% with modalTarget = modalTarget %}
@@ -103,10 +108,11 @@
                   </td>
                 {% endif %}
               {% endif %}
-              {% if formType == "pendingOverload" %}
-              <td> {# Status #}
-                {{allForms.status}}
-              </td>
+              {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
+                <td> {# STATUS #}
+                    {{allForms.status}}
+                  {{allForms.formID.status}}
+                </td>
               {% endif %}
               <td> {# TERM #}
                 {{allForms.formID.termCode.termName}}

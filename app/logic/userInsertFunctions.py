@@ -1,5 +1,13 @@
+from datetime import datetime, date, timedelta, time
+from functools import reduce
+import operator
+
+from flask import json, jsonify
+from flask import request
+from flask import Flask, redirect, url_for, flash
 from flask_login import login_required
-from app.controllers.main_routes import *
+from peewee import DoesNotExist
+
 from app.models.user import *
 from app.models.status import *
 from app.models.laborStatusForm import *
@@ -11,17 +19,9 @@ from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.department import *
 from app.models.Tracy.stuposn import STUPOSN
-from flask import json, jsonify
-from flask import request
-from datetime import datetime, date
-from flask import Flask, redirect, url_for, flash
-from app import cfg
 from app.logic.emailHandler import emailHandler
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.utils import makeThirdPartyLink
-from peewee import DoesNotExist
-from functools import reduce
-import operator
 
 class InvalidUserException(Exception):
     pass
@@ -278,6 +278,8 @@ def createStudentFromTracy(username=None, bnumber=None):
     else:
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
 
+def calculateExpirationDate():
+    return datetime.combine(datetime.now() + timedelta(app.config["student_confirmation_days"]),time(23, 59, 59))
 
 def createLaborStatusForm(student, primarySupervisor, department, term, rspFunctional):
     """
@@ -307,7 +309,8 @@ def createLaborStatusForm(student, primarySupervisor, department, term, rspFunct
                                  endDate = endDate,
                                  supervisorNotes = rspFunctional["stuNotes"],
                                  laborDepartmentNotes = rspFunctional["stuLaborNotes"],
-                                 studentName = student.legal_name + " " + student.LAST_NAME
+                                 studentName = student.legal_name + " " + student.LAST_NAME,
+                                 studentExpirationDate = calculateExpirationDate()
                                  )
 
     return lsf
@@ -351,7 +354,7 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
                         overloadForm = None,
                         createdBy   = creatorID,
                         createdDate = date.today(),
-                        status      = "Pre-Student Approval" if isOverload else "Pending")
+                        status      = "Pre-Student Approval")
 
     if not formHistory.formID.termCode.isBreak and not isOverload:
         email = emailHandler(formHistory.formHistoryID)
@@ -380,7 +383,7 @@ def checkForSecondLSFBreak(termCode, student):
                                 .join(FormHistory)
                                 .where( LaborStatusForm.termCode == termCode, 
                                         LaborStatusForm.studentSupervisee == student,
-                                        FormHistory.status_id != "Denied")
+                                        ~(FormHistory.status_id % "Denied%"))
                                 .distinct())
     isMoreLSFDict = {}
     storeLSFFormsID = []
@@ -460,7 +463,7 @@ def checkForPrimaryPosition(termCode, student, currentUser):
     if not term.isBreak:
         if lastPrimaryPosition and not approvedRelease:
             if rspFunctional == "Primary":
-                if lastPrimaryPosition.status.statusName == "Denied":
+                if "Denied" in lastPrimaryPosition.status.statusName: # handle two denied statuses
                     finalStatus["status"] = "hire"
                 else:
                     finalStatus["status"]  = "noHire"
@@ -470,10 +473,10 @@ def checkForPrimaryPosition(termCode, student, currentUser):
                     finalStatus["position"] = lastPrimaryPosition.formID.POSN_CODE +" - "+lastPrimaryPosition.formID.POSN_TITLE + " (" + lastPrimaryPosition.formID.WLS + ")"
                     finalStatus["hours"] = lastPrimaryPosition.formID.jobType + " (" + str(lastPrimaryPosition.formID.weeklyHours) + ")"
                     finalStatus["isLaborAdmin"] = currentUser.isLaborAdmin
-                    if lastPrimaryPosition.status.statusName == "Approved" or lastPrimaryPosition.status.statusName == "Approved Reluctantly":
+                    if lastPrimaryPosition.status == "Approved" or lastPrimaryPosition.status == "Approved Reluctantly":
                         finalStatus["approvedForm"] = True
             else:
-                if lastPrimaryPosition.status.statusName in ["Approved", "Approved Reluctantly", "Pending"]:
+                if lastPrimaryPosition.status in ["Approved", "Approved Reluctantly", "Pending"]:
                     lastPrimaryPositionTermCode = str(lastPrimaryPosition.formID.termCode.termCode)[-2:]
                     # if selected term is AY and student has an approved/pending LSF in spring or fall
                     if shortCode == '00' and lastPrimaryPositionTermCode in ['11', '12']:

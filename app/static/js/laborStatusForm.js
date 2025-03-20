@@ -768,6 +768,9 @@ function userInsert(){
            data: JSON.stringify(globalArrayOfStudents),
            contentType: "application/json",
            success: function(response) {
+              setTimeout(() => {
+                  location.reload();}, 3000);
+                  
                var isBreak = $('#selectedTerm').find('option:selected').data('termbreak');
                modalList = [];
                for(var key = 0; key < globalArrayOfStudents.length; key++){

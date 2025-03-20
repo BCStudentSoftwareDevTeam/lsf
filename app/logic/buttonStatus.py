@@ -88,7 +88,7 @@ class ButtonStatus:
                     self.rehire = True
                     self.num_buttons += 2
 
-                elif historyForm.status.statusName == "Denied":
+                elif "Denied" in historyForm.status.statusName:
                     self.rehire = True
                     self.release = True
                     self.adjust = True
@@ -102,7 +102,7 @@ class ButtonStatus:
             # Adjustment
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             elif historyForm.adjustedForm != None:
-                if historyForm.status.statusName in ["Approved","Denied"]:
+                if historyForm.status.statusName in ["Approved","Denied by Student","Denied by Admin"]:
                     self.rehire = True
                     self.release = True
                     self.adjust = True
@@ -123,7 +123,7 @@ class ButtonStatus:
                     self.correction = True
                     self.num_buttons += 2
 
-                elif historyForm.status.statusName == "Denied":
+                elif "Denied" in historyForm.status.statusName: # handle both denies
                     # Denied LSF forms can be rehired
                     self.rehire = True
                     self.num_buttons += 1

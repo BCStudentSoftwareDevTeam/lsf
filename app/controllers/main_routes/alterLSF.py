@@ -7,7 +7,6 @@ from app.models.supervisor import Supervisor
 from app.models.department import Department
 from app.models.adjustedForm import AdjustedForm
 from app.logic.userInsertFunctions import createSupervisorFromTracy
-from app import cfg
 from app.logic.emailHandler import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy
@@ -259,7 +258,7 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
                    .join_from(LaborStatusForm, FormHistory) \
                    .where((LaborStatusForm.termCode == lsf.termCode) &
                          (LaborStatusForm.studentSupervisee.ID == lsf.studentSupervisee.ID) &
-                         (FormHistory.status != "Denied") &
+                         ~(FormHistory.status % "Denied%") &
                          (FormHistory.historyType == "Labor Status Form"))
 
 

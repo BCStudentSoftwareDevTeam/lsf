@@ -15,7 +15,6 @@ from app.models.formHistory import *
 from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
-from app import cfg
 from datetime import datetime, date
 from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
@@ -43,12 +42,13 @@ def allPendingForms(formType):
         pageTitle = ""
         approvalTarget = ""
         completedOverloadFormCounter = 0
-        laborStatusFormCounter = FormHistory.select().where(((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Status Form')).count()
-        adjustedFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Adjustment Form')).count()
+        laborStatusFormCounter = FormHistory.select().where((FormHistory.status == "Pending") & (FormHistory.historyType == 'Labor Status Form')).count()
+        adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
+        preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm is None).count()
 
         if currentUser.isLaborAdmin:
-            overloadFormCounter = FormHistory.select().where(((FormHistory.status == 'Pending')|(FormHistory.status == 'Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
+            overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
             overloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                              .where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Overload Form'))\
@@ -56,7 +56,7 @@ def allPendingForms(formType):
 
             completedOverloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                                      .where(FormHistory.historyType == 'Labor Overload Form')\
-                                                     .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied')).count()
+                                                     .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied by Admin')).count()
         elif currentUser.isSaasAdmin:
             overloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                              .where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Overload Form'))\
@@ -64,7 +64,7 @@ def allPendingForms(formType):
 
             completedOverloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
                                                      .where(FormHistory.historyType == 'Labor Overload Form')\
-                                                     .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied')).count()
+                                                     .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied by Admin')).count()
 
         if formType == "pendingLabor":
             historyType = "Labor Status Form"
@@ -91,6 +91,12 @@ def allPendingForms(formType):
             approvalTarget = ""
             pageTitle = "Approved Overload Forms"
 
+        elif formType == "preStudentApproval":
+            historyType = "Labor Status Form"
+            approvalTarget = ""
+            pageTitle = "Pre-Student Approval"
+            
+
         # We are adding all of these joins so we don't do 10 queries later for every form
         CreatorSup = Supervisor.alias()
         baseQuery = (FormHistory.select(FormHistory, OverloadForm, LaborStatusForm, Supervisor, Student, User, Department, Term, CreatorSup, HistoryType, Status)
@@ -113,7 +119,7 @@ def allPendingForms(formType):
                                       )
             elif formType == "completedOverload":
                 baseQuery = (baseQuery.where(FormHistory.historyType == "Labor Overload Form")
-                                      .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied'))
+                                      .where((FormHistory.overloadForm.financialAidApproved == 'Approved') | (FormHistory.overloadForm.financialAidApproved == 'Denied by Admin'))
                                       )
 
         if currentUser.isSaasAdmin:
@@ -123,12 +129,20 @@ def allPendingForms(formType):
                                       .where((FormHistory.overloadForm.SAASApproved == 'Pending') | (FormHistory.overloadForm.SAASApproved == None)))
             elif formType == "completedOverload":
                 baseQuery = (baseQuery.where(FormHistory.historyType == "Labor Overload Form")
-                                      .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied')))
+                                      .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied by Admin')))
 
         if currentUser.isLaborAdmin:
-            baseQuery = baseQuery.where((FormHistory.status == "Pending")|(FormHistory.status == 'Pre-Student Approval'), FormHistory.historyType == historyType)
+            print("#"*30)
+            print(formType)
+            if formType == "pendingOverload":
+                baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
+            elif formType == "preStudentApproval":
+                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm is None)
+            elif formType == "pendingLabor":
+                baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
+        print(formList)
 
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
@@ -155,6 +169,7 @@ def allPendingForms(formType):
                                 laborStatusFormCounter = laborStatusFormCounter,
                                 adjustedFormCounter  = adjustedFormCounter,
                                 releaseFormCounter = releaseFormCounter,
+                                preStudentApprovalCounter = preStudentApprovalCounter,
                                 completedOverloadFormCounter = completedOverloadFormCounter,
                                 pendingOverloadFormPairs = pendingOverloadFormPairs
                               )
@@ -237,7 +252,7 @@ def finalUpdateStatus(raw_status):
     if raw_status == 'approved':
         new_status = "Approved"
     elif raw_status == 'denied':
-        new_status = "Denied"
+        new_status = "Denied by Admin"
     else:
         print("Unknown status: ", raw_status)
         return jsonify({"success": False})
@@ -246,7 +261,7 @@ def finalUpdateStatus(raw_status):
 
 def saveStatus(new_status, form_ids, currentUser):
     try:
-        if new_status == 'Denied':
+        if new_status == 'Denied by Admin':
             # Index 1 will always hold the reject reason in the list, so we can
             # set a variable equal to the index value and then slice off the list
             # item before the iteration
@@ -258,6 +273,7 @@ def saveStatus(new_status, form_ids, currentUser):
 
             labor_forms = FormHistory.get(FormHistory.formHistoryID == int(id), FormHistory.historyType == history_type)
             labor_forms.status = Status.get(Status.statusName == new_status)
+            
             labor_forms.reviewedDate = date.today()
             labor_forms.reviewedBy = currentUser
 
@@ -272,12 +288,12 @@ def saveStatus(new_status, form_ids, currentUser):
             # if we are able to save
             if save_status:
 
-                if new_status == 'Denied':
+                if new_status == 'Denied by Admin':
                     labor_forms.rejectReason = denyReason
                 labor_forms.save()
 
                 email = emailHandler(labor_forms.formHistoryID)
-                if new_status == "Denied" and history_type == "Labor Status Form":
+                if new_status == "Denied by Admin" and history_type == "Labor Status Form":
                     email.laborStatusFormRejected()
                 if new_status == "Approved" and history_type == "Labor Status Form":
                     email.laborStatusFormApproved()
@@ -601,7 +617,7 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
                     email = emailHandler(pendingForm.formHistoryID)
                     if rsp['status'] in ['Approved', 'Approved Reluctantly']:
                         email.laborStatusFormApproved()
-                    elif rsp['status'] == 'Denied':
+                    elif rsp['status'] == 'Denied by Admin':
                         email.laborStatusFormRejected()
         except DoesNotExist:
             pass
@@ -630,12 +646,12 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
     if rsp['formType'] == 'Overload':
         if rsp['status'] in ['Approved', 'Approved Reluctantly']:
             email.LaborOverLoadFormApproved()
-        elif rsp['status'] == 'Denied':
+        elif rsp['status'] == 'Denied by Admin':
             email.LaborOverLoadFormRejected()
     elif rsp['formType'] == 'Release':
         if rsp['status'] == 'Approved':
             email.laborReleaseFormApproved()
-        elif rsp['status'] == 'Denied':
+        elif rsp['status'] == 'Denied by Admin':
             email.laborReleaseFormRejected()
     return jsonify({"Success": True})
 
@@ -664,6 +680,7 @@ def modalFormUpdate():
                 conn = Banner()
                 save_form_status = conn.insert(historyForm)
 
+
             # if we are able to save
             if save_form_status:
                 # This try is to handle Overload Forms
@@ -680,13 +697,13 @@ def modalFormUpdate():
                     historyForm.reviewedDate = currentDate
                     historyForm.reviewedBy = currentUser
                     historyForm.save()
-                    if rsp["status"] == "Denied" or "adminNotes" in rsp:
+                    if rsp["status"] == "Denied by Admin" or "adminNotes" in rsp:
                         newNotes = Notes.create(formID = historyForm.formID,
                                                 createdBy = currentUser,
                                                 notesContents = "",
                                                 noteType = "",
                                                 date = currentDate)
-                        if rsp["status"] == "Denied":
+                        if rsp["status"] == "Denied by Admin":
                             newNotes.notesContents = rsp["denialReason"]
                         elif "adminNotes" in rsp:
                             newNotes.notesContents = rsp["adminNotes"]
@@ -698,7 +715,7 @@ def modalFormUpdate():
                             newNotes.noteType = "Supervisor Note"
                         newNotes.save()
 
-                    if rsp["status"] == "Denied":
+                    if rsp["status"] == "Denied by Admin":
                         email.laborReleaseFormRejected()
                     elif rsp["status"] == "Approved":
                         email.laborReleaseFormApproved()

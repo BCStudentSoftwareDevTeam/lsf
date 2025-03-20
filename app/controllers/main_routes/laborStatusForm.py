@@ -1,4 +1,5 @@
 from flask_login import login_required
+from flask_mail import Mail, Message
 from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.models.user import *
@@ -14,7 +15,6 @@ from flask import json, jsonify
 from flask import request
 from datetime import datetime, date, timedelta
 from flask import Flask, redirect, url_for, flash
-from app import cfg
 from app.logic.emailHandler import*
 from app.logic.userInsertFunctions import*
 from app.models.supervisor import Supervisor

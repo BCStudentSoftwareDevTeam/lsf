@@ -1,5 +1,5 @@
 from flask import request, session
-from app import cfg, app
+from app import app
 from app.controllers.errors_routes.handlers import *
 from app.models.user import User, DoesNotExist
 from app.models.term import Term
@@ -12,7 +12,7 @@ def getUsernameFromEnv(env):
         username = env[envK].split("@")[0].split('/')[-1].lower()
         return username
     else:
-        return cfg['user']['debug']
+        return app.config['user']['debug']
 
 def logout():
     """
