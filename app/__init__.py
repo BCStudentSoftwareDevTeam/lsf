@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_restful import Api
-import yaml
 from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
@@ -8,33 +7,20 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 api = Api(app)
-# login = LoginManager(app)  #FIXME: needs configured with our dev/prod environment handlers
 
-def load_config(file):
-    with open(file, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
-    return cfg
+from app.config.loadConfig import get_secret_cfg
+app.config.update(get_secret_cfg())
 
-cfg = load_config("app/config/secret_config.yaml")
-app.secret_key = cfg["secret_key"]
+app.secret_key = app.config["secret_key"]
 
-app.config['use_shibboleth'] = False
-if app.config['ENV'] == 'production':
-    app.config['use_shibboleth'] = True
-
-app.config['use_tracy'] = False
-if app.config['ENV'] in ('production','staging'):
-    app.config['use_tracy'] = True
-
-app.config['use_banner'] = False
-if app.config['ENV'] in ('production','staging'):
-    app.config['use_banner'] = True
+app.config['use_shibboleth'] = (app.config['ENV'] == 'production')
+app.config['use_tracy'] = (app.config['ENV'] in ('production','staging'))
+app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
 
 # Record and output queries if requested
-app.config['show_queries'] = cfg["show_queries"] if "show_queries" in cfg else False
 from flask import session
 from peewee import BaseQuery
-if app.config['show_queries']:
+if app.config.get('show_queries'):
     old_execute = BaseQuery.execute
     def new_execute(*args, **kwargs):
         if session:
@@ -42,7 +28,7 @@ if app.config['show_queries']:
                 session['querycount'] = 0
 
             session['querycount'] += 1
-            if app.config['show_queries']: # check it again in case we selectively disable
+            if app.config.get('show_queries'): # in case we selectively disable
                 print("**Running query {}**".format(session['querycount']))
                 print(args[0])
         return old_execute(*args, **kwargs)

@@ -6,7 +6,7 @@
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal">&times;</button>
 
-  <span style="text-align: right;"><button type="button" class="btn btn-default btn col-sm-2" id="print" onclick="fillPDF({{statusForm.laborStatusFormID}})"><span class="glyphicon glyphicon-print"></span> Print</button></span>
+  <span style="text-align: right;"><button type="button" class="btn btn-default btn col-sm-4" id="print" onclick="fillPDF({{statusForm.laborStatusFormID}})"><span class="glyphicon glyphicon-print"></span> Print</button></span>
   <span class="h3 col-sm-9 modalHeader" id="studentDetails">
       {{statusForm.studentSupervisee.FIRST_NAME}} {{statusForm.studentSupervisee.LAST_NAME}} <a href="mailto:{{statusForm.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
       <br><span class="h4">{{statusForm.studentSupervisee.ID}}</span>
@@ -46,22 +46,29 @@
   {% for form in forms %}
     {% if form.adjustedForm == None and form.releaseForm == None and form.overloadForm == None %}
       {% if form.reviewedDate == None %}
+        {% if form.formID.studentResponseDate %}
+            <div class="h4 nopadding">
+              <div class="col-sm-3">{{form.formID.studentResponseDate.strftime('%m-%d-%Y')}}</div>
+              <div class="col-sm-5">{{form.historyType}}</div>
+              <div class="col-sm-4" align="left">{{ form.status if "Denied" in form.status.statusName else "Accepted by Student"}}</div>
+            </div>
+        {% endif %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% elif form.reviewedDate != None %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">{{form.status}}</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">{{form.status}}</div>
         </div>
-        {% if form.status.statusName == "Denied" %}
+        {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
            <div class="row">
-             <p class="control-label col-sm-6 pTag" align="right">Reject Reason: </p>
-           <div class="col-sm-6">
+             <p class="control-label col-sm-5 pTag" align="right">Reject Reason: </p>
+           <div class="col-sm-5">
              <textarea class="rejectReasonTextArea" rows="3" cols="25" readonly>{{form.rejectReason}}</textarea>
            </div>
            </div>
@@ -69,8 +76,8 @@
         {% endif %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% endif %}
 
@@ -78,16 +85,16 @@
       {% if form.reviewedDate == None %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% elif form.reviewedDate != None %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">{{form.status}}</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">{{form.status}}</div>
         </div>
-        {% if form.status.statusName == "Denied" %}
+        {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
           <div class="row">
             <p class="col-sm-4 pTag">Reject Reason:</p>
@@ -99,8 +106,8 @@
         {% endif %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 ">{{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% endif %}
         <div class="smallDataMargin">
@@ -127,16 +134,16 @@
     {% if form.reviewedDate == None %}
       <div class="h4 nopadding">
         <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-        <div class="col-sm-2" align="left">Submitted</div>
+        <div class="col-sm-5 ">{{form.historyType}}</div>
+        <div class="col-sm-4" align="left">Submitted</div>
       </div>
     {% elif form.reviewedDate != None %}
       <div class="h4 nopadding">
         <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-        <div class="col-sm-2" align="left">{{form.status}}</div>
+        <div class="col-sm-5 ">{{form.historyType}}</div>
+        <div class="col-sm-4" align="left">{{form.status}}</div>
       </div>
-      {% if form.status.statusName == "Denied" %}
+      {% if "Denied" in form.status.statusName %}
       <div class="leftMargin">
         <div class="row">
           <p class="col-sm-4 pTag">Reject Reason:</p>
@@ -148,8 +155,8 @@
       {% endif %}
       <div class="h4 nopadding">
         <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-6 col-sm-offset-1">{{form.historyType}}</div>
-        <div class="col-sm-2" align="left">Submitted</div>
+        <div class="col-sm-5 ">{{form.historyType}}</div>
+        <div class="col-sm-4" align="left">Submitted</div>
       </div>
     {% endif %}
       <div class="row">
@@ -160,9 +167,10 @@
       {% if form.reviewedDate == None %}
         <div class="h4 overloadBottom">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1"><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 "><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
+
       {% elif form.reviewedDate != None %}
         {% set status = form.status_id %}
         {% if currentUser.isStudent %}
@@ -171,10 +179,10 @@
 
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1"><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
-          <div class="col-sm-2" align="left">{{status}}</div>
+          <div class="col-sm-5 "><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
+          <div class="col-sm-4" align="left">{{status}}</div>
         </div>
-        {% if form.status.statusName == "Denied" %}
+        {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
           <div class="row">
             <p class="col-sm-4 nopadding pTag">Reject Reason:</p>
@@ -186,8 +194,8 @@
         {% endif %}
         <div class="h4 overloadBottom">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-          <div class="col-sm-6 col-sm-offset-1"><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
-          <div class="col-sm-2" align="left">Submitted</div>
+          <div class="col-sm-5 "><span class="glyphicon glyphicon-warning-sign" style="color:orange;font-size:85%"></span> {{form.historyType}}</div>
+          <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% endif %}
 

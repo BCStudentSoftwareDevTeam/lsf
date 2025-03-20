@@ -32,7 +32,7 @@ def laborReleaseForm(laborStatusKey):
             historyForms = FormHistory.select().where((FormHistory.formID == laborStatusKey) & (FormHistory.releaseForm != None))
             if historyForms:
                 for form in historyForms:
-                    if form.status.statusName != "Denied":
+                    if "Denied" not in form.status.statusName: # we have two denied statuses
                         # If there is currently a pending labor release form for the labor status form
                         # then the user should not be able submit another one
                         message = "An error has occurred. {0} {1} already has a 'Pending' Labor Release Form.".format(historyForms[0].formID.studentSupervisee.FIRST_NAME, historyForms[0].formID.studentSupervisee.LAST_NAME)

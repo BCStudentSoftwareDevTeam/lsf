@@ -1,17 +1,15 @@
-from peewee import *
 import os
 
-# from app import login
-from app import load_config
+from peewee import *
 
+from app import app
 
 def getMySQLDB():
-    cfg = load_config('app/config/secret_config.yaml')
     if os.environ.get("USING_CONTAINER", False):
-        cfg['lsfdb']['host'] = 'db'
+        app.config['lsfdb']['host'] = 'db'
     else:
-        cfg["lsfdb"]["host"] = "localhost"
-    theDB = MySQLDatabase(cfg['lsfdb']['db_name'], host = cfg['lsfdb']['host'], user = cfg['lsfdb']['username'], passwd = cfg['lsfdb']['password'])
+        app.config["lsfdb"]["host"] = "localhost"
+    theDB = MySQLDatabase(app.config['lsfdb']['db_name'], host = app.config['lsfdb']['host'], user = app.config['lsfdb']['username'], passwd = app.config['lsfdb']['password'])
     return theDB
 
 mainDB = getMySQLDB() # MySQL (current)

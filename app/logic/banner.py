@@ -1,24 +1,21 @@
 # Relying on https://www.oracle.com/technical-resources/articles/database/python-with-database-11g.html
 
 import cx_Oracle
-from app.config.loadConfig import*
 from app import app
 
 class Banner():
 
     def __init__(self):
         self.conn = None
-        secret_conf = get_secret_cfg()
-        banner_cfg = secret_conf["banner"]
 
         self.database_exists = False
         if app.config['use_banner']:
             self.database_exists = True
             try:
                 self.conn = cx_Oracle.connect(
-                        banner_cfg["user"],
-                        banner_cfg["password"],
-                        "{url}:{port}/{sid}".format(**banner_cfg))
+                        app.config["banner"]["user"],
+                        app.config["banner"]["password"],
+                        "{url}:{port}/{sid}".format(**app.config["banner"]))
                 print("BANNER connection initialized. Oracle version {}".format(self.conn.version))
 
             except Exception as err:

@@ -11,11 +11,14 @@ $(document).ready(function() {
     targetsList = [8]
   } else if ($('#overloadTab').hasClass('active')) {
     targetsList = [9]
-  }else if ($('#adjustedTab').hasClass('active')) {
+  } else if ($('#adjustedTab').hasClass('active')) {
     targetsList = [0, 10]
+  } else if ($('#preStudentApprovalTab').hasClass('active')) {
+      targetsList = [9];
   } else {
     targetsList = [0, 9]
   }
+
   // If overload tab has been clicked, then we
   table = $('#pendingForms, #statusForms, #adjustedForms, #releaseForms').DataTable({
     'columnDefs': [{
@@ -398,7 +401,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
         createAJAX = false
       } else {
         $('#required-error').hide();
-        status = 'Denied'
+        status = 'Denied by Admin'
         var denyReason = $('#denyOverloadReason').val()
         overloadModalInfo['denialReason'] = denyReason;
       }
@@ -473,7 +476,7 @@ function submitRelease(formHistoryID) {
         createAJAX = false;
       } else {
         $('.required-error').hide();
-        status = 'Denied';
+        status = 'Denied by Admin';
         var denyReason = $('#denyReleaseReason').val();
         releaseModalInfo['denialReason'] = denyReason;
       }
