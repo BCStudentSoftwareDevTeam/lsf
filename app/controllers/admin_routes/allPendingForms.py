@@ -132,17 +132,14 @@ def allPendingForms(formType):
                                       .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied by Admin')))
 
         if currentUser.isLaborAdmin:
-            print("#"*30)
-            print(formType)
             if formType == "pendingOverload":
                 baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
             elif formType == "preStudentApproval":
                 baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm is None)
-            elif formType == "pendingLabor":
+            elif formType in ("pendingLabor","pendingAdjustment","pendingRelease"):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-        print(formList)
 
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
