@@ -167,32 +167,32 @@ def checkAdjustment(allForms):
         Retrieve supervisor and position information for adjusted forms using the new values
         stored in adjusted table and update allForms
     """
-    if allForms.adjustedForm:
+    if allForms["fieldAdjusted"]:
 
-        if allForms.adjustedForm.fieldAdjusted == "supervisor":
+        if allForms["fieldAdjusted"]== "supervisor":
             # use the supervisor id in the field adjusted to find supervisor in User table.
-            newSupervisorID = allForms.adjustedForm.newValue
+            newSupervisorID = allForms["newValue"]
             newSupervisor = Supervisor.get(Supervisor.ID == newSupervisorID)
             if not newSupervisor:
                 newSupervisor = createSupervisorFromTracy(bnumber=newSupervisorID)
 
             # we are temporarily storing the supervisor name in new value,
             # because we want to show the supervisor name in the hmtl template.
-            allForms.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
-            allForms.adjustedForm.oldValue = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
+            allForms["newValue"] = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
+            allForms["newValue"] = {"email":newSupervisor.EMAIL, "ID":newSupervisor.ID}
 
-        if allForms.adjustedForm.fieldAdjusted == "position":
-            newPositionCode = allForms.adjustedForm.newValue
+        if allForms["fieldAdjusted"] == "position":
+            newPositionCode = allForms["newValue"]
             newPosition = Tracy().getPositionFromCode(newPositionCode)
             # temporarily storing the position code and wls in new value, and position name in old value
             # because we want to show these information in the hmtl template.
-            allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
-            allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
+            allForms["newValue"] = newPosition.POSN_CODE +" (" + newPosition.WLS+")"
+            allForms["newValue"] = newPosition.POSN_TITLE
 
-        if allForms.adjustedForm.fieldAdjusted == "department":
-            newDepartment = Department.get(Department.ORG==allForms.adjustedForm.newValue)
-            allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
-            allForms.adjustedForm.oldValue = newDepartment.ORG + "-" + newDepartment.ACCOUNT
+        if allForms["fieldAdjusted"] == "department":
+            newDepartment = Department.get(Department.ORG==allForms["newValue"])
+            allForms["newValue"] = newDepartment.DEPT_NAME
+            allForms["newValue"] = newDepartment.ORG + "-" + newDepartment.ACCOUNT
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():

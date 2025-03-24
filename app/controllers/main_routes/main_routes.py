@@ -5,6 +5,7 @@ from functools import reduce
 from peewee import fn, Case
 from datetime import datetime
 from app.models.term import Term
+from app.models.adjustedForm import AdjustedForm
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -147,7 +148,9 @@ def getDatatableData(request):
     studentFirstNameCase = fn.COALESCE(fn.NULLIF(Student.preferred_name, ''), fn.NULLIF(Student.legal_name, ''), Student.LAST_NAME)
     global formSearchResults
     formSearchResults = (FormHistory.select(
-        FormHistory.formID.alias("formID"),
+                            FormHistory.formID.alias("formID"),
+                            FormHistory.historyType.alias("formType"),
+                            FormHistory.createdBy.alias("createdBy"),
                             FormHistory.status.alias("status"),
                             FormHistory.createdDate.alias("createdDate"),
                             LaborStatusForm.weeklyHours.alias("weeklyHours"),
@@ -157,7 +160,11 @@ def getDatatableData(request):
                             LaborStatusForm.laborStatusFormID.alias("laborStatusFormID"),
                             LaborStatusForm.POSN_TITLE.alias("positionTitle"),
                             LaborStatusForm.jobType.alias("jobType"),
-                            LaborStatusForm.WLS("WLS"),
+                            LaborStatusForm.WLS.alias("WLS"),
+                            AdjustedForm.fieldAdjusted.alias('fieldAdjusted'),
+                            AdjustedForm.oldValue.alias('oldValue'),
+                            AdjustedForm.newValue.alias('newValue'),
+                            AdjustedForm.effectiveDate.alias('effectiveDate'),
                             Department.DEPT_NAME.alias("departmentName"),
                             Department.ORG.alias("departmentOrg"),
                             Department.ACCOUNT.alias("departmentAccount"),
@@ -170,8 +177,8 @@ def getDatatableData(request):
                             Supervisor.LAST_NAME.alias("supervisorLastName"),
                             Supervisor.EMAIL.alias("supervisorEmail"),
                             Term.termName.alias("termName")
-
-        )
+        )                           
+                                    .join(AdjustedForm, on=(FormHistory.adjustedForm == AdjustedForm.adjustedFormID), join_type='LEFT')
                                     .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
                                     .join(Department, on=(LaborStatusForm.department == Department.departmentID))
                                     .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
@@ -184,7 +191,6 @@ def getDatatableData(request):
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
 
-    print(formSearchResults)
     recordsTotal = len(formSearchResults)
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
@@ -285,26 +291,25 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         hoursField = form["weeklyHours"] if form["weeklyHours"] else form["contractHours"]
         # Adjustment Form Specific Data
         checkAdjustment(form)
-        if (form.adjustedForm):
-            if form.adjustedForm.fieldAdjusted == "supervisor":
+        if (form["fieldAdjusted"]):
+            if form["fieldAdjusted"] == "supervisor":
+                print(type(form["oldValue"]), "___________")
+                print(form["oldValue"].__dict__, "___________")
                 newSupervisor = supervisorHTML.format(
-                                form.adjustedForm.oldValue['ID'],
-                                form.adjustedForm.newValue,
-                                form.adjustedForm.oldValue['email'])
+                                form["oldValue"]['ID'],
+                                form["newValue"],
+                                form["oldValue"]['email'])
                 supervisorField = f'<s aria-label="true">{supervisorField}</s><br>{newSupervisor}'
 
-            if form.adjustedForm.fieldAdjusted == "position":
+            if form["fieldAdjusted"] == "position":
                 newPosition = positionHTML.format(
-                              form.adjustedForm.oldValue,
-                              form.adjustedForm.newValue)
+                              form["oldValue"],
+                              form["newValue"])
                 positionField = f'<s aria-label="true">{positionField}</s><br>{newPosition}'
 
-            if form.adjustedForm.fieldAdjusted == "weeklyHours"  or  form.adjustedForm.fieldAdjusted == "contractHours":
-                newHours = form.adjustedForm.newValue
-                hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
-
-        
-        
+            if form["fieldAdjusted"] == "weeklyHours" or form["fieldAdjusted"] == "contractHours":
+                newHours = form["newValue"]
+                hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'        
 
         record.append(f'<a><span onclick=loadFormHistoryModal({form["formID"]})>{form["positionTitle"]}</span></a><br>{positionField}')
         record.append(hoursField)
@@ -312,25 +317,26 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         record.append("<br>".join([form["startDate"].strftime('%m/%d/%y'),
                                    form["endDate"].strftime('%m/%d/%y')]))
         # Created By
+        createdBy = User.get_by_id(form["createdBy"])
         record.append(supervisorHTML.format(
-                        form.createdBy.supervisor.ID if form.createdBy.supervisor else form.createdBy.student.ID,
-                        form.createdBy.username,
-                        form.createdBy.email,
-                        form.createdDate.strftime('%m/%d/%y')))
+                        # createdBy.supervisor.ID if createdBy.supervisor else createdBy.student.ID,
+                        # createdBy.username,
+                        # createdBy.email,
+                        # form["createdDate"].strftime('%m/%d/%y')))
+        "", "", "", ""))
         # Form Type
         formTypeNameMapping = {
             "Labor Status Form": "Original",
             "Labor Adjustment Form": "Adjusted",
             "Labor Overload Form": "Overload",
             "Labor Release Form": "Release"}
-        originalFormTypeName = form["type"]
+        originalFormTypeName = form["formType"]
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
         # formType(Status)
         formTypeStatusField = record.append(formTypeStatus.format(f'Original ({form["status"]})'))
 
         # Evaluation status
         # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
-
         formattedData.append(record)
     return formattedData
 
