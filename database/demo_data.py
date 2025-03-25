@@ -102,6 +102,21 @@ tracyStudents = [
                 "LAST_SUP_PIDM":"7"
                 },
                 {
+                "ID":"B00791326",
+                "PIDM":"99",
+                "FIRST_NAME":"Oluwagbayi",
+                "LAST_NAME":"Makinde",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Brian Ramsay",
+                "STU_EMAIL":"makindeo@berea.edu",
+                "STU_CPO":"883",
+                "LAST_POSN":"Student Programmer",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
                 "ID":"B00751360",
                 "PIDM":"90",
                 "FIRST_NAME":"Tyler",
@@ -375,6 +390,14 @@ users = [
         "student": "B00734292",
         "supervisor": None,
         "username": "cruzg",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
+        "student": "B00791326",
+        "supervisor": None,
+        "username": "makindeo",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
