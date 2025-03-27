@@ -142,6 +142,8 @@ function checkSupervisor() {
 }
 
 function checkForChange(){
+  // create a dict, throw the values in once you open the modal
+  // once you hit submit, create another dict and compare
   var oldSupervisor = $("#prefillsupervisor").val();
   var newSupervisor = $("#supervisor").val();
   var oldPostition = $("#prefillposition").val();
