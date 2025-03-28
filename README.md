@@ -25,7 +25,7 @@ Python 3.7+
 4. If you have non-default root and application database credentials, match your MySQL configuration to the application config. You can either:
     - Update MySQL to use the database, username, and password in ```app/config/default.yml```. *OR*
     - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/local-override.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service.
-5. In the database directory, run ```./reset_database.sh```
+5. In the database directory, run ```./reset_database.sh test```
 6. Run the app with ```flask run``` in the root directory
 
 ## Using the Production database and real Tracy data

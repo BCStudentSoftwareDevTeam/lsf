@@ -1,5 +1,12 @@
 #!/bin/bash
 
+## Check if argument was passed in
+if [ "$1" != "test" ] && [ "$1" != "from-backup" ]; then
+	echo "You must specify which data set you want to restore"
+    echo "Usage: ./reset_database.sh [test|from-backup]"
+	exit 1;
+fi
+
 cd database;
 
 PRODUCTION=0
