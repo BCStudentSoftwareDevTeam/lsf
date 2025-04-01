@@ -52,6 +52,21 @@ bothStudents = [
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
                 },
+                {
+                "ID":"B00791326",
+                "PIDM":"9",
+                "FIRST_NAME":"Oluwagbayi",
+                "LAST_NAME":"Makinde",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"makindeo@berea.edu",
+                "STU_CPO":"883",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
                 ]
 localStudents = [
                 {
@@ -375,6 +390,14 @@ users = [
         "student": "B00734292",
         "supervisor": None,
         "username": "cruzg",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
+        "student": "B00791326",
+        "supervisor": None,
+        "username": "makindeo",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None

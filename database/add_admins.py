@@ -1,7 +1,7 @@
 # Add admins for testing
 from app.logic.userInsertFunctions import *
 
-students = ['manalaih','mupotsal','escalerapadronl','cruzg','romanow','crafta','rieral','juem','jamalie']
+students = ['manalaih','mupotsal','escalerapadronl','cruzg','romanow','crafta','rieral','juem','jamalie', 'makindeo']
 staff = ['bryantal','ramsayb2','heggens','knowlesg', 'welshs', 'napoleonr2', 'buenrostroa', 'ashb', 'gosneyj', 'asantes']
 
 print("Adding staff admins")
