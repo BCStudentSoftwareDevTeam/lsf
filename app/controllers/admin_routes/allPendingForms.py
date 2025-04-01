@@ -92,7 +92,7 @@ def allPendingForms(formType):
             pageTitle = "Approved Overload Forms"
 
         elif formType == "preStudentApproval":
-            historyType = "Labor Status Form"
+            historyType = ["Labor Status Form", "Secondary Labor Status Form"]
             approvalTarget = ""
             pageTitle = "Pre-Student Approval"
             
@@ -135,7 +135,7 @@ def allPendingForms(formType):
             if formType == "pendingOverload":
                 baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
             elif formType == "preStudentApproval":
-                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm is None)
+                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType.in_(historyType), FormHistory.overloadForm is None)
             elif formType in ("pendingLabor","pendingAdjustment","pendingRelease"):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
