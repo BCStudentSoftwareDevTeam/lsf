@@ -206,37 +206,36 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     if view == "simple":
         formattedData = {}
         for form in filteredSearchResults:
-            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            # here's where the magic needs to happen.
-            # for each form, we can see the student's B-No.
-            # create another dict for B-No. 
-            # if we've seen a B-No before, we ignore. If not, we create a unique entry
-            # that should be all?
-            formStartDate = form.formID.startDate.strftime('%%d/%y')
-            print(form.createdDate, "here")
-            BNumber = form.formID.studentSupervisee.ID
-            if BNumber not in formattedData:
-                formattedData[BNumber] = ([f"""
-                <a href="/laborHistory/{BNumber}">
-                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({BNumber})</span>
-                </a>
-                <span class="pushRight">{form.status}</span>
-                <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
-                """], form.formID.startDate)
-            elif form.formID.startDate > formattedData[BNumber][1]:
-                formattedData[BNumber] = ([f"""
-                <a href="/laborHistory/{BNumber}">
-                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({BNumber})</span>
-                </a>
-                <span class="pushRight">{form.status}</span>
-                <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
-                """], form.formID.startDate)
-            print(form.formID.termCode, "WAAAAA")
-            formatedDataList = [value for value,_ in formattedData.values()]
+            startDate = form.formID.startDate
+            bNumber = form.formID.studentSupervisee.ID
 
-        return formatedDataList
+            if bNumber in formattedData and startDate <= formattedData[bNumber][1]:
+                continue
+            
+            # html fields
+            firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
+            term = form.formID.termCode.termName
+            positionTitle = form.formID.POSN_TITLE
+            jobType = form.formID.jobType
+            departmentName = form.formID.department.DEPT_NAME
+            statusFormId = form.formID.laborStatusFormID
+
+            html = f"""
+            <a href="/laborHistory/{bNumber}">
+                <span class="h4">{firstName} {lastName} ({bNumber})</span>
+            </a>
+            <span class="pushRight">{form.status}</span>
+            <br>
+            <span class="pushLeft h6">
+                {term} - <a><span onclick=loadFormHistoryModal({statusFormId})>{positionTitle} ({jobType})</span></a> - {departmentName}
+            </span>
+            """
+
+            formattedData[bNumber] = (html, startDate)
+
+        formattedDataList = [value for value,_ in formattedData.values()]
+
+        return formattedDataList
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     studentHTML = '<div><a href="/laborHistory/{}">{}</a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
