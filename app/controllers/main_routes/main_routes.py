@@ -207,6 +207,12 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         formattedData = []
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
+            print(form.createdDate, "here")
+            # here's where the magic needs to happen.
+            # for each form, we can see the student's B-No.
+            # create another dict for B-No.
+            # if we've seen a B-No before, we ignore. If not, we create a unique entry
+            # that should be all?
             formattedData.append([f"""
                 <a href="/laborHistory/{form.formID.studentSupervisee.ID}">
                     <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
