@@ -205,22 +205,29 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     if view == "simple":
         formattedData = []
+        seenBNumbers = set()
         for form in filteredSearchResults:
             # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            print(form.createdDate, "here")
             # here's where the magic needs to happen.
             # for each form, we can see the student's B-No.
-            # create another dict for B-No.
+            # create another dict for B-No. 
+            #            -> Honestly I thought that a set for the b-numbers, 
+            #               or if its a dictionary have Bnumber: most recent approved form (Finn suggestion)
             # if we've seen a B-No before, we ignore. If not, we create a unique entry
             # that should be all?
-            formattedData.append([f"""
+            print(form.createdDate, "here")
+            
+            if form.formID.studentSupervisee.ID not in seenBNumbers:
+                formattedData.append([f"""
                 <a href="/laborHistory/{form.formID.studentSupervisee.ID}">
                     <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>
                 <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
-            """])
+                """]) 
+                seenBNumbers.add(form.formID.studentSupervisee.ID)
+        
         return formattedData
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
