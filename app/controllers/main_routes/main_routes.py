@@ -233,7 +233,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
 
             formattedData[bNumber] = (html, startDate)
 
-        formattedDataList = [value for value,_ in formattedData.values()]
+        formattedDataList = [[value] for value,_ in formattedData.values()]
 
         return formattedDataList
 
