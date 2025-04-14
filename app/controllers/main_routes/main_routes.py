@@ -3,7 +3,7 @@ import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
 from functools import reduce
 from peewee import fn, Case
-from datetime import datetime
+from datetime import datetime, date
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -205,17 +205,36 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     if view == "simple":
         formattedData = {}
-        todaysDate = datetime.today().strftime('%Y-%m-%d')
+        todaysDate = date.today()
+        print("the-type", type(todaysDate))
         for form in filteredSearchResults:
             startDate = form.formID.startDate
             endDate = form.formID.endDate
-            if form.formID.studentSupervisee.ID in formattedData:
-                print(startDate, formattedData[bNumber][1], startDate >= formattedData[bNumber][1]
-                    , endDate, formattedData[bNumber][2], endDate <= formattedData[bNumber][2], "Some ID")
             bNumber = form.formID.studentSupervisee.ID
+            shouldAdd, inCurrentDateWindow = False, False
 
-            if bNumber not in formattedData or ((startDate <= todaysDate and todaysDate >= endDate) and (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])):
+            if bNumber not in formattedData:
+                shouldAdd = True
 
+            inCurrentDateWindow = (startDate <= todaysDate and todaysDate <= endDate)
+
+            if shouldAdd:
+                # add the event
+                pass
+            else:
+                pass
+            
+            # break down the logic and make it more straightforward
+
+            isClosestToCurrentDate = (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])
+
+            # if date in current window, then we check if the date is a closer fit to our current date
+            if (inCurrentDateWindow and isClosestToCurrentDate) or shouldAdd:
+                # do the logic for adding
+                pass
+
+            if bNumber not in formattedData or ((startDate <= todaysDate and todaysDate <= endDate) and (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])):
+                
                 # html fields
                 firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
                 term = form.formID.termCode.termName
@@ -236,6 +255,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 """
 
                 formattedData[bNumber] = (html, startDate, endDate)
+                print("saved these", startDate, endDate, formattedData[bNumber][1], formattedData[bNumber][2])
 
         formattedDataList = [[value] for value, _, _ in formattedData.values()]
 
