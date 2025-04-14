@@ -205,35 +205,39 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     if view == "simple":
         formattedData = {}
+        todaysDate = datetime.today().strftime('%Y-%m-%d')
         for form in filteredSearchResults:
             startDate = form.formID.startDate
+            endDate = form.formID.endDate
+            if form.formID.studentSupervisee.ID in formattedData:
+                print(startDate, formattedData[bNumber][1], startDate >= formattedData[bNumber][1]
+                    , endDate, formattedData[bNumber][2], endDate <= formattedData[bNumber][2], "Some ID")
             bNumber = form.formID.studentSupervisee.ID
 
-            if bNumber in formattedData and startDate <= formattedData[bNumber][1]:
-                continue
-            
-            # html fields
-            firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
-            term = form.formID.termCode.termName
-            positionTitle = form.formID.POSN_TITLE
-            jobType = form.formID.jobType
-            departmentName = form.formID.department.DEPT_NAME
-            statusFormId = form.formID.laborStatusFormID
+            if bNumber not in formattedData or ((startDate <= todaysDate and todaysDate >= endDate) and (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])):
 
-            html = f"""
-            <a href="/laborHistory/{bNumber}">
-                <span class="h4">{firstName} {lastName} ({bNumber})</span>
-            </a>
-            <span class="pushRight">{form.status}</span>
-            <br>
-            <span class="pushLeft h6">
-                {term} - <a><span onclick=loadFormHistoryModal({statusFormId})>{positionTitle} ({jobType})</span></a> - {departmentName}
-            </span>
-            """
+                # html fields
+                firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
+                term = form.formID.termCode.termName
+                positionTitle = form.formID.POSN_TITLE
+                jobType = form.formID.jobType
+                departmentName = form.formID.department.DEPT_NAME
+                statusFormId = form.formID.laborStatusFormID
 
-            formattedData[bNumber] = (html, startDate)
+                html = f"""
+                <a href="/laborHistory/{bNumber}">
+                    <span class="h4">{firstName} {lastName} ({bNumber})</span>
+                </a>
+                <span class="pushRight">{form.status}</span>
+                <br>
+                <span class="pushLeft h6">
+                    {term} - <a><span onclick=loadFormHistoryModal({statusFormId})>{positionTitle} ({jobType})</span></a> - {departmentName}
+                </span>
+                """
 
-        formattedDataList = [[value] for value,_ in formattedData.values()]
+                formattedData[bNumber] = (html, startDate, endDate)
+
+        formattedDataList = [[value] for value, _, _ in formattedData.values()]
 
         return formattedDataList
 
