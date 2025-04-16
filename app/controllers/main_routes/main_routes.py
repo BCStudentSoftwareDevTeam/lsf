@@ -336,5 +336,5 @@ def downloadSupervisorPortalResults():
         includeEvals = False
 
     formSearchResults = formSearchResults.order_by(-FormHistory.createdDate)
-    excel = CSVMaker("supervisorPortal", formSearchResults, includeEvals = includeEvals)
+    excel = CSVMaker("studentList", formSearchResults, includeEvals = includeEvals)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())

@@ -1,13 +1,9 @@
-from flask import flash
-from app.models.laborStatusForm import LaborStatusForm
+from enum import Enum
 from app.models.formHistory import *
 import csv
 from app.controllers.main_routes.main_routes import *
-from app.models.supervisor import Supervisor
-from app.logic.tracy import Tracy
 from app.models.formHistory import FormHistory
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
-
 
 class CSVMaker:
     '''
@@ -16,12 +12,18 @@ class CSVMaker:
     def __init__(self, downloadType, requestedLSFs, includeEvals = False):
         self.relativePath = 'static/files/LaborStudents.csv'
         self.completePath = 'app/' + self.relativePath
-        self.downloadType = downloadType          #studentHistory, allPending, studentList
+        self.downloadType = self._verifyDownloadType(downloadType)
         self.formHistories = self.retrieveFormHistories(requestedLSFs)
         self.includeEvals = includeEvals
 
         self.makeCSV()
 
+    @staticmethod
+    def _verifyDownloadType(downloadType):
+        if downloadType not in {'studentHistory', 'studentList', 'allPending'}:
+            raise ValueError(f'Invalid download type: {downloadType}')
+        return downloadType
+        
 
     def retrieveFormHistories(self, requestedLSFs):
         '''
@@ -37,6 +39,10 @@ class CSVMaker:
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
             elif self.downloadType == "studentList":
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
+            elif self.downloadType == "allPending":
+                studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
+            elif self.downloadType == "includeOverride":
+                studentFormHistories = FormHistory.select().join(OverloadForm).where(FormHistory.formID == statusForm, FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
 
             for historyForm in studentFormHistories:
                 allFormHistories.append(historyForm)
