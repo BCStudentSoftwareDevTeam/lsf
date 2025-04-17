@@ -13,7 +13,7 @@ class CSVMaker:
         self.relativePath = 'static/files/LaborStudents.csv'
         self.completePath = 'app/' + self.relativePath
         self.downloadType = self._verifyDownloadType(downloadType)
-        self.formHistories = self.retrieveFormHistories(requestedLSFs)
+        self.formHistories = requestedLSFs      # probably should change this name since its a FormHistory object not an LSF
         self.includeEvals = includeEvals
 
         self.makeCSV()
@@ -39,6 +39,7 @@ class CSVMaker:
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
             elif self.downloadType == "studentList":
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
+                print(studentFormHistories, "???", statusForm)
             elif self.downloadType == "allPending":
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
             elif self.downloadType == "includeOverride":
@@ -130,6 +131,7 @@ class CSVMaker:
                     row = self.addOverloadData(form, row)
                     self.filewriter.writerow(row)
                 else:
+                    print(form, "the-download")
                     self.filewriter.writerow(row)
 
 

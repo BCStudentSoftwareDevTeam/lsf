@@ -208,17 +208,21 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
+    allPendingFormsSelectObject = request.form.get('formList')
+    print(allPendingFormsSelectObject, type(allPendingFormsSelectObject), "the-type")
+    allPendingForms = allPendingFormsSelectObject.order_by(-FormHistory.createdDate)
+    print(allPendingForms, "some bs forms?")
+    print("all pending list", allPendingForms)
     currentUser = require_login()
 
-    allPendingForms = FormHistory.select().order_by(-FormHistory.createdDate)
     downloadType = "allPending"
-    if currentUser.isLaborAdmin:
-        allPendingForms = allPendingForms.where(FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
-    elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        downloadType = "includeOverloads"
-        allPendingForms = allPendingForms.join(OverloadForm).where(FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
-    else:
-        abort(403)
+    # if currentUser.isLaborAdmin:
+    #     allPendingForms = allPendingForms.where(FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
+    # elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+    #     downloadType = "includeOverloads"
+    #     allPendingForms = allPendingForms.join(OverloadForm).where(FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
+    # else:
+    #     abort(403)
 
     excel = CSVMaker(downloadType, allPendingForms)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
