@@ -1,4 +1,4 @@
-from flask import flash, send_file, json, jsonify, redirect, url_for, abort
+from flask import abort, flash, jsonify, redirect, session, send_file
 from peewee import JOIN
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -16,7 +16,6 @@ from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from datetime import datetime, date
-from flask import Flask, redirect, url_for, flash
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
@@ -140,7 +139,7 @@ def allPendingForms(formType):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-
+        session['formIds'] = [form.formHistoryID for form in formList]      # storing the form id's in a session instead of global variable for safety and consistency.
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -208,11 +207,10 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    allPendingFormsSelectObject = request.form.get('formList')
+    formIds = session.get('formIds') # add some simple exception logic here.
+    allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds))
     print(allPendingFormsSelectObject, type(allPendingFormsSelectObject), "the-type")
-    allPendingForms = allPendingFormsSelectObject.order_by(-FormHistory.createdDate)
-    print(allPendingForms, "some bs forms?")
-    print("all pending list", allPendingForms)
+    # allPendingForms = allPendingFormsSelectObject.order_by(-FormHistory.createdDate)
     currentUser = require_login()
 
     downloadType = "allPending"
@@ -224,7 +222,7 @@ def downloadAllPendingForms():
     # else:
     #     abort(403)
 
-    excel = CSVMaker(downloadType, allPendingForms)
+    excel = CSVMaker(downloadType, allPendingFormsSelectObject)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
