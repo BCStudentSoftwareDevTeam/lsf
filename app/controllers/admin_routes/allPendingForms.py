@@ -1,4 +1,5 @@
 from flask import abort, flash, jsonify, redirect, session, send_file
+import uuid
 from peewee import JOIN
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -26,8 +27,12 @@ from app.controllers.main_routes.download import CSVMaker
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
     try:
-        global globalFormType
-        globalFormType = formType
+        # if the user has multiple tabs open, session data will continually overwrite
+        # itself. unique identifiers are required.
+
+        sessionId = str(uuid.uuid4())
+        session[f'formType_{sessionId}'] = formType
+
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
@@ -139,7 +144,7 @@ def allPendingForms(formType):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-        session['formIds'] = [form.formHistoryID for form in formList]      # storing the form id's in a session instead of global variable for safety and consistency.
+        session[f'formIds_{sessionId}'] = [form.formHistoryID for form in formList]      # storing the form id's in the current session for safety and consistency.
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -158,6 +163,7 @@ def allPendingForms(formType):
         return render_template( 'admin/allPendingForms.html',
                                 title=pageTitle,
                                 username=currentUser.username,
+                                sessionId=sessionId,
                                 formList = formList,
                                 formType= formType,
                                 modalTarget = approvalTarget,
@@ -207,9 +213,17 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    formIds = session.get('formIds') # add some simple exception logic here.
-    allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds))
-    print(allPendingFormsSelectObject, type(allPendingFormsSelectObject), "the-type")
+    sessionId = request.form.get('sessionId')
+    if not sessionId:
+        print("session id not found.")
+        return render_template('errors/500.html'), 500
+    
+    formIds = session.get(f'formIds_{sessionId}')
+    if not sessionId:
+        print(f"[ERROR] Missing session ID for request to {request.path}. Possible tampered form or expired session.")
+        return render_template('errors/500.html'), 500
+    
+    allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds)).order_by(-FormHistory.createdDate)
     # allPendingForms = allPendingFormsSelectObject.order_by(-FormHistory.createdDate)
     currentUser = require_login()
 
@@ -221,6 +235,9 @@ def downloadAllPendingForms():
     #     allPendingForms = allPendingForms.join(OverloadForm).where(FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
     # else:
     #     abort(403)
+
+    # from what it looks like, the downloadType + ModelSelect object just recreate what's on the page
+    
 
     excel = CSVMaker(downloadType, allPendingFormsSelectObject)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
@@ -519,9 +536,10 @@ def getOverloadModalData(formHistoryID):
                             'FinancialAidApprover': FinancialAidApprover,
                             })
         noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID).count()
+        sessionId = request.args.get('sessionId')
         returnToTab = None
         try:
-            returnToTab = globalFormType
+            returnToTab = session.get(f'formType_{sessionId}')
         except Exception as e:
             pass
         return render_template('snips/pendingOverloadModal.html',

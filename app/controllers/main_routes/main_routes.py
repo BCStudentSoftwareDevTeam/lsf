@@ -1,8 +1,7 @@
-import sys
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g, session
 from functools import reduce
-from peewee import fn, Case
+from peewee import fn
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -11,8 +10,6 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
-from app.models.historyType import HistoryType
-from app.models.status import Status
 from app.models.user import User
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
@@ -22,18 +19,9 @@ from app.logic.search import getDepartmentsForSupervisor
 from app.login_manager import require_login, logout
 
 
-@main_bp.before_app_request
-def before_request():
-    pass # TODO Do we need to do anything here? User stuff?
-
 @main_bp.route('/logout', methods=['GET'])
 def logout():
     return redirect(logout())
-
-# Global variable that will store the query result.
-# It is made global to be used later in creating CSV file.
-formSearchResults = None
-sleJoin = False
 
 @main_bp.route('/', methods=['GET', 'POST'])
 def supervisorPortal():
@@ -99,9 +87,6 @@ def getDatatableData(request):
     '''
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
-    global sleJoin
-    if sleJoin:
-        sleJoin = False
     
     currentUser = require_login()
     draw = int(request.form.get('draw', 0))
@@ -142,11 +127,10 @@ def getDatatableData(request):
             if type(value) is list:
                 clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
-                sleJoin = value[0]       
+                session['sleJoin'] = value[0]       # use the session to store the sle??
             else:
                 clauses.append(field == value)
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
-    global formSearchResults
     formSearchResults = (FormHistory.select()
                                     .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
                                     .join(Department, on=(LaborStatusForm.department == Department.departmentID))
@@ -159,8 +143,7 @@ def getDatatableData(request):
     if not currentUser.isLaborAdmin:
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-
-    print(formSearchResults)
+    session['formSearchResultIds'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
     recordsTotal = len(formSearchResults)
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
@@ -326,8 +309,7 @@ def downloadSupervisorPortalResults():
     generate a CSV file of datatable data.
     '''
 
-    global formSearchResults
-    global sleJoin
+    sleJoin = session.get('sleJoin')
     if sleJoin == "evalComplete":
         includeEvals = "Final"
     elif sleJoin == "evalMidyearComplete":
@@ -335,6 +317,7 @@ def downloadSupervisorPortalResults():
     else:
         includeEvals = False
 
-    formSearchResults = formSearchResults.order_by(-FormHistory.createdDate)
-    excel = CSVMaker("studentList", formSearchResults, includeEvals = includeEvals)
+    formSearchResultIds = session['formSearchResultIds']
+    formSearchResultsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
+    excel = CSVMaker("studentList", formSearchResultsSelectObject, includeEvals = includeEvals)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())

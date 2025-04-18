@@ -52,7 +52,7 @@
         {% endif %}
         <li class="pull-right">
             <form method="POST" action="/admin/pendingForms/download">
-              <input type="hidden" name="formList" value="{{ formList }}">
+              <input type="hidden" name="sessionId" value="{{ sessionId }}">
               <button class="btn btn-success" id="download">Download</button>
             </form>
         </li>

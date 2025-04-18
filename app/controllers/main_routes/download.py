@@ -39,7 +39,6 @@ class CSVMaker:
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
             elif self.downloadType == "studentList":
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
-                print(studentFormHistories, "???", statusForm)
             elif self.downloadType == "allPending":
                 studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
             elif self.downloadType == "includeOverride":
@@ -131,7 +130,6 @@ class CSVMaker:
                     row = self.addOverloadData(form, row)
                     self.filewriter.writerow(row)
                 else:
-                    print(form, "the-download")
                     self.filewriter.writerow(row)
 
 
