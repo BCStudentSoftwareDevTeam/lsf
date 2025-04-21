@@ -2,6 +2,7 @@ import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g, session
 from functools import reduce
 from peewee import fn
+import uuid
 from datetime import datetime
 from app.models.term import Term
 from app.models.department import Department
@@ -88,6 +89,7 @@ def getDatatableData(request):
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
     
+    sessionId = str(uuid.uuid4())
     currentUser = require_login()
     draw = int(request.form.get('draw', 0))
     rowNumber = int(request.form.get('start', 0))
@@ -127,7 +129,7 @@ def getDatatableData(request):
             if type(value) is list:
                 clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
-                session['sleJoin'] = value[0]       # use the session to store the sle??
+                session[f'sleJoin_{sessionId}'] = value[0]       # use the session to store the sle??
             else:
                 clauses.append(field == value)
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
@@ -143,7 +145,7 @@ def getDatatableData(request):
     if not currentUser.isLaborAdmin:
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-    session['formSearchResultIds'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
+    session[f'formSearchResultIds_{sessionId}'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
     recordsTotal = len(formSearchResults)
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
@@ -176,7 +178,7 @@ def getDatatableData(request):
     else:
         filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict.get('view'))
-    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData}
+    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData, "sessionId": sessionId}
 
     return jsonify(formsDict)
 
@@ -308,8 +310,11 @@ def downloadSupervisorPortalResults():
     This function uses the general search results, stored in a global variable, to
     generate a CSV file of datatable data.
     '''
-
-    sleJoin = session.get('sleJoin')
+    sessionId = request.form.get('sessionId')
+    print("blaaaa", sessionId)
+    if not sessionId:
+        pass    # add the fail flash here
+    sleJoin = session.get(f'sleJoin_{sessionId}')
     if sleJoin == "evalComplete":
         includeEvals = "Final"
     elif sleJoin == "evalMidyearComplete":
@@ -317,7 +322,9 @@ def downloadSupervisorPortalResults():
     else:
         includeEvals = False
 
-    formSearchResultIds = session['formSearchResultIds']
+    formSearchResultIds = session[f'formSearchResultIds_{sessionId}']
+    if not formSearchResultIds:
+        pass        # add another fail flash if it makes it this far
     formSearchResultsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
     excel = CSVMaker("studentList", formSearchResultsSelectObject, includeEvals = includeEvals)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
