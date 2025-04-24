@@ -73,32 +73,32 @@ def allPendingForms(formType):
         if formType == "pendingLabor":
             historyType = "Labor Status Form"
             approvalTarget = "denyLaborStatusFormsModal"
-            pageTitle = "Pending Labor Status Forms"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Labor Status Forms"
 
         elif formType == "pendingAdjustment":
             historyType = "Labor Adjustment Form"
             approvalTarget = "denyAdjustedFormsModal"
-            pageTitle = "Pending Adjustment Forms"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Adjustment Forms"
 
         elif formType == "pendingOverload":
             historyType = "Labor Overload Form"
             approvalTarget = "denyOverloadFormsModal"
-            pageTitle = "Pending Overload Forms"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Overload Forms"
 
         elif formType == "pendingRelease":
             historyType = "Labor Release Form"
             approvalTarget = "denyReleaseformSModal"
-            pageTitle = "Pending Release Forms"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Release Forms"
 
         elif formType == "completedOverload":
             historyType = "Labor Overload Form"
             approvalTarget = ""
-            pageTitle = "Approved Overload Forms"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Approved Overload Forms"
 
         elif formType == "preStudentApproval":
             historyType = "Labor Status Form"
             approvalTarget = ""
-            pageTitle = "Pre-Student Approval"
+            pageTitle = session[f'downloadName_{sessionId}'] = "Pre-Student Approval"
             
 
         # We are adding all of these joins so we don't do 10 queries later for every form
@@ -219,27 +219,28 @@ def downloadAllPendingForms():
         return render_template('errors/500.html'), 500
     
     formIds = session.get(f'formIds_{sessionId}')
+    downloadName = session.get(f'downloadName_{sessionId}')
     if not sessionId:
         print(f"[ERROR] Missing session ID for request to {request.path}. Possible tampered form or expired session.")
         return render_template('errors/500.html'), 500
     
     allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds)).order_by(-FormHistory.createdDate)
-    # allPendingForms = allPendingFormsSelectObject.order_by(-FormHistory.createdDate)
     currentUser = require_login()
 
-    downloadType = "allPending"
-    # if currentUser.isLaborAdmin:
-    #     allPendingForms = allPendingForms.where(FormHistory.status.in_(["Pending", "Pre-Student Approval"]))
-    # elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-    #     downloadType = "includeOverloads"
-    #     allPendingForms = allPendingForms.join(OverloadForm).where(FormHistory.status != "Pre-Student Approval", FormHistory.historyType == "Labor Overload Form")
-    # else:
-    #     abort(403)
+    additionalSpreadsheetFields = []
+    if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        additionalSpreadsheetFields.append("overloads")
+    elif not currentUser.isLaborAdmin:
+        abort(403)
 
     # from what it looks like, the downloadType + ModelSelect object just recreate what's on the page
     
+    excel = CSVMaker(
+        downloadName, 
+        requestedLSFs = allPendingFormsSelectObject, 
+        additionalSpreadsheetFields=additionalSpreadsheetFields
+    )
 
-    excel = CSVMaker(downloadType, allPendingFormsSelectObject)
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])

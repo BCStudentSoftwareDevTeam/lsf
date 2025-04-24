@@ -311,20 +311,26 @@ def downloadSupervisorPortalResults():
     generate a CSV file of datatable data.
     '''
     sessionId = request.form.get('sessionId')
-    print("blaaaa", sessionId)
+    additionalSpreadsheetFields = []
+    includeEvals = False
     if not sessionId:
         pass    # add the fail flash here
     sleJoin = session.get(f'sleJoin_{sessionId}')
     if sleJoin == "evalComplete":
-        includeEvals = "Final"
+        additionalSpreadsheetFields = ["finalEvaluations"]
+        includeEvals = True
     elif sleJoin == "evalMidyearComplete":
-        includeEvals = "Midyear"
-    else:
-        includeEvals = False
+        additionalSpreadsheetFields = ["midYearEvaluations"]
+        includeEvals = True
 
     formSearchResultIds = session[f'formSearchResultIds_{sessionId}']
     if not formSearchResultIds:
         pass        # add another fail flash if it makes it this far
     formSearchResultsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
-    excel = CSVMaker("studentList", formSearchResultsSelectObject, includeEvals = includeEvals)
+    excel = CSVMaker(
+        "LSF Search",
+        requestedLSFs=formSearchResultsSelectObject, 
+        additionalSpreadsheetFields=additionalSpreadsheetFields,
+        includeEvals=includeEvals
+    )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
