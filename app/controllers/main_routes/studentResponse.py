@@ -17,7 +17,6 @@ def confirm():
                             .join(FormHistory)
                             .where(LaborStatusForm.confirmationToken == token
                                    ,LaborStatusForm.studentSupervisee == g.currentUser.student))
-                            ))
     try:
         form = forms.get()
     except DoesNotExist as e:
