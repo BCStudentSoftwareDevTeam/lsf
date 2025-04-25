@@ -24,7 +24,7 @@ def confirm():
         flash("This contract is invalid or has expired.", "danger")
         abort(404)
 
-    if form.studentConfirmation is not None:
+    if form.studentConfirmation is not None: # 3 possible values, True, False, None
         verb = "accepted" if form.studentConfirmation else "denied"
         flash("This contract has already been " + verb + ".", "danger")
         abort(403)
@@ -36,6 +36,7 @@ def confirm():
         "supervisor": form.supervisor.FIRST_NAME + " " + form.supervisor.LAST_NAME,
         "position_code_title": f"{form.POSN_CODE}, {form.POSN_TITLE}",
         "wls": form.WLS,
+        "jobType": form.jobType,
         "term": form.termCode,
         "department": form.department.DEPT_NAME,
         "hours_per_week": form.weeklyHours or form.contractHours,
