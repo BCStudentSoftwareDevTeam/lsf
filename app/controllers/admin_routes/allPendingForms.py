@@ -1,5 +1,6 @@
-from flask import abort, flash, jsonify, redirect, session, send_file
+from flask import abort, flash, jsonify, redirect, send_file, make_response
 import uuid
+import json
 from peewee import JOIN
 from app.login_manager import *
 from app.controllers.admin_routes import admin
@@ -27,12 +28,7 @@ from app.controllers.main_routes.download import CSVMaker
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
     try:
-        # if the user has multiple tabs open, session data will continually overwrite
-        # itself. unique identifiers are required.
-
-        sessionId = str(uuid.uuid4())
-        session[f'formType_{sessionId}'] = formType
-
+        cookieId = str(uuid.uuid4())
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
@@ -73,33 +69,34 @@ def allPendingForms(formType):
         if formType == "pendingLabor":
             historyType = "Labor Status Form"
             approvalTarget = "denyLaborStatusFormsModal"
-            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Labor Status Forms"
+            pageTitle = "Pending Labor Status Forms"
 
         elif formType == "pendingAdjustment":
             historyType = "Labor Adjustment Form"
             approvalTarget = "denyAdjustedFormsModal"
-            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Adjustment Forms"
+            pageTitle = "Pending Adjustment Forms"
 
         elif formType == "pendingOverload":
             historyType = "Labor Overload Form"
             approvalTarget = "denyOverloadFormsModal"
-            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Overload Forms"
+            pageTitle = "Pending Overload Forms"
 
         elif formType == "pendingRelease":
             historyType = "Labor Release Form"
             approvalTarget = "denyReleaseformSModal"
-            pageTitle = session[f'downloadName_{sessionId}'] = "Pending Release Forms"
+            pageTitle = "Pending Release Forms"
 
         elif formType == "completedOverload":
             historyType = "Labor Overload Form"
             approvalTarget = ""
-            pageTitle = session[f'downloadName_{sessionId}'] = "Approved Overload Forms"
+            pageTitle = "Approved Overload Forms"
 
         elif formType == "preStudentApproval":
             historyType = "Labor Status Form"
             approvalTarget = ""
-            pageTitle = session[f'downloadName_{sessionId}'] = "Pre-Student Approval"
+            pageTitle = "Pre-Student Approval"
             
+
 
         # We are adding all of these joins so we don't do 10 queries later for every form
         CreatorSup = Supervisor.alias()
@@ -144,7 +141,7 @@ def allPendingForms(formType):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-        session[f'formIds_{sessionId}'] = [form.formHistoryID for form in formList]      # storing the form id's in the current session for safety and consistency.
+        formIds = [form.formHistoryID for form in formList]
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -160,21 +157,45 @@ def allPendingForms(formType):
                     print(e)
 
             checkAdjustment(allForms)
-        return render_template( 'admin/allPendingForms.html',
-                                title=pageTitle,
-                                username=currentUser.username,
-                                sessionId=sessionId,
-                                formList = formList,
-                                formType= formType,
-                                modalTarget = approvalTarget,
-                                overloadFormCounter = overloadFormCounter,
-                                laborStatusFormCounter = laborStatusFormCounter,
-                                adjustedFormCounter  = adjustedFormCounter,
-                                releaseFormCounter = releaseFormCounter,
-                                preStudentApprovalCounter = preStudentApprovalCounter,
-                                completedOverloadFormCounter = completedOverloadFormCounter,
-                                pendingOverloadFormPairs = pendingOverloadFormPairs
-                              )
+        result = make_response(render_template(
+            'admin/allPendingForms.html',
+            title=pageTitle,
+            username=currentUser.username,
+            cookieId=cookieId,
+            pageTitle=pageTitle,
+            formList = formList,
+            formType= formType,
+            modalTarget = approvalTarget,
+            overloadFormCounter = overloadFormCounter,
+            laborStatusFormCounter = laborStatusFormCounter,
+            adjustedFormCounter  = adjustedFormCounter,
+            releaseFormCounter = releaseFormCounter,
+            preStudentApprovalCounter = preStudentApprovalCounter,
+            completedOverloadFormCounter = completedOverloadFormCounter,
+            pendingOverloadFormPairs = pendingOverloadFormPairs
+        ))
+        if formIds:
+            print(f"downloadName_{cookieId}", f"formIds_{cookieId}", cookieId, "it shoudl all be hereeeee")
+            result.set_cookie(
+                key=f'downloadName_{cookieId}',
+                value=pageTitle,
+                max_age=3600,
+                httponly=True,
+            )
+            result.set_cookie(
+                key=f'formIds_{cookieId}',
+                value=json.dumps(formIds),
+                max_age=3600,
+                httponly=True,
+            )
+            result.set_cookie(
+                key=f'formType_{cookieId}',
+                value=formType,
+                max_age=3600,
+                httponly=True,
+            )
+        return result
+    
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
@@ -213,15 +234,15 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    sessionId = request.form.get('sessionId')
-    if not sessionId:
-        print("session id not found.")
+    cookieId = request.form.get('cookieId')
+    if not cookieId:
+        print(f"[ERROR] Missing cookie for request to {request.path}. Possible tampered or expired cookie.")
         return render_template('errors/500.html'), 500
     
-    formIds = session.get(f'formIds_{sessionId}')
-    downloadName = session.get(f'downloadName_{sessionId}')
-    if not sessionId:
-        print(f"[ERROR] Missing session ID for request to {request.path}. Possible tampered form or expired session.")
+    formIds = json.loads(request.cookies.get(f'formIds_{cookieId}'))
+    downloadName = request.cookies.get(f'downloadName_{cookieId}')
+    if not formIds:
+        print(f"[ERROR] Missing forms for download. There are either no results to be downloaded or another error has occured.")
         return render_template('errors/500.html'), 500
     
     allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds)).order_by(-FormHistory.createdDate)
@@ -232,8 +253,6 @@ def downloadAllPendingForms():
         additionalSpreadsheetFields.append("overloads")
     elif not currentUser.isLaborAdmin:
         abort(403)
-
-    # from what it looks like, the downloadType + ModelSelect object just recreate what's on the page
     
     excel = CSVMaker(
         downloadName, 
@@ -537,10 +556,10 @@ def getOverloadModalData(formHistoryID):
                             'FinancialAidApprover': FinancialAidApprover,
                             })
         noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID).count()
-        sessionId = request.args.get('sessionId')
+        cookieId = request.args.get('cookieId')
         returnToTab = None
         try:
-            returnToTab = session.get(f'formType_{sessionId}')
+            returnToTab = request.cookies.get(f'formType_{cookieId}')
         except Exception as e:
             pass
         return render_template('snips/pendingOverloadModal.html',

@@ -1,5 +1,5 @@
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g, session
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g, make_response
 from functools import reduce
 from peewee import fn
 import uuid
@@ -89,7 +89,8 @@ def getDatatableData(request):
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
     
-    sessionId = str(uuid.uuid4())
+    cookieId = str(uuid.uuid4())
+    sleJoin = ""
     currentUser = require_login()
     draw = int(request.form.get('draw', 0))
     rowNumber = int(request.form.get('start', 0))
@@ -129,7 +130,7 @@ def getDatatableData(request):
             if type(value) is list:
                 clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
-                session[f'sleJoin_{sessionId}'] = value[0]       # use the session to store the sle??
+                sleJoin=value[0]
             else:
                 clauses.append(field == value)
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
@@ -146,9 +147,6 @@ def getDatatableData(request):
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
     recordsTotal = len(formSearchResults)
-    if len(formSearchResults):
-        session[f'formSearchResultIds_{sessionId}'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
-
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
@@ -180,9 +178,27 @@ def getDatatableData(request):
     else:
         filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict.get('view'))
-    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData, "sessionId": sessionId}
+    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData, "cookieId": cookieId}
 
-    return jsonify(formsDict)
+    result = make_response(jsonify(formsDict))
+    formIds = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
+    if formIds:
+        print("Okay, here", f"formSearchResultIds_{cookieId}", "what is going on?")
+        jsonFormIds = json.dumps(formIds)
+        result.set_cookie(
+            key=f'formSearchResultIds_{cookieId}',
+            value=jsonFormIds,
+            max_age=3600,
+            httponly=True,
+        )
+        result.set_cookie(
+            key=f'sleJoin_{cookieId}',
+            value=json.dumps(sleJoin),
+            max_age=3600,
+            httponly=True,
+        )
+
+    return result
 
 def getFormattedData(filteredSearchResults, view ='simple'):
     '''
@@ -312,13 +328,13 @@ def downloadSupervisorPortalResults():
     This function uses the general search results, stored in a global variable, to
     generate a CSV file of datatable data.
     '''
-    sessionId = request.form.get('sessionId')
+    cookieId = request.form.get('cookieId')
     additionalSpreadsheetFields = []
     includeEvals = False
-    if not sessionId:
-        print(f"[ERROR] Missing session ID for request to {request.path}.")
+    if not cookieId:
+        print(f"[ERROR] Missing cookie ID for request to {request.path}.")
         return "", 500
-    sleJoin = session.get(f'sleJoin_{sessionId}')
+    sleJoin = request.cookies.get(f'sleJoin_{cookieId}')
     if sleJoin == "evalComplete":
         additionalSpreadsheetFields = ["finalEvaluations"]
         includeEvals = True
@@ -326,9 +342,9 @@ def downloadSupervisorPortalResults():
         additionalSpreadsheetFields = ["midYearEvaluations"]
         includeEvals = True
 
-    formSearchResultIds = session.get(f'formSearchResultIds_{sessionId}')
+    formSearchResultIds = json.loads(request.cookies.get(f'formSearchResultIds_{cookieId}'))
     if not formSearchResultIds:
-        print(f"[ERROR] The key, formSearchResultIds_{sessionId}, does not exist in the session dictionary.")
+        print(f"[ERROR] The cookie formSearchResultIds_{cookieId} does not exist.")
         return "", 500
     formSearchResultsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
     excel = CSVMaker(
