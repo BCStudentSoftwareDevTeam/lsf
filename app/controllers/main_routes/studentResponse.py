@@ -16,7 +16,7 @@ def confirm():
     forms = (LaborStatusForm.select()
                             .join(FormHistory)
                             .where(LaborStatusForm.confirmationToken == token
-                                   #,LaborStatusForm.studentSupervisee == g.currentUser.student))
+                                   ,LaborStatusForm.studentSupervisee == g.currentUser.student))
                             ))
     try:
         form = forms.get()
