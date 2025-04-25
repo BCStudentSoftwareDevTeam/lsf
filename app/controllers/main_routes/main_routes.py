@@ -145,8 +145,10 @@ def getDatatableData(request):
     if not currentUser.isLaborAdmin:
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-    session[f'formSearchResultIds_{sessionId}'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
     recordsTotal = len(formSearchResults)
+    if len(formSearchResults):
+        session[f'formSearchResultIds_{sessionId}'] = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
+
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
@@ -314,7 +316,8 @@ def downloadSupervisorPortalResults():
     additionalSpreadsheetFields = []
     includeEvals = False
     if not sessionId:
-        pass    # add the fail flash here
+        print(f"[ERROR] Missing session ID for request to {request.path}.")
+        return "", 500
     sleJoin = session.get(f'sleJoin_{sessionId}')
     if sleJoin == "evalComplete":
         additionalSpreadsheetFields = ["finalEvaluations"]
@@ -323,9 +326,10 @@ def downloadSupervisorPortalResults():
         additionalSpreadsheetFields = ["midYearEvaluations"]
         includeEvals = True
 
-    formSearchResultIds = session[f'formSearchResultIds_{sessionId}']
+    formSearchResultIds = session.get(f'formSearchResultIds_{sessionId}')
     if not formSearchResultIds:
-        pass        # add another fail flash if it makes it this far
+        print(f"[ERROR] The key, formSearchResultIds_{sessionId}, does not exist in the session dictionary.")
+        return "", 500
     formSearchResultsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
     excel = CSVMaker(
         "LSF Search",
