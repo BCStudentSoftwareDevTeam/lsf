@@ -1,5 +1,5 @@
 import operator
-from flask import render_template, request, json, jsonify, redirect, url_for, send_file, flash, g, make_response
+from flask import render_template, request, json, jsonify, redirect, url_for, send_file, g, make_response
 from functools import reduce
 from peewee import fn
 import uuid
@@ -183,7 +183,6 @@ def getDatatableData(request):
     result = make_response(jsonify(formsDict))
     formIds = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
     if formIds:
-        print("Okay, here", f"formSearchResultIds_{cookieId}", "what is going on?")
         jsonFormIds = json.dumps(formIds)
         result.set_cookie(
             key=f'formSearchResultIds_{cookieId}',
