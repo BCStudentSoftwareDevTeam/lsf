@@ -175,7 +175,6 @@ def allPendingForms(formType):
             pendingOverloadFormPairs = pendingOverloadFormPairs
         ))
         if formIds:
-            print(f"downloadName_{cookieId}", f"formIds_{cookieId}", cookieId, "it shoudl all be hereeeee")
             result.set_cookie(
                 key=f'downloadName_{cookieId}',
                 value=pageTitle,
