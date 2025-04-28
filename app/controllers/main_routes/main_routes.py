@@ -206,34 +206,18 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     if view == "simple":
         formattedData = {}
         todaysDate = date.today()
-        print("the-type", type(todaysDate))
+        filteredSearchResults.order_by(FormHistory.formID.startDate.desc())
         for form in filteredSearchResults:
             startDate = form.formID.startDate
             endDate = form.formID.endDate
             bNumber = form.formID.studentSupervisee.ID
-            shouldAdd, inCurrentDateWindow = False, False
-
             if bNumber not in formattedData:
-                shouldAdd = True
-
-            inCurrentDateWindow = (startDate <= todaysDate and todaysDate <= endDate)
-
-            if shouldAdd:
-                # add the event
-                pass
+                absentInFormatting = True
+                isMostCurrent = True
             else:
-                pass
-            
-            # break down the logic and make it more straightforward
-
-            isClosestToCurrentDate = (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])
-
-            # if date in current window, then we check if the date is a closer fit to our current date
-            if (inCurrentDateWindow and isClosestToCurrentDate) or shouldAdd:
-                # do the logic for adding
-                pass
-
-            if bNumber not in formattedData or ((startDate <= todaysDate and todaysDate <= endDate) and (startDate >= formattedData[bNumber][1] and endDate <= formattedData[bNumber][2])):
+                absentInFormatting = False 
+                isMostCurrent = (startDate > formattedData[bNumber][1] and endDate > formattedData[bNumber][2])
+            if (startDate <= todaysDate <= endDate) and absentInFormatting or isMostCurrent:
                 
                 # html fields
                 firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
@@ -347,6 +331,10 @@ def getFormattedData(filteredSearchResults, view ='simple'):
 
         formattedData.append(record)
     return formattedData
+
+def new_func(filteredSearchResults):
+    filteredSearchResults = sorted(filteredSearchResults, key=lambda x: x.formID.startDate)
+    return filteredSearchResults
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
