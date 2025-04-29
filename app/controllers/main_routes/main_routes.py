@@ -239,7 +239,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 """
 
                 formattedData[bNumber] = (html, startDate, endDate)
-                print("saved these", startDate, endDate, formattedData[bNumber][1], formattedData[bNumber][2])
 
         formattedDataList = [[value] for value, _, _ in formattedData.values()]
 
@@ -331,10 +330,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
 
         formattedData.append(record)
     return formattedData
-
-def new_func(filteredSearchResults):
-    filteredSearchResults = sorted(filteredSearchResults, key=lambda x: x.formID.startDate)
-    return filteredSearchResults
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
