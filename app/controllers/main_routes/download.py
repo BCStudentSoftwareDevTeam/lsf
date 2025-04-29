@@ -1,48 +1,27 @@
-from flask import flash
-from app.models.laborStatusForm import LaborStatusForm
+from peewee import ModelSelect
 from app.models.formHistory import *
 import csv
 from app.controllers.main_routes.main_routes import *
-from app.models.supervisor import Supervisor
-from app.logic.tracy import Tracy
-from app.models.formHistory import FormHistory
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
-
 
 class CSVMaker:
     '''
     Create the CSV for the download bottons
     '''
-    def __init__(self, downloadType, requestedLSFs, includeEvals = False):
-        self.relativePath = 'static/files/LaborStudents.csv'
+    def __init__(self, downloadName, requestedLSFs: ModelSelect, includeEvals = False, additionalSpreadsheetFields: list[str] = []):
+        self.relativePath = f'static/files/{downloadName}.csv'
         self.completePath = 'app/' + self.relativePath
-        self.downloadType = downloadType          #studentHistory, allPending, studentList
-        self.formHistories = self.retrieveFormHistories(requestedLSFs)
+        self.additionalSpreadsheetFields = (self._validateAdditionalSpreadsheetFields(additionalSpreadsheetFields))
+        self.formHistories = requestedLSFs 
         self.includeEvals = includeEvals
-
         self.makeCSV()
-
-
-    def retrieveFormHistories(self, requestedLSFs):
-        '''
-        Removes any duplicate formHistory IDs
-        '''
-
-        allForms = list(set(requestedLSFs)) # remove duplicates
-        allFormHistories = []
-
-        for statusForm in allForms:
-            studentFormHistories = []
-            if self.downloadType == "studentHistory":
-                studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm)
-            elif self.downloadType == "studentList":
-                studentFormHistories = FormHistory.select().where(FormHistory.formID == statusForm, FormHistory.historyType == 'Labor Status Form')
-
-            for historyForm in studentFormHistories:
-                allFormHistories.append(historyForm)
-
-        return allFormHistories
-
+        
+    @staticmethod
+    def _validateAdditionalSpreadsheetFields(additionalFields):
+        for additionalField in additionalFields:
+            if additionalField not in {'overloads', 'finalEvaluations', 'midYearEvaluations', 'allEvaluations'}:
+                raise ValueError(f'Invalid spreadsheet fields: {additionalField}')
+        return additionalFields
 
     def makeCSV(self):
         '''
@@ -89,7 +68,7 @@ class CSVMaker:
                                 'SLE Overall Score'
                                 ])
             
-            if self.downloadType == 'includeOverloads':
+            if 'overloads' in self.additionalSpreadsheetFields:
                 headers.extend(['Student Overload Reason',
                                 'Financial Aid Status',
                                 'Financial Aid Approver',
@@ -120,7 +99,7 @@ class CSVMaker:
                             row.extend(evaluation)
                             self.filewriter.writerow(row)
 
-                elif self.downloadType == "includeOverloads":
+                elif 'overloads' in self.additionalSpreadsheetFields:
                     row = self.addOverloadData(form, row)
                     self.filewriter.writerow(row)
                 else:
@@ -179,11 +158,11 @@ class CSVMaker:
         Adds data for SLE
         '''
         multipleRows = []
-        if self.includeEvals == "Final":
+        if "finalEvaluations" in self.additionalSpreadsheetFields:
             finalEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 0, StudentLaborEvaluation.is_submitted == True)
             if finalEvaluation:
                 multipleRows.append(self.insertEvaluationData(finalEvaluation, "Final"))
-        elif self.includeEvals == "Midyear":
+        elif "midYearEvaluations" in self.additionalSpreadsheetFields:
             midyearEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 1, StudentLaborEvaluation.is_submitted == True)
             if midyearEvaluation:
                 multipleRows.append(self.insertEvaluationData(midyearEvaluation, "Midyear"))
