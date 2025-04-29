@@ -290,7 +290,10 @@ function fetchSimpleView(data) {
       url: "/",
       type: "POST",
       data: { 'data': data },
-      dataSrc: "data",
+      dataSrc: function(response) {
+        $('#cookieId').val(response.cookieId);
+        return response.data;
+      }
     }
   });
 }
