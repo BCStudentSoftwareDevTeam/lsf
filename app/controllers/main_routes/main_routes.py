@@ -315,7 +315,7 @@ def downloadSupervisorPortalResults():
     '''
     formSearchResults = retrieveFormSearchResult(request.form.get('downloadId'))
     if not formSearchResults:
-        print(f"[ERROR] Missing download ID for form search.")
+        print(f"[ERROR] Missing or invalid download ID for form search.")
         return "", 500
 
     formSearchResultIds = json.loads(formSearchResults.formHistoryIds)
