@@ -291,7 +291,7 @@ function fetchSimpleView(data) {
       type: "POST",
       data: { 'data': data },
       dataSrc: function(response) {
-        $('#cookieId').val(response.cookieId);
+        $('#downloadId').val(response.downloadId);
         return response.data;
       }
     }
