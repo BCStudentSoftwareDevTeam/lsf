@@ -207,17 +207,17 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         formattedData = {}
         todaysDate = date.today()
         filteredSearchResults.order_by(FormHistory.formID.startDate.desc())
+        isMostCurrent = False
         for form in filteredSearchResults:
             startDate = form.formID.startDate
             endDate = form.formID.endDate
             bNumber = form.formID.studentSupervisee.ID
             if bNumber not in formattedData:
                 absentInFormatting = True
-                isMostCurrent = True
             else:
                 absentInFormatting = False 
-                isMostCurrent = (startDate > formattedData[bNumber][1] and endDate > formattedData[bNumber][2])
-            if (startDate <= todaysDate <= endDate) and absentInFormatting or isMostCurrent:
+                isMostCurrent = (startDate > formattedData[bNumber][1]) or (startDate <= todaysDate <= endDate)
+            if absentInFormatting or isMostCurrent:
                 
                 # html fields
                 firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
