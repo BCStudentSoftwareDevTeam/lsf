@@ -67,7 +67,7 @@
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
               {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
-                <th> Approve <input type="checkbox" id="checkAll"/></th>
+                <th><input type="checkbox" id="checkAll"/></th>
               {% endif %}
               {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
                 <th>Status</th>
