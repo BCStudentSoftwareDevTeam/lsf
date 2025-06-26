@@ -6,6 +6,7 @@ from flask_bootstrap import bootstrap_find_resource
 from app.models.Tracy.studata import *
 from app import *
 from app.login_manager import *
+from app.config.loadConfig import *
 
 @app.context_processor
 def injectGlobalData():
