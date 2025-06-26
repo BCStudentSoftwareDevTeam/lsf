@@ -100,6 +100,7 @@ $(document).ready(function () {
   if ((document.cookie).includes("lsfSearchResults=")) {
     cookieStr = Cookies.get('lsfSearchResults')
     cookieJSON = JSON.parse(cookieStr)
+
     // using the cookies, make sure the view is properly set as well
     if (cookieJSON.view == 'advanced') {
       createDataTable(cookieStr)
@@ -292,6 +293,7 @@ function fetchSimpleView(data) {
       data: { 'data': data },
       dataSrc: function(response) {
         $('#cookieId').val(response.cookieId);
+        updateDownloadButton(response)
         return response.data;
       }
     }
@@ -300,7 +302,7 @@ function fetchSimpleView(data) {
 
 function createDataTable(data) {
   $("#formSearchAccordion").accordion({ collapsible: true, active: false });
-  $("#download").prop('disabled', false);
+  $("#download").prop('disabled', true);
   $('#formSearchTable').show();
   $('#simpleView').hide()
   $('#simpleView_wrapper').hide();
@@ -332,8 +334,20 @@ function createDataTable(data) {
       type: "POST",
       data: { 'data': data },
       dataSrc: "data",
+      success: function(response){
+        updateDownloadButton(response)
+      }
     }
   });
+
+}
+
+function updateDownloadButton(response){
+ if (response.recordsTotal && response.recordsTotal > 0) {
+          $("#download").prop('disabled', false);
+        } else {
+          $("#download").prop('disabled', true);
+        }
 }
 
 function setFormSearchValues(searchDict) {
