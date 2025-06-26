@@ -30,6 +30,9 @@ $(document).ready(function() {
       [1, 'asc']
     ], // start to sort data in second column
     pageLength: 50,
+    language: {
+      lengthMenu: " _MENU_ entries per page"
+    },
     // "dom": '<"top"fl>rt<"bottom"p><"clear">'
   });
 
