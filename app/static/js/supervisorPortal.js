@@ -293,7 +293,7 @@ function fetchSimpleView(data) {
       data: { 'data': data },
       dataSrc: function(response) {
         $('#cookieId').val(response.cookieId);
-        disablingDownloadButton(response)
+        updateDownloadButton(response)
         return response.data;
       }
     }
@@ -335,14 +335,14 @@ function createDataTable(data) {
       data: { 'data': data },
       dataSrc: "data",
       success: function(response){
-        disablingDownloadButton(response)
+        updateDownloadButton(response)
       }
     }
   });
 
 }
 
-function disablingDownloadButton(response){
+function updateDownloadButton(response){
  if (response.recordsTotal && response.recordsTotal > 0) {
           $("#download").prop('disabled', false);
         } else {
