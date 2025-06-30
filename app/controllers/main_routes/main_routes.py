@@ -17,12 +17,12 @@ from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.controllers.main_routes.download import CSVMaker
 from app.logic.search import getDepartmentsForSupervisor
-from app.login_manager import require_login, logout
-
+from app.login_manager import require_login, logout as performlogout
 
 @main_bp.route('/logout', methods=['GET'])
-def logout():
-    return redirect(logout())
+def handlelogout():  
+    performlogout() 
+    return redirect('https://www.berea.edu/labor-program-office')
 
 @main_bp.route('/', methods=['GET', 'POST'])
 def supervisorPortal():
