@@ -4,6 +4,9 @@ from app.models.supervisor import Supervisor
 from peewee import CharField
 # from app import login
 
+from datetime import date
+from app.models.department import Department
+
 
 # Capitalized fields are originally pulled from tracy
 class User(baseModel):
@@ -17,7 +20,38 @@ class User(baseModel):
 
     def __str__(self):
         return str(self.__dict__)
+    
+    @property
+    def laborDepartmentStudent(self):
+        if not self.student:
+            return False
+        
+        from app.models.laborStatusForm import LaborStatusForm
 
+        today = date.today()
+
+        labor_status_forms = (
+            LaborStatusForm
+            .select()
+            .join(Department)
+            .where(
+                (LaborStatusForm.studentSupervisee == self.student) &
+                (LaborStatusForm.startDate <= today) &
+                (LaborStatusForm.endDate >= today) &
+                (Department.isActive == True)
+            )
+        )
+        return labor_status_forms.exists()
+    
+    # @property
+    # def isBonnerScholar(self):
+    #     from app.models.bonnerCohort import BonnerCohort
+    #     if self._bsCache is None:
+    #         # TODO should we exclude users who are banned from Bonner here?
+    #         self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
+
+    #     return self._bsCache
+        
     @property
     def firstName(self):
         if self.supervisor:
