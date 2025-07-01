@@ -7,8 +7,6 @@ from app.models.supervisor import Supervisor
 from app.models.student import Student
 from flask import flash
 
-
-
 def getUser(selectpickerID):
     username = request.form.get(selectpickerID)
     try:

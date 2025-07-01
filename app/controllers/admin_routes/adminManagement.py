@@ -10,6 +10,8 @@ from app.models.student import Student
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy
 
+
+
 @admin.route('/admin/adminManagement', methods=['GET'])
 # @login_required
 def admin_Management():
