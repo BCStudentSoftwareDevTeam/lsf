@@ -22,8 +22,7 @@ from app.login_manager import require_login, logout as performlogout
 @main_bp.route('/logout', methods=['GET'])
 def handlelogout():  
     performlogout() 
-    return redirect('https://www.berea.edu/labor-program-office')
-
+   
 @main_bp.route('/', methods=['GET', 'POST'])
 def supervisorPortal():
     '''
