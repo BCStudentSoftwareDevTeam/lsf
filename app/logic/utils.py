@@ -1,4 +1,4 @@
-from flask import session, request
+from flask import session, request, flash
 from urllib.parse import urlparse
 
 
@@ -15,3 +15,12 @@ def makeThirdPartyLink(recipient, host, formHistoryId):
 
 def setReferrerPath():
     session['referrerPath'] = urlparse(request.referrer).path or ''
+
+
+def adminFlashMessage(user, action, adminType):
+    message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
+
+    if action == 'added':
+        flash(message, "success")
+    elif action == 'removed':
+        flash(message, "danger") 

@@ -11,7 +11,6 @@ from app.models.supervisor import Supervisor
 from app.models.department import Department
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.logic.tracy import Tracy
-from app.
 
 
 

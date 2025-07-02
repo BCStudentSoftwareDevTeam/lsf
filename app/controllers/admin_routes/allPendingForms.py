@@ -24,7 +24,7 @@ from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
 from app.logic.supervisorAdjustment import checkAdjustment
-
+from app.logic.allPendingForms import saveStatus
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
