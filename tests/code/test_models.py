@@ -2,9 +2,16 @@ import pytest
 from app.models.user import User
 from app.models.formHistory import FormHistory
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.student import Student
+from app.models.department import Department
+from datetime import date, timedelta
+
 from app.models.term import Term
 from app.models import mainDB
 from peewee import DoesNotExist, JOIN
+
+for dept in Department.select().where(Department.isActive == True):
+    print(dept.departmentID, dept.DEPT_NAME)
 
 @pytest.mark.integration
 def test_user_model():
@@ -26,6 +33,116 @@ def test_user_model():
     assert both_user.lastName == "Bryant"
     assert both_user.fullName == "Alex Bryant"
     assert both_user.email == "bryantal@berea.edu"
+
+
+
+    dept = Department.create(DEPT_NAME="Labor Department", isActive=True) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
+    inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
+    non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
+    active_dept = Department.create(DEPT_NAME="CS Department", isActive=True) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
+
+    student1 = Student.get(ID="B12345773")
+    student2 = Student.get(ID="B12345783")
+    student3 = Student.get(ID="B12345784")
+    student4 = Student.get(ID="B12345785")
+    student5 = Student.get(ID="B12345786") 
+    student6 = Student.create(ID="B12345787") #multiple valid students working in the Active Labor Dep
+
+    stu_user1 = User.create(username="tester",student=student1)
+    stu_user2 = User.create(username="inactiveUser", student=student2)
+    stu_user3 = User.create(username="inactiveDepartment", student=student3)
+    stu_user4 = User.create(username="activeDepartment", student=student4)
+    stu_user5 = User.create(username="inActiveTime", student=student5)
+    user_non_stu = User.create(username="notStudent") #No student relation
+    stu_user6 = User.create(username="tester2", student=student6)
+
+
+    LaborStatusForm.create(
+        studentSupervisee=student1,
+        department=dept,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "Labor Workers",
+        POSN_CODE="S61407",
+        startDate=date.today() - timedelta(days=1),  # started in the past
+        endDate=date.today() + timedelta(days=10)    # ends in the future
+    )
+
+    LaborStatusForm.create(
+        studentSupervisee=student2,
+        department=inactive_dept,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "CS Workers",
+        POSN_CODE="S61408",
+        startDate=date.today() - timedelta(days=1), 
+        endDate=date.today() + timedelta(days=10)   
+    )
+
+    LaborStatusForm.create(
+        studentSupervisee=student3,
+        department=non_active_lab_dep,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "Labor Workers",
+        POSN_CODE="S61407",
+        startDate=date.today() - timedelta(days=1), 
+        endDate=date.today() + timedelta(days=10) 
+    )
+    
+    LaborStatusForm.create(
+        studentSupervisee=student4,
+        department=active_dept,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "CS Workers",
+        POSN_CODE="S61408",
+        startDate=date.today() - timedelta(days=1), 
+        endDate=date.today() + timedelta(days=10) 
+    )
+
+    LaborStatusForm.create(
+        studentSupervisee=student5,
+        department=dept,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "Labor Workers",
+        POSN_CODE="S61407",
+        startDate=date.today() + timedelta(days=1), 
+        endDate=date.today() - timedelta(days=10)   
+    )
+
+    LaborStatusForm.create(
+        studentSupervisee=student6,
+        department=dept,
+        termCode_id="202000",
+        supervisor_id="B12361006",
+        jobType="Primary",
+        WLS=1,
+        POSN_TITLE= "Labor Workers",
+        POSN_CODE="S61407",
+        startDate=date.today() - timedelta(days=1), 
+        endDate=date.today() + timedelta(days=10)  
+    )
+
+    assert stu_user1.laborDepartmentStudent == True
+    assert stu_user2.laborDepartmentStudent == False
+    assert stu_user3.laborDepartmentStudent == False
+    assert stu_user4.laborDepartmentStudent == False
+    assert stu_user5.laborDepartmentStudent == False
+    assert user_non_stu.laborDepartmentStudent == False
+    assert stu_user6.laborDepartmentStudent == True
+
 
 
 @pytest.mark.integration
@@ -75,6 +192,3 @@ def test_term_model():
         resultingTermCodes = [f.termCode for f in sortedForms]
         assert  resultingTermCodes == sortedTermCodes
         transaction.rollback()
-
-    
-
