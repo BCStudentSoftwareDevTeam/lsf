@@ -41,7 +41,7 @@ def test_user_model():
     non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
     active_dept = Department.create(DEPT_NAME="CS Department", isActive=True) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
     case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True) #checking the case sensitiveness of the department name.
-    case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the case sensitiveness of the department name.
+    case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the spelling sensetivity of the department name.
 
     student1 = Student.get(ID="B12345773")
     student2 = Student.get(ID="B12345783")

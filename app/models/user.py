@@ -40,7 +40,7 @@ class User(baseModel):
                 (LaborStatusForm.endDate >= today) &
                 (Department.isActive == True) &
                 # (Department.DEPT_NAME == "Labor Department") #production backup (from)
-                (fn.BINARY(Department.DEPT_NAME) == "Labor Department") # this makes the comparison case sensetive.
+                (fn.BINARY(Department.DEPT_NAME) == "Labor Department") # comparison case sensetive.
             )
         )
         return labor_status_forms.exists()
