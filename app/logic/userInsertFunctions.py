@@ -22,37 +22,8 @@ from app.models.Tracy.stuposn import STUPOSN
 from app.logic.emailHandler import emailHandler
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.utils import makeThirdPartyLink
-from app.logic.statusFormFunctions import createStudentFromTracy
+from app.logic.studentsFromTracy import createStudentFromTracy,InvalidUserException
 
-
-
-class InvalidUserException(Exception):
-    pass
-
-def createUser(username, student=None, supervisor=None):
-    """
-    Retrieves or creates a user in the User table and updates Supervisor and/or Student as requested.
-
-    Raises InvalidUserException if this does not succeed.
-    """
-
-    if not student and not supervisor:
-        raise InvalidUserException("A User should be connected to Student or Supervisor")
-
-    try:
-        user = User.get_or_create(username=username)[0]
-
-    except Exception as e:
-        raise InvalidUserException("Adding {} to user table failed".format(username), e)
-
-    if student:
-        user.student = student.ID # Not sure why assigning the object doesn't work...
-    if supervisor:
-        user.supervisor = supervisor.ID
-
-    user.save()
-
-    return user
 
 def updatePersonRecords():
     """
