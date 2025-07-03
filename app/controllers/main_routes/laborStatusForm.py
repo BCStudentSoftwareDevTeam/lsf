@@ -21,7 +21,8 @@ from app.models.supervisor import Supervisor
 from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
-from app.logic.statusFormFunctions import createLaborStatusForm, checkForSecondLSFBreak
+from app.logic.statusFormFunctions import *
+
 
 @main_bp.route('/laborstatusform', methods=['GET'])
 @main_bp.route('/laborstatusform/<laborStatusKey>', methods=['GET'])

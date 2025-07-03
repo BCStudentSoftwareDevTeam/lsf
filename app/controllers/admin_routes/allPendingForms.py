@@ -22,7 +22,7 @@ from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
 from app.models.department import Department
-from app.controllers.main_routes.download import CSVMaker
+from app.logic.download import CSVMaker
 from app.logic.supervisorAdjustment import checkAdjustment
 from app.logic.allPendingForms import saveStatus, laborAdminOverloadApproval, financialAidSAASOverloadApproval, modal_approval_and_denial_data
 
