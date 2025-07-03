@@ -17,8 +17,11 @@ $('#positionTable tbody tr td').on('click',function(){
 
 function loadFormHistoryModal(formHistory) {
   $("#modal").modal("show");
-  $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory);
-  setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
+  $(".loader").show();
+  $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory, function() {
+    // This function is called when the modal content is loaded
+    $(".loader").fadeOut("slow"); // Hide the loader after content is loaded
+  });
 }
 
 function redirection(laborStatusKey){
@@ -116,3 +119,24 @@ function withdrawform(formID){
            }
          });
        }
+
+function studentHistoryModalClose(){
+  $('#studentHistoryModal').modal('hide');
+
+}
+
+function submitToBanner(formId) {
+  $.ajax({
+    type: "POST",
+    url: "/admin/addToBanner/" + formId,
+    success: function(response) {
+      if (response.success) {
+        msgFlash("Form submitted to banner successfully ", "success");
+        studentHistoryModalClose();
+      } else {
+        msgFlash("Form failed to submit to banner", "fail");
+        studentHistoryModalClose();
+      }
+    }
+  });
+}

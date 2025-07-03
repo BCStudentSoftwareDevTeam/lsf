@@ -213,6 +213,7 @@
       <div class = "col-sm-{{12/buttonState.num_buttons}}">
 
       <a href="#"><button class="btn btn-primary" id="emailLabor">Email Labor</button></a>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitToBanner({{statusForm.laborStatusFormID}})">Resubmit Form</button>     
       {% if buttonState.rehire %}
         <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{statusForm.laborStatusFormID}})">Rehire</button></a>
       {% endif %}
