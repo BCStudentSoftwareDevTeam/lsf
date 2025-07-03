@@ -1,11 +1,5 @@
 from datetime import datetime, date, timedelta, time
 from functools import reduce
-import operator
-
-from flask import json, jsonify
-from flask import request
-from flask import Flask, redirect, url_for, flash
-from flask_login import login_required
 from peewee import DoesNotExist
 
 from app.models.user import *
@@ -18,11 +12,7 @@ from app.models.term import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.department import *
-from app.models.Tracy.stuposn import STUPOSN
-from app.logic.emailHandler import emailHandler
-from app.logic.tracy import Tracy, InvalidQueryException
-from app.logic.utils import makeThirdPartyLink
-from app.logic.studentsFromTracy import createStudentFromTracy,InvalidUserException
+from app.logic.tracy import Tracy, InvalidQueryException, createStudentFromTracy, InvalidUserException
 
 
 def updatePersonRecords():
@@ -114,44 +104,9 @@ def updateSupervisorRecord(supervisor):
     supervisor.isActive = True
     supervisor.save()
 
-def updatePositionRecords():
-    remoteDepartments = Tracy().getDepartments()  # Create local copies of new departments in Tracy
-    departmentsPulledFromTracy = 0
-    for dept in remoteDepartments:
-        d = Department.get_or_none(ACCOUNT=dept.ACCOUNT, ORG=dept.ORG)
-        if d:
-            d.DEPT_NAME = dept.DEPT_NAME
-            d.save()
-        else:
-            Department.create(DEPT_NAME=dept.DEPT_NAME, ACCOUNT=dept.ACCOUNT, ORG=dept.ORG)
-            departmentsPulledFromTracy += 1
-
-    departmentsInDB = list(Department.select())
-    departmentsUpdated = 0
-    departmentsNotFound = 0
-    departmentsFailed = 0
-    for department in departmentsInDB:
-        try:
-            updateDepartmentRecord(department)
-            departmentsUpdated += 1
-        except InvalidQueryException as e:
-            departmentsNotFound += 1
-        except Exception as e:
-            departmentsFailed += 1
-
-    return departmentsPulledFromTracy, departmentsUpdated, departmentsNotFound, departmentsFailed
 
 
-def updateDepartmentRecord(department):
-    tracyDepartment = STUPOSN.query.filter((STUPOSN.ORG == department.ORG) & (STUPOSN.ACCOUNT == department.ACCOUNT)).first()
 
-    department.isActive = bool(tracyDepartment)
-    if tracyDepartment is None:
-        raise InvalidQueryException("Department ({department.ORG}, {department.ACCOUNT}) not found")
-        
-    
-    department.DEPT_NAME = tracyDepartment.DEPT_NAME
-    department.save()
 
 
 def createSupervisorFromTracy(username=None, bnumber=None):
@@ -189,20 +144,43 @@ def createSupervisorFromTracy(username=None, bnumber=None):
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))
 
 
-def calculateExpirationDate():
-    return datetime.combine(datetime.now() + timedelta(app.config["student_confirmation_days"]),time(23, 59, 59))
-
-
-
-def emailDuringBreak(secondLSFBreak, term):
+def createUser(username, student=None, supervisor=None):
     """
-    Sending emails during break period
-    """
-    if term.isBreak:
-        isOneLSF = json.loads(secondLSFBreak)
-        formHistory = FormHistory.get(FormHistory.formHistoryID == isOneLSF['formHistoryID'])
-        email = emailHandler(formHistory.formHistoryID)
-        email.laborStatusFormSubmitted()
-        if(len(isOneLSF["previousSupervisorNames"]) > 1): #Student has more than one lsf. Send email to both supervisors and student
-            email.notifyAdditionalLaborStatusFormSubmittedForBreak()
+    Retrieves or creates a user in the User table and updates Supervisor and/or Student as requested.
 
+    Raises InvalidUserException if this does not succeed.
+    """
+
+    if not student and not supervisor:
+        raise InvalidUserException("A User should be connected to Student or Supervisor")
+
+    try:
+        user = User.get_or_create(username=username)[0]
+
+    except Exception as e:
+        raise InvalidUserException("Adding {} to user table failed".format(username), e)
+
+    if student:
+        user.student = student.ID # Not sure why assigning the object doesn't work...
+    if supervisor:
+        user.supervisor = supervisor.ID
+
+    user.save()
+
+    return user
+
+def getOrCreateStudentRecord(username=None, bnumber=None):
+    """
+        Attempts to add a student from the Tracy database to the application, based on the provided username or bnumber.
+        Raises InvalidUserException if this does not succeed.
+    """
+    if not username and not bnumber:
+        raise ValueError("No arguments provided to getOrCreateStudentRecord()")
+    try:
+        if bnumber:
+            student = Student.get(Student.ID == bnumber)
+        else:
+            student = Student.get(Student.STU_EMAIL == "{}@berea.edu".format(username))
+    except DoesNotExist:
+        student = createStudentFromTracy(username,bnumber)
+    return student

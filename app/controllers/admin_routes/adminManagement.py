@@ -1,5 +1,4 @@
 from app.controllers.admin_routes import *
-from app.models.user import User, DoesNotExist
 from app.models.user import *
 from app.controllers.admin_routes import admin
 from flask import request
@@ -7,10 +6,9 @@ from app.login_manager import require_login
 from flask import Flask, redirect, url_for, flash, jsonify
 from app.models.supervisor import Supervisor
 from app.models.student import Student
-from app.logic.tracy import Tracy
-from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy
-from app.logic.adminManagement import searchForAdmin
-from app.logic.adminManagement import getUser, addAdmin, removeAdmin
+from app.logic.tracy import Tracy, createStudentFromTracy
+from app.logic.userInsertFunctions import createSupervisorFromTracy, createUser
+from app.logic.adminManagement import searchForAdmin,  getUser, addAdmin, removeAdmin
 from app.logic.utils import adminFlashMessage
 
 

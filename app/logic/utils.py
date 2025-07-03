@@ -1,6 +1,8 @@
+from datetime import datetime, date, timedelta, time
+from app.models.user import *
 from flask import session, request, flash
 from urllib.parse import urlparse
-
+from datetime import datetime, timedelta
 
 def makeThirdPartyLink(recipient, host, formHistoryId):
     route = ""
@@ -24,3 +26,7 @@ def adminFlashMessage(user, action, adminType):
         flash(message, "success")
     elif action == 'removed':
         flash(message, "danger") 
+
+
+def calculateExpirationDate():
+    return datetime.combine(datetime.now() + timedelta(app.config["student_confirmation_days"]),time(23, 59, 59))

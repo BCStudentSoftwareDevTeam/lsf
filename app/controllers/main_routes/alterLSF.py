@@ -9,7 +9,7 @@ from app.models.adjustedForm import AdjustedForm
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.logic.emailHandler import *
 from app.login_manager import require_login
-from app.logic.tracy import Tracy
+from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.utils import makeThirdPartyLink
 from app.models.notes import Notes
 from app.models.supervisor import Supervisor

@@ -3,7 +3,8 @@ from app import app
 from app.controllers.errors_routes.handlers import *
 from app.models.user import User, DoesNotExist
 from app.models.term import Term
-from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy, InvalidUserException, updateUserFromTracy
+from app.logic.userInsertFunctions import  createSupervisorFromTracy, createStudentFromTracy, updateUserFromTracy, createUser
+from app.logic.tracy import InvalidUserException
 
 def getUsernameFromEnv(env):
     envK = "eppn"

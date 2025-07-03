@@ -1,10 +1,10 @@
 from app.models.overloadForm import *
 from datetime import datetime, date, timedelta, time
 from app.models.laborStatusForm import *
-from app.logic.userInsertFunctions import calculateExpirationDate, InvalidUserException
+from app.logic.userInsertFunctions import InvalidUserException
 from app.models.formHistory import*
 from app.logic.emailHandler import emailHandler
-from app.logic.utils import makeThirdPartyLink
+from app.logic.utils import makeThirdPartyLink, calculateExpirationDate
 from app.logic.tracy import Tracy, InvalidQueryException
 from flask import request, json, jsonify
 from functools import reduce
@@ -218,3 +218,16 @@ def checkForPrimaryPosition(termCode, student, currentUser):
     else:
         finalStatus["status"]  = "hire"
     return json.dumps(finalStatus)
+
+
+def emailDuringBreak(secondLSFBreak, term):
+    """
+    Sending emails during break period
+    """
+    if term.isBreak:
+        isOneLSF = json.loads(secondLSFBreak)
+        formHistory = FormHistory.get(FormHistory.formHistoryID == isOneLSF['formHistoryID'])
+        email = emailHandler(formHistory.formHistoryID)
+        email.laborStatusFormSubmitted()
+        if(len(isOneLSF["previousSupervisorNames"]) > 1): #Student has more than one lsf. Send email to both supervisors and student
+            email.notifyAdditionalLaborStatusFormSubmittedForBreak()
