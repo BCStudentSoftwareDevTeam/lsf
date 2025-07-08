@@ -15,169 +15,169 @@ for dept in Department.select().where(Department.isActive == True):
 
 @pytest.mark.integration
 def test_user_model():
-    sup_user = User.get(username="heggens")
-    stu_user = User.get(username="jamalie")
-    both_user = User.get(username="bryantal")
+    with mainDB.atomic() as transaction:
+        sup_user = User.get(username="heggens")
+        stu_user = User.get(username="jamalie")
+        both_user = User.get(username="bryantal")
 
-    assert sup_user.firstName == "Scott"
-    assert sup_user.lastName == "Heggen"
-    assert sup_user.fullName == "Scott Heggen"
-    assert sup_user.email == "heggens@berea.edu"
+        assert sup_user.firstName == "Scott"
+        assert sup_user.lastName == "Heggen"
+        assert sup_user.fullName == "Scott Heggen"
+        assert sup_user.email == "heggens@berea.edu"
 
-    assert stu_user.firstName == "Elaheh"
-    assert stu_user.lastName == "Jamali"
-    assert stu_user.fullName == "Elaheh Jamali"
-    assert stu_user.email == "jamalie@berea.edu"
+        assert stu_user.firstName == "Elaheh"
+        assert stu_user.lastName == "Jamali"
+        assert stu_user.fullName == "Elaheh Jamali"
+        assert stu_user.email == "jamalie@berea.edu"
 
-    assert both_user.firstName == "Alex"
-    assert both_user.lastName == "Bryant"
-    assert both_user.fullName == "Alex Bryant"
-    assert both_user.email == "bryantal@berea.edu"
-
-
-
-    dept = Department.create(DEPT_NAME="Labor Department", isActive=True) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
-    inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
-    non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
-    active_dept = Department.create(DEPT_NAME="CS Department", isActive=True) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
-    case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True) #checking the case sensitiveness of the department name.
-    case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the spelling sensetivity of the department name.
-
-    student1 = Student.get(ID="B12345773")
-    student2 = Student.get(ID="B12345783")
-    student3 = Student.get(ID="B12345784")
-    student4 = Student.get(ID="B12345785")
-    student5 = Student.get(ID="B12345786") 
-    student6 = Student.get(ID="B12345787") #multiple valid students working in the Active Labor Dep
-    student7 = Student.get(ID="B12345788")
-    student8 = Student.get(ID="B12345789")
+        assert both_user.firstName == "Alex"
+        assert both_user.lastName == "Bryant"
+        assert both_user.fullName == "Alex Bryant"
+        assert both_user.email == "bryantal@berea.edu"
 
 
-    stu_user1 = User.create(username="tester",student=student1)
-    stu_user2 = User.create(username="inactiveUser", student=student2)
-    stu_user3 = User.create(username="inactiveDepartment", student=student3)
-    stu_user4 = User.create(username="activeDepartment", student=student4)
-    stu_user5 = User.create(username="inActiveTime", student=student5)
-    user_non_stu = User.create(username="notStudent") #No student relation
-    stu_user6 = User.create(username="tester2", student=student6)
-    stu_user7 = User.create(username="casesense", student=student7)
-    stu_user8 = User.create(username="casesense2", student=student8)
+
+        dept = Department.create(DEPT_NAME="Labor Department", isActive=True) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
+        inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
+        non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
+        active_dept = Department.create(DEPT_NAME="CS Department", isActive=True) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
+        case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True) #checking the case sensitiveness of the department name.
+        case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the spelling sensetivity of the department name.
+
+        student1 = Student.get(ID="B12345773")
+        student2 = Student.get(ID="B12345783")
+        student3 = Student.get(ID="B12345784")
+        student4 = Student.get(ID="B12345785")
+        student5 = Student.get(ID="B12345786") 
+        student6 = Student.get(ID="B12345787") #multiple valid students working in the Active Labor Dep
+        student7 = Student.get(ID="B12345788")
+        student8 = Student.get(ID="B12345789")
 
 
-    LaborStatusForm.create(
-        studentSupervisee=student1,
-        department=dept,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() - timedelta(days=1),  # started in the past
-        endDate=date.today() + timedelta(days=10)    # ends in the future
-    )
-
-    LaborStatusForm.create(
-        studentSupervisee=student2,
-        department=inactive_dept,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "CS Workers",
-        POSN_CODE="S61408",
-        startDate=date.today() - timedelta(days=1), 
-        endDate=date.today() + timedelta(days=10)   
-    )
-
-    LaborStatusForm.create(
-        studentSupervisee=student3,
-        department=non_active_lab_dep,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() - timedelta(days=1), 
-        endDate=date.today() + timedelta(days=10) 
-    )
-    
-    LaborStatusForm.create(
-        studentSupervisee=student4,
-        department=active_dept,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "CS Workers",
-        POSN_CODE="S61408",
-        startDate=date.today() - timedelta(days=1), 
-        endDate=date.today() + timedelta(days=10) 
-    )
-
-    LaborStatusForm.create(
-        studentSupervisee=student5,
-        department=dept,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() + timedelta(days=1), 
-        endDate=date.today() - timedelta(days=10)   
-    )
-
-    LaborStatusForm.create(
-        studentSupervisee=student6,
-        department=dept,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() - timedelta(days=1), 
-        endDate=date.today() + timedelta(days=10)  
-    )
-    LaborStatusForm.create(
-        studentSupervisee=student7,
-        department=case_sensive_name ,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() - timedelta(days=1),  # started in the past
-        endDate=date.today() + timedelta(days=10)    # ends in the future
-    )
-    LaborStatusForm.create(
-        studentSupervisee=student8,
-        department=case_sensive_name2 ,
-        termCode_id="202000",
-        supervisor_id="B12361006",
-        jobType="Primary",
-        WLS=1,
-        POSN_TITLE= "Labor Workers",
-        POSN_CODE="S61407",
-        startDate=date.today() - timedelta(days=1),  # started in the past
-        endDate=date.today() + timedelta(days=10)    # ends in the future
-    )
+        stu_user1 = User.create(username="tester",student=student1)
+        stu_user2 = User.create(username="inactiveUser", student=student2)
+        stu_user3 = User.create(username="inactiveDepartment", student=student3)
+        stu_user4 = User.create(username="activeDepartment", student=student4)
+        stu_user5 = User.create(username="inActiveTime", student=student5)
+        user_non_stu = User.create(username="notStudent") #No student relation
+        stu_user6 = User.create(username="tester2", student=student6)
+        stu_user7 = User.create(username="casesense", student=student7)
+        stu_user8 = User.create(username="casesense2", student=student8)
 
 
-    assert stu_user1.laborDepartmentStudent == True
-    assert stu_user2.laborDepartmentStudent == False
-    assert stu_user3.laborDepartmentStudent == False
-    assert stu_user4.laborDepartmentStudent == False
-    assert stu_user5.laborDepartmentStudent == False
-    assert user_non_stu.laborDepartmentStudent == False
-    assert stu_user6.laborDepartmentStudent == True
-    assert stu_user7.laborDepartmentStudent == False  #should be false  
-    assert stu_user8.laborDepartmentStudent == False
+        LaborStatusForm.create(
+            studentSupervisee=student1,
+            department=dept,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() - timedelta(days=1),  # started in the past
+            endDate=date.today() + timedelta(days=10)    # ends in the future
+        )
+
+        LaborStatusForm.create(
+            studentSupervisee=student2,
+            department=inactive_dept,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "CS Workers",
+            POSN_CODE="S61408",
+            startDate=date.today() - timedelta(days=1), 
+            endDate=date.today() + timedelta(days=10)   
+        )
+
+        LaborStatusForm.create(
+            studentSupervisee=student3,
+            department=non_active_lab_dep,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() - timedelta(days=1), 
+            endDate=date.today() + timedelta(days=10) 
+        )
+        
+        LaborStatusForm.create(
+            studentSupervisee=student4,
+            department=active_dept,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "CS Workers",
+            POSN_CODE="S61408",
+            startDate=date.today() - timedelta(days=1), 
+            endDate=date.today() + timedelta(days=10) 
+        )
+
+        LaborStatusForm.create(
+            studentSupervisee=student5,
+            department=dept,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() + timedelta(days=1), 
+            endDate=date.today() - timedelta(days=10)   
+        )
+
+        LaborStatusForm.create(
+            studentSupervisee=student6,
+            department=dept,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() - timedelta(days=1), 
+            endDate=date.today() + timedelta(days=10)  
+        )
+        LaborStatusForm.create(
+            studentSupervisee=student7,
+            department=case_sensive_name ,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() - timedelta(days=1),  # started in the past
+            endDate=date.today() + timedelta(days=10)    # ends in the future
+        )
+        LaborStatusForm.create(
+            studentSupervisee=student8,
+            department=case_sensive_name2 ,
+            termCode_id="202000",
+            supervisor_id="B12361006",
+            jobType="Primary",
+            WLS=1,
+            POSN_TITLE= "Labor Workers",
+            POSN_CODE="S61407",
+            startDate=date.today() - timedelta(days=1),  # started in the past
+            endDate=date.today() + timedelta(days=10)    # ends in the future
+        )
 
 
+        assert stu_user1.laborDepartmentStudent == True
+        assert stu_user2.laborDepartmentStudent == False
+        assert stu_user3.laborDepartmentStudent == False
+        assert stu_user4.laborDepartmentStudent == False
+        assert stu_user5.laborDepartmentStudent == False
+        assert user_non_stu.laborDepartmentStudent == False
+        assert stu_user6.laborDepartmentStudent == True
+        assert stu_user7.laborDepartmentStudent == False  #should be false  
+        assert stu_user8.laborDepartmentStudent == False
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_term_model():
