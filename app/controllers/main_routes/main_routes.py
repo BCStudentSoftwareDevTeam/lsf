@@ -21,7 +21,8 @@ from app.login_manager import require_login, logout as performlogout
 
 @main_bp.route('/logout', methods=['GET'])
 def handlelogout():  
-    performlogout() 
+    performlogout()
+    return redirect("https://secure.berea.edu/Shibboleth.sso/Logout?return=https://lsf.berea.edu/logged_out") 
    
 @main_bp.route('/', methods=['GET', 'POST'])
 def supervisorPortal():

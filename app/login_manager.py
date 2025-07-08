@@ -20,7 +20,7 @@ def logout():
     """
     if 'username' in session:
         print("Logging out", session['username'])
-    session.clear()
+        session.clear()
 
     url ="/"
     if app.config['use_shibboleth']:

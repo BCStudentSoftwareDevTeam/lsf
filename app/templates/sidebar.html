@@ -1,4 +1,12 @@
 <div id="sidebar" class="col-sm-2">
+    {% block javascript %}
+    <script type="text/javascript">
+        function preventBack(){window.history.forward();}
+        setTimeout("preventBack()", 0);
+        window.onunload=function(){null};
+    </script>
+    {% endblock %}
+
     <nav class="navbar">
       <!-- Logo -->
       <div id="logo"><img src="/static/labor-logo.png" title="Labor Program Logo" /></div>
@@ -83,7 +91,7 @@
       {% endif %}
           <div class="container-fluid">
             <div class="panel panel-default">
-                <a href="https://secure.berea.edu/Shibboleth.sso/Logout?return=https://login.berea.edu/idp/profile/Logout">
+                <a href="https://secure.berea.edu/Shibboleth.sso/Logout?return=https://lsf.berea.edu/logged_out">
                     <div class="panel-heading" tabindex="14">
                         <h4>
                             Logout
