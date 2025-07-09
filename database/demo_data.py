@@ -22,6 +22,22 @@ print("Inserting data for demo and testing purposes")
 # Students (TRACY)
 #############################
 bothStudents = [
+     {
+                "ID":"B12345773",
+                "PIDM":"57",
+                "FIRST_NAME":"Test",
+                "LAST_NAME":"Taker",
+                "CLASS_LEVEL":"Sophmore",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"student@berea.edu",
+                "STU_CPO":"700",
+                "LAST_POSN":"Media Technician",
+                "LAST_SUP_PIDM":"7"
+                },
+
                 {
                 "ID":"B00730361",
                 "PIDM":"1",
@@ -102,7 +118,7 @@ tracyStudents = [
                 "LAST_SUP_PIDM":"7"
                 },
                 {
-                "ID":"            B00888329",
+                "ID":"B00888329",
                 "PIDM":"7",
                 "FIRST_NAME":"Jeremiah",
                 "LAST_NAME":"Bullfrog",
@@ -226,7 +242,16 @@ positions = [
             "ORG" : "2114",
             "ACCOUNT":"6740",
             "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61409",
+            "POSN_TITLE": "Labor Workers",
+            "WLS": "1",
+            "ORG" : "2119",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Labor Department"
             }
+
 ]
 # Add to Tracy db
 for position in positions:
@@ -409,6 +434,14 @@ users = [
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
+        },
+        {
+        "student": "B12345773",
+        "supervisor": None,
+        "username": "test1",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
         }
         ]
 User.insert_many(users).on_conflict_replace().execute()
@@ -447,7 +480,15 @@ departments = [
               "ACCOUNT": "6740",
               "ORG": "2107",
               "departmentCompliance": 1
-            },
+            }, 
+            {
+              "departmentID":5,
+              "DEPT_NAME": "Labor Department",
+              "ACCOUNT": "6740",
+              "ORG": "2119",# add to tracy
+              "departmentCompliance": 1
+            }
+
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
 print(" * departments added")

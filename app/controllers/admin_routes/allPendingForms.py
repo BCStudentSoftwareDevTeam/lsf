@@ -23,7 +23,7 @@ from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
-from app.models.user import laborDepartmentStudent
+from app.models.user import User
 
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
@@ -35,7 +35,7 @@ def allPendingForms(formType):
             return render_template('errors/403.html'), 403
         
         laborHistory = None
-        if currentUser.student and laborDepartmentStudent(currentUser.student):
+        if currentUser.student and currentUser.laborDepartmentStudent(currentUser.student):
             laborHistory = LaborStatusForm.select().where(LaborStatusForm.student == currentUser.student.ID)
             currentUser.isLaborAdmin = True
          
