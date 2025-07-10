@@ -168,15 +168,15 @@ def test_user_model():
         )
 
 
-        assert stu_user1.laborDepartmentStudent == True
-        assert stu_user2.laborDepartmentStudent == False
-        assert stu_user3.laborDepartmentStudent == False
-        assert stu_user4.laborDepartmentStudent == False
-        assert stu_user5.laborDepartmentStudent == False
-        assert user_non_stu.laborDepartmentStudent == False
-        assert stu_user6.laborDepartmentStudent == True
-        assert stu_user7.laborDepartmentStudent == False  #should be false  
-        assert stu_user8.laborDepartmentStudent == False
+        assert stu_user1.isLaborDepartmentStudent == True
+        assert stu_user2.isLaborDepartmentStudent == False
+        assert stu_user3.isLaborDepartmentStudent == False
+        assert stu_user4.isLaborDepartmentStudent == False
+        assert stu_user5.isLaborDepartmentStudent == False
+        assert user_non_stu.isLaborDepartmentStudent == False
+        assert stu_user6.isLaborDepartmentStudent == True
+        assert stu_user7.isLaborDepartmentStudent == False  #should be false  
+        assert stu_user8.isLaborDepartmentStudent == False
         transaction.rollback()
 
 @pytest.mark.integration

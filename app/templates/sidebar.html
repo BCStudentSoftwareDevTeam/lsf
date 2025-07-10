@@ -16,7 +16,7 @@
        </div>
       {% endif %}
       
-      {% if currentUser.student and currentUser.laborDepartmentStudent%}
+      {% if currentUser.isLaborDepartmentStudent%}
       <div class="container-fluid">
           <div class="panel-group" >
               <div class="panel panel-default">
@@ -27,7 +27,7 @@
                 </a>
             </div>
           </div>
-                 <div class="panel-heading {% if request.path == "/admin/pendingForms/pendingLabor" or request.path == "/admin/pendingForms/pendingAdjustment" or request.path == "/admin/pendingForms/pendingOverload" or request.path == "/admin/pendingForms/pendingRelease" %} active {% endif %}" tabindex="9"><a href="/admin/pendingForms/pendingLabor"><h4>Pending Forms</h4></a></div>
+                <div class="panel-heading {% if request.path == "/admin/pendingForms/pendingLabor" or request.path == "/admin/pendingForms/pendingAdjustment" or request.path == "/admin/pendingForms/pendingOverload" or request.path == "/admin/pendingForms/pendingRelease" %} active {% endif %}" tabindex="9"><a href="/admin/pendingForms/pendingLabor"><h4>Pending Forms</h4></a></div>
        </div>
       {% endif %}
 

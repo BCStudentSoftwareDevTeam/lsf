@@ -22,7 +22,7 @@ class User(baseModel):
         return str(self.__dict__)
     
     @property
-    def laborDepartmentStudent(self):
+    def isLaborDepartmentStudent(self):
         if not self.student:
             return False
         
@@ -39,7 +39,6 @@ class User(baseModel):
                 (LaborStatusForm.startDate <= today) &
                 (LaborStatusForm.endDate >= today) &
                 (Department.isActive == True) &
-                # (Department.DEPT_NAME == "Labor Department") #production backup (from)
                 (fn.BINARY(Department.DEPT_NAME) == "Labor Department") # comparison case sensetive.
             )
         )

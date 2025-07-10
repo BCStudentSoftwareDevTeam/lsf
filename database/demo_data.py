@@ -547,6 +547,32 @@ FormHistory.insert([{
             "status_id": "Pending"
         }]).on_conflict_replace().execute()
 
+LaborStatusForm.insert([{
+            "laborStatusFormID": 3,
+            "termCode_id": "202000",
+            "studentName": "Test Taker",
+            "studentSupervisee_id": "B12345773",
+            "supervisor_id": "B12361006",
+            "department_id": 5,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Labor Workers",
+            "POSN_CODE": "S61409",
+            "weeklyHours": 10,
+            "startDate": "2020-04-01",
+            "endDate": "2020-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 3,
+            "formID_id": "3",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": "2020-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()    
+
+
 
 #############################
 # admin Notes
