@@ -42,9 +42,9 @@
       <div class="floatleft">
       {% for form in forms %}
       <div class="form-group">
-        <label>Student</label>
+        <label class="space"> Student</label>
         <div>
-          <input type="text" class="form-control" id="student" value="{{form.studentSupervisee.FIRST_NAME}} {{form.studentSupervisee.LAST_NAME}}" disabled></input>  <!--User CANNOT edit-->
+          <input type="text" class="form-control studentspace" id="student" value="{{form.studentSupervisee.FIRST_NAME}} {{form.studentSupervisee.LAST_NAME}}" disabled></input>  <!--User CANNOT edit-->
         </div>
       </div>
         <div class="form-group">
@@ -72,7 +72,7 @@
       <div class= "floatright" >
         <div class="form-group">
             <label><span class="tooltip-right" data-tooltip="Required">Contacted Labor Office Member<span class="required-mark">*</span></span></label>
-            <div class='form-text'><small>Note: you are required to contact the labor office before submitting the form </small></div>
+            <div class='form-text '><small>Note: you are required to contact the labor office before submitting the form </small></div>
           <div>
             <select class="selectpicker" name="contactPerson" id="contactPerson" title="Name of the person you contacted from labor office" data-width="100%">
               {% for admin in laborAdmins %}
