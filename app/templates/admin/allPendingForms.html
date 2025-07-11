@@ -21,7 +21,7 @@
 <div class="container" id="wrapper">
   <div id="pendingTabs" class="container" style='display: inline-block;'>
     <ul class="nav nav-tabs" style='text-align: center;'>
-      {% if currentUser.isLaborAdmin %}
+      {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent%}
         <li id='laborTab' {% if formType == "pendingLabor" %} class="active" {% endif %}>
           <a id="pendingLabor" href="{{url_for('admin.allPendingForms', formType = 'pendingLabor')}}"> Pending Labor Status Forms <strong>({{ laborStatusFormCounter }})</strong></a>
         </li>
@@ -29,7 +29,7 @@
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingAdjustment')}}">Pending Adjustment Forms <strong>({{ adjustedFormCounter }})</strong></a>
         </li>
         {% endif %}
-        {% if currentUser.isFinancialAidAdmin or currentUser.isLaborAdmin  or currentUser.isSaasAdmin %}
+        {% if currentUser.isFinancialAidAdmin or currentUser.isLaborAdmin  or currentUser.isSaasAdmin or currentUser.isLaborDepartmentStudent%}
         <li id='overloadTab' {% if formType == "pendingOverload" %} class="active" {% endif %}>
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingOverload')}}">Pending Overload Forms <strong>({{ overloadFormCounter }})</strong></a>
         </li>
@@ -39,12 +39,12 @@
           <a href="{{url_for('admin.allPendingForms', formType = 'completedOverload')}}">Completed Overload Forms <strong>({{ completedOverloadFormCounter }})</strong></a>
         </li>
         {% endif %}
-        {% if currentUser.isLaborAdmin %}
+        {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
         <li id='releaseTab' {% if formType == "pendingRelease" %} class="active" {% endif %}>
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingRelease')}}">Pending Release Forms <strong>({{ releaseFormCounter }})</strong></a>
         </li>
         {% endif %}
-        {% if currentUser.isLaborAdmin %}
+        {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
           <li id='preStudentApprovalTab' {% if formType == "preStudentApproval" %} class="active" {% endif %}>
             <a href="{{url_for('admin.allPendingForms', formType='preStudentApproval')}}">
                 Pre-Student Approval <strong>({{ preStudentApprovalCounter }})</strong></a>
