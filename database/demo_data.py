@@ -486,7 +486,8 @@ departments = [
               "DEPT_NAME": "Labor Department",
               "ACCOUNT": "6740",
               "ORG": "2119",# add to tracy
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             }
 
         ]
@@ -560,7 +561,7 @@ LaborStatusForm.insert([{
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
             "startDate": "2020-04-01",
-            "endDate": "2020-09-01"
+            "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
 FormHistory.insert([{

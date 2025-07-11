@@ -21,13 +21,20 @@ class User(baseModel):
     def __str__(self):
         return str(self.__dict__)
     
+    # def __init__(self,*args, **kwargs):
+    #     super().__init__(*args,**kwargs)
+    #     self._ldsCache = None
+    
     @property
     def isLaborDepartmentStudent(self):
+        if self._ldsCache is None:
+            return self._ldsCache
+       
         if not self.student:
+            self._ldsCache = False
             return False
         
         from app.models.laborStatusForm import LaborStatusForm
-
         today = date.today()
 
         labor_status_forms = (
@@ -42,8 +49,12 @@ class User(baseModel):
                 (fn.BINARY(Department.DEPT_NAME) == "Labor Department") # comparison case sensetive.
             )
         )
-        return labor_status_forms.exists()
+       
+        self._ldsCache = labor_status_forms.exists()
+        return self._ldsCache
         
+        
+
     @property
     def firstName(self):
         if self.supervisor:
