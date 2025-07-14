@@ -43,6 +43,7 @@
       {% for form in forms %}
       <div class="form-group">
         <label class="space"> Student</label>
+        <div class='form-text '></br></div> <!-- Space for the student name to align with the right side -->
         <div>
           <input type="text" class="form-control studentspace" id="student" value="{{form.studentSupervisee.FIRST_NAME}} {{form.studentSupervisee.LAST_NAME}}" disabled></input>  <!--User CANNOT edit-->
         </div>
@@ -72,12 +73,11 @@
       <div class= "floatright" >
         <div class="form-group">
             <label><span class="tooltip-right" data-tooltip="Required">Contacted Labor Office Member<span class="required-mark">*</span></span></label>
-            <div class='form-text '><small>Note: you are required to contact the labor office before submitting the form </small></div>
+            <div class='form-text'><small>Note: you are required to contact the labor office before submitting the form </small></div>
           <div>
             <select class="selectpicker" name="contactPerson" id="contactPerson" title="Name of the person you contacted from labor office" data-width="100%">
               {% for admin in laborAdmins %}
-                {% set user = admin.supervisor if admin.supervisor else admin.student %}
-                <option value="{{admin.username}}">{{user.FIRST_NAME}} {{user.LAST_NAME}} </option>
+                <option value="{{admin.username}}">{{admin.fullName}} </option>
               {% endfor %}
             </select>
           </div>
