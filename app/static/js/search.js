@@ -1,5 +1,12 @@
 // Creates a dom fragment from html, rather than having to add dom elements
 // https://love2dev.com/blog/inserting-html-using-createdocumentfragment-instead-of-using-jquery/
+
+
+$(document).ready(function(){
+  $('#searchBoxContainer').children('.dropdown, .bootstrap-select, .form-control').addClass('open')
+  $('[type="search"], .form-control').focus();
+})
+
 function createFragment(htmlStr) {
     let frag = document.createDocumentFragment(), temp = document.createElement('div');
     temp.innerHTML = htmlStr;
