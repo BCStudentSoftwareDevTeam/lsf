@@ -2,6 +2,7 @@
     <nav class="navbar">
       <!-- Logo -->
       <div id="logo"><img src="/static/labor-logo.png" title="Labor Program Logo" /></div>
+<<<<<<< HEAD
       
       {% if currentUser.isLaborDepartmentStudent%}
       <div class="container-fluid">
@@ -29,7 +30,53 @@
             </div>
         </div>
       {% endif %}
+=======
+>>>>>>> d661aa8288cf400824aaf156a51b45a9e067ae7a
 
+        {% if currentUser.student and currentUser.isLaborDepartmentStudent %}
+        <div class="container-fluid">
+            <div class="panel-group active">
+                <!-- Labor History Panel -->
+                <div class="panel panel-default">
+                    <a href="/laborHistory/{{ currentUser.student.ID }}">
+                        <div class="panel-heading">
+                            <h4>Labor History</h4>
+                        </div>
+                    </a>        
+                </div>
+
+                <!-- Pending Forms Panel -->
+                <div class="panel-heading {% if request.path in [
+                        '/admin/pendingForms/pendingLabor',
+                        '/admin/pendingForms/pendingAdjustment',
+                        '/admin/pendingForms/pendingOverload',
+                        '/admin/pendingForms/pendingRelease'
+                    ] %}panel-default{% endif %}" tabindex="9">
+                    <a href="/admin/pendingForms/pendingLabor">
+                        <h4 style="color: aliceblue">Pending Forms</h4>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+  
+        {% if currentUser.student and not(currentUser.isLaborDepartmentStudent)%}
+        <div class="container-fluid">
+            <div class="panel-group" >
+                <div class="panel panel-default">
+                    <a href='/laborHistory/{{currentUser.student.ID}}'>
+                        <div class="panel-heading">
+                            <h4>Labor History</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+      {% endif %}
+     
+      
+  
   
       {% if currentUser.supervisor %}
         <div class="container-fluid">
