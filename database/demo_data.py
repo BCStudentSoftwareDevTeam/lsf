@@ -487,11 +487,7 @@ departments = [
               "ACCOUNT": "6740",
               "ORG": "2119",# add to tracy
               "departmentCompliance": 1,
-<<<<<<< HEAD
               "isActive": 1
-=======
-              "isActive" :1 #Active for test
->>>>>>> d661aa8288cf400824aaf156a51b45a9e067ae7a
             }
 
         ]
@@ -564,11 +560,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
-<<<<<<< HEAD
             "startDate": "2020-04-01",
-=======
-            "startDate": "2022-04-01",
->>>>>>> d661aa8288cf400824aaf156a51b45a9e067ae7a
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
