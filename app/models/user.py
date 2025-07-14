@@ -6,6 +6,7 @@ from peewee import CharField
 
 from datetime import date
 from app.models.department import Department
+from peewee import CharField, fn
 
 
 # Capitalized fields are originally pulled from tracy
@@ -21,13 +22,13 @@ class User(baseModel):
     def __str__(self):
         return str(self.__dict__)
     
-    # def __init__(self,*args, **kwargs):
-    #     super().__init__(*args,**kwargs)
-    #     self._ldsCache = None
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self._ldsCache = None
     
     @property
     def isLaborDepartmentStudent(self):
-        if self._ldsCache is None:
+        if self._ldsCache is not None:
             return self._ldsCache
        
         if not self.student:
