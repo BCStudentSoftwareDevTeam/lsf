@@ -49,7 +49,7 @@ def laborReleaseForm(laborStatusKey):
             releaseReason = request.form.get("notes")
             releaseCondition = request.form.get("condition")
             releaseContactUsername = request.form.get("contactPerson")
-            releaseContactPerson = User.select().where(User.username == releaseContactUsername).get()
+            releaseContactPerson = User.get(User.username == releaseContactUsername)
 
             createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
 
