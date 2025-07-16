@@ -23,8 +23,6 @@ from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
-from app.models.user import User
-
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):

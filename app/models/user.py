@@ -9,6 +9,7 @@ from app.models.department import Department
 from peewee import CharField, fn
 
 
+
 # Capitalized fields are originally pulled from tracy
 class User(baseModel):
     userID              = PrimaryKeyField()
@@ -24,35 +25,56 @@ class User(baseModel):
     
     def __init__(self,*args, **kwargs):
         super().__init__(*args,**kwargs)
-        self._ldsCache = None
-    
+        self._ldsCache = None  
+
     @property
     def isLaborDepartmentStudent(self):
-        if self._ldsCache is not None:
-            return self._ldsCache
-       
-        if not self.student:
-            self._ldsCache = False
-            return False
-        
-        from app.models.laborStatusForm import LaborStatusForm
-        today = date.today()
+        if self._ldsCache is None:
+            if not self.student:
+                self._ldsCache = False
+            else:
+                from app.models.laborStatusForm import LaborStatusForm
+                from app.models.formHistory import FormHistory
+                from app.models.status import Status
+                today = date.today()
 
-        labor_status_forms = (
-            LaborStatusForm
-            .select()
-            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-            .where(
-                (LaborStatusForm.studentSupervisee == self.student) &
-                (LaborStatusForm.startDate <= today) &
-                (LaborStatusForm.endDate >= today) &
-                (Department.isActive == True) &
-                (fn.BINARY(Department.DEPT_NAME) == "Labor Department") # comparison case sensetive.
-            )
-        )
-       
-        self._ldsCache = labor_status_forms.exists()
-        return self._ldsCache
+                # Get the approved status record
+                try:
+                    approved_status = Status.get(Status.statusName == "Approved")
+                except Status.DoesNotExist:
+                    # If no approved status exists, no forms can be approved
+                    self._ldsCache = False
+                    return self._ldsCache
+                
+
+                # Subquery to check if student has an approved release form
+                released_forms = (
+                    FormHistory
+                    .select(FormHistory.formID)
+                    .where(
+                        (FormHistory.releaseForm.is_null(False)) &  # Has a release form
+                        (FormHistory.status == approved_status)     # Release form is approved
+                    )
+                )
+
+                labor_status_forms = (
+                    LaborStatusForm
+                    .select()
+                    .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                    .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                    .where(
+                        (LaborStatusForm.studentSupervisee == self.student) &
+                        (LaborStatusForm.startDate <= today) &
+                        (LaborStatusForm.endDate >= today) &
+                        (Department.isActive == True) &
+                        (fn.BINARY(Department.DEPT_NAME) == "Labor Department")& # comparison case sensetive.
+                        (FormHistory.status == approved_status)& # Ensure form is approved
+                        ~(LaborStatusForm.laborStatusFormID.in_(released_forms))  # Exclude released students
+                    )
+                )
+            
+                self._ldsCache = labor_status_forms.exists()
+                return self._ldsCache
         
         
 
