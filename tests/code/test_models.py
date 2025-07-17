@@ -73,19 +73,18 @@ def test_user_model():
         case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True) #checking the case sensitiveness of the department name.
         case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the spelling sensetivity of the department name.
 
-
-        student1 = Student.create(ID="B12345773")
-        student2 = Student.create(ID="B12345783")
-        student3 = Student.create(ID="B12345784")
-        student4 = Student.create(ID="B12345785")
-        student5 = Student.create(ID="B12345786") 
-        student6 = Student.create(ID="B12345787") #multiple valid students working in the Active Labor Dep
-        student7 = Student.create(ID="B12345788")
-        student8 = Student.create(ID="B12345789")
-        student9 = Student.create(ID="B12345790", legal_name="Test Nine", preferred_name="Test9")
-        student10 = Student.create(ID="B12345791", legal_name="Test Ten", preferred_name="Test10")
-        student11 = Student.create(ID="B12345792", legal_name="Test Eleven", preferred_name="Test11")
-        student12 = Student.create(ID="B12345793", legal_name="Test Twelve", preferred_name="Test12")
+        student1, _ = Student.get_or_create(ID="B12345773")
+        student2, _ = Student.get_or_create(ID="B12345783")
+        student3, _ = Student.get_or_create(ID="B12345784")
+        student4, _ = Student.get_or_create(ID="B12345785")
+        student5, _ = Student.get_or_create(ID="B12345786") 
+        student6, _ = Student.get_or_create(ID="B12345787") 
+        student7, _ = Student.get_or_create(ID="B12345788")
+        student8, _ = Student.get_or_create(ID="B12345789")
+        student9, _ = Student.get_or_create(ID="B12345790")
+        student10, _ = Student.get_or_create(ID="B12345791")
+        student11, _ = Student.get_or_create(ID="B12345792")
+        student12, _ = Student.get_or_create(ID="B12345793")
    
         # Create users
         stu_user1 = User.create(username="tester",student=student1)
