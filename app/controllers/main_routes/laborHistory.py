@@ -39,6 +39,7 @@ def laborhistory(id):
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
                                           FormHistory.historyType.historyTypeName == "Labor Status Form"))
+        print(studentForms, "Student Forms ")
         authorizedForms = studentForms.distinct()
         print("#"*60)
         print(authorizedForms)
@@ -82,7 +83,9 @@ def downloadFormHistory():
     """
     try:
         data = request.form
+        print("Data received for download: ", data)
         historyList = data["listOfForms"].split(',')
+        print(historyList, "History List")
         excel = CSVMaker("studentHistory", historyList, includeEvals = True)
         return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
     except:
