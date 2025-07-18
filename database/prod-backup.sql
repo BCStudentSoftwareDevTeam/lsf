@@ -913,7 +913,7 @@ CREATE TABLE `status` (
 
 LOCK TABLES `status` WRITE;
 /*!40000 ALTER TABLE `status` DISABLE KEYS */;
-INSERT INTO `status` VALUES ('Approved'),('Approved'),('Denied by Admin'),('Denied by Student'),('Overload Pending'),('Pending'),('Pre-Student Approval');
+INSERT INTO `status` VALUES ('Approved'),('Denied by Admin'),('Denied by Student'),('Overload Pending'),('Pending'),('Pre-Student Approval');
 /*!40000 ALTER TABLE `status` ENABLE KEYS */;
 UNLOCK TABLES;
 
