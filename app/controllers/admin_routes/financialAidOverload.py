@@ -33,7 +33,7 @@ def financialAidOverload(formHistoryID):
     # IF YES: populate the "Current Position" Fields with the information from that labor status form.
     allLaborStatusForms = (LaborStatusForm.select()
                                 .join(FormHistory)
-                                .where(FormHistory.status_id.in_(["Approved", "Approved Reluctantly", "Pending"]),
+                                .where(FormHistory.status_id.in_(["Approved", "Pending"]),
                                        FormHistory.historyType_id == "Labor Status Form",
                                        LaborStatusForm.studentSupervisee == lsfForm.studentSupervisee.ID,
                                        LaborStatusForm.termCode == lsfForm.termCode))

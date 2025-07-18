@@ -176,7 +176,7 @@ function runFormSearchQuery(button) {
       departmentID = ""
       supervisorID = "currentUser"
       studentID = ""
-      formStatusList = ["Approved", "Approved Reluctantly"]
+      formStatusList = ["Approved"]
       if (view == "simple") { // avoid duplicates in the table
         formTypeList = ["Labor Status Form"]
       }
