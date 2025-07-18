@@ -14,10 +14,7 @@
   <h1>Labor History</h1>
     <span id="studentName">{{student.FIRST_NAME}} {{student.LAST_NAME}} </span> <a href="mailto:{{student.STU_EMAIL}}" id="studentName"><span id="mailtoIcon" class="glyphicon glyphicon-envelope"></span></a>
     <br><span class="h4">{{student.ID}} </span>
-    <form method="POST" action="/laborHistory/download">
-      <input hidden name="listOfForms" value="{{laborStatusFormList}}" />
-      <div style="width:50%; margin-bottom:0.5%" align= "right" id="editor"><button  type="submit" value="Submit" class="btn btn-success" id="downloadButton">Download</button></div>
-    </form>
+    <div style="width:50%; margin-bottom:0.5%" align= "right" id="editor"><input  type="button" value="Download" class="btn btn-success" id="downloadHistoryListButton" /></div>
 
     <div align= "center">
       <table class="table" id="positionTable" >

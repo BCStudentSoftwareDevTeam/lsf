@@ -36,6 +36,34 @@ $("#modal").on('transitionend', function(){ //Had to search for css element visi
   $('#emailLabor').on('click', mailToLabor);
 })
 
+$("#downloadHistoryListButton").on('click', function(e){
+  e.preventDefault();
+  let table = $('#positionTable');
+  let historyList = [];
+
+  table.find('tr').each(function(){
+    let formID = $(this).find('td').attr('id');
+    if(formID){
+      historyList.push(formID);
+    }
+  });
+    
+  // Get the data from the server to download them as a CSV file
+  $.ajax({
+    url: '/laborHistory/download',
+    method: 'POST',
+    data: { "listOfFormIDs": historyList },
+    success: function(response) {
+      // Handle successful download
+      window.location.href = response.download_url;
+    },
+    error: function() {
+      // Handle download error
+      console.log("Download failed");
+    }
+  });
+});
+
 function mailToLabor(){
   let subject = `Labor Position Question about ${$('#studentDetails').text()}`
   subject= subject.replace(/\s+/g, ' ')

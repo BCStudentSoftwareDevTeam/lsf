@@ -62,7 +62,7 @@ def laborhistory(id):
         
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
 
-        laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
+        laborStatusFormList = ','.join([str(form.formID) for form in studentForms])
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
@@ -82,13 +82,15 @@ def downloadFormHistory():
     This function downloads the created excel sheet of the history from the page.
     """
     try:
-        data = request.form
-        print("Data received for download: ", data)
-        historyList = data["listOfForms"].split(',')
-        print(historyList, "History List")
-        excel = CSVMaker("studentHistory", historyList, includeEvals = True)
-        return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
-    except:
+        dataIds =  request.form.getlist('listOfFormIDs[]')
+        laborStatusForms = FormHistory.select().where(FormHistory.formID.in_(dataIds))
+
+        excel = CSVMaker("studentHistory", laborStatusForms, includeEvals=False)
+        download_url = url_for('static', filename='files/studentHistory.csv')
+        return jsonify({"download_url": download_url})
+
+    except Exception as e:
+        print("Error",e)
         return render_template('errors/500.html'), 500
 
 @main_bp.route('/laborHistory/modal/<statusKey>', methods=['GET'])
