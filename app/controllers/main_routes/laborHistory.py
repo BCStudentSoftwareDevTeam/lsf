@@ -39,7 +39,6 @@ def laborhistory(id):
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
                                           FormHistory.historyType.historyTypeName == "Labor Status Form"))
-        print(studentForms, "Student Forms ")
         authorizedForms = studentForms.distinct()
         print("#"*60)
         print(authorizedForms)

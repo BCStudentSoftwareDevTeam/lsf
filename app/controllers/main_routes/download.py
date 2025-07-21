@@ -10,7 +10,6 @@ class CSVMaker:
     '''
     def __init__(self, downloadName, requestedLSFs: ModelSelect, includeEvals = False, additionalSpreadsheetFields: list[str] = []):
         self.relativePath = f'static/files/{downloadName}.csv'
-        print("path", self.relativePath)
         self.completePath = 'app/' + self.relativePath
         self.additionalSpreadsheetFields = (self._validateAdditionalSpreadsheetFields(additionalSpreadsheetFields))
         self.formHistories = requestedLSFs 
