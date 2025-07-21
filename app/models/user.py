@@ -1,8 +1,6 @@
 from app.models import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
-# from app import login
-
 from datetime import date
 from app.models.department import Department
 from peewee import CharField, fn
@@ -36,10 +34,8 @@ class User(baseModel):
             return self._ldsCache
 
         from app.models.laborStatusForm import LaborStatusForm
-        from app.models.formHistory import FormHistory, HistoryType
-        # from app.models.status import Status
+        from app.models.formHistory import FormHistory
         today = date.today()
-        approved_status = "Approved"
 
         # Subquery to check if student has an approved release form
         released_forms = (
@@ -47,7 +43,7 @@ class User(baseModel):
             .select(FormHistory.formID)
             .where(
                 (FormHistory.releaseForm.is_null(False)) &  # Has a release form
-                (FormHistory.status == approved_status)     # Release form is approved
+                (FormHistory.status == "Approved")     # Release form is approved
             )
         )
 
@@ -55,15 +51,17 @@ class User(baseModel):
             LaborStatusForm
             .select()
             .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-            .join(FormHistory, JOIN.LEFT_OUTER, on=((FormHistory.formID == LaborStatusForm.laborStatusFormID) &
-            (FormHistory.historyType == "Contract")))
+            .join(FormHistory, on=(
+            (FormHistory.formID == LaborStatusForm.laborStatusFormID) &
+            (FormHistory.historyType == "Labor Status Form")  # Filter by Labor Status history type
+        ))
             .where(
                 (LaborStatusForm.studentSupervisee == self.student) &
                 (LaborStatusForm.startDate <= today) &
                 (LaborStatusForm.endDate >= today) &
                 (Department.isActive == True) &
                 (fn.BINARY(Department.DEPT_NAME) == "Labor Department") & 
-                ((FormHistory.status == approved_status) | (FormHistory.status.is_null())) & 
+                (FormHistory.status == "Approved") & 
                 (LaborStatusForm.laborStatusFormID.not_in(released_forms))  
             )
         )

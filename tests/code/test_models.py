@@ -56,14 +56,14 @@ def test_user_model():
 
         # Get or create history types
         try:
-            labor_history_type = HistoryType.get(HistoryType.historyTypeName == "Labor Status")
+            labor_history_type = HistoryType.get(HistoryType.historyTypeName == "Labor Status Form")
         except HistoryType.DoesNotExist:
-            labor_history_type = HistoryType.create(historyTypeName="Labor Status")
-        
+            labor_history_type = HistoryType.create(historyTypeName="Labor Status Form")
+
         try:
-            release_history_type = HistoryType.get(HistoryType.historyTypeName == "Labor Release")
+            release_history_type = HistoryType.get(HistoryType.historyTypeName == "Labor Release Form")
         except HistoryType.DoesNotExist:
-            release_history_type = HistoryType.create(historyTypeName="Labor Release")
+            release_history_type = HistoryType.create(historyTypeName="Labor Release Form")
             
 
         dept = Department.create(DEPT_NAME="Labor Department", isActive=True) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
