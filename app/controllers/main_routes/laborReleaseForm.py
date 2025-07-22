@@ -26,8 +26,15 @@ def laborReleaseForm(laborStatusKey):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     forms = LaborStatusForm.select().distinct().where(LaborStatusForm.laborStatusFormID == laborStatusKey)
-    laborAdmins = User.select().where(User.isLaborAdmin == 1)
-
+#    laborAdmins = User.select().where(User.isLaborAdmin == True).order_by(User.LAST_NAME.asc(), User.FIRST_NAME.asc())
+#    laborAdmins = (Supervisor.select().join(User).where((User.isLaborAdmin == True)).order_by(Supervisor.legal_name, Supervisor.LAST_NAME))
+    laborAdmins = (
+        User
+        .select(User, Supervisor)
+        .join(Supervisor, JOIN.INNER)
+        .where(User.isLaborAdmin == True)
+        .order_by(+Supervisor.legal_name, +Supervisor.LAST_NAME)
+    )
     if(request.method == 'POST'):
         try:
             historyForms = FormHistory.select().where((FormHistory.formID == laborStatusKey) & (FormHistory.releaseForm != None))
