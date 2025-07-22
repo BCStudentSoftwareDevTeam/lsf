@@ -1,12 +1,11 @@
-// Creates a dom fragment from html, rather than having to add dom elements
-// https://love2dev.com/blog/inserting-html-using-createdocumentfragment-instead-of-using-jquery/
-
-
+// Focus and expand the search box on page load
 $(document).ready(function(){
   $('#searchBoxContainer').children('.dropdown, .bootstrap-select, .form-control').addClass('open')
   $('[type="search"], .form-control').focus();
 })
 
+// Creates a dom fragment from html, rather than having to add dom elements
+// https://love2dev.com/blog/inserting-html-using-createdocumentfragment-instead-of-using-jquery/
 function createFragment(htmlStr) {
     let frag = document.createDocumentFragment(), temp = document.createElement('div');
     temp.innerHTML = htmlStr;
