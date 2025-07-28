@@ -66,12 +66,12 @@ def test_user_model():
             release_history_type = HistoryType.create(historyTypeName="Labor Release Form")
             
 
-        dept = Department.create(DEPT_NAME="Labor Department", isActive=True) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
-        inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
-        non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
-        active_dept = Department.create(DEPT_NAME="CS Department", isActive=True) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
-        case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True) #checking the case sensitiveness of the department name.
-        case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True) #checking the spelling sensetivity of the department name.
+        dept = Department.create(DEPT_NAME="Labor Department", isActive=True, ACCOUNT=6740, ORG=4022) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
+        inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False, ACCOUNT=6740, ORG=4187) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
+        non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False, ACCOUNT=6740, ORG=4187) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
+        active_dept = Department.create(DEPT_NAME="CS Department", isActive=True, ACCOUNT=6740, ORG=4187) #checks if stu_user4 isn't Labor Dep Student Worker if the dep is Active
+        case_sensive_name = Department.create(DEPT_NAME="labor department", isActive=True, ACCOUNT=6740, ORG=4187) #checking the case sensitiveness of the department name.
+        case_sensive_name2 = Department.create(DEPT_NAME="labour dep", isActive=True, ACCOUNT=6740, ORG=4187) #checking the spelling sensetivity of the department name.
 
         student1, _ = Student.get_or_create(ID="B12345773")
         student2, _ = Student.get_or_create(ID="B12345783")
@@ -246,7 +246,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf1,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf1,  
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -257,7 +257,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf2,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf2,  
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -268,7 +268,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf3,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf3,  
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -279,7 +279,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf4,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf4, 
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -290,7 +290,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf5,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf5,  
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -301,7 +301,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf6,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf6, 
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -312,7 +312,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf7,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf7, 
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -323,7 +323,7 @@ def test_user_model():
         )
 
         FormHistory.create(
-            formID=lsf8,  # You'll need to capture the LaborStatusForm when creating it
+            formID=lsf8,  
             historyType=labor_history_type,
             createdBy=sup_user,
             createdDate=date.today(),
@@ -423,14 +423,15 @@ def test_user_model():
         )
 
 
+                # Test assertions
         assert stu_user1.isLaborDepartmentStudent == True
         assert stu_user2.isLaborDepartmentStudent == False
         assert stu_user3.isLaborDepartmentStudent == False
-        assert stu_user4.isLaborDepartmentStudent == False
+        assert stu_user4.isLaborDepartmentStudent == True  # Active dept with ACCOUNT=6740, ORG=4187
         assert stu_user5.isLaborDepartmentStudent == False
         assert stu_user6.isLaborDepartmentStudent == True
-        assert stu_user7.isLaborDepartmentStudent == False  #should be false  
-        assert stu_user8.isLaborDepartmentStudent == False
+        assert stu_user7.isLaborDepartmentStudent == True  # Valid ORG and ACCOUNT
+        assert stu_user8.isLaborDepartmentStudent == True  # Valid ORG and ACCOUNT
         assert stu_user9.isLaborDepartmentStudent == False  # Pending form (not approved)
         assert stu_user10.isLaborDepartmentStudent == False  # Has approved release form
         assert stu_user11.isLaborDepartmentStudent == True  # Has denied release form (still active)
