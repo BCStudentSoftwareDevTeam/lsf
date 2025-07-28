@@ -60,7 +60,8 @@ class User(baseModel):
                 (LaborStatusForm.startDate <= today) &
                 (LaborStatusForm.endDate >= today) &
                 (Department.isActive == True) &
-                (fn.BINARY(Department.DEPT_NAME) == "Labor Department") & 
+                (Department.ACCOUNT == 6740) &
+                (Department.ORG.in_([4022, 4187])) & 
                 (FormHistory.status == "Approved") & 
                 (LaborStatusForm.laborStatusFormID.not_in(released_forms))  
             )

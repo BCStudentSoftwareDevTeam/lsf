@@ -247,7 +247,7 @@ positions = [
             "POSN_CODE": "S61409",
             "POSN_TITLE": "Labor Workers",
             "WLS": "1",
-            "ORG" : "2119",
+            "ORG" : "4022",
             "ACCOUNT":"6740",
             "DEPT_NAME":"Labor Department"
             }
@@ -485,7 +485,7 @@ departments = [
               "departmentID":5,
               "DEPT_NAME": "Labor Department",
               "ACCOUNT": "6740",
-              "ORG": "2119",# add to tracy
+              "ORG": "4022",
               "departmentCompliance": 1,
               "isActive": 1
             }
