@@ -41,9 +41,11 @@ class User(baseModel):
         released_forms = (
             FormHistory
             .select(FormHistory.formID)
+            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
             .where(
                 (FormHistory.releaseForm.is_null(False)) &  # Has a release form
-                (FormHistory.status == "Approved")     # Release form is approved
+                (FormHistory.status == "Approved") &     # Release form is approved
+                (LaborStatusForm.studentSupervisee == self.student) # Only for this student
             )
         )
 
