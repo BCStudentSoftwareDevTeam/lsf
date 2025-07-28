@@ -28,6 +28,7 @@
           <thead>
             <tr>
               <th scope="col">Condition at Release</th>
+              <th scope="col">Contacted from Labor Office</th>
               <th scope="col">Release Request Date</th>
               <th scope="col">Date Submitted</th>
             </tr>
@@ -35,6 +36,7 @@
           <tbody>
             <tr>
               <td style="text-align:center">{{form.releaseForm.conditionAtRelease}}</td>
+              <td style="text-align:center">{{form.releaseForm.contactPerson.supervisor.FIRST_NAME}} {{form.releaseForm.contactPerson.supervisor.LAST_NAME}}</td>
               <td style="text-align:center">{{form.releaseForm.releaseDate.strftime('%m/%d/%y')}}</td>
               <td style="text-align:center">{{form.createdDate.strftime('%m/%d/%y')}}</td>
             </tr>

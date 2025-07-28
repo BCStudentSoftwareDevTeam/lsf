@@ -113,9 +113,15 @@
         <div class="smallDataMargin">
           <div class="row" style="padding-top:5px">
             <p class="col-sm-4 releaseTopRows pTag">Condition at Release:</p>
-          <div class="col-sm-7" align="left">
-            <p>{{form.releaseForm.conditionAtRelease}}</p>
+            <div class="col-sm-7" align="left">
+              <p>{{form.releaseForm.conditionAtRelease}}</p>
+            </div>
           </div>
+          <div class="row" style="padding-top:5px">
+            <p class="col-sm-4 releaseTopRows pTag">Contact from Labor Office</p>
+            <div class="col-sm-7" align="left">
+              <p>{{form.releaseForm.contactPerson.supervisor.FIRST_NAME}} {{form.releaseForm.contactPerson.supervisor.LAST_NAME}} </p> 
+            </div>
           </div>
           <div class="row">
             <p class="col-sm-4 releaseTopRows pTag" align="left">Release Date:</p>
