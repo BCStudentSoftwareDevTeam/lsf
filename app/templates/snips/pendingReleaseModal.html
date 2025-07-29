@@ -56,9 +56,14 @@
           </label>
         </div>
         <div id="notesTextAreaRelease" class="notesTextArea">
+         
+          <span aria-hidden="true" style="color:red; float: left; margin-right: 5px;"><strong>*</strong></span>
           <textarea id='releaseNotes' class="finalNote" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a note"></textarea>
           <p id="banner-warning" style="color:blue;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>Please ensure the student's form has been updated in <strong>Banner</strong> before approving the release form.</strong></p>
+          <p class="notesTextAreaRelease-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>A Note is required in order to submit</strong></p>
         </div>
+
+
         <div id="denyTextAreaRelease" class="denyTextArea" style="display:None">
           <p class="required-error" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong> This field is required</strong></p>
           <textarea id='denyReleaseReason' class="finalDeny" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial"></textarea>
