@@ -514,9 +514,10 @@ function submitRelease(formHistoryID) {
       'formHistoryID': formHistoryID
     }
     if ($('#denyRelease').is(':checked')) {
-      if ($("#denyReleaseReason").val() == "") {
+      if ($("#denyReleaseReason").val().trim() == "") {
         $("#denyReleaseReason").focus();
-        $(".required-error").show();
+        // $(".required-error").show();
+        $(".denyNotesRelease-warning").show();
         createAJAX = false;
       } else {
         $('.required-error').hide();
