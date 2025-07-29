@@ -24,15 +24,15 @@ from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
 
-
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
     try:
         cookieId = str(uuid.uuid4())
         currentUser = require_login()
         if not currentUser:                    # Not logged in
-            return render_template('errors/403.html'), 403
-        if not currentUser.isLaborAdmin:       # Not an admin
+            return render_template('errors/403.html'), 403      
+    
+        if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):       # Not an admin
             if currentUser.student: # logged in as a student
                 return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor and not currentUser.isFinancialAidAdmin and not currentUser.isSaasAdmin:
@@ -47,7 +47,7 @@ def allPendingForms(formType):
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
         preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm.is_null()).count()
 
-        if currentUser.isLaborAdmin:
+        if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
             overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
             overloadFormCounter = FormHistory.select().join_from(FormHistory, OverloadForm)\
@@ -132,7 +132,7 @@ def allPendingForms(formType):
                 baseQuery = (baseQuery.where(FormHistory.historyType == "Labor Overload Form")
                                       .where((FormHistory.overloadForm.SAASApproved == 'Approved') | (FormHistory.overloadForm.SAASApproved == 'Denied by Admin')))
 
-        if currentUser.isLaborAdmin:
+        if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
             if formType == "pendingOverload":
                 baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
             elif formType == "preStudentApproval":
@@ -195,6 +195,7 @@ def allPendingForms(formType):
             )
         return result
     
+    
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
@@ -250,7 +251,7 @@ def downloadAllPendingForms():
     additionalSpreadsheetFields = []
     if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
         additionalSpreadsheetFields.append("overloads")
-    elif not currentUser.isLaborAdmin:
+    elif not currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
         abort(403)
     
     excel = CSVMaker(
@@ -281,7 +282,7 @@ def finalUpdateStatus(raw_status):
     currentUser = require_login()
     if not currentUser:                    # Not logged in
         return render_template('errors/403.html'), 403
-    if not currentUser.isLaborAdmin:       # Not an admin
+    if not currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:       # Not an admin
         return render_template('errors/403.html'), 403
 
     if raw_status == 'approved':
@@ -480,7 +481,7 @@ def insertNotes(formId):
         currentDate = datetime.now().strftime("%Y-%m-%d")  # formats the date to match the peewee format for the database
 
         if stripresponse:
-            if currentUser.isLaborAdmin:
+            if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
                 Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "Labor Note") # creates a new entry in the laborOfficeNotes table
             elif currentUser.isFinancialAidAdmin:
                 Notes.create(formID=formId, createdBy=currentUser, date=currentDate, notesContents=stripresponse, noteType = "Financial Aid Note")
@@ -700,7 +701,7 @@ def modalFormUpdate():
     """
     try:
         currentUser = require_login()
-        if not currentUser.isLaborAdmin and not (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin):
+        if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent) and not (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin):
             abort(403)
         rsp = eval(request.data.decode("utf-8"))
         if rsp:
@@ -722,7 +723,7 @@ def modalFormUpdate():
                 # This try is to handle Overload Forms
                 if historyForm.overloadForm:
                     overloadForm = historyForm.overloadForm
-                    if currentUser.isLaborAdmin:
+                    if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
                         laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email)
                     elif currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
                         financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate)
