@@ -231,3 +231,13 @@ def emailDuringBreak(secondLSFBreak, term):
         email.laborStatusFormSubmitted()
         if(len(isOneLSF["previousSupervisorNames"]) > 1): #Student has more than one lsf. Send email to both supervisors and student
             email.notifyAdditionalLaborStatusFormSubmittedForBreak()
+
+
+def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
+    allTermForms = LaborStatusForm.select() \
+                   .join_from(LaborStatusForm, Student) \
+                   .join_from(LaborStatusForm, FormHistory) \
+                   .where((LaborStatusForm.termCode == lsf.termCode) &
+                         (LaborStatusForm.studentSupervisee.ID == lsf.studentSupervisee.ID) &
+                         ~(FormHistory.status % "Denied%") &
+                         (FormHistory.historyType == "Labor Status Form"))

@@ -6,8 +6,8 @@ from app.login_manager import require_login
 from flask import Flask, redirect, url_for, flash, jsonify
 from app.models.supervisor import Supervisor
 from app.models.student import Student
-from app.logic.tracy import Tracy, createStudentFromTracy
-from app.logic.userInsertFunctions import createSupervisorFromTracy, createUser
+from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
 from app.logic.adminManagement import searchForAdmin,  getUser, addAdmin, removeAdmin
 from app.logic.utils import adminFlashMessage
 

@@ -7,7 +7,7 @@ from app.logic.emailHandler import *
 from app.logic.utils import makeThirdPartyLink
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.logic.tracy import Tracy
-
+from app.logic.statusFormFunctions import createOverloadForm
 
 
 def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
@@ -86,14 +86,7 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         return adjustedFormHistory.formHistoryID
     
 
-def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
-    allTermForms = LaborStatusForm.select() \
-                   .join_from(LaborStatusForm, Student) \
-                   .join_from(LaborStatusForm, FormHistory) \
-                   .where((LaborStatusForm.termCode == lsf.termCode) &
-                         (LaborStatusForm.studentSupervisee.ID == lsf.studentSupervisee.ID) &
-                         ~(FormHistory.status % "Denied%") &
-                         (FormHistory.historyType == "Labor Status Form"))
+
 
 
     previousTotalHours = 0

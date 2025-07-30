@@ -23,8 +23,7 @@ from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.logic.download import CSVMaker
-from app.logic.supervisorAdjustment import checkAdjustment
-from app.logic.allPendingForms import saveStatus, laborAdminOverloadApproval, financialAidSAASOverloadApproval, modal_approval_and_denial_data
+from app.logic.allPendingForms import saveStatus, laborAdminOverloadApproval, financialAidSAASOverloadApproval, modal_approval_and_denial_data, checkAdjustment
 
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])

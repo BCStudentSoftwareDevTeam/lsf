@@ -2,8 +2,7 @@ from peewee import DoesNotExist
 from app.models.user import User
 from app.logic.tracy import Tracy
 from flask import request, flash
-from app.logic.userInsertFunctions import createSupervisorFromTracy, createUser
-from app.logic.tracy import createStudentFromTracy 
+from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
 
 
 def searchForAdmin(rsp):
