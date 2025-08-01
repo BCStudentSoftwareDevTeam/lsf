@@ -64,13 +64,6 @@ def getUser(selectpickerID):
     return user
 
 
-def adminFlashMessage(user, action, adminType):
-    message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
-
-    if action == 'added':
-        flash(message, "success")
-    elif action == 'removed':
-        flash(message, "danger") 
 
 def addAdmin(newAdmin, adminType):
     if adminType == 'labor':

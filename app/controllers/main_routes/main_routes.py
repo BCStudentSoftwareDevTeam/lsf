@@ -21,7 +21,7 @@ def logout():
 def supervisorPortal():
     '''
     When the request is GET the function populates the General Search interface dropdown menus with their corresponding values.
-    If the request is POST it also populates the datatable with data based on user input.
+    If the request is POST it also populates the datatable with data based on S input.
     '''
     currentUser = require_login()
     if not currentUser or not currentUser.supervisor:

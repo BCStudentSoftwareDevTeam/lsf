@@ -257,7 +257,7 @@ def financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, curr
 
 def checkAdjustment(allForms):
     """
-        Retrieve supervisor and position information for adjusted forms using the new values
+        Retrieve `supervisor` and position information for adjusted forms using the new values
         stored in adjusted table and update allForms
     """
     if allForms.adjustedForm:
