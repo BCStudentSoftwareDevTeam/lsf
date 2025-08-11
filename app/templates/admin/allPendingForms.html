@@ -204,7 +204,7 @@
                   {% include "snips/pendingNotesModal.html" %}
                   <button class="btn btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown" onclick="notesCounter({{allForms.formID.laborStatusFormID}}, {{allForms.formHistoryID}})">Actions
                     <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1" style="min-width: 100%;">
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1" style="min-width: 100%;">
                     {% if allForms.historyType.historyTypeName == 'Labor Overload Form' %}
                         <li role="presentation">
                         {% if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
@@ -229,14 +229,13 @@
                                 onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
                     {% else %}
                         <li role="presentation"><a role="menuitem" href="#">
-                          <span id="reject_{{allForms.formHistoryID}}"
-                                onclick="insertDenial({{allForms.formHistoryID}})"
+                          <span onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
                                 data-target="#denyModal">Deny</span></a></li>
                     {% endif %}
                     {% if allForms.historyType.historyTypeName == 'Labor Status Form' %}
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
-                            <span id="edit_{{allForms.formID.laborStatusFormID}}">Modify</span></a></li>
+                            <span >Modify</span></a></li>
                     {% endif %}
                         <li role="presentation"><a role="menuitem" href="#">
                           <span id="notes_{{allForms.formHistoryID}}"
@@ -245,10 +244,12 @@
                                 data-target="#NotesModal">View Notes</span></a></li>
                     {% if formType == 'preStudentApproval' %}
                         <li role="presentation"><a role="menuitem" href="#">
-                          <span id="pending_{{allForms.formHistoryID}}"
-                                onclick="skipApproval({{allForms.formID.laborStatusFormID}})"
+                          <span onclick="skipApproval({{allForms.formID.laborStatusFormID}})"
                                 data-toggle="modal"
                                 data-target="#skipApprovalModal">Skip Student Approval</span></a></li>
+                        <li role="presentation"><a role="menuitem" href="#">
+                          <span onclick="resendApprovalLink({{allForms.formID.laborStatusFormID}})">
+                              Re-send Approval Email</span></a></li>
                     {% endif %}
                   </ul>
                 </div>

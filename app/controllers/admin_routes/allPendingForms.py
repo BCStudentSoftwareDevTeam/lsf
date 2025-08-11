@@ -11,7 +11,7 @@ from app.models.adjustedForm import AdjustedForm
 from app.models.emailTracker import EmailTracker
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
-from app.logic.emailHandler import *
+from app.logic.emailHandler import emailHandler
 from app.logic.utils import makeThirdPartyLink
 from app.models.formHistory import *
 from app.models.term import Term
@@ -20,6 +20,7 @@ from app.logic.tracy import Tracy
 from datetime import datetime, date
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
+from app.models.student import Student
 from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
@@ -319,6 +320,30 @@ def skipStudentApproval():
         flash("Error skipping student approval. Please try again.","danger")
 
     return redirect('/admin/pendingForms/preStudentApproval')
+
+@admin.route('/admin/resendStudentConfirmation/<formID>', methods=['POST'])
+def resendStudentConfirmation(formID):
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):       # Not an admin
+        return render_template('errors/403.html'), 403
+
+    try:
+        # get the base form history for the given labor status form
+        formhistory = FormHistory.get(FormHistory.formID == formID, FormHistory.historyType == "Labor Status Form")
+
+        # resend but only to students
+        emailer = emailHandler(formhistory.formHistoryID)
+        if formhistory.formID.termCode.isBreak:
+            emailer.checkRecipient("Break Labor Status Form Submitted For Student")
+        else:
+            emailer.checkRecipient("Labor Status Form Submitted For Student")
+
+        return jsonify({"student_email":formhistory.formID.studentSupervisee.STU_EMAIL});
+
+    except Exception as e:
+        print("Error sending confirmation email. Invalid Form ID.", e)
+        flash("Error sending confirmation email. Please try again.","danger")
+        abort(500)
+
 
 
 @admin.route('/admin/updateStatus/<raw_status>', methods=['POST'])

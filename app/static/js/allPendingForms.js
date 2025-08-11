@@ -250,6 +250,17 @@ function skipApproval(formId) {
     $("#skipApprovalFormID").val(formId);
 }
 
+// send another link to the confirmation page and renew the expiration time
+function resendApprovalLink(formId) {
+  $.ajax({
+    type: "POST",
+    url: "/admin/resendStudentConfirmation/" + formId,
+    contentType: 'application/json',
+    success: function(response) {
+        msgFlash("New confirmation email sent to " + response['student_email'],"success")
+    }
+  });
+}
 
 function getNotes(formId) {
   $.ajax({
