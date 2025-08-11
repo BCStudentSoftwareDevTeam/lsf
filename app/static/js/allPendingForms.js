@@ -245,6 +245,11 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
   });
 }
 
+// make sure the modal has the id we are talking about
+function skipApproval(formId) {
+    $("#skipApprovalFormID").val(formId);
+}
+
 
 function getNotes(formId) {
   $.ajax({
@@ -340,6 +345,7 @@ function finalDeny() {
 
 function clearTextArea() { //makes sure that it empties text areas and p tags when modal is closed
   $("#notesText").val("");
+  $("#skipNote").val("");
   $("#laborNotesText").val("");
 }
 

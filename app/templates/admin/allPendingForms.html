@@ -242,6 +242,13 @@
                                 onclick="getNotes({{allForms.formID.laborStatusFormID}})"
                                 data-toggle="modal"
                                 data-target="#NotesModal">View Notes</span></a></li>
+                    {% if formType == 'preStudentApproval' %}
+                        <li role="presentation"><a role="menuitem" href="#">
+                          <span id="pending_{{allForms.formHistoryID}}"
+                                onclick="skipApproval({{allForms.formID.laborStatusFormID}})"
+                                data-toggle="modal"
+                                data-target="#skipApprovalModal">Skip Student Approval</span></a></li>
+                    {% endif %}
                   </ul>
                 </div>
               </td>
@@ -269,4 +276,31 @@
     </div>
   </div>
 </div>
+
+{# ##############################################################
+   Skip Approval Modal
+   ##############################################################}
+<div class="modal fade" id="skipApprovalModal" tabindex="-1" role="dialog" aria-labelledby="skipModalLabel" aria-describedby="skipModalBody">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="/admin/skipStudentApproval" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick= "clearTextArea()"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title" id="skipModalLabel">Skip Student Approval</h3>
+      </div>
+      <div class="modal-body" id="skipModalBody">
+          <input type="hidden" name="formID" id="skipApprovalFormID" />
+          <label class=" control-label text-left" for="skipNote">Enter Note:</label>
+          <textarea id="skipNote" name="skipNote" rows="4" cols="70" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick= "clearTextArea()">Close</button>
+        <input type="submit" class="btn btn-primary" value="Send to Pending" />
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- END OF MODAL -->
+
 {% endblock %}

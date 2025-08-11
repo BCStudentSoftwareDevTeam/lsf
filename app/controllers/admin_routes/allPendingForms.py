@@ -1,4 +1,4 @@
-from flask import abort, flash, jsonify, redirect, send_file, make_response
+from flask import abort, flash, jsonify, redirect, send_file, make_response, g
 import uuid
 import json
 from peewee import JOIN
@@ -23,6 +23,7 @@ from app.models.supervisor import Supervisor
 from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
+from app.models import mainDB
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
@@ -275,6 +276,50 @@ def approved_and_denied_Forms():
     except Exception as e:
         print(e)
         return jsonify({"Success": False}),500
+
+@admin.route('/admin/skipStudentApproval', methods=['POST'])
+def skipStudentApproval():
+    '''
+    Mark a form as approved by the student and update status to pending
+    '''
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
+        abort(403)
+
+    note = "Skipping Student Approval: " + request.form.get("skipNote")
+    formID = request.form.get("formID")
+
+    # TODO should pull this out into a function in a logic file after PR #494 is merged
+
+    # Update form history status
+    try:
+        form = LaborStatusForm.get_by_id(formID)
+    except DoesNotExist:
+        flash("Invalid form ID provided", "danger")
+        abort(404)
+
+    # make sure our database changes happen all at once
+    try:
+        with mainDB.atomic():
+            form.studentConfirmation = True
+            form.studentResponseDate = date.today()
+            form.save()
+
+            # Get the form history record. XXX Currently restricted to original lsf.
+            formHistory = FormHistory.get_or_none(FormHistory.formID == form.laborStatusFormID, 
+                                                  FormHistory.historyType == "Labor Status Form")
+            if formHistory:
+                formHistory.status = "Pending"
+                formHistory.save()
+
+            # Add Labor note
+            Notes.create(formID=form.laborStatusFormID, createdBy=g.currentUser, date=date.today(), notesContents=note, noteType = "Labor Note")
+
+    except Exception as e:
+        print("Error skipping student approval", e)
+        flash("Error skipping student approval. Please try again.","danger")
+
+    return redirect('/admin/pendingForms/preStudentApproval')
+
 
 @admin.route('/admin/updateStatus/<raw_status>', methods=['POST'])
 def finalUpdateStatus(raw_status):
