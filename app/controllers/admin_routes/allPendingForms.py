@@ -17,6 +17,7 @@ from app.models.formHistory import *
 from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import calculateExpirationDate
 from datetime import datetime, date
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
@@ -329,6 +330,10 @@ def resendStudentConfirmation(formID):
     try:
         # get the base form history for the given labor status form
         formhistory = FormHistory.get(FormHistory.formID == formID, FormHistory.historyType == "Labor Status Form")
+
+        # make a new expiration date
+        formhistory.formID.studentExpirationDate = calculateExpirationDate()
+        formhistory.formID.save()
 
         # resend but only to students
         emailer = emailHandler(formhistory.formHistoryID)
