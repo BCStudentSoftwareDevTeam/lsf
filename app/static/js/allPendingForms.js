@@ -133,15 +133,16 @@ function finalApproval() { //this method changes the status of the lsf from pend
   $("#approvalModal").data("bs.modal").options.backdrop = "static";
   $("#approvalModal").data("bs.modal").options.keyboard = false;
   var data = JSON.stringify(labor_details_ids);
+
+  newStatus = (true) ? "pending" : "approved";
   $.ajax({
     type: "POST",
-    url: "/admin/updateStatus/approved",
+    url: "/admin/updateStatus/" + newStatus,
     datatype: "json",
     data: data,
     contentType: 'application/json',
     success: function(response) {
-      if (response) {
-        if (response.success) {
+      if (response && response.success) {
           $(".btn").prop("disabled", false);
           $(".close").prop("disabled", false);
           $("#approveModalButton").text("Approve");
@@ -157,7 +158,6 @@ function finalApproval() { //this method changes the status of the lsf from pend
           catch(e){
             location.reload(true);
           }
-        }
       }
     }
   });

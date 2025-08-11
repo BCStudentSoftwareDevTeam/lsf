@@ -80,7 +80,7 @@
           <!-- Made empty header tags because we need to hide the header -->
           <thead id="headTable" text-align="center">
             <tr id="tableHeaders" class="tableHeaders">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType != "preStudentApproval" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
                 <th><input type="checkbox" id="checkAll"/></th>
               {% endif %}
               {% if formType == "pendingOverload" or formType == "preStudentApproval" %}
@@ -106,7 +106,7 @@
             <!--  -->
             {% for allForms in formList %}
             <tr id="tableData" class="tableData" align="center">
-              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" and formType !="preStudentApproval" %}
+              {% if formType != "pendingOverload" and formType != "pendingRelease" and formType !="completedOverload" %}
                 {% if allForms.formHistoryID in pendingOverloadFormPairs %}
                   <td> {# REDIRECT #}
                     {% with modalTarget = modalTarget %}
@@ -257,6 +257,7 @@
           </tbody>
         </table>
         {% if formType != 'pendingOverload' and formType != 'pendingRelease' and formType != 'completedOverload'%}
+            {% set buttonText = "Approve Selected" if formType == 'pendingLabor' else "Skip Student Approval for Selected" %}
         <div style='float:left'>
           <button
             id="approveSelected"
@@ -264,10 +265,10 @@
             type="button"
             class="btn btn-newcolor"
             onclick="insertApprovals();"
-            value="Approve Selected"
+            value="{{buttonText}} Forms"
             data-target="#approvalModal"
             data-toggle="modal">
-            Approve Selected
+              {{buttonText}} Forms
           </button>
         {% include "snips/pendingApprovalModal.html" %}
         </div>
