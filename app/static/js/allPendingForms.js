@@ -134,7 +134,7 @@ function finalApproval() { //this method changes the status of the lsf from pend
   $("#approvalModal").data("bs.modal").options.keyboard = false;
   var data = JSON.stringify(labor_details_ids);
 
-  newStatus = (true) ? "pending" : "approved";
+  newStatus = ($("#formType").val() == "preStudentApproval") ? "pending" : "approved";
   $.ajax({
     type: "POST",
     url: "/admin/updateStatus/" + newStatus,
