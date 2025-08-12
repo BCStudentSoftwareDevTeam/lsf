@@ -7,7 +7,7 @@ $(document).ready(function () {
   $('#switchViewButton').on('click', function () {
     // toggle the view and button value
     buttonVal = $("#switchViewButton").val()
-    switchViewButton(buttonVal)
+    switchViewButton((buttonVal == "simple") ? "advanced" : "simple")
 
     // we can just rerun the form search query as it pulls down the value
     // of the button to determine what button to render
@@ -104,10 +104,10 @@ $(document).ready(function () {
     // using the cookies, make sure the view is properly set as well
     if (cookieJSON.view == 'advanced') {
       createDataTable(cookieStr)
-      switchViewButton('simple')
+      switchViewButton('advanced')
     } else {
       fetchSimpleView(cookieStr)
-      switchViewButton('advanced')
+      switchViewButton('simple')
     }
     setFormSearchValues(cookieJSON)
 
@@ -155,7 +155,7 @@ function disableButtonHandler() {
 }
 
 function runFormSearchQuery(button) {
-  let view = $('#switchViewButton').val()
+  let currentView = $('#switchViewButton').val()
   let termCode, departmentID, supervisorID, studentID;
   let formStatusList = [];
   let formTypeList = [];
@@ -177,7 +177,7 @@ function runFormSearchQuery(button) {
       supervisorID = "currentUser"
       studentID = ""
       formStatusList = ["Approved", "Approved Reluctantly"]
-      if (view == "simple") { // avoid duplicates in the table
+      if (currentView == "simple") { // avoid duplicates in the table
         formTypeList = ["Labor Status Form"]
       }
       break;
@@ -196,7 +196,7 @@ function runFormSearchQuery(button) {
       supervisorID = ""
       studentID = ""
       formStatusList = []
-      if (view == "simple") { // avoid duplicates in the table
+      if (currentView == "simple") { // avoid duplicates in the table
         formTypeList = ["Labor Status Form"]
       }
       break;
@@ -211,7 +211,7 @@ function runFormSearchQuery(button) {
   }
 
   queryDict = {
-    'view': view,
+    'view': currentView,
     'termCode': termCode,
     'departmentID': departmentID,
     'supervisorID': supervisorID,
@@ -226,7 +226,7 @@ function runFormSearchQuery(button) {
 
   var inAnHour = new Date(new Date().getTime() + 60 * 60 * 1000);
   Cookies.set('lsfSearchResults', data, { expires: inAnHour })
-  if (view === 'advanced') {
+  if (currentView === 'advanced') {
     createDataTable(data)
   } else {
     fetchSimpleView(data)
@@ -247,8 +247,8 @@ function resetColumns(columnFieldMap) {
   })
 }
 
-function switchViewButton(view) {
-  if (view == 'advanced') {
+function switchViewButton(targetView) {
+  if (targetView == 'simple') {
     $('#switchViewButton').val('simple')
     $('#switchViewButton').html('Switch To Advanced View')
     resetColumns(simpleColumnFieldMap) 
@@ -312,7 +312,7 @@ function createDataTable(data) {
   $('#sortByButton').show()
 
   // default ordering upon initialization is term
-  $('#formSearchTable').DataTable({
+  let table = $('#formSearchTable').DataTable({
     responsive: true,
     destroy: true,
     searching: false, // we may want to enable this at some point, think it may require custom logic on our end, though.
@@ -333,11 +333,11 @@ function createDataTable(data) {
       url: "/",
       type: "POST",
       data: { 'data': data },
-      dataSrc: "data",
-      success: function(response){
-        updateDownloadButton(response)
-      }
     }
+  });
+  // catch the ajax data returning. Can't use the 'success' callback
+  table.on('xhr.dt', function(e, settings, json, xhr) {
+    updateDownloadButton(json)
   });
 
 }
