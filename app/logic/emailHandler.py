@@ -55,11 +55,16 @@ class emailHandler():
                 pass
 
         self.link = ""
-        self.confirmationLink = ""
         self.releaseReason = ""
         self.releaseDate = ""
         self.newAdjustmentField = ""
         self.oldAdjustmentField = ""
+
+        # generating a confirmation link for student approval
+        self.confirmationLink = ""
+        if self.laborStatusForm.confirmationToken:
+            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
+
 
         if self.formHistory.adjustedForm:
             if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
@@ -114,13 +119,6 @@ class emailHandler():
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self):
-        try:
-            # generating a link for confirmation for student
-            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
-
-        except Student.DoesNotExist:
-            print("Error: Student record not found.")
-            return
 
         # Submit the forms for secondary, break, and regular
         if self.laborStatusForm.jobType == 'Secondary':

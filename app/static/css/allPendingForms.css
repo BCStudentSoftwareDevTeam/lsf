@@ -102,3 +102,8 @@ a.hover_indicator:active {
 .form-check-label{
   font-weight: normal;
 }
+
+#pendingForms th {
+  text-align: center !important;
+}
+

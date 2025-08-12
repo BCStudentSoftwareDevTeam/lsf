@@ -1,9 +1,9 @@
 import operator
 from flask import render_template, request, json, jsonify, redirect, url_for, send_file, g, make_response
 from functools import reduce
-from peewee import fn
+from peewee import fn, Case
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -191,18 +191,45 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     the HTML for the datatables are also formatted here.
     '''
     if view == "simple":
-        formattedData = []
+        formattedData = {}
+        todaysDate = date.today()
+        filteredSearchResults.order_by(FormHistory.formID.startDate.desc())
+        isMostCurrent = False
         for form in filteredSearchResults:
-            # The order in which you append the items to 'record' matters and it should match the order of columns on the table!
-            formattedData.append([f"""
-                <a href="/laborHistory/{form.formID.studentSupervisee.ID}">
-                    <span class="h4">{form.formID.studentSupervisee.FIRST_NAME} {form.formID.studentSupervisee.LAST_NAME} ({form.formID.studentSupervisee.ID})</span>
+            startDate = form.formID.startDate
+            endDate = form.formID.endDate
+            bNumber = form.formID.studentSupervisee.ID
+            if bNumber not in formattedData:
+                absentInFormatting = True
+            else:
+                absentInFormatting = False 
+                isMostCurrent = (startDate > formattedData[bNumber][1]) or (startDate <= todaysDate <= endDate)
+            if absentInFormatting or isMostCurrent:
+                
+                # html fields
+                firstName, lastName = form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME
+                term = form.formID.termCode.termName
+                positionTitle = form.formID.POSN_TITLE
+                jobType = form.formID.jobType
+                departmentName = form.formID.department.DEPT_NAME
+                statusFormId = form.formID.laborStatusFormID
+
+                html = f"""
+                <a href="/laborHistory/{bNumber}">
+                    <span class="h4">{firstName} {lastName} ({bNumber})</span>
                 </a>
                 <span class="pushRight">{form.status}</span>
                 <br>
-                <span class="pushLeft h6"> {form.formID.termCode.termName} - <a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE} ({form.formID.jobType})</span></a> - {form.formID.department.DEPT_NAME}</span>
-            """])
-        return formattedData
+                <span class="pushLeft h6">
+                    {term} - <a><span onclick=loadFormHistoryModal({statusFormId})>{positionTitle} ({jobType})</span></a> - {departmentName}
+                </span>
+                """
+
+                formattedData[bNumber] = (html, startDate, endDate)
+
+        formattedDataList = [[value] for value, _, _ in formattedData.values()]
+
+        return formattedDataList
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     studentHTML = '<div><a href="/laborHistory/{}">{}</a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
