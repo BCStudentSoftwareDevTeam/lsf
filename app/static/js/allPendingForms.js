@@ -133,15 +133,16 @@ function finalApproval() { //this method changes the status of the lsf from pend
   $("#approvalModal").data("bs.modal").options.backdrop = "static";
   $("#approvalModal").data("bs.modal").options.keyboard = false;
   var data = JSON.stringify(labor_details_ids);
+
+  newStatus = ($("#formType").val() == "preStudentApproval") ? "pending" : "approved";
   $.ajax({
     type: "POST",
-    url: "/admin/updateStatus/approved",
+    url: "/admin/updateStatus/" + newStatus,
     datatype: "json",
     data: data,
     contentType: 'application/json',
     success: function(response) {
-      if (response) {
-        if (response.success) {
+      if (response && response.success) {
           $(".btn").prop("disabled", false);
           $(".close").prop("disabled", false);
           $("#approveModalButton").text("Approve");
@@ -157,7 +158,6 @@ function finalApproval() { //this method changes the status of the lsf from pend
           catch(e){
             location.reload(true);
           }
-        }
       }
     }
   });
@@ -245,6 +245,22 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
   });
 }
 
+// make sure the modal has the id we are talking about
+function skipApproval(formId) {
+    $("#skipApprovalFormID").val(formId);
+}
+
+// send another link to the confirmation page and renew the expiration time
+function resendApprovalLink(formId) {
+  $.ajax({
+    type: "POST",
+    url: "/admin/resendStudentConfirmation/" + formId,
+    contentType: 'application/json',
+    success: function(response) {
+        msgFlash("New confirmation email sent to " + response['student_email'],"success")
+    }
+  });
+}
 
 function getNotes(formId) {
   $.ajax({
@@ -340,6 +356,7 @@ function finalDeny() {
 
 function clearTextArea() { //makes sure that it empties text areas and p tags when modal is closed
   $("#notesText").val("");
+  $("#skipNote").val("");
   $("#laborNotesText").val("");
 }
 
