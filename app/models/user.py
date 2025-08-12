@@ -1,8 +1,10 @@
 from app.models import *
 from app.models.student import Student
 from app.models.supervisor import Supervisor
-from peewee import CharField
-# from app import login
+from datetime import date
+from app.models.department import Department
+from peewee import CharField, fn
+
 
 
 # Capitalized fields are originally pulled from tracy
@@ -17,6 +19,58 @@ class User(baseModel):
 
     def __str__(self):
         return str(self.__dict__)
+    
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self._ldsCache = None  
+
+    @property
+    def isLaborDepartmentStudent(self):
+        if self._ldsCache is not None:  
+            return self._ldsCache
+            
+        if not self.student:
+            self._ldsCache = False
+            return self._ldsCache
+
+        from app.models.laborStatusForm import LaborStatusForm
+        from app.models.formHistory import FormHistory
+        today = date.today()
+
+        # Subquery to check if student has an approved release form
+        released_forms = (
+            FormHistory
+            .select(FormHistory.formID)
+            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+            .where(
+                (FormHistory.releaseForm.is_null(False)) &  # Has a release form
+                (FormHistory.status == "Approved") &     # Release form is approved
+                (LaborStatusForm.studentSupervisee == self.student) # Only for this student
+            )
+        )
+
+        labor_status_forms = (
+            LaborStatusForm
+            .select()
+            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+            .join(FormHistory, on=(
+            (FormHistory.formID == LaborStatusForm.laborStatusFormID) &
+            (FormHistory.historyType == "Labor Status Form")  # Filter by Labor Status history type
+        ))
+            .where(
+                (LaborStatusForm.studentSupervisee == self.student) &
+                (LaborStatusForm.startDate <= today) &
+                (LaborStatusForm.endDate >= today) &
+                (Department.isActive == True) &
+                (Department.ACCOUNT == 6740) &
+                (Department.ORG.in_([4022, 4187])) & 
+                (FormHistory.status == "Approved") & 
+                (LaborStatusForm.laborStatusFormID.not_in(released_forms))  
+            )
+        )
+
+        self._ldsCache = labor_status_forms.exists()
+        return self._ldsCache   
 
     @property
     def firstName(self):
