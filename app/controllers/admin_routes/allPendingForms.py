@@ -1,7 +1,8 @@
+from datetime import datetime, date
 from flask import abort, flash, jsonify, redirect, send_file, make_response, g
-import uuid
 import json
 from peewee import JOIN
+
 from app.login_manager import *
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
@@ -18,7 +19,6 @@ from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import calculateExpirationDate
-from datetime import datetime, date
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
 from app.models.student import Student
@@ -26,11 +26,11 @@ from app.models.historyType import HistoryType
 from app.models.department import Department
 from app.controllers.main_routes.download import CSVMaker
 from app.models import mainDB
+from app.logic.download import saveFormSearchResult, retrieveFormSearchResult
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
     try:
-        cookieId = str(uuid.uuid4())
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403      
@@ -144,7 +144,10 @@ def allPendingForms(formType):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-        formIds = [form.formHistoryID for form in formList]
+
+        # store forms in database for later download
+        downloadId = saveFormSearchResult(pageTitle, formList, formType)
+
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -164,7 +167,6 @@ def allPendingForms(formType):
             'admin/allPendingForms.html',
             title=pageTitle,
             username=currentUser.username,
-            cookieId=cookieId,
             pageTitle=pageTitle,
             formList = formList,
             formType= formType,
@@ -175,27 +177,9 @@ def allPendingForms(formType):
             releaseFormCounter = releaseFormCounter,
             preStudentApprovalCounter = preStudentApprovalCounter,
             completedOverloadFormCounter = completedOverloadFormCounter,
-            pendingOverloadFormPairs = pendingOverloadFormPairs
+            pendingOverloadFormPairs = pendingOverloadFormPairs,
+            downloadId = downloadId
         ))
-        if formIds:
-            result.set_cookie(
-                key=f'downloadName_{cookieId}',
-                value=pageTitle,
-                max_age=3600,
-                httponly=True,
-            )
-            result.set_cookie(
-                key=f'formIds_{cookieId}',
-                value=json.dumps(formIds),
-                max_age=3600,
-                httponly=True,
-            )
-            result.set_cookie(
-                key=f'formType_{cookieId}',
-                value=formType,
-                max_age=3600,
-                httponly=True,
-            )
         return result
     
     
@@ -237,29 +221,23 @@ def checkAdjustment(allForms):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    cookieId = request.form.get('cookieId')
-    if not cookieId:
-        print(f"[ERROR] Missing cookie for request to {request.path}. Possible tampered or expired cookie.")
-        return render_template('errors/500.html'), 500
-    
-    formIds = json.loads(request.cookies.get(f'formIds_{cookieId}'))
-    downloadName = request.cookies.get(f'downloadName_{cookieId}')
-    if not formIds:
-        print(f"[ERROR] Missing forms for download. There are either no results to be downloaded or another error has occured.")
-        return render_template('errors/500.html'), 500
-    
-    allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds)).order_by(-FormHistory.createdDate)
-    currentUser = require_login()
+    searchResult = retrieveFormSearchResult(request.form.get('downloadId'))
+    if not searchResult:
+        print(f"[ERROR] Missing or invalid download id was provided by the user.")
+        abort(500)
+
+    formHistoryIds = json.loads(searchResult.formHistoryIds)
+    formHistories = FormHistory.select().where(FormHistory.formHistoryID.in_(formHistoryIds)).order_by(-FormHistory.createdDate)
 
     additionalSpreadsheetFields = []
-    if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+    if g.currentUser.isFinancialAidAdmin or g.currentUser.isSaasAdmin:
         additionalSpreadsheetFields.append("overloads")
     elif not currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
         abort(403)
     
     excel = CSVMaker(
-        downloadName, 
-        requestedLSFs = allPendingFormsSelectObject, 
+        searchResult.name, 
+        requestedLSFs = formHistories, 
         additionalSpreadsheetFields=additionalSpreadsheetFields
     )
 
@@ -643,12 +621,7 @@ def getOverloadModalData(formHistoryID):
                             'FinancialAidApprover': FinancialAidApprover,
                             })
         noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID).count()
-        cookieId = request.args.get('cookieId')
         returnToTab = None
-        try:
-            returnToTab = request.cookies.get(f'formType_{cookieId}')
-        except Exception as e:
-            pass
         return render_template('snips/pendingOverloadModal.html',
                                             historyForm = historyForm,
                                             departmentStatusInfo = departmentStatusInfo,

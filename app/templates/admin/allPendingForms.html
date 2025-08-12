@@ -53,7 +53,7 @@
         {% endif %}
         <li class="pull-right">
             <form method="POST" action="/admin/pendingForms/download">
-              <input type="hidden" name="cookieId" value="{{ cookieId }}">
+              <input type="hidden" name="downloadId" value="{{ downloadId }}">
               <button class="btn btn-success" id="download"
               {% if formType == "pendingLabor" and laborStatusFormCounter == 0 %}
                 disabled
