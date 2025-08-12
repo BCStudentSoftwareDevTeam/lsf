@@ -13,17 +13,15 @@ $(document).ready(function() {
     targetsList = [8]
   } else if ($('#overloadTab').hasClass('active')) {
     targetsList = [9]
-  } else if ($('#adjustedTab').hasClass('active')) {
+  } else if ($('#adjustedTab').hasClass('active') || $('#preStudentApprovalTab').hasClass('active')) {
     targetsList = [0, 10]
-  } else if ($('#preStudentApprovalTab').hasClass('active')) {
-      targetsList = [9];
   } else {
     targetsList = [0, 9]
   }
 
 
   // If overload tab has been clicked, then we
-  table = $('#pendingForms, #statusForms, #adjustedForms, #releaseForms').DataTable({
+  table = $('#pendingForms').DataTable({
     'columnDefs': [{
       'orderable': false,
       'targets': targetsList
