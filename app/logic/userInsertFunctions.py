@@ -473,7 +473,7 @@ def checkForPrimaryPosition(termCode, student, currentUser):
                     finalStatus["position"] = lastPrimaryPosition.formID.POSN_CODE +" - "+lastPrimaryPosition.formID.POSN_TITLE + " (" + lastPrimaryPosition.formID.WLS + ")"
                     finalStatus["hours"] = lastPrimaryPosition.formID.jobType + " (" + str(lastPrimaryPosition.formID.weeklyHours) + ")"
                     finalStatus["isLaborAdmin"] = currentUser.isLaborAdmin
-                    if lastPrimaryPosition.status == "Approved" or lastPrimaryPosition.status == "Approved Reluctantly":
+                    if lastPrimaryPosition.status.statusName == "Approved" or lastPrimaryPosition.status.statusName == "Approved Reluctantly":
                         finalStatus["approvedForm"] = True
             else: # New form is secondary
                 if lastPrimaryPosition.status_id in ["Approved", "Approved Reluctantly", "Pending"]:
