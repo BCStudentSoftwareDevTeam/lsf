@@ -259,7 +259,7 @@
           </tbody>
         </table>
         {% if formType != 'pendingOverload' and formType != 'pendingRelease' and formType != 'completedOverload'%}
-            {% set buttonText = "Approve Selected" if formType == 'pendingLabor' else "Skip Student Approval for Selected" %}
+            {% set buttonText = "Skip Student Approval for Selected" if formType == 'preStudentApproval' else "Approve Selected" %}
         <div style='float:left'>
           <button
             id="approveSelected"
