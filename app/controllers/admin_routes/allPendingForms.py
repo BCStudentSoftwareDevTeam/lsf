@@ -367,6 +367,8 @@ def saveStatus(new_status, formHistoryIds, currentUser):
             formHistory.reviewedDate = date.today()
             formHistory.reviewedBy = currentUser
 
+            formType = formHistory.historyType_id
+
             # Add a note if we've skipped to Pending
             if new_status == 'Pending':
                 note = "Skipped Student Approval"
@@ -379,7 +381,8 @@ def saveStatus(new_status, formHistoryIds, currentUser):
 
             # Add to BANNER
             save_status = True # default true so that we will still save in other cases
-            if new_status == 'Approved' and formHistory.historyType == "Labor Status Form" and formHistory.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
+
+            if new_status == 'Approved' and formType == "Labor Status Form" and formHistory.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
                 if formHistory.formID.POSN_CODE == "SNOLAB":
                        formHistory.formID.weeklyHours = 10
                 conn = Banner()
@@ -394,11 +397,11 @@ def saveStatus(new_status, formHistoryIds, currentUser):
 
                 # Send necessary emails from the status change
                 email = emailHandler(formHistory.formHistoryID)
-                if new_status == "Denied by Admin" and formHistory.historyType == "Labor Status Form":
+                if new_status == "Denied by Admin" and formType == "Labor Status Form":
                     email.laborStatusFormRejected()
-                if new_status == "Approved" and formHistory.historyType == "Labor Status Form":
+                if new_status == "Approved" and formType == "Labor Status Form":
                     email.laborStatusFormApproved()
-                if new_status == "Approved" and formHistory.historyType == "Labor Adjustment Form":
+                if new_status == "Approved" and formType == "Labor Adjustment Form":
                     # This function is triggered whenever an adjustment form is approved.
                     # The following function overrides the original data in lsf with the new data from adjustment form.
                     LSF = LaborStatusForm.get_by_id(formHistory.formID)
