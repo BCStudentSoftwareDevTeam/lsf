@@ -197,49 +197,40 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
     return jsonify({"Success": True})
 
 
-#method extracts data from the data base to papulate pending form approvale modal
-def modal_approval_and_denial_data(approval_ids):
+# extract data from the database to populate pending form approval modal
+def modal_approval_and_denial_data(formHistoryIdList):
     ''' This method grabs the data that populated the on approve modal for lsf'''
 
-    id_list = []
-    for formHistoryID in approval_ids:
-        formHistory = FormHistory.get(FormHistory.formHistoryID == int(formHistoryID))
-        fhistory_id = LaborStatusForm.select().join(FormHistory).where(FormHistory.formHistoryID == int(formHistoryID)).get()
-        student_details = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == fhistory_id)
-        student_firstname, student_lastname = student_details.studentSupervisee.FIRST_NAME, student_details.studentSupervisee.LAST_NAME
-        student_name = str(student_firstname) + " " + str(student_lastname)
-        student_pos = student_details.POSN_TITLE
-        supervisor_firstname, supervisor_lastname = student_details.supervisor.FIRST_NAME, student_details.supervisor.LAST_NAME
-        supervisor_name = str(supervisor_firstname) + " " + str(supervisor_lastname)
-        student_hours = student_details.weeklyHours
-        student_hours_ch = student_details.contractHours
-        student_dept = student_details.department.DEPT_NAME
+    details_list = []
+    for fhID in formHistoryIdList:
+        formHistory = FormHistory.get(FormHistory.formHistoryID == fhID)
+        lsf = formHistory.formID
+
+        studentName = f"{lsf.studentSupervisee.FIRST_NAME} {lsf.studentSupervisee.LAST_NAME}"
+        position = lsf.POSN_TITLE
+        supervisorName = f"{lsf.supervisor.FIRST_NAME} {lsf.supervisor.LAST_NAME}"
+        weeklyHours = lsf.weeklyHours
+        contractHours = lsf.contractHours
+        deptName = lsf.department.DEPT_NAME
 
         if formHistory.adjustedForm:
-            if formHistory.adjustedForm.fieldAdjusted == "position":
-                position = Tracy().getPositionFromCode(formHistory.adjustedForm.newValue)
-                student_pos = position.POSN_TITLE
-            if formHistory.adjustedForm.fieldAdjusted == "supervisor":
-                supervisor = Supervisor.get(Supervisor.ID == formHistory.adjustedForm.newValue)
-                supervisor_firstname, supervisor_lastname = supervisor.FIRST_NAME, supervisor.LAST_NAME
-                supervisor_name = str(supervisor_firstname) +" "+ str(supervisor_lastname)
-            if formHistory.adjustedForm.fieldAdjusted == "weeklyHours":
-                student_hours = formHistory.adjustedForm.newValue
-            if formHistory.adjustedForm.fieldAdjusted == "contractHours":
-                student_hours_ch = formHistory.adjustedForm.newValue
-            if formHistory.adjustedForm.fieldAdjusted == "department":
-                department = Department.get(Department.ORG==formHistory.adjustedForm.newValue)
-                student_dept = department.DEPT_NAME
+            match formHistory.adjustedForm.fieldAdjusted:
+                case "position":
+                    position = Tracy().getPositionFromCode(formHistory.adjustedForm.newValue)
+                    position = position.POSN_TITLE
+                case "supervisor":
+                    supervisor = Supervisor.get(Supervisor.ID == formHistory.adjustedForm.newValue)
+                    supervisorName = f"{supervisor.FIRST_NAME} {supervisor.LAST_NAME}"
+                case "weeklyHours":
+                    weeklyHours = formHistory.adjustedForm.newValue
+                case "contractHours":
+                    contractHours = formHistory.adjustedForm.newValue
+                case "department":
+                    deptName = Department.get(Department.ORG==formHistory.adjustedForm.newValue).DEPT_NAME
 
-        tempList = []
-        tempList.append(student_name)
-        tempList.append(student_dept)
-        tempList.append(student_pos)
-        tempList.append(str(student_hours))
-        tempList.append(str(student_hours_ch))
-        tempList.append(supervisor_name)
-        id_list.append(tempList)
-    return(id_list)
+        details_list.append([studentName, deptName, position, str(weeklyHours),str(contractHours), supervisorName])
+
+    return details_list
 
 
 def financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate):
