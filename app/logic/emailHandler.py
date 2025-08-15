@@ -55,11 +55,16 @@ class emailHandler():
                 pass
 
         self.link = ""
-        self.confirmationLink = ""
         self.releaseReason = ""
         self.releaseDate = ""
         self.newAdjustmentField = ""
         self.oldAdjustmentField = ""
+
+        # generating a confirmation link for student approval
+        self.confirmationLink = ""
+        if self.laborStatusForm.confirmationToken:
+            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
+
 
         if self.formHistory.adjustedForm:
             if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
@@ -114,13 +119,6 @@ class emailHandler():
     # is pulled from the model, and replaceText method will replace the neccesary keywords with the correct data.
     # The sendEmail method will handle all of the email sending once the email template has been populated.
     def laborStatusFormSubmitted(self):
-        try:
-            # generating a link for confirmation for student
-            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
-
-        except Student.DoesNotExist:
-            print("Error: Student record not found.")
-            return
 
         # Submit the forms for secondary, break, and regular
         if self.laborStatusForm.jobType == 'Secondary':
@@ -240,7 +238,6 @@ class emailHandler():
         # In order to keep track of when emails to 'SAAS' and 'Financial Aid'
         # are sent, the EmailTracker will create a new entry that points back to
         # the LSF form the email is being created for.
-        secret_conf = get_secret_cfg()
         self.link = link
         emailList = []
         if dept == "SAAS":
@@ -248,7 +245,7 @@ class emailHandler():
             for admin in admins:
                 emailList.append(admin.username + "@berea.edu")
         elif dept == "Financial Aid":
-            emailList.append(secret_conf["financial_aid"]["email"])
+            emailList.append(app.config["financial_aid"]["email"])
         emailTemplateID = EmailTemplate.get(EmailTemplate.purpose == "SAAS and Financial Aid Office")
         message = Message(emailTemplateID.subject, recipients=emailList)
         newEmailTracker = EmailTracker.create(

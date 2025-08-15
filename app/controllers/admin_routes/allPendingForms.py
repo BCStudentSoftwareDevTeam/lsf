@@ -1,7 +1,9 @@
-from flask import abort, flash, jsonify, redirect, send_file, make_response
-import uuid
+from datetime import datetime, date
+from flask import abort, flash, jsonify, redirect, send_file, make_response, g
 import json
 from peewee import JOIN
+
+from app.models import mainDB
 from app.login_manager import *
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
@@ -11,24 +13,23 @@ from app.models.adjustedForm import AdjustedForm
 from app.models.emailTracker import EmailTracker
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
-from app.logic.emailHandler import *
-from app.logic.utils import makeThirdPartyLink
-from app.models.formHistory import *
+from app.logic.emailHandler import emailHandler
+from app.logic.utils import makeThirdPartyLink, calculateExpirationDate
+from app.models.formHistory import FormHistory
 from app.models.term import Term
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
-from datetime import datetime, date
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
+from app.models.student import Student
 from app.models.historyType import HistoryType
 from app.models.department import Department
-from app.logic.download import CSVMaker
 from app.logic.allPendingForms import saveStatus, laborAdminOverloadApproval, financialAidSAASOverloadApproval, modal_approval_and_denial_data, checkAdjustment
+from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
 
 @admin.route('/admin/pendingForms/<formType>',  methods=['GET'])
 def allPendingForms(formType):
     try:
-        cookieId = str(uuid.uuid4())
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403      
@@ -142,7 +143,10 @@ def allPendingForms(formType):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
 
         formList = baseQuery.order_by(-FormHistory.createdDate).distinct()
-        formIds = [form.formHistoryID for form in formList]
+
+        # store forms in database for later download
+        downloadId = saveFormSearchResult(pageTitle, formList, formType)
+
         # only if a form is adjusted
         pendingOverloadFormPairs = {}
         # or allForms.adjustedForm.fieldAdjusted == "Weekly Hours":
@@ -162,7 +166,6 @@ def allPendingForms(formType):
             'admin/allPendingForms.html',
             title=pageTitle,
             username=currentUser.username,
-            cookieId=cookieId,
             pageTitle=pageTitle,
             formList = formList,
             formType= formType,
@@ -173,27 +176,9 @@ def allPendingForms(formType):
             releaseFormCounter = releaseFormCounter,
             preStudentApprovalCounter = preStudentApprovalCounter,
             completedOverloadFormCounter = completedOverloadFormCounter,
-            pendingOverloadFormPairs = pendingOverloadFormPairs
+            pendingOverloadFormPairs = pendingOverloadFormPairs,
+            downloadId = downloadId
         ))
-        if formIds:
-            result.set_cookie(
-                key=f'downloadName_{cookieId}',
-                value=pageTitle,
-                max_age=3600,
-                httponly=True,
-            )
-            result.set_cookie(
-                key=f'formIds_{cookieId}',
-                value=json.dumps(formIds),
-                max_age=3600,
-                httponly=True,
-            )
-            result.set_cookie(
-                key=f'formType_{cookieId}',
-                value=formType,
-                max_age=3600,
-                httponly=True,
-            )
         return result
     
     
@@ -204,29 +189,23 @@ def allPendingForms(formType):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    cookieId = request.form.get('cookieId')
-    if not cookieId:
-        print(f"[ERROR] Missing cookie for request to {request.path}. Possible tampered or expired cookie.")
-        return render_template('errors/500.html'), 500
-    
-    formIds = json.loads(request.cookies.get(f'formIds_{cookieId}'))
-    downloadName = request.cookies.get(f'downloadName_{cookieId}')
-    if not formIds:
-        print(f"[ERROR] Missing forms for download. There are either no results to be downloaded or another error has occured.")
-        return render_template('errors/500.html'), 500
-    
-    allPendingFormsSelectObject = FormHistory.select().where(FormHistory.formHistoryID.in_(formIds)).order_by(-FormHistory.createdDate)
-    currentUser = require_login()
+    searchResult = retrieveFormSearchResult(request.form.get('downloadId'))
+    if not searchResult:
+        print(f"[ERROR] Missing or invalid download id was provided by the user.")
+        abort(500)
+
+    formHistoryIds = json.loads(searchResult.formHistoryIds)
+    formHistories = FormHistory.select().where(FormHistory.formHistoryID.in_(formHistoryIds)).order_by(-FormHistory.createdDate)
 
     additionalSpreadsheetFields = []
-    if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+    if g.currentUser.isFinancialAidAdmin or g.currentUser.isSaasAdmin:
         additionalSpreadsheetFields.append("overloads")
     elif not currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
         abort(403)
     
     excel = CSVMaker(
-        downloadName, 
-        requestedLSFs = allPendingFormsSelectObject, 
+        searchResult.name, 
+        requestedLSFs = formHistories, 
         additionalSpreadsheetFields=additionalSpreadsheetFields
     )
 
@@ -246,9 +225,81 @@ def approved_and_denied_Forms():
         print(e)
         return jsonify({"Success": False}),500
 
+@admin.route('/admin/skipStudentApproval', methods=['POST'])
+def skipStudentApproval():
+    '''
+    Mark a form as approved by the student and update status to pending
+    '''
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
+        abort(403)
+
+    note = "Skipped Student Approval: " + request.form.get("skipNote")
+    formID = request.form.get("formID")
+
+    # TODO should pull this out into a function in a logic file after PR #494 is merged
+
+    # Update form history status
+    try:
+        form = LaborStatusForm.get_by_id(formID)
+    except DoesNotExist:
+        flash("Invalid form ID provided", "danger")
+        abort(404)
+
+    # make sure our database changes happen all at once
+    try:
+        with mainDB.atomic():
+            form.studentConfirmation = True
+            form.studentResponseDate = date.today()
+            form.save()
+
+            # Get the form history record. XXX Currently restricted to original lsf.
+            formHistory = FormHistory.get_or_none(FormHistory.formID == form.laborStatusFormID, 
+                                                  FormHistory.historyType == "Labor Status Form")
+            if formHistory:
+                formHistory.status = "Pending"
+                formHistory.save()
+
+            # Add Labor note
+            Notes.create(formID=form.laborStatusFormID, createdBy=g.currentUser, date=date.today(), notesContents=note, noteType = "Labor Note")
+
+    except Exception as e:
+        print("Error skipping student approval", e)
+        flash("Error skipping student approval. Please try again.","danger")
+
+    return redirect('/admin/pendingForms/preStudentApproval')
+
+@admin.route('/admin/resendStudentConfirmation/<formID>', methods=['POST'])
+def resendStudentConfirmation(formID):
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):       # Not an admin
+        return render_template('errors/403.html'), 403
+
+    try:
+        # get the base form history for the given labor status form
+        formhistory = FormHistory.get(FormHistory.formID == formID, FormHistory.historyType == "Labor Status Form")
+
+        # make a new expiration date
+        formhistory.formID.studentExpirationDate = calculateExpirationDate()
+        formhistory.formID.save()
+
+        # resend but only to students
+        emailer = emailHandler(formhistory.formHistoryID)
+        if formhistory.formID.termCode.isBreak:
+            emailer.checkRecipient("Break Labor Status Form Submitted For Student")
+        else:
+            emailer.checkRecipient("Labor Status Form Submitted For Student")
+
+        return jsonify({"student_email":formhistory.formID.studentSupervisee.STU_EMAIL});
+
+    except Exception as e:
+        print("Error sending confirmation email. Invalid Form ID.", e)
+        flash("Error sending confirmation email. Please try again.","danger")
+        abort(500)
+
+
+
 @admin.route('/admin/updateStatus/<raw_status>', methods=['POST'])
 def finalUpdateStatus(raw_status):
-    ''' This method changes the status of the pending forms to approved '''
+    ''' This method changes the status of the pending forms '''
     currentUser = require_login()
     if not currentUser:                    # Not logged in
         return render_template('errors/403.html'), 403
@@ -259,12 +310,14 @@ def finalUpdateStatus(raw_status):
         new_status = "Approved"
     elif raw_status == 'denied':
         new_status = "Denied by Admin"
+    elif raw_status == 'pending':
+        new_status = "Pending"
     else:
         print("Unknown status: ", raw_status)
         return jsonify({"success": False})
+
     form_ids = eval(request.data.decode("utf-8"))
     return saveStatus(new_status, form_ids, currentUser)
-
 
 @admin.route('/admin/getNotes/<formid>', methods=['GET'])
 def getNotes(formid):
@@ -383,12 +436,7 @@ def getOverloadModalData(formHistoryID):
                             'FinancialAidApprover': FinancialAidApprover,
                             })
         noteTotal = Notes.select().where(Notes.formID == historyForm[0].formID.laborStatusFormID).count()
-        cookieId = request.args.get('cookieId')
         returnToTab = None
-        try:
-            returnToTab = request.cookies.get(f'formType_{cookieId}')
-        except Exception as e:
-            pass
         return render_template('snips/pendingOverloadModal.html',
                                             historyForm = historyForm,
                                             departmentStatusInfo = departmentStatusInfo,

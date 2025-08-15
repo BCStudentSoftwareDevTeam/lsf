@@ -6,6 +6,15 @@
 <script src="{{ url_for('static', filename='js/checkboxStudentEmailConfirmation.js') }}"></script>
 {% endblock %}
 
+{% block styles %}
+  {{super()}}
+  <style>
+    #sidebar { display:none!important }
+    .sidebar-push { left:0px!important; width:auto!important; margin-right:0px!important }
+  </style>
+{% endblock %}
+
+
 {% block app_content %}
 
 <h2>Confirm Your Work Contract</h2>
@@ -25,6 +34,7 @@
             <p><strong>Position Code/Title:</strong> {{ laborDescription.position_code_title }}</p>
             <p><strong>WLS Level:</strong> {{ laborDescription.wls }}</p>
             <p><strong>Department Name:</strong> {{ laborDescription.department }}</p>
+            <p><strong>Position Type:</strong> {{ laborDescription.jobType }}</p>
             {% set hoursDescription = "Total Contracted Hours" if laborDescription.term.isBreak else "Hours per Week" %}
             <p><strong>{{ hoursDescription}}:</strong> {{ laborDescription.hours_per_week }}</p>
             <p><strong>Start Date:</strong> {{ laborDescription.start_date }}</p>
@@ -33,43 +43,48 @@
     </div>
 
     <div class="form-group">
-        <p>
-        This contract is an offer that you must respond to before it is reviewed by the Labor Program Office. By choosing “Accept”, you agree to the labor status form details above. Please be aware that <b>once an offer is accepted, the offer is locked in.</b>  In order to leave an accepted contract, you and your supervisor must mutually agree to a release before the labor change deadline listed in the academic calendar. Any mutual releases or adjustments must happen before the labor position change deadline listed on the academic calendar.
-        </p>
-        <p>
-        Please do not accept this position without first considering all your offers. If you felt coerced or pressured to accept the position, please do not accept the contract and contact the Labor Program Office.
-        <br>If you do not accept the terms of this form, please deny the position. If you believe that some of the information in this contract is correct, bur some of it is incorrect, deny the position and contact the potential supervisor. Your supervisor can submit a new contract for your acceptance.
+      {% if laborDescription.jobType == "Primary" %}
+        <p>This contract is an offer that you must respond to before it is reviewed by the Labor Program Office. By choosing “Accept”, you agree to the labor status form details above. Please be aware that <b>once an offer is accepted, the offer is locked in.</b>  In order to leave an accepted contract, you and your supervisor must mutually agree to a release before the labor change deadline listed in the academic calendar. Any mutual releases or adjustments must happen before the labor position change deadline listed on the academic calendar.</p>
+        <p>Please do not accept this position without first considering all your offers. If you felt coerced or pressured to accept the position, please do not accept the contract and contact the Labor Program Office.</p>
+
+      {% else %} {# Secondary #}
+        <p>This contract is an offer that you must respond to before it is reviewed by the Labor Program Office. <b>By choosing “Accept”, you agree to the labor status form details above.</b> Please be aware that secondaries are not a requirement. However, in order to leave an accepted contract, your supervisor must submit a release.</p>
+        <p>If this is a secondary position for the Spring or Fall term, <b>your primary supervisor reserves the right to deny the secondary position.</b> There are no primary break positions.<p>
+
+      {% endif %}
+
+        <p>If you do not accept the terms of this form, please deny the position. If you believe that some of the information in this contract is correct, but some of it is incorrect, deny the position and contact the potential supervisor. Your supervisor can submit a new contract for your acceptance.
         </p>
     
-        <p>
-        <b>NOTICE:</b> This does not mean your position is active to begin work, only that a labor status form has been submitted to the Labor Program Office to await approval.
-        </p>
+        <p><b>NOTICE:</b> This does not mean your position is active to begin work, only that a labor status form has been submitted to the Labor Program Office to await approval.</p>
 
         <label>
-            <input type="checkbox" id="firstCheckbox" name="confirmFirst">
+            <input type="checkbox">
             I confirm the above information is correct for this labor position.
         </label><br>
 
+      {% if laborDescription.jobType == "Primary" %}
         <label>
-            <input type="checkbox" id="secondCheckbox" name="confirmSecond">
+            <input type="checkbox">
             I agree to remain in this labor position until the end date above.
         </label><br>
 
         <label>
-            <input type="checkbox" id="thirdCheckbox" name="confirmThird">
+            <input type="checkbox">
             I have reviewed all my other offers before accepting this position.
         </label><br>
 
         <label>
-            <input type="checkbox" id="fourthCheckbox" name="confirmFourth">
+            <input type="checkbox">
             I understand that my supervisor and I must mutually agree to a release once this offer has been accepted.
         </label><br>
+      {% endif %}
     </div>
 </div>
 
 <form action="/studentResponse/submit" method="post">
     <input type="hidden" name="token" value="{{ form.confirmationToken }}">
-    <input type="hidden" name="confirmParticipation" value="0">
+    <input type="hidden" id="confirmParticipation" value="0">
     <button type="submit" name="response" value="Accepted" class="btn btn-lg btn-success" id="acceptButton" disabled>Accept</button>
     &nbsp;
     <button type="submit" name="response" value="Denied" class="btn btn-lg btn-danger">Deny</button>

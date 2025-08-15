@@ -22,43 +22,55 @@ def saveStatus(new_status, form_ids, currentUser):
             # Index 1 will always hold the reject reason in the list, so we can
             # set a variable equal to the index value and then slice off the list
             # item before the iteration
-            denyReason = form_ids[1]
-            form_ids = form_ids[:1]
-        for id in form_ids:
-            history_type_data = FormHistory.get(FormHistory.formHistoryID == int(id))
-            history_type = str(history_type_data.historyType)
+            denyReason = formHistoryIds[1]
+            formHistoryIds = formHistoryIds[:1]
 
-            labor_forms = FormHistory.get(FormHistory.formHistoryID == int(id), FormHistory.historyType == history_type)
-            labor_forms.status = Status.get(Status.statusName == new_status)
+        for formHistoryID in formHistoryIds:
+            formHistory = FormHistory.get(FormHistory.formHistoryID == formHistoryID)
+            formHistory.status = Status.get(Status.statusName == new_status)
             
-            labor_forms.reviewedDate = date.today()
-            labor_forms.reviewedBy = currentUser
+            formHistory.reviewedDate = date.today()
+            formHistory.reviewedBy = currentUser
+
+            formType = formHistory.historyType_id
+
+            # Add a note if we've skipped to Pending
+            if new_status == 'Pending':
+                note = "Skipped Student Approval"
+                Notes.create(formID=formHistory.formID,
+                             createdBy=currentUser,
+                             date=date.today(),
+                             notesContents=note,
+                             noteType = "Labor Note")
+
 
             # Add to BANNER
             save_status = True # default true so that we will still save in other cases
-            if new_status == 'Approved' and history_type == "Labor Status Form" and labor_forms.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
-                if labor_forms.formID.POSN_CODE == "SNOLAB":
-                       labor_forms.formID.weeklyHours = 10
+
+            if new_status == 'Approved' and formType == "Labor Status Form" and formHistory.formID.POSN_CODE != "S12345": # don't update banner for Adjustment forms or for CS dummy position
+                if formHistory.formID.POSN_CODE == "SNOLAB":
+                       formHistory.formID.weeklyHours = 10
                 conn = Banner()
-                save_status = conn.insert(labor_forms)
+                save_status = conn.insert(formHistory)
 
             # if we are able to save
             if save_status:
 
                 if new_status == 'Denied by Admin':
-                    labor_forms.rejectReason = denyReason
-                labor_forms.save()
+                    formHistory.rejectReason = denyReason
+                formHistory.save()
 
-                email = emailHandler(labor_forms.formHistoryID)
-                if new_status == "Denied by Admin" and history_type == "Labor Status Form":
+                # Send necessary emails from the status change
+                email = emailHandler(formHistory.formHistoryID)
+                if new_status == "Denied by Admin" and formType == "Labor Status Form":
                     email.laborStatusFormRejected()
-                if new_status == "Approved" and history_type == "Labor Status Form":
+                if new_status == "Approved" and formType == "Labor Status Form":
                     email.laborStatusFormApproved()
-                if new_status == "Approved" and history_type == "Labor Adjustment Form":
+                if new_status == "Approved" and formType == "Labor Adjustment Form":
                     # This function is triggered whenever an adjustment form is approved.
                     # The following function overrides the original data in lsf with the new data from adjustment form.
-                    LSF = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == history_type_data.formID) # getting the specific labor status form
-                    overrideOriginalStatusFormOnAdjustmentFormApproval(history_type_data, LSF)
+                    LSF = LaborStatusForm.get_by_id(formHistory.formID)
+                    overrideOriginalStatusFormOnAdjustmentFormApproval(formHistory, LSF)
 
             else:
                 print("Unable to update form status for formHistoryID {}.".format(id))

@@ -1,12 +1,13 @@
-import uuid
 import operator
 from datetime import datetime, date
+from functools import reduce
+
 from flask import json, jsonify, g, make_response
 from peewee import fn, Case
-from functools import reduce
+
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
-from app.login_manager import require_login
 from app.logic.search import getDepartmentsForSupervisor
+from app.logic.download import saveFormSearchResult
 from app.models.term import Term
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -16,7 +17,6 @@ from app.models.formHistory import FormHistory
 from app.models.user import User
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 
-
 def getDatatableData(request):
     '''
     This function runs a query based on selected options in the front-end and retrieves the appropriate forms.
@@ -25,9 +25,7 @@ def getDatatableData(request):
     # 'draw', 'start', 'length', 'order[0][column]', 'order[0][dir]' are built-in parameters, i.e.,
     # they are implicitly passed as part of the AJAX request when using datatable server-side processing
     
-    cookieId = str(uuid.uuid4())
     sleJoin = ""
-    currentUser = require_login()
     draw = int(request.form.get('draw', 0))
     rowNumber = int(request.form.get('start', 0))
     rowsPerPage = int(request.form.get('length', 25))
@@ -79,8 +77,8 @@ def getDatatableData(request):
                                     .join(User, on=(FormHistory.createdBy == User.userID)))
     if clauses:
         formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
-    if not currentUser.isLaborAdmin:
-        supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+    if not g.currentUser.isLaborAdmin:
+        supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
     recordsTotal = len(formSearchResults)
 
@@ -114,26 +112,11 @@ def getDatatableData(request):
     else:
         filteredSearchResults = formSearchResults.order_by(fn.TRIM(sortValueColumnMap[sortBy]).asc()).limit(rowsPerPage).offset(rowNumber)
     formattedData = getFormattedData(filteredSearchResults, queryFilterDict.get('view'))
-    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData, "cookieId": cookieId}
 
-    result = make_response(jsonify(formsDict))
-    formIds = [formSearchResult.formHistoryID for formSearchResult in formSearchResults]
-    if formIds:
-        jsonFormIds = json.dumps(formIds)
-        result.set_cookie(
-            key=f'formSearchResultIds_{cookieId}',
-            value=jsonFormIds,
-            max_age=3600,
-            httponly=True,
-        )
-        result.set_cookie(
-            key=f'sleJoin_{cookieId}',
-            value=json.dumps(sleJoin),
-            max_age=3600,
-            httponly=True,
-        )
+    downloadId = saveFormSearchResult("Form Search", formSearchResults, "LSF Search")
+    formsDict = {"draw": draw, "recordsTotal": recordsTotal, "recordsFiltered": recordsTotal, "data": formattedData, "downloadId": downloadId}
 
-    return result
+    return make_response(jsonify(formsDict))
 
 def getFormattedData(filteredSearchResults, view ='simple'):
     '''
@@ -181,6 +164,8 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         formattedDataList = [[value] for value, _, _ in formattedData.values()]
 
         return formattedDataList
+
+    # now in advanced view
 
     supervisorHTML = '<span href="#" aria-label="{}">{} </span><a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span>'
     studentHTML = '<div><a href="/laborHistory/{}">{}</a><br>{} <a href="mailto:{}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></span></a></div>'
@@ -238,9 +223,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 newHours = form.adjustedForm.newValue
                 hoursField = f'<s aria-label="true">{hoursField}</s><br>{newHours}'
 
-        
-        
-
         record.append(f'<a><span onclick=loadFormHistoryModal({form.formID.laborStatusFormID})>{form.formID.POSN_TITLE}</span></a><br>{positionField}')
         record.append(hoursField)
         # Contract Dates
@@ -263,8 +245,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         # formType(Status)
         formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
 
-        # Evaluation status
-        # TODO: Skipping adding to the table. Requires database work to get SLE out from form (formHistory, to be precise)
-
         formattedData.append(record)
+
     return formattedData

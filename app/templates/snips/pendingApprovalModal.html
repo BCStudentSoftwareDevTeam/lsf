@@ -3,7 +3,8 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title" id="approvalModalLabel" align="center"><strong>Form(s) ready for Approval</strong></h5>
+        {% set modalTitle = "Forms to make Pending" if formType == 'preStudentApproval' else "Forms to Approve" %}
+        <h5 class="modal-title" id="approvalModalLabel" align="center"><strong>{{modalTitle}}</strong></h5>
       <button type="button" class="close" data-dismiss="modal" onclick="approvalModalClose()" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -26,7 +27,8 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="approvalModalClose()">Close</button>
-      <button id="approveModalButton" type="button" class="btn btn-primary"  data-dismiss="modal" onclick="finalApproval()" >Approve</button>
+      {% set buttonText = "Skip Student Approval" if formType == 'preStudentApproval' else "Approve Selected" %}
+      <button id="approveModalButton" type="button" class="btn btn-primary"  data-dismiss="modal" onclick="finalApproval()" >{{buttonText}}</button>
     </div>
   </div>
 

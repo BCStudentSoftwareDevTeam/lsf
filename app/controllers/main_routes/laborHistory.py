@@ -25,6 +25,7 @@ from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
 from app.logic.utils import setReferrerPath
+from app.logic.download import saveFormSearchResult, retrieveFormSearchResult
 
 @main_bp.route('/laborHistory/<id>', methods=['GET'])
 def laborhistory(id):
@@ -40,8 +41,6 @@ def laborhistory(id):
                                    .where(FormHistory.formID.studentSupervisee == student, 
                                           FormHistory.historyType.historyTypeName == "Labor Status Form"))
         authorizedForms = studentForms.distinct()
-        print("#"*60)
-        print(authorizedForms)
         if not currentUser.isLaborAdmin:
             # View only your own form history
             if currentUser.student and not currentUser.supervisor:
@@ -60,6 +59,7 @@ def laborhistory(id):
         
         
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
+        downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         return render_template('main/formHistory.html',
@@ -68,7 +68,9 @@ def laborhistory(id):
                                 username=currentUser.username,
                                 laborStatusFormList = laborStatusFormList,
                                 authorizedForms = authorizedForms,
+                                downloadId = downloadId
                               )
+
 
     except Exception as e:
         print("Error Loading Student Labor History", e)
@@ -80,13 +82,20 @@ def downloadFormHistory():
     This function is called when the download button is pressed.  It runs a function for writing to an excel sheet that is in download.py.
     This function downloads the created excel sheet of the history from the page.
     """
-    try:
-        data = request.form
-        historyList = data["listOfForms"].split(',')
-        excel = CSVMaker("studentHistory", historyList, includeEvals = True)
-        return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
-    except:
-        return render_template('errors/500.html'), 500
+    formSearchResults = retrieveFormSearchResult(request.form.get('downloadId'))
+    if not formSearchResults:
+        print(f"[ERROR] Missing or invalid download ID for student labor history.")
+        return "", 500
+
+    formSearchResultIds = json.loads(formSearchResults.formHistoryIds)
+    formHistories = FormHistory.select().where(FormHistory.formHistoryID.in_(formSearchResultIds)).order_by(-FormHistory.createdDate)
+    excel = CSVMaker(
+        formSearchResults.searchType,
+        requestedLSFs=formHistories, 
+        additionalSpreadsheetFields=[],
+        includeEvals=False
+    )
+    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 @main_bp.route('/laborHistory/modal/<statusKey>', methods=['GET'])
 def populateModal(statusKey):
