@@ -1,4 +1,5 @@
 import pytest
+from app import app
 from app.controllers.main_routes.alterLSF import modifyLSF, adjustLSF
 from app.logic.statusFormFunctions import createOverloadForm
 from app.models.user import User
