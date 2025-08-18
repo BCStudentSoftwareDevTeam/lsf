@@ -46,10 +46,11 @@
             </tr>
           </tbody>
         </table>
-        <p class="status-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>A Status is required in order to submit</strong></p>
+        
         <div id='radioDivRelease'>
           <button id="modalNote_{{formHistoryID}}" onclick="toggleNotesLog({{laborStatusFormID}}, {{formHistoryID}})" style='float: left; margin-top: -10px;' class='btn btn-sm btn-primary'>View Notes ({{noteTotal}})</button>
-          <span>Status:<span aria-hidden="true" style="color:red"><strong>*</strong></span></span>
+          <p class="status-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign">
+          </span><strong>A Status is required in order to submit</strong></p><span>Status:<span aria-hidden="true" style="color:red"><strong>*</strong></span></span>
           <label for="approveRelease" class="radio-inline">
             <input type="radio" id="approveRelease" class='release' name="decision" value="approve" onclick="displayModalTextArea(this.value)">Approve</input>
           </label>
@@ -57,14 +58,19 @@
             <input type="radio" id="denyRelease" class='release' name="decision" value="deny" onclick="displayModalTextArea(this.value, this.class)">Deny</input>
           </label>
         </div>
-        <div id="notesTextAreaRelease" class="notesTextArea">
+        
+        <div id="notesTextAreaRelease" class="notesTextArea"> 
+          <span aria-hidden="true" style="color:red; float: left; margin-right: 5px;"><strong>*</strong></span>
           <textarea id='releaseNotes' class="finalNote" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a note"></textarea>
           <p id="banner-warning" style="color:blue;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>Please ensure the student's form has been updated in <strong>Banner</strong> before approving the release form.</strong></p>
+          <p class="notesTextAreaRelease-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>A Note is required in order to submit</strong></p>
         </div>
         <div id="denyTextAreaRelease" class="denyTextArea" style="display:None">
           <p class="required-error" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong> This field is required</strong></p>
-          <textarea id='denyReleaseReason' class="finalDeny" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial"></textarea>
-        </div>
+           <span aria-hidden="true" style="color:red; float: left; margin-right: 5px;"><strong>*</strong></span>
+           <textarea id='denyReleaseReason' class="finalDeny" name="name" rows="4" cols="80" style="max-width:100%;resize:none" placeholder="Enter a reason for denial"></textarea>
+        <p class="denyNotesRelease-warning" style="color:red;" hidden><span class="glyphicon glyphicon-exclamation-sign"></span><strong>A Note is required in order to submit</strong></p></div>
+
         <div class="logNotesDiv" style='display:none'>
           <h4 class="supeNotesLabel col-md-4 control-label text-left" for="supervisor">Supervisor Notes: </h4>
           <textarea class="notesText" rows="2" cols="70" disabled> </textarea>

@@ -3,24 +3,25 @@ $('a.hover_indicator').click(function(e){
   e.preventDefault(); // prevents click on '#' link from jumping to top of the page.
 });
 
+
 $(document).ready(function() {
   // If the overload tab has been selected, then we need to restrict the
   // ordering functionality on different headers
+
 
   if  ($('#releaseTab').hasClass('active') || $('#completedOverloadTab').hasClass('active')) {
     targetsList = [8]
   } else if ($('#overloadTab').hasClass('active')) {
     targetsList = [9]
-  } else if ($('#adjustedTab').hasClass('active')) {
+  } else if ($('#adjustedTab').hasClass('active') || $('#preStudentApprovalTab').hasClass('active')) {
     targetsList = [0, 10]
-  } else if ($('#preStudentApprovalTab').hasClass('active')) {
-      targetsList = [9];
   } else {
     targetsList = [0, 9]
   }
 
+
   // If overload tab has been clicked, then we
-  table = $('#pendingForms, #statusForms, #adjustedForms, #releaseForms').DataTable({
+  table = $('#pendingForms').DataTable({
     'columnDefs': [{
       'orderable': false,
       'targets': targetsList
@@ -36,23 +37,27 @@ $(document).ready(function() {
     // "dom": '<"top"fl>rt<"bottom"p><"clear">'
   });
 
+
 // CHECK ALL CHECKBOX ON APPROVE BUTTON
   $('#checkAll').change(function(){
     $(".approveCheckbox").prop('checked', $(this).prop("checked"));
   });
 
+
   $('.approveCheckbox').change(function(){
-	   //uncheck "check all" if one of the listed checkbox item is unchecked
-  	if(this.checked == false){
-  		$("#checkAll")[0].checked = false;
+     //uncheck "check all" if one of the listed checkbox item is unchecked
+    if(this.checked == false){
+      $("#checkAll")[0].checked = false;
     }
-  	 //check "check all" if all checkbox items are checked
-  	if ($('.approveCheckbox:checked').length == $('.approveCheckbox').length ){
-  		  $("#checkAll")[0].checked = true;
-  	}
+     //check "check all" if all checkbox items are checked
+    if ($('.approveCheckbox:checked').length == $('.approveCheckbox').length ){
+        $("#checkAll")[0].checked = true;
+    }
   });
 
+
 });
+
 
 var labor_details_ids = []; // for insertApprovals() and final_approval() only
 function insertApprovals(laborHistoryId = null) {
@@ -69,6 +74,7 @@ function insertApprovals(laborHistoryId = null) {
     $("#adjustedApproval").prop("disabled", true);
     $("#approveOverload").prop("disabled", true);
     $("#approveRelease").prop("disabled", true);
+
 
     location.reload();
   }
@@ -106,14 +112,17 @@ function updateApproveTableData(returned_details) {
   }
 }
 
+
 $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functionality work when clicking outside of the modal
   approvalModalClose();
 });
+
 
 function approvalModalClose(){// on close of approval modal we are clearing the table to prevent duplicate data.
   $('#classTableBody').empty();
   labor_details_ids = [] // emptying the list, becuase otherwise will cause duplicate data.
 }
+
 
 function finalApproval() { //this method changes the status of the lsf from pending to approved status
   $(".btn").prop("disabled", true);
@@ -122,20 +131,22 @@ function finalApproval() { //this method changes the status of the lsf from pend
   $("#approvalModal").data("bs.modal").options.backdrop = "static";
   $("#approvalModal").data("bs.modal").options.keyboard = false;
   var data = JSON.stringify(labor_details_ids);
+
+  newStatus = ($("#formType").val() == "preStudentApproval") ? "pending" : "approved";
   $.ajax({
     type: "POST",
-    url: "/admin/updateStatus/approved",
+    url: "/admin/updateStatus/" + newStatus,
     datatype: "json",
     data: data,
     contentType: 'application/json',
     success: function(response) {
-      if (response) {
-        if (response.success) {
+      if (response && response.success) {
           $(".btn").prop("disabled", false);
           $(".close").prop("disabled", false);
           $("#approveModalButton").text("Approve");
           $("#approvalModal").data("bs.modal").options.backdrop = true;
           $("#approvalModal").data("bs.modal").options.keyboard = true;
+
 
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
@@ -145,11 +156,11 @@ function finalApproval() { //this method changes the status of the lsf from pend
           catch(e){
             location.reload(true);
           }
-        }
       }
     }
   });
 }
+
 
 var laborDenialInfo = []; //this arrary is for insertDenial() and finalDenial() methods
 //This method calls AJAX from checkforms methods in the controller
@@ -171,6 +182,7 @@ function insertDenial(val) {
   });
 }
 
+
 // this method inserts data to the table of denial popup modal
 function finalDenial_data(returned_details) {
   for (var i = 0; i < returned_details.length; i++) {
@@ -190,14 +202,19 @@ function finalDenial_data(returned_details) {
   }
 }
 
+
 function denialModalClose(){// on close of denial modal we are clearing the table to prevent duplicate data.
   $('#denialPendingFormsBody').empty();
   laborDenialInfo = [] // emptying the list, becuase otherwise will cause duplicate data.
 }
 
+
 $('.denialModal').on('hidden.bs.modal', function () {// makes the close functionality work when clicking otuside of the modal
   denialModalClose();
 });
+
+
+
 
 
 
@@ -226,6 +243,23 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
   });
 }
 
+// make sure the modal has the id we are talking about
+function skipApproval(formId) {
+    $("#skipApprovalFormID").val(formId);
+}
+
+// send another link to the confirmation page and renew the expiration time
+function resendApprovalLink(formId) {
+  $.ajax({
+    type: "POST",
+    url: "/admin/resendStudentConfirmation/" + formId,
+    contentType: 'application/json',
+    success: function(response) {
+        msgFlash("New confirmation email sent to " + response['student_email'],"success")
+    }
+  });
+}
+
 function getNotes(formId) {
   $.ajax({
     type: "GET",
@@ -238,6 +272,7 @@ function getNotes(formId) {
         $("#laborNotesText").empty();
       } else {
         $("#laborNotesText").data('formId', formId); //attaches the formid data to the textarea
+
 
         //Populates notes value from the database
         if ("supervisorNotes" in response) {
@@ -259,6 +294,7 @@ function getNotes(formId) {
   });
 }
 
+
 function notesInsert(textareaID, buttonID) {
   var formId = $("#" + textareaID).data('formId');
   var laborNotes = $("#" + textareaID).val(); //this is getting the id of the labor notes text area
@@ -270,9 +306,11 @@ function notesInsert(textareaID, buttonID) {
   var note = notes.notes; //This is how we are getting the note object from the dictionary
   var data = JSON.stringify(note);
 
+
   $("#" + buttonID).on('submit', function(e) {
     e.preventDefault();
   });
+
 
   $.ajax({
     method: "POST",
@@ -295,6 +333,9 @@ function notesInsert(textareaID, buttonID) {
 
 
 
+
+
+
 function finalDeny() {
   /*
   This method will first check if the deny reason text area has been populated, and if
@@ -310,10 +351,14 @@ function finalDeny() {
   }
 }
 
+
 function clearTextArea() { //makes sure that it empties text areas and p tags when modal is closed
   $("#notesText").val("");
+  $("#skipNote").val("");
   $("#laborNotesText").val("");
 }
+
+
 
 
 function loadOverloadModal(formHistoryID, laborStatusFormID) {
@@ -325,11 +370,14 @@ function loadOverloadModal(formHistoryID, laborStatusFormID) {
   $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID);
 }
 
+
 function loadReleaseModal(formHistoryID, laborStatusFormID) {
   $("#modalRelease").modal("show");
   $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
 
+
 }
+
 
 function displayModalTextArea(radioValue) {
   /*
@@ -337,6 +385,7 @@ function displayModalTextArea(radioValue) {
   'Overload' and 'Release' modals based on what radio has been selected
   */
   $('.status-warning').hide();
+  $('.notesTextAreaRelease-warning').hide();
   var radioVal = radioValue
   if (radioVal == 'deny') {
     $('.finalNote').val('');
@@ -352,6 +401,7 @@ function displayModalTextArea(radioValue) {
     $("#denyTextAreaOverload").removeClass("has-error");
   }
 }
+
 
 function sendEmail(formHistoryID, emailRecipient) {
   /*
@@ -385,6 +435,7 @@ function sendEmail(formHistoryID, emailRecipient) {
     }
   });
 }
+
 
 function submitOverload(formHistoryID, isLaborAdmin) {
   /*
@@ -421,16 +472,20 @@ function submitOverload(formHistoryID, isLaborAdmin) {
       }
     }
 
-    if ($('#initials').val() == ""){
+
+    if ($('#initials').val().trim() == ""){
       createAJAX = false
       $('.status-warning').html('<span class="glyphicon glyphicon-exclamation-sign"></span><strong> Please fill out all required fields.</strong>')
       $('.status-warning').show();
+
+
     }
     else{
       createAJAX = true
       $('.status-warning').hide();
       overloadModalInfo['initials'] = $('#initials').val();
     }
+
 
     if (createAJAX == true) {
       overloadModalInfo['status'] = status;
@@ -461,6 +516,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
   }
 }
 
+
 function submitRelease(formHistoryID) {
   /*
   This method is used to check if the form is ready for submission, then
@@ -473,9 +529,10 @@ function submitRelease(formHistoryID) {
       'formHistoryID': formHistoryID
     }
     if ($('#denyRelease').is(':checked')) {
-      if ($("#denyReleaseReason").val() == "") {
+      if ($("#denyReleaseReason").val().trim() == "") {
         $("#denyReleaseReason").focus();
-        $(".required-error").show();
+        // $(".required-error").show();
+        $(".denyNotesRelease-warning").show();
         createAJAX = false;
       } else {
         $('.required-error').hide();
@@ -490,6 +547,10 @@ function submitRelease(formHistoryID) {
       if ($('#releaseNotes').val() != '') {
         var adminNotes = $('#releaseNotes').val();
         releaseModalInfo['adminNotes'] = adminNotes;
+      } else {
+        createAJAX = false;
+        $("#notesTextAreaRelease").focus();
+        $(".notesTextAreaRelease-warning").show();
       }
     }
     if (createAJAX == true) {
@@ -521,6 +582,7 @@ function submitRelease(formHistoryID) {
   }
 }
 
+
 function toggleNotesLog(laborStatusFormID, formHistoryID) {
   /*
   This method toggles the 'Notes' log at the bottom of the
@@ -536,6 +598,7 @@ function toggleNotesLog(laborStatusFormID, formHistoryID) {
     $('.logNotesDiv').css('display', 'none')
   }
 }
+
 
 function notesCounter(laborStatusFormID, formHistoryID){
   /*
@@ -560,3 +623,5 @@ function notesCounter(laborStatusFormID, formHistoryID){
     }
   });
 }
+
+
