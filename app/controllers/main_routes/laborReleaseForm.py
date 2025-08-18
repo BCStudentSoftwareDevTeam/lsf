@@ -33,7 +33,7 @@ def laborReleaseForm(laborStatusKey):
         .select(User, Supervisor)
         .join(Supervisor, JOIN.INNER)
         .where(User.isLaborAdmin == True)
-        .order_by(+Supervisor.legal_name, +Supervisor.LAST_NAME)
+        .order_by(+fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name), +Supervisor.LAST_NAME)
     )
     if(request.method == 'POST'):
         try:

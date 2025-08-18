@@ -108,7 +108,8 @@ def populateModal(statusKey):
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
-        forms = FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc())
+        forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
+                            .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
         currentDate = datetime.date.today()
@@ -164,6 +165,7 @@ def populateModal(statusKey):
                                             ))
         return (resp)
     except Exception as e:
+        raise e
         print("Error on button state: ", e)
         message = "An error occured. Contact support using the link at the bottom of the website."
         flash(message, "danger")
