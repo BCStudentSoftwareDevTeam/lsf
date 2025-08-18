@@ -14,7 +14,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 
 @main_bp.route('/logout', methods=['GET'])
-def logout():
+def triggerLogout():
     return redirect(logout())
 
 @main_bp.route('/', methods=['GET', 'POST'])

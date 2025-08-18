@@ -25,7 +25,7 @@ def logout():
 
     url ="/"
     if app.config['use_shibboleth']:
-        url = "/Shibboleth.sso/Logout"
+        url = "/Shibboleth.sso/Logout?return=https://login.berea.edu/idp/profile/Logout"
     return url
 
 def require_login():
