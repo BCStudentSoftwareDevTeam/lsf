@@ -56,6 +56,7 @@ class CSVMaker:
 
             ## Create heading on csv ##
             headers =   ([  'Term',
+                            'Form Type',
                             'Form Status',
                             'B#',
                             'Student Name',
@@ -136,7 +137,8 @@ class CSVMaker:
         '''
 
         row = [ form.formID.termCode.termName,
-                form.status.statusName,
+                form.historyType_id,
+                form.status_id,
                 form.formID.studentSupervisee.ID,
                 u' '.join((form.formID.studentSupervisee.FIRST_NAME, form.formID.studentSupervisee.LAST_NAME)),
                 form.formID.studentSupervisee.STU_EMAIL,
