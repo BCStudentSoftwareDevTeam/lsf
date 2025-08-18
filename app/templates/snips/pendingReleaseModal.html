@@ -36,7 +36,13 @@
           <tbody>
             <tr>
               <td style="text-align:center">{{form.releaseForm.conditionAtRelease}}</td>
-              <td style="text-align:center">{{form.releaseForm.contactPerson.supervisor.FIRST_NAME}} {{form.releaseForm.contactPerson.supervisor.LAST_NAME}}</td>
+              <td style="text-align:center">
+                  {% if form.releaseForm.contactPerson_id %}
+                    {{form.releaseForm.contactPerson.supervisor.FIRST_NAME}} {{form.releaseForm.contactPerson.supervisor.LAST_NAME}}
+                  {% else %}
+                    None
+                  {% endif %}
+              </td>
               <td style="text-align:center">{{form.releaseForm.releaseDate.strftime('%m/%d/%y')}}</td>
               <td style="text-align:center">{{form.createdDate.strftime('%m/%d/%y')}}</td>
             </tr>
