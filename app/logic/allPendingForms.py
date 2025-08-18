@@ -16,7 +16,7 @@ from app.models.notes import Notes
 from app.login_manager import DoesNotExist, render_template
 
 
-def saveStatus(new_status, form_ids, currentUser):
+def saveStatus(new_status, formHistoryIds, currentUser):
     try:
         if new_status == 'Denied by Admin':
             # Index 1 will always hold the reject reason in the list, so we can

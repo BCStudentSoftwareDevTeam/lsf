@@ -1,7 +1,6 @@
 from enum import Enum
 from datetime import date
 from app.logic.search import getDepartmentsForSupervisor
-from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 
 class ButtonStatus:
@@ -20,8 +19,7 @@ class ButtonStatus:
         self.withdraw = False
         self.adjust = False
         self.correction = False
-        self.evaluate = False
-        self.evaluation_exists = False
+        self.resubmit = False
         self.num_buttons = 0
 
     def get_history_form_from_lsf(self, historyForm):
@@ -36,31 +34,6 @@ class ButtonStatus:
         '''
         return FormHistory.get(FormHistory.formID == historyForm.formID, (FormHistory.status == "Approved") | (FormHistory.status == "Pending"), FormHistory.historyType == "Labor Status Form")
 
-    def set_evaluation_button(self, historyForm, currentUser):
-        ogHistoryForm = self.get_history_form_from_lsf(historyForm)
-        evaluations = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == ogHistoryForm, StudentLaborEvaluation.is_submitted == True)
-        if currentUser.student:
-            for evaluation in evaluations:
-
-                if evaluation.is_midyear_evaluation and not historyForm.formID.termCode.isFinalEvaluationOpen:
-                    self.evaluation_exists = True
-                elif not evaluation.is_midyear_evaluation:  #i.e., it's a final evaluation
-                    self.evaluation_exists = True
-        else:
-            currentUserDepartments = [department.DEPT_NAME for department in getDepartmentsForSupervisor(currentUser)]
-            if ogHistoryForm.formID.supervisor.DEPT_NAME in currentUserDepartments or currentUser.isLaborAdmin:
-                if historyForm.formID.termCode.isFinalEvaluationOpen or historyForm.formID.termCode.isMidyearEvaluationOpen:
-                    self.evaluate = True
-                for evaluation in evaluations:
-                    if evaluation.is_midyear_evaluation and not historyForm.formID.termCode.isFinalEvaluationOpen:
-                        # If a midyear evaluation has been completed
-                        self.evaluation_exists = True
-                        self.evaluate = False
-                    elif not evaluation.is_midyear_evaluation:
-                        # If a final labor evaluation has been completed
-                        self.evaluation_exists = True
-                        self.evaluate = False
-
     def set_button_states(self, historyForm, currentUser):
         ############################################################
         # Student Options
@@ -72,7 +45,7 @@ class ButtonStatus:
             self.withdraw = False
             self.adjust = False
             self.correction = False
-            self.evaluate = False
+            self.resubmit = False
             self.num_buttons = 1
 
         ############################################################
@@ -82,17 +55,17 @@ class ButtonStatus:
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             # Release
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            if historyForm.releaseForm != None:
+            if historyForm.releaseForm:
                 if historyForm.status.statusName == "Approved":
-                    # Approved release forms can be rehired
                     self.rehire = True
+                    self.resubmit = True
                     self.num_buttons += 2
 
                 elif "Denied" in historyForm.status.statusName:
                     self.rehire = True
                     self.release = True
                     self.adjust = True
-                    self.num_buttons += 4
+                    self.num_buttons += 3
 
                 elif historyForm.status.statusName == "Pending":
                     # Pending release forms get no buttons
@@ -101,17 +74,13 @@ class ButtonStatus:
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             # Adjustment
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            elif historyForm.adjustedForm != None:
+            elif historyForm.adjustedForm:
                 if historyForm.status.statusName in ["Approved","Denied by Student","Denied by Admin"]:
                     self.rehire = True
                     self.release = True
                     self.adjust = True
-
-                    self.num_buttons += 4
-
-                elif historyForm.status.statusName == "Pending":
-                    # Pending adjustment forms get no buttons
-                    self.num_buttons += 1
+                    self.num_buttons += 3
+                # Pending adjustment forms get no buttons
 
             #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             # Standard or Overload
@@ -129,7 +98,6 @@ class ButtonStatus:
                     self.num_buttons += 1
 
                 elif historyForm.status.statusName == "Approved":
-                    self.num_buttons += 1
                     if self.currentDate <= historyForm.formID.endDate:
                         # An approved LSF before the end of the term
                         if self.currentDate > historyForm.formID.termCode.adjustmentCutOff and not currentUser.isLaborAdmin:
@@ -142,7 +110,8 @@ class ButtonStatus:
                             self.release = True
                             self.adjust = True
                             self.rehire = True
-                            self.num_buttons += 3
+                            self.resubmit = True
+                            self.num_buttons += 4
                     else:
                         self.rehire = True
                         self.num_buttons += 1

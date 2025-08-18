@@ -1,4 +1,4 @@
-from flask import render_template, request, json, redirect, url_for, send_file, g
+from flask import render_template, request, json, redirect, url_for, send_file, g, flash
 from peewee import fn
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -12,6 +12,7 @@ from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearc
 from app.logic.search import getDepartmentsForSupervisor
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
+from app.logic.banner import Banner
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -110,3 +111,22 @@ def downloadSupervisorPortalResults():
         includeEvals=False
     )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+
+@main_bp.route('/lsf/<lsfId>/submitToBanner', methods=['GET'])
+def submitToBanner(lsfId):
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
+        return render_template('errors/403.html'), 403      
+
+    try:
+        conn = Banner()
+        save_form_status = conn.insert(lsfId)
+    except Exception as e:
+        save_form_status = False
+        print(f"Error saving form history ({lsfId}) to Banner.")
+
+    if save_form_status:
+        return "Form successfully submitted to Banner.", 200
+    else:
+        return "Submitting to Banner failed.", 500
+
+

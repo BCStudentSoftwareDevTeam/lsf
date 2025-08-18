@@ -212,39 +212,32 @@
     {% else %}
       <div class = "col-sm-{{12/buttonState.num_buttons}}">
 
-      <a href="#"><button class="btn btn-primary" id="emailLabor">Email Labor</button></a>
+      <a href="#" class="btn btn-primary" id="emailLabor">Email Labor</a>
+
       {% if buttonState.rehire %}
-        <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{statusForm.laborStatusFormID}})">Rehire</button></a>
+        <a href="/laborstatusform/{{statusForm.laborStatusFormID}}" class="btn btn-success">Rehire</a>
       {% endif %}
+
       {% if buttonState.withdraw %}
         <button type="button" class="btn btn-danger"  data-dismiss="modal" onclick = "withdrawform({{statusForm.laborStatusFormID}})">Withdraw</button>
       {% endif %}
+
       {% if buttonState.correction %}
-        <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Modify</button></a>
+        <a href="/alterLSF/{{statusForm.laborStatusFormID}}"  class="btn btn-warning">Modify</a>
       {% endif %}
+
       {% if buttonState.release %}
-        <a id="release" href="#"><button type="button" class="btn btn-danger" onclick="redirection({{statusForm.laborStatusFormID}})">Release</button></a>
+        <a href="/laborReleaseForm/{{statusForm.laborStatusFormID}}" class="btn btn-danger">Release</a>
       {% endif %}
+
       {% if buttonState.adjust %}
-        <a id="alter" href="#"><button type="button" class="btn btn-info" onclick="redirection({{statusForm.laborStatusFormID}})">Adjustment Form</button></a>
+        <a href="/alterLSF/{{statusForm.laborStatusFormID}}"  class="btn btn-warning">Adjustment Form</a>
       {% endif %}
-      {% if buttonState.evaluate %}
-            <a id="sle" href="#">
-              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Evaluate
-              </button>
-            </a>
-          </div>
+
+      {% if buttonState.resubmit %}
+        <button type="button" class="btn btn-info" data-dismiss="modal" onclick = "resubmitform({{statusForm.laborStatusFormID}})">Submit to Banner</button>
       {% endif %}
-      {% if buttonState.evaluation_exists %}
-            <a id="sle" href="#">
-              <button type="submit" name="submit" value="submit" class="btn btn-warning" onclick="redirection({{statusForm.laborStatusFormID}})"> Show Evaluation
-              </button>
-            </a>
-          </div>
-      {% endif %}
+
     {% endif %}
-
-
-
-
+    </div>
 </div>
