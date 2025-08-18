@@ -112,17 +112,17 @@ def downloadSupervisorPortalResults():
     )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
-@main_bp.route('/lsf/<lsfId>/submitToBanner', methods=['GET'])
-def submitToBanner(lsfId):
+@main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET'])
+def submitToBanner(formHistoryId):
     if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403      
 
     try:
         conn = Banner()
-        save_form_status = conn.insert(lsfId)
+        save_form_status = conn.insert(formHistoryId)
     except Exception as e:
         save_form_status = False
-        print(f"Error saving form history ({lsfId}) to Banner.")
+        print(f"Error saving form history ({formHistoryId}) to Banner.")
 
     if save_form_status:
         return "Form successfully submitted to Banner.", 200
