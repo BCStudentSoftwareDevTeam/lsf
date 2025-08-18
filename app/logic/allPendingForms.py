@@ -127,7 +127,7 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
 def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDate, email):
     if rsp['formType'] == 'Overload':
         overloadForm = OverloadForm.get(OverloadForm.overloadFormID == historyForm.overloadForm.overloadFormID)
-        overloadForm.laborApproved = status.statusName
+        overloadForm.laborApproved = status
         overloadForm.laborApprover = currentUser
         overloadForm.laborReviewDate = currentDate
         overloadForm.save()
@@ -139,10 +139,7 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
                     LSF.weeklyHours = pendingForm.adjustedForm.newValue
                     LSF.save()
             if pendingForm.historyType.historyTypeName == "Labor Status Form" or (pendingForm.historyType.historyTypeName == "Labor Adjustment Form" and pendingForm.adjustedForm.fieldAdjusted == "weeklyHours"):
-                if status.statusName == "Approved Reluctantly":
-                    pendingForm.status = "Approved"
-                else:
-                    pendingForm.status = status.statusName
+                pendingForm.status = status
                 pendingForm.reviewedBy = currentUser
                 pendingForm.reviewedDate = currentDate
                 if 'denialReason' in rsp.keys():
@@ -156,7 +153,7 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
 
                 if pendingForm.historyType.historyTypeName == "Labor Status Form":
                     email = emailHandler(pendingForm.formHistoryID)
-                    if rsp['status'] in ['Approved', 'Approved Reluctantly']:
+                    if rsp['status'] == 'Approved':
                         email.laborStatusFormApproved()
                     elif rsp['status'] == 'Denied by Admin':
                         email.laborStatusFormRejected()
@@ -185,7 +182,7 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
     historyForm.reviewedDate = currentDate
     historyForm.save()
     if rsp['formType'] == 'Overload':
-        if rsp['status'] in ['Approved', 'Approved Reluctantly']:
+        if rsp['status'] == 'Approved':
             email.LaborOverLoadFormApproved()
         elif rsp['status'] == 'Denied by Admin':
             email.LaborOverLoadFormRejected()

@@ -63,7 +63,7 @@ def studentOverloadApp(formHistoryId):
         studentPrimaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == primaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending"]) ))
+                                    FormHistory.status.in_(["Approved","Pending"]) ))
         formIDPrimary.append(studentPrimaryHistory)
     formIDSecondary = []
 
@@ -71,7 +71,7 @@ def studentOverloadApp(formHistoryId):
         studentSecondaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == secondaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending"]) ))
+                                    FormHistory.status.in_(["Approved","Pending"]) ))
         formIDSecondary.append(studentSecondaryHistory)
 
     totalCurrentHours = 0

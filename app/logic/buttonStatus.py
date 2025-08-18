@@ -128,7 +128,7 @@ class ButtonStatus:
                     self.rehire = True
                     self.num_buttons += 1
 
-                elif historyForm.status.statusName in ["Approved","Approved Reluctantly"]:
+                elif historyForm.status.statusName == "Approved":
                     self.num_buttons += 1
                     if self.currentDate <= historyForm.formID.endDate:
                         # An approved LSF before the end of the term

@@ -463,9 +463,6 @@ function submitOverload(formHistoryID, isLaborAdmin) {
       if ($('#approve').is(':checked')) {
         status = 'Approved';
       }
-      if ($('#approveRel').is(':checked')) {
-        status = 'Approved Reluctantly'
-      }
       if ($('#overloadNotes').val() != '') {
         var adminNotes = $('#overloadNotes').val()
         overloadModalInfo['adminNotes'] = adminNotes;

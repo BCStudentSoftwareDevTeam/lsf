@@ -192,10 +192,9 @@ def checkForPrimaryPosition(termCode, student, currentUser):
                     finalStatus["position"] = lastPrimaryPosition.formID.POSN_CODE +" - "+lastPrimaryPosition.formID.POSN_TITLE + " (" + lastPrimaryPosition.formID.WLS + ")"
                     finalStatus["hours"] = lastPrimaryPosition.formID.jobType + " (" + str(lastPrimaryPosition.formID.weeklyHours) + ")"
                     finalStatus["isLaborAdmin"] = currentUser.isLaborAdmin
-                    if lastPrimaryPosition.status.statusName == "Approved" or lastPrimaryPosition.status.statusName == "Approved Reluctantly":
-                        finalStatus["approvedForm"] = True
+                    finalStatus["approvedForm"] = (lastPrimaryPosition.status_id == "Approved")
             else:
-                if lastPrimaryPosition.status_id in ["Approved", "Approved Reluctantly", "Pending"]:
+                if lastPrimaryPosition.status_id in ["Approved", "Pending"]:
                     lastPrimaryPositionTermCode = str(lastPrimaryPosition.formID.termCode.termCode)[-2:]
                     # if selected term is AY and student has an approved/pending LSF in spring or fall
                     if shortCode == '00' and lastPrimaryPositionTermCode in ['11', '12']:

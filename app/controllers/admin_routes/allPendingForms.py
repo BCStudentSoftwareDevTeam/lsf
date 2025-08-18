@@ -472,7 +472,6 @@ def getReleaseModalData(formHistoryID):
         print("Error Populating Release Modal:", e)
         return render_template('errors/500.html'), 500
 
-
 @admin.route('/admin/modalFormUpdate', methods=['POST'])
 def modalFormUpdate():
     """
