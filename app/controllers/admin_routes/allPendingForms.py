@@ -24,6 +24,7 @@ from app.models.supervisor import Supervisor
 from app.models.student import Student
 from app.models.historyType import HistoryType
 from app.models.department import Department
+from app.models.status import Status
 from app.logic.allPendingForms import saveStatus, laborAdminOverloadApproval, financialAidSAASOverloadApproval, modal_approval_and_denial_data, checkAdjustment
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
 
