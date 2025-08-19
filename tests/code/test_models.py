@@ -381,7 +381,8 @@ def test_user_model():
             POSN_CODE="S61407",
             releaseDate=date.today(),
             conditionAtRelease="released",
-            reasonForRelease="End of Term" 
+            reasonForRelease="End of Term",
+            contactPerson_id=None
         )
 
         release_form11 = LaborReleaseForm.create(
@@ -395,7 +396,8 @@ def test_user_model():
             POSN_CODE="S61407",
             releaseDate=date.today(),
             conditionAtRelease="released",
-            reasonForRelease="End of Term" 
+            reasonForRelease="End of Term",
+            contactPerson_id=sup_user
         )
 
         # Create APPROVED release form history for student10 (should exclude them)
