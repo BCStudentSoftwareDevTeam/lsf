@@ -1162,4 +1162,11 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-20 12:59:42
+ALTER TABLE `laborreleaseform`
+  ADD COLUMN `contactPerson_id` INT,
+  ADD INDEX `laborreleaseform_contactPerson_id` (`contactPerson_id`),
+  ADD CONSTRAINT `laborreleaseform_ibfk_1`
+    FOREIGN KEY (`contactPerson_id`)
+    REFERENCES `user` (`userID`)
+    ON DELETE CASCADE
+    ON UPDATE RESTRICT;
