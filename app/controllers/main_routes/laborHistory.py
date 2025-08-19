@@ -108,7 +108,8 @@ def populateModal(statusKey):
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
-        forms = FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc())
+        forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
+                            .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
         currentDate = datetime.date.today()

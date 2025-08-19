@@ -44,6 +44,10 @@ textarea {
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
   box-sizing: border-box;         /* Opera/IE 8+ */
 }
+.space {
+  position: relative;
+  top: 1rem;
+}
 
 .padding {
   padding-right: 100px;
