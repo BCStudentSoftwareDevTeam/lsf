@@ -497,36 +497,42 @@ print(" * departments added")
 #############################
 # Term
 #############################
+today = datetime.now()
+current_year = today.year - (today.month < 8)
+
 terms = [
-            {
-            "termCode":"202000",
-            "termName": "AY 2020-2021",
-            "termStart":"2020-08-01",
-            "termEnd" : "2021-05-01",
-            "termState": 1,
-            "primaryCutOff": "2020-09-01",
-            "adjustmentCutOff": "2020-09-01"
-            },
-            {
-            "termCode":"202001",
-            "termName": "Thanksgiving Break 2020",
-            "termStart":"2020-08-01",
-            "termEnd" : "2021-05-01",
-            "termState": 0,
-            "primaryCutOff": "2020-09-01",
-            "adjustmentCutOff": "2020-09-01",
-            "isBreak": 1
-            }
-       ]
+    {
+        "termCode": f"{current_year}00",
+        "termName": f"AY {current_year}-{current_year+1}",
+        "termStart": f"{current_year}-08-01",
+        "termEnd": f"{current_year+1}-05-01",
+        "termState": 1,
+        "primaryCutOff": f"{current_year}-09-01",
+        "adjustmentCutOff": f"{current_year}-09-01",
+    },
+    {
+        "termCode": f"{current_year}01",
+        "termName": f"Thanksgiving Break {current_year}",
+        "termStart": f"{current_year}-08-01",
+        "termEnd": f"{current_year+1}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year}-09-01",
+        "adjustmentCutOff": f"{current_year}-09-01",
+        "isBreak": 1,
+    },
+]
+
 Term.insert_many(terms).on_conflict_replace().execute()
-print(" * terms added")
+print(f" * terms for {current_year}-{current_year+1} added")
 
 #############################
 # Create a Pending Labor Status Form
 #############################
+today = datetime.now()
+current_year = today.year - (today.month < 8)
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": "202000",
+            "termCode_id": f"{current_year}00",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -536,21 +542,21 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
-            "startDate": "2020-04-01",
-            "endDate": "2020-09-01"
+            "startDate": f"{current_year}-04-01",
+            "endDate": f"{current_year}-09-01"
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": "2020-04-14",
+            "createdDate": f"{current_year}-04-14",
             "status_id": "Pending"
         }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
-            "termCode_id": "202000",
+            "termCode_id": f"{current_year}00",
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
@@ -560,7 +566,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
-            "startDate": "2020-04-01",
+            "startDate": f"{current_year}-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
@@ -569,7 +575,7 @@ FormHistory.insert([{
             "formID_id": "3",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": "2020-04-14",
+            "createdDate": f"{current_year}-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()    
 
