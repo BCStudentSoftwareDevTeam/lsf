@@ -6,6 +6,7 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
+from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
@@ -31,7 +32,7 @@ def supervisorPortal():
 
         return render_template('errors/403.html'), 403
     
-    terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
+    terms = Term.select(Term.termName).order_by(Term.termCode.desc())
     supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
     department = None
