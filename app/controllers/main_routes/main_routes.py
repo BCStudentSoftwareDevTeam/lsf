@@ -47,8 +47,6 @@ def supervisorPortal():
         departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
         deptNames = [department.DEPT_NAME for department in departments]
 
-        supervisorPrimaryDepartment = Department.select().join(SupervisorDepartment) # count up all forms for a supervisor in department and get the max
-
         supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
                                  .join_from(Supervisor, LaborStatusForm)
                                  .join_from(LaborStatusForm, Department)
