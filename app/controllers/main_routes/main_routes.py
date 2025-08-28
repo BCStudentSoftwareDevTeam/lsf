@@ -32,7 +32,6 @@ def supervisorPortal():
         return render_template('errors/403.html'), 403
     
     terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    allSupervisors = Supervisor.select()
     supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
     studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
     department = None
@@ -66,7 +65,6 @@ def supervisorPortal():
     return render_template('main/supervisorPortal.html',
                             terms = terms,
                             supervisors = supervisors,
-                            allSupervisors = allSupervisors,
                             students = students,
                             departments = departments,
                             department = department,
