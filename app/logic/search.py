@@ -46,19 +46,22 @@ def getDepartmentsForSupervisor(currentUser):
     """
     Given currentUser, find and return all departments that the user is associated with.
     """
-    # query the SupervisorDepartment table to see if any entries exist for the currentUser
-    supervisorDepts = Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
-
-    # queries all forms to see what departments the user has interacted with
-    departments = (Department.select(Department)
-                    .join_from(Department, LaborStatusForm)
-                    .join_from(LaborStatusForm, FormHistory)
-                    .join_from(LaborStatusForm, Supervisor)
-                    .where((LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | (FormHistory.createdBy == currentUser)).order_by(Department.DEPT_NAME)
-                    .distinct()
+    # queries all forms to see the department IDs which the user has interacted with
+    departments = (
+                    Department.select(Department.departmentID)
+                    .join(LaborStatusForm)
+                    .join(FormHistory)
+                    .join(Supervisor)
+                    .join(SupervisorDepartment)
+                    .where(
+                        (SupervisorDepartment.supervisor == currentUser.supervisor) |
+                        (LaborStatusForm.supervisor.ID == currentUser.supervisor.ID) | 
+                        (FormHistory.createdBy == currentUser)
                     )
-    alldepts = departments.union(supervisorDepts)
-    return alldepts
+                    .order_by(Department.DEPT_NAME)
+                    .distinct()
+                )
+    return departments
 
 def getSupervisorsForDepartment(departmentId):
     departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()

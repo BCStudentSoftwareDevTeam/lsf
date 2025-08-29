@@ -78,7 +78,7 @@ def getDatatableData(request):
     if clauses:
         formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
     if not g.currentUser.isLaborAdmin:
-        supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
+        supervisorDepartments = getDepartmentsForSupervisor(g.currentUser)
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
     recordsTotal = formSearchResults.count()
 
