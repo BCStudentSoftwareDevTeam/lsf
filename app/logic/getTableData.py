@@ -3,7 +3,7 @@ from datetime import datetime, date
 from functools import reduce
 
 from flask import json, jsonify, g, make_response
-from peewee import fn, Case
+from peewee import fn, SQL
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.logic.search import getDepartmentsForSupervisor
@@ -68,20 +68,28 @@ def getDatatableData(request):
             else:
                 clauses.append(field == value)
     # This expression creates SQL AND operator between the conditions added to 'clauses' list
-    formSearchResults = (FormHistory.select()
-                                    .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                                    .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                                    .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
-                                    .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
-                                    .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
-                                    .join(User, on=(FormHistory.createdBy == User.userID)))
-    if clauses:
-        formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
     if not g.currentUser.isLaborAdmin:
-        supervisorDepartments = getDepartmentsForSupervisor(g.currentUser)
-        formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-    recordsTotal = formSearchResults.count()
+        supervisor_filter = (
+            (Supervisor.ID == g.currentUser.supervisor.ID) |
+            (FormHistory.createdBy == g.currentUser)
+        )
+        clauses.append(supervisor_filter)
 
+    formSearchResults = (
+                            FormHistory.select()
+                            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                            .join(Supervisor, on=(LaborStatusForm.supervisor == Supervisor.ID))
+                            .join(Student, on=(LaborStatusForm.studentSupervisee == Student.ID))
+                            .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
+                            .join(User, on=(FormHistory.createdBy == User.userID))
+                            .where(
+                                reduce(operator.and_, clauses)
+                            ) if clauses else SQL("1=1")
+                        )
+
+    recordsTotal = formSearchResults.count()
+    exit(1)
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
     # stored in last_name

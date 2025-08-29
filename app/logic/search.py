@@ -48,7 +48,7 @@ def getDepartmentsForSupervisor(currentUser):
     """
     # queries all forms to see the department IDs which the user has interacted with
     departments = (
-                    Department.select(Department.departmentID)
+                    Department.select(Department)
                     .join(LaborStatusForm)
                     .join(FormHistory)
                     .join(Supervisor)
