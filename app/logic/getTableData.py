@@ -80,7 +80,7 @@ def getDatatableData(request):
     if not g.currentUser.isLaborAdmin:
         supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-    recordsTotal = len(formSearchResults)
+    recordsTotal = formSearchResults.count()
 
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
