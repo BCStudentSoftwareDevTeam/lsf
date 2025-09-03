@@ -123,8 +123,16 @@ $('#mySupervisees').trigger("click")
 
 //--------------------- WE ARE HERE --------------------------------------------------
 $("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
-  console.log("it's clicking")
   liveSearch("termSelect", e);
+});
+$("#departmentSelectParent .bs-searchbox input").on("keyup", function(e) {
+  liveSearch("departmentSelect", e);
+});
+$("#supervisorSelectParent .bs-searchbox input").on("keyup", function(e) {
+  liveSearch("supervisorSelect", e);
+});
+$("#studentSelectParent .bs-searchbox input").on("keyup", function(e) {
+  liveSearch("studentSelect", e);
 });
 
 });

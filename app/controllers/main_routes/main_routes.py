@@ -1,4 +1,4 @@
-from flask import render_template, request, json, redirect, url_for, send_file, g, flash
+from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from peewee import fn
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -108,7 +108,22 @@ def downloadSupervisorPortalResults():
     )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
-@main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET'])
+# WORK IN PROGRESS---------------------------------------------------
+@main_bp.route('/supervisorPortal/liveSearch', methods=['POST'])
+def SupervisorPortalSearch():
+    """
+        ADD DESCRIPTION HERE
+        Logic copied from adminManagement live search function
+    """
+    try:
+        rsp = eval(request.data.decode("utf-8"))
+        userList = searchForAdmin(rsp)
+        return jsonify(userList)
+    except Exception as e:
+        print('ERROR Loading Non Labor Admins:', e, type(e))
+        return jsonify(userList)
+
+@main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
 def submitToBanner(formHistoryId):
     if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403      
