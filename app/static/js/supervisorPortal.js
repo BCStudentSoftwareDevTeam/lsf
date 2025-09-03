@@ -121,6 +121,11 @@ $('#collapseSearch').collapse(false)
 $('#mySupervisees').trigger("click")
 }
 
+$("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
+  console.log("it's clicking")
+  liveSearch("termSelect", e);
+});
+
 });
 
 // this is a mapping which maps the column option to its field options.
@@ -372,4 +377,41 @@ function setFormSearchValues(searchDict) {
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
 }
+// Dynamic search for dropdowns (from adminManagement.js)
+
+$("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
+  console.log("it's clicking")
+  liveSearch("termSelect", e);
+});
+
+function liveSearch(selectPickerID, e) {
+    let searchData = e.target.value;
+    $("#"+ selectPickerID).empty();
+    if (searchData.length >= 3) {
+      $("#"+ selectPickerID).empty();
+      let data = [selectPickerID, searchData]
+      data = JSON.stringify(data)
+      $.ajax({
+        type: "POST",
+        url: "/supervisorFormSearch",
+        datatype: "json",
+        data: data,
+        contentType: 'application/json',
+        success: function(response) {
+          for (let key = 0; key < response.length; key++) {
+            let username = response[key]['username']
+            let firstName = response[key]['firstName']
+            let lastName = response[key]['lastName']
+            let type = response[key]['type']
+            if (type == "Student") {
+              $("#"+ selectPickerID).append('<option value="' + username + '" data-subtext="' + username + ' (' + type + ')">' + firstName + ' ' + lastName + '</option>');
+            } else {
+              $("#"+ selectPickerID).append('<option value="' + username + '" data-subtext="' + username + '">' + firstName + ' ' + lastName + '</option>');
+            }
+          }
+          $("#"+ selectPickerID).selectpicker("refresh");
+        }
+      });
+    }
+};
 
