@@ -121,6 +121,7 @@ $('#collapseSearch').collapse(false)
 $('#mySupervisees').trigger("click")
 }
 
+//--------------------- WE ARE HERE --------------------------------------------------
 $("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
   console.log("it's clicking")
   liveSearch("termSelect", e);
@@ -378,12 +379,6 @@ function setFormSearchValues(searchDict) {
   })
 }
 // Dynamic search for dropdowns (from adminManagement.js)
-
-$("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
-  console.log("it's clicking")
-  liveSearch("termSelect", e);
-});
-
 function liveSearch(selectPickerID, e) {
     let searchData = e.target.value;
     $("#"+ selectPickerID).empty();
