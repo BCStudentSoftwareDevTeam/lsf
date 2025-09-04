@@ -1,139 +1,144 @@
 $(document).ready(function () {
-$('#formSearchButton').on('click', function () {
-runFormSearchQuery();
-$('#sortOptions').show();
-});
-
-$('#switchViewButton').on('click', function () {
-// toggle the view and button value
-buttonVal = $("#switchViewButton").val()
-switchViewButton((buttonVal == "simple") ? "advanced" : "simple")
-
-// we can just rerun the form search query as it pulls down the value
-// of the button to determine what button to render
-runFormSearchQuery();
-$('#sortOptions').show();
-});
-
-$('#addUserToDept').on('click', function () {
-$("#addSupervisorToDeptModal").modal("show");
-$('#addUser').prop('disabled', true)
-})
-$("#sortByButton").on('click', function () {
-var isDisabled = $('#fieldPicker').prop('disabled');
-if (!isDisabled && $('#fieldPicker').val() == '') {
-  msgFlash("Cannot sort without selecting a field.", 'warning')
-  return
-}
-runFormSearchQuery()
-})
-
-if ($('#columnPicker').val() == '') {
-$('#fieldPicker').prop('disabled', true)
-$('.selectpicker').selectpicker('refresh')
-}
-
-$('#addUser').on('click', function () {
-let supervisorID = $('#supervisorModalSelect :selected').val()
-let departmentID = $('#departmentModalSelect :selected').val()
-
-addSupervisorToDepartment(supervisorID, departmentID)
-})
-$('#departmentModalSelect').on('change', disableButtonHandler)
-$('#supervisorModalSelect').on('change', disableButtonHandler)
-
-$('#clearSelectionsButton').on('click', function () {
-$("input:checkbox").removeAttr("checked");
-clearDropdowns()
-});
-
-$(function () {
-$("#formSearchAccordion").accordion({
-  collapsible: true
-});
-});
-$(function () {
-$("#formSearchAccordion").accordion();
-$("#formSearchAccordion .ui-accordion-header").css({ fontSize: 20 });// width of the box content area
-});
-// listening for preset button clicks.
-$('#mySupervisees').on('click', function () {
-$("input:checkbox").removeAttr("checked");
-runFormSearchQuery("mySupervisees");
-});
-$('#superviseesPendingForms').on('click', function () {
-$("input:checkbox").removeAttr("checked");
-runFormSearchQuery("pendingForms");
-});
-$('#currentTerm').on('click', function () {
-runFormSearchQuery("currentTerm");
-});
-$('#columnPicker').on('change', function () {
-let column = $('#columnPicker :selected').text()
-buttonVal = $("#switchViewButton").val()
-let fields = buttonVal == "advanced" ? advancedColumnFieldMap[column] : simpleColumnFieldMap[column];
-
-// clear the options from the current field picker and replace 
-// them with the ones from the columnFieldMap 
-$('#fieldPicker').empty();
-fields.forEach((field) => {
-  var option = $('<option>', {
-    value: field[1],
-    text: field[0]
+  $('#formSearchButton').on('click', function () {
+    runFormSearchQuery();
+    $('#sortOptions').show();
   });
-  $('#fieldPicker').append(option)
-})
 
-// if there is only one field then that means we can disable the fieldPicker and rely
-// on the column instead
-if (fields.length === 1) {
-  $('#fieldPicker').prop('disabled', true);
+  $('#switchViewButton').on('click', function () {
+    // toggle the view and button value
+    buttonVal = $("#switchViewButton").val()
+    switchViewButton((buttonVal == "simple") ? "advanced" : "simple")
 
-} else {
-  $('#fieldPicker').prop('disabled', false);
-}
-$('.selectpicker').selectpicker('refresh')
-})
+    // we can just rerun the form search query as it pulls down the value
+    // of the button to determine what button to render
+    runFormSearchQuery();
+    $('#sortOptions').show();
+  });
 
-////////////////////////////////////////////
-// check the cookie and GO!
-if ((document.cookie).includes("lsfSearchResults=")) {
-cookieStr = Cookies.get('lsfSearchResults')
-cookieJSON = JSON.parse(cookieStr)
+  $('#addUserToDept').on('click', function () {
+    $("#addSupervisorToDeptModal").modal("show");
+    $('#addUser').prop('disabled', true)
+  })
+  $("#sortByButton").on('click', function () {
+    var isDisabled = $('#fieldPicker').prop('disabled');
+    if (!isDisabled && $('#fieldPicker').val() == '') {
+      msgFlash("Cannot sort without selecting a field.", 'warning')
+      return
+    }
+    runFormSearchQuery()
+  })
 
-// using the cookies, make sure the view is properly set as well
-if (cookieJSON.view == 'advanced') {
-  createDataTable(cookieStr)
-  switchViewButton('advanced')
-} else {
-  fetchSimpleView(cookieStr)
-  switchViewButton('simple')
-}
-setFormSearchValues(cookieJSON)
+  if ($('#columnPicker').val() == '') {
+    $('#fieldPicker').prop('disabled', true)
+    $('.selectpicker').selectpicker('refresh')
+  }
 
-} else {
-$('#formSearchTable').hide();
-$('#sortOptions').hide();
-$("#download").prop('disabled', true);
-$('#collapseSearch').collapse(false)
+  $('#addUser').on('click', function () {
+    let supervisorID = $('#supervisorModalSelect :selected').val()
+    let departmentID = $('#departmentModalSelect :selected').val()
 
-// select current supervisees if nothing selected
-$('#mySupervisees').trigger("click")
-}
+    addSupervisorToDepartment(supervisorID, departmentID)
+  })
 
-//--------------------- WE ARE HERE --------------------------------------------------
-$("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
-  liveSearch("termSelect", e);
-});
-$("#departmentSelectParent .bs-searchbox input").on("keyup", function(e) {
-  liveSearch("departmentSelect", e);
-});
-$("#supervisorSelectParent .bs-searchbox input").on("keyup", function(e) {
-  liveSearch("supervisorSelect", e);
-});
-$("#studentSelectParent .bs-searchbox input").on("keyup", function(e) {
-  liveSearch("studentSelect", e);
-});
+  $('#departmentModalSelect').on('change', disableButtonHandler)
+  $('#supervisorModalSelect').on('change', disableButtonHandler)
+
+  $('#clearSelectionsButton').on('click', function () {
+    $("input:checkbox").removeAttr("checked");
+    clearDropdowns()
+  });
+
+  $(function () {
+    $("#formSearchAccordion").accordion({
+      collapsible: true
+    });
+  });
+
+  $(function () {
+    $("#formSearchAccordion").accordion();
+    $("#formSearchAccordion .ui-accordion-header").css({ fontSize: 20 });// width of the box content area
+  });
+  // listening for preset button clicks.
+  $('#mySupervisees').on('click', function () {
+    $("input:checkbox").removeAttr("checked");
+    runFormSearchQuery("mySupervisees");
+  });
+
+  $('#superviseesPendingForms').on('click', function () {
+    $("input:checkbox").removeAttr("checked");
+    runFormSearchQuery("pendingForms");
+  });
+
+  $('#currentTerm').on('click', function () {
+    runFormSearchQuery("currentTerm");
+  });
+
+  $('#columnPicker').on('change', function () {
+    let column = $('#columnPicker :selected').text()
+    buttonVal = $("#switchViewButton").val()
+    let fields = buttonVal == "advanced" ? advancedColumnFieldMap[column] : simpleColumnFieldMap[column];
+
+    // clear the options from the current field picker and replace 
+    // them with the ones from the columnFieldMap 
+    $('#fieldPicker').empty();
+    fields.forEach((field) => {
+      var option = $('<option>', {
+        value: field[1],
+        text: field[0]
+      });
+      $('#fieldPicker').append(option)
+    })
+
+    // if there is only one field then that means we can disable the fieldPicker and rely
+    // on the column instead
+    if (fields.length === 1) {
+      $('#fieldPicker').prop('disabled', true);
+
+    } else {
+      $('#fieldPicker').prop('disabled', false);
+    }
+    $('.selectpicker').selectpicker('refresh')
+  })
+
+  ////////////////////////////////////////////
+  // check the cookie and GO!
+  if ((document.cookie).includes("lsfSearchResults=")) {
+    cookieStr = Cookies.get('lsfSearchResults')
+    cookieJSON = JSON.parse(cookieStr)
+
+    // using the cookies, make sure the view is properly set as well
+    if (cookieJSON.view == 'advanced') {
+      createDataTable(cookieStr)
+      switchViewButton('advanced')
+    } else {
+      fetchSimpleView(cookieStr)
+      switchViewButton('simple')
+    }
+    setFormSearchValues(cookieJSON)
+
+  } else {
+    $('#formSearchTable').hide();
+    $('#sortOptions').hide();
+    $("#download").prop('disabled', true);
+    $('#collapseSearch').collapse(false)
+
+    // select current supervisees if nothing selected
+    $('#mySupervisees').trigger("click")
+  }
+
+  // Live search handling for dropdowns
+  $("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
+    liveSearch("termSelect", e);
+  });
+  $("#departmentSelectParent .bs-searchbox input").on("keyup", function(e) {
+    liveSearch("departmentSelect", e);
+  });
+  $("#supervisorSelectParent .bs-searchbox input").on("keyup", function(e) {
+    liveSearch("supervisorSelect", e);
+  });
+  $("#studentSelectParent .bs-searchbox input").on("keyup", function(e) {
+    liveSearch("studentSelect", e);
+  });
 
 });
 
@@ -388,29 +393,29 @@ function setFormSearchValues(searchDict) {
 }
 // Dynamic search for dropdowns (from adminManagement.js)
 function liveSearch(selectPickerID, e) {
-    let searchData = e.target.value;
+    const searchData = e.target.value;
     $("#"+ selectPickerID).empty();
     if (searchData.length >= 3) {
-      $("#"+ selectPickerID).empty();
-      let data = [selectPickerID, searchData]
-      data = JSON.stringify(data)
+      const searchType = selectPickerID;
       $.ajax({
-        type: "POST",
-        url: "/supervisorFormSearch",
-        datatype: "json",
-        data: data,
+        type: "GET",
+        url: "/supervisorPortal/liveSearch",
+        data: {
+                searchType: searchType,
+                userInput: searchData
+            },
         contentType: 'application/json',
         success: function(response) {
-          for (let key = 0; key < response.length; key++) {
-            let username = response[key]['username']
-            let firstName = response[key]['firstName']
-            let lastName = response[key]['lastName']
-            let type = response[key]['type']
-            if (type == "Student") {
-              $("#"+ selectPickerID).append('<option value="' + username + '" data-subtext="' + username + ' (' + type + ')">' + firstName + ' ' + lastName + '</option>');
-            } else {
-              $("#"+ selectPickerID).append('<option value="' + username + '" data-subtext="' + username + '">' + firstName + ' ' + lastName + '</option>');
+          if(selectPickerID == "termSelect"){ 
+            for (let key = 0; key < response.length; key++) {
+              $("#"+ selectPickerID).append('<option value="' + response[key]['termCode'] + '">' + response[key]['termName'] + '</option>');
             }
+          }
+          else if (selectPickerID == "departmentSelect"){
+          }
+          else if (selectPickerID == "supervisorSelect"){
+          }
+          else if (selectPickerID == "studentSelect"){
           }
           $("#"+ selectPickerID).selectpicker("refresh");
         }

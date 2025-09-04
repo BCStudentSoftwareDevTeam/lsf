@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import fn
+from peewee import fn, DoesNotExist
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -14,6 +14,8 @@ from app.logic.search import getDepartmentsForSupervisor
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.models.user import User # remove later?
+from app.logic.tracy import Tracy # remove later?
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -109,19 +111,82 @@ def downloadSupervisorPortalResults():
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
 # WORK IN PROGRESS---------------------------------------------------
-@main_bp.route('/supervisorPortal/liveSearch', methods=['POST'])
+@main_bp.route('/supervisorPortal/liveSearch', methods=['GET'])
 def SupervisorPortalSearch():
     """
         ADD DESCRIPTION HERE
         Logic copied from adminManagement live search function
     """
+    def searchSupervisorPortal(searchType, userInput):
+        if searchType == "termSelect":
+            termList = []
+            terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
+            for term in terms:
+                termList.append({'termCode': term.termCode,
+                                'termName': term.termName
+                                })
+            print("this is our term list:", termList)
+            return termList
+        elif searchType == "departmentSelect":
+            pass
+        elif searchType == "supervisorSelect":
+            pass
+        elif searchType == "studentSelect":
+            pass
+
+        # userList = []
+        # if adminType == "addlaborAdmin":
+        #     tracyStudents = Tracy().getStudentsFromUserInput(userInput)
+        #     students = []
+        #     for student in tracyStudents:
+        #         try:
+        #             existingUser = User.get(User.student == student.ID)
+        #             if existingUser.isLaborAdmin:
+        #                 pass
+        #             else:
+        #                 students.append(student)
+        #         except DoesNotExist as e:
+        #             students.append(student)
+        #     for student in students:
+        #         username = student.STU_EMAIL.split('@', 1)
+        #         userList.append({'username': username[0],
+        #                         'firstName': student.FIRST_NAME,
+        #                         'lastName': student.LAST_NAME,
+        #                         'type': 'Student'
+        #                         })
+        # tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
+        # supervisors = []
+        # for supervisor in tracySupervisors:
+        #     try:
+        #         existingUser = User.get(User.supervisor == supervisor.ID)
+        #         if ((existingUser.isLaborAdmin and adminType == "addlaborAdmin")
+        #             or (existingUser.isSaasAdmin and adminType == "addSaasAdmin")
+        #             or (existingUser.isFinancialAidAdmin and adminType == "addFinAidAdmin")):
+        #             pass
+        #         else:
+        #             supervisors.append(supervisor)
+        #     except DoesNotExist as e:
+        #         supervisors.append(supervisor)
+        # for sup in supervisors:
+        #     username = sup.EMAIL.split('@', 1)
+        #     userList.append({'username': username[0],
+        #                     'firstName': sup.FIRST_NAME,
+        #                     'lastName': sup.LAST_NAME,
+        #                     'type': 'Supervisor'})
+        # return userList
+    
+    # The acutal function code starts here***********************
     try:
-        rsp = eval(request.data.decode("utf-8"))
-        userList = searchForAdmin(rsp)
+        searchType = request.args.get("searchType")
+        userInput = request.args.get("userInput")
+
+        if not searchType or not userInput:
+            return jsonify({""}), 400
+        userList = searchSupervisorPortal(searchType, userInput)
+        
         return jsonify(userList)
     except Exception as e:
-        print('ERROR Loading Non Labor Admins:', e, type(e))
-        return jsonify(userList)
+        print('ERROR:', e, type(e))
 
 @main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
 def submitToBanner(formHistoryId):
