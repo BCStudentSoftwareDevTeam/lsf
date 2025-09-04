@@ -391,35 +391,81 @@ function setFormSearchValues(searchDict) {
     $(`input:checkbox[value='${value}']`).prop('checked', true);
   })
 }
-// Dynamic search for dropdowns (from adminManagement.js)
+
+
+function resetSelect(selectPickerID) {
+  const defaultOptions = {
+    termSelect: [
+      { value: "", text: "All terms" },
+      { value: "activeTerms", text: "All Active Terms" }
+    ],
+    departmentSelect: [
+      { value: "", text: "All departments" }
+    ],
+    supervisorSelect: [
+      { value: "", text: "All supervisors" }
+    ],
+    studentSelect: [
+      { value: "", text: "All students" }
+    ]
+  };
+
+  const $select = $("#" + selectPickerID);
+  $select.empty();
+
+  defaultOptions[selectPickerID].forEach(option => {
+    $select.append($("<option>", { value: option.value, text: option.text }));
+  });
+
+  $select.selectpicker("refresh");
+}
+
 function liveSearch(selectPickerID, e) {
-    const searchData = e.target.value;
-    $("#"+ selectPickerID).empty();
-    if (searchData.length >= 3) {
-      const searchType = selectPickerID;
-      $.ajax({
-        type: "GET",
-        url: "/supervisorPortal/liveSearch",
-        data: {
-                searchType: searchType,
-                userInput: searchData
-            },
-        contentType: 'application/json',
-        success: function(response) {
-          if(selectPickerID == "termSelect"){ 
-            for (let key = 0; key < response.length; key++) {
-              $("#"+ selectPickerID).append('<option value="' + response[key]['termCode'] + '">' + response[key]['termName'] + '</option>');
-            }
-          }
-          else if (selectPickerID == "departmentSelect"){
-          }
-          else if (selectPickerID == "supervisorSelect"){
-          }
-          else if (selectPickerID == "studentSelect"){
-          }
-          $("#"+ selectPickerID).selectpicker("refresh");
-        }
-      });
+    const searchQuery = e.target.value;
+    if (searchQuery.length < 3) {
+      resetSelect(selectPickerID);
+      return;
     }
+
+    const selectObject = $("#" + selectPickerID);
+    const searchType = selectPickerID;
+    const optionBuilders = {
+      termSelect: row => ({
+        value: row.termCode,
+        text: row.termName
+      }),
+      departmentSelect: row => ({
+        value: row.departmentID,
+        text: row.DEPT_NAME
+      }),
+      supervisorSelect: row => ({
+        value: row.ID,
+        text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`
+      }),
+      studentSelect: row => ({
+        value: row.ID,
+        text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`
+      })
+    };
+
+    $.ajax({
+      type: "GET",
+      url: "/supervisorPortal/liveSearch",
+      data: {
+              searchType: searchType,
+              userInput: searchQuery
+            },
+      contentType: 'application/json',
+      success: function(response) {
+        selectObject.empty();
+        const buildOption = optionBuilders[selectPickerID];
+        response.forEach(row => {
+          const option = buildOption(row);
+          console.log(option);
+          selectObject.append($("<option>", option));
+        });
+        $("#"+ selectPickerID).selectpicker("refresh");
+      }
+    });
 };
 

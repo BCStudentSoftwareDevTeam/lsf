@@ -183,7 +183,6 @@ def SupervisorPortalSearch():
         if not searchType or not userInput:
             return jsonify({""}), 400
         userList = searchSupervisorPortal(searchType, userInput)
-        
         return jsonify(userList)
     except Exception as e:
         print('ERROR:', e, type(e))
