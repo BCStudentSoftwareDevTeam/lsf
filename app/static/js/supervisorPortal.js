@@ -433,7 +433,6 @@ const selectConfig = {
   }
 };
 
-
 function resetSelect(selectPickerID) {
   const $select = $("#" + selectPickerID);
   $select.empty();
@@ -446,33 +445,35 @@ function resetSelect(selectPickerID) {
 }
 
 function liveSearch(selectPickerID, e) {
-    const searchQuery = e.target.value;
-    if (searchQuery.length < 3) {
-      resetSelect(selectPickerID);
-      return;
+  const searchQuery = e.target.value;
+  if (searchQuery.length < 3) {
+    resetSelect(selectPickerID);
+    return;
+  }
+
+  const selectObject = $("#" + selectPickerID);
+  const searchType = selectPickerID;
+
+  $.ajax({
+    type: "GET",
+    url: "/supervisorPortal/liveSearch",
+    data: {
+            searchType: searchType,
+            userInput: searchQuery
+          },
+    success: function(response) {
+      selectObject.empty();
+      const buildOption = selectConfig[selectPickerID].build;
+      response.forEach(row => {
+        const option = buildOption(row);
+        selectObject.append($("<option>", option));
+      });
+      selectObject.selectpicker("refresh");
+    },
+    error: function(xhr, status, error) {
+      resetSelect(selectPickerID)
+      console.log(xhr, status, error)
     }
-
-    const selectObject = $("#" + selectPickerID);
-    const searchType = selectPickerID;
-
-    $.ajax({
-      type: "GET",
-      url: "/supervisorPortal/liveSearch",
-      data: {
-              searchType: searchType,
-              userInput: searchQuery
-            },
-      contentType: 'application/json',
-      success: function(response) {
-        selectObject.empty();
-        const buildOption = selectConfig[selectPickerID].build;
-        response.forEach(row => {
-          const option = buildOption(row);
-          console.log(option);
-          selectObject.append($("<option>", option));
-        });
-        selectObject.selectpicker("refresh");
-      }
-    });
+  });
 };
 
