@@ -83,7 +83,6 @@ def downloadSupervisorPortalResults():
     )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
-# WORK IN PROGRESS---------------------------------------------------
 @main_bp.route('/supervisorPortal/liveSearch', methods=['GET'])
 def SupervisorPortalSearch():
     """
@@ -111,14 +110,12 @@ def SupervisorPortalSearch():
             ]
 
         elif searchType == "supervisorSelect":
-            query = (
-                    Supervisor
-                     .select(Supervisor, fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name).alias("FIRST_NAME"))
-                     .where(
-                            fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name).contains(userInput),
-                            Supervisor.LAST_NAME.contains(userInput)
-                        )
+            query = Supervisor.select().where(
+                        (Supervisor.preferred_name.contains(userInput)) |
+                        (Supervisor.legal_name.contains(userInput)) |
+                        (Supervisor.LAST_NAME.contains(userInput))
                     )
+            
             if allowed_departments is not None:
                 query = (query.join_from(Supervisor, LaborStatusForm)
                               .join_from(LaborStatusForm, Department)
@@ -126,18 +123,15 @@ def SupervisorPortalSearch():
                               .distinct())
             query = query.order_by(Supervisor.isActive.desc()).limit(10)
             return [
-                {'id': sup.id, 'FIRST_NAME': sup.name, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
+                {'id': sup.ID, 'FIRST_NAME': sup.FIRST_NAME, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
                 for sup in query
             ]
 
         elif searchType == "studentSelect":
-            query = (
-                    Student
-                     .select(Student, fn.COALESCE(Student.preferred_name, Student.legal_name).alias("name"))
-                     .where(
-                            fn.COALESCE(Student.preferred_name, Student.legal_name).contains(userInput) |
-                            Student.LAST_NAME.contains(userInput)
-                            )
+            query = Student.select().where(
+                        (Student.preferred_name.contains(userInput)) |
+                        (Student.legal_name.contains(userInput)) |
+                        (Student.LAST_NAME.contains(userInput))
                     )
             if allowed_departments is not None:
                 query = (query.join_from(Student, LaborStatusForm)
@@ -146,7 +140,7 @@ def SupervisorPortalSearch():
                               .distinct())
             query = query.order_by(Student.LAST_NAME.asc()).limit(10)
             return [
-                {'id': stu.id, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
+                {'id': stu.ID, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
                 for stu in query
             ]
 
