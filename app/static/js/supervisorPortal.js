@@ -392,28 +392,53 @@ function setFormSearchValues(searchDict) {
   })
 }
 
-
-function resetSelect(selectPickerID) {
-  const defaultOptions = {
-    termSelect: [
+const selectConfig = {
+  termSelect: {
+    defaults: [
       { value: "", text: "All terms" },
       { value: "activeTerms", text: "All Active Terms" }
     ],
-    departmentSelect: [
-      { value: "", text: "All departments" }
-    ],
-    supervisorSelect: [
-      { value: "", text: "All supervisors" }
-    ],
-    studentSelect: [
-      { value: "", text: "All students" }
-    ]
-  };
+    build: row => ({
+      value: row.termCode,
+      text: row.termName
+    })
+  },
+  departmentSelect: {
+    defaults: [{ value: "", text: "All departments" }],
+    build: row => ({
+      value: row.departmentID,
+      text: row.DEPT_NAME,
+      "data-content": row.isActive
+        ? row.DEPT_NAME
+        : `<div class='text-muted'>${row.DEPT_NAME} <small>--INACTIVE--</small></div>`
+    })
+  },
+  supervisorSelect: {
+    defaults: [{ value: "", text: "All supervisors" }],
+    build: row => ({
+      value: row.ID,
+      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`,
+      "data-content": row.isActive
+        ? `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.ID})</small>`
+        : `<div class='text-muted'>${row.FIRST_NAME} ${row.LAST_NAME} <small>(${row.ID}) --INACTIVE--</small></div>`
+    })
+  },
+  studentSelect: {
+    defaults: [{ value: "", text: "All students" }],
+    build: row => ({
+      value: row.ID,
+      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`,
+      "data-content": `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.ID})</small>`
+    })
+  }
+};
 
+
+function resetSelect(selectPickerID) {
   const $select = $("#" + selectPickerID);
   $select.empty();
 
-  defaultOptions[selectPickerID].forEach(option => {
+  selectConfig[selectPickerID].defaults.forEach(option => {
     $select.append($("<option>", { value: option.value, text: option.text }));
   });
 
@@ -429,24 +454,6 @@ function liveSearch(selectPickerID, e) {
 
     const selectObject = $("#" + selectPickerID);
     const searchType = selectPickerID;
-    const optionBuilders = {
-      termSelect: row => ({
-        value: row.termCode,
-        text: row.termName
-      }),
-      departmentSelect: row => ({
-        value: row.departmentID,
-        text: row.DEPT_NAME
-      }),
-      supervisorSelect: row => ({
-        value: row.ID,
-        text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`
-      }),
-      studentSelect: row => ({
-        value: row.ID,
-        text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`
-      })
-    };
 
     $.ajax({
       type: "GET",
@@ -458,13 +465,13 @@ function liveSearch(selectPickerID, e) {
       contentType: 'application/json',
       success: function(response) {
         selectObject.empty();
-        const buildOption = optionBuilders[selectPickerID];
+        const buildOption = selectConfig[selectPickerID].build;
         response.forEach(row => {
           const option = buildOption(row);
           console.log(option);
           selectObject.append($("<option>", option));
         });
-        $("#"+ selectPickerID).selectpicker("refresh");
+        selectObject.selectpicker("refresh");
       }
     });
 };
