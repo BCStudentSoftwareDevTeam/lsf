@@ -1,5 +1,7 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import fn
+from peewee import JOIN
+from functools import reduce
+import operator
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -110,38 +112,19 @@ def SupervisorPortalSearch():
             ]
 
         elif searchType == "supervisorSelect":
-            query = Supervisor.select().where(
-                        (Supervisor.preferred_name.contains(userInput)) |
-                        (Supervisor.legal_name.contains(userInput)) |
-                        (Supervisor.LAST_NAME.contains(userInput))
-                    )
-            
-            if allowed_departments is not None:
-                query = (query.join_from(Supervisor, LaborStatusForm)
-                              .join_from(LaborStatusForm, Department)
-                              .where(Department.DEPT_NAME.in_(allowed_departments))
-                              .distinct())
-            query = query.order_by(Supervisor.isActive.desc()).limit(10)
+            supervisor_query = search_person(Supervisor, userInput, allowed_departments)
+            supervisor_query = supervisor_query.order_by(Supervisor.isActive.desc()).limit(10)
             return [
                 {'id': sup.ID, 'FIRST_NAME': sup.FIRST_NAME, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
-                for sup in query
+                for sup in supervisor_query
             ]
 
         elif searchType == "studentSelect":
-            query = Student.select().where(
-                        (Student.preferred_name.contains(userInput)) |
-                        (Student.legal_name.contains(userInput)) |
-                        (Student.LAST_NAME.contains(userInput))
-                    )
-            if allowed_departments is not None:
-                query = (query.join_from(Student, LaborStatusForm)
-                              .join_from(LaborStatusForm, Department)
-                              .where(Department.DEPT_NAME.in_(allowed_departments))
-                              .distinct())
-            query = query.order_by(Student.LAST_NAME.asc()).limit(10)
+            student_query = search_person(Student, userInput, allowed_departments)
+            student_query = student_query.order_by(Student.LAST_NAME.asc()).limit(10)
             return [
                 {'id': stu.ID, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
-                for stu in query
+                for stu in student_query
             ]
 
         return []
@@ -156,6 +139,35 @@ def SupervisorPortalSearch():
         return jsonify(userList)
     except Exception as e:
         print('ERROR:', e, type(e))
+
+def search_person(model, userInput, allowed_departments=None):
+    """
+    Returns a Peewee SelectObject filtered so that all words in userInput
+    must appear in at least one of the model's fields.
+    """
+    words = userInput.strip().split()
+
+    word_conditions = []
+    for word in words:
+        word_conditions.append(
+            (model.preferred_name.contains(word)) |
+            (model.legal_name.contains(word)) |
+            (model.LAST_NAME.contains(word)) |
+            (model.ID.contains(word))
+        )
+
+    query = model.select().where(reduce(operator.and_, word_conditions))
+
+    if allowed_departments is not None:
+        query = (
+            query
+            .join_from(model, LaborStatusForm, JOIN.LEFT_OUTER)
+            .join_from(LaborStatusForm, Department, JOIN.LEFT_OUTER)
+            .where(Department.DEPT_NAME.in_(allowed_departments))
+            .distinct()
+        )
+
+    return query
 
 @main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
 def submitToBanner(formHistoryId):
