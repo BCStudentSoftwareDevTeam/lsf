@@ -459,9 +459,17 @@ function liveSearch(selectPickerID, e) {
           },
     success: function(response) {
       selectObject.empty();
-      if (response.length > 0 && allOption.length > 0) {
-        selectObject.append(allOption);
+      if (selectPickerID === "termSelect") {
+        selectConfig.termSelect.defaults.forEach(opt => {
+          selectObject.append($("<option>", { value: opt.value, text: opt.text }));
+        });
+      } else {
+        // For other selects, append the single "All" option if it existed in HTML
+        if (allOption.length > 0) {
+          selectObject.append(allOption);
+        }
       }
+
       const buildOption = selectConfig[selectPickerID].build;
       response.forEach(row => {
         const option = buildOption(row);
