@@ -34,33 +34,6 @@ def supervisorPortal():
 
         return render_template('errors/403.html'), 403
     
-    terms = Term.select(Term.termName).order_by(Term.termCode.desc())
-    supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
-    studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
-    department = None
-    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
-        students = (Student.select(Student, studentFirstName)
-                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
-
-    else:
-        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
-                                 .join_from(Supervisor, LaborStatusForm)
-                                 .join_from(LaborStatusForm, Department)
-                                 .where(Department.DEPT_NAME.in_(departments))
-                                 .distinct()
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
-        
-        students = (Student.select(Student, studentFirstName)
-                           .join_from(Student, LaborStatusForm)
-                           .join_from(LaborStatusForm, Department)
-                           .where(Department.DEPT_NAME.in_(departments))
-                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME)
-                           .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
 
