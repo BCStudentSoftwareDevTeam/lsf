@@ -107,7 +107,7 @@ def SupervisorPortalSearch():
                 query = query.where(Department.DEPT_NAME.in_(allowed_departments))
             query = query.order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()).limit(10)
             return [
-                {'DEPT_NAME': dept.DEPT_NAME, 'id': dept.id, 'isActive': dept.isActive} 
+                {'DEPT_NAME': dept.DEPT_NAME, 'id': dept.departmentID, 'isActive': dept.isActive} 
                 for dept in query
             ]
 

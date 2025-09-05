@@ -107,17 +107,6 @@
                 <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search='true'
                   title="All supervisors">
                   <option value="">All supervisors</option>
-                  {% for supervisor in supervisors %}
-                  {% if supervisor.isActive %}
-                  <option value="{{supervisor.ID}}"
-                    data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}} <small class='text-muted'>  ({{supervisor.ID}})</small>">
-                    {% else %}
-                  <option value="{{supervisor.ID}}"
-                    data-content="<div class='text-muted'>{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}} <small>({{supervisor.ID}}) --INACTIVE-- </small></div>">
-                    {% endif %}
-                    {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
-                  </option>
-                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -127,12 +116,6 @@
                 <select class="selectpicker" name='student' id='studentSelect' data-live-search='true'
                   title="All students">
                   <option value="">All students</option>
-                  {% for student in students %}
-                  <option value="{{student.ID}}"
-                    data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
-                    {{student.FIRST_NAME}} {{student.LAST_NAME}} ({{student.ID}})
-                  </option>
-                  {% endfor %}
                 </select>
               </div>
             </div>
