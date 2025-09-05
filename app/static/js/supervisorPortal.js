@@ -406,7 +406,7 @@ const selectConfig = {
   departmentSelect: {
     defaults: [{ value: "", text: "All departments" }],
     build: row => ({
-      value: row.departmentID,
+      value: row.id,
       text: row.DEPT_NAME,
       "data-content": row.isActive
         ? row.DEPT_NAME
@@ -416,19 +416,19 @@ const selectConfig = {
   supervisorSelect: {
     defaults: [{ value: "", text: "All supervisors" }],
     build: row => ({
-      value: row.ID,
-      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`,
+      value: row.id,
+      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.id})`,
       "data-content": row.isActive
-        ? `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.ID})</small>`
-        : `<div class='text-muted'>${row.FIRST_NAME} ${row.LAST_NAME} <small>(${row.ID}) --INACTIVE--</small></div>`
+        ? `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.id})</small>`
+        : `<div class='text-muted'>${row.FIRST_NAME} ${row.LAST_NAME} <small>(${row.id}) --INACTIVE--</small></div>`
     })
   },
   studentSelect: {
     defaults: [{ value: "", text: "All students" }],
     build: row => ({
-      value: row.ID,
-      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.ID})`,
-      "data-content": `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.ID})</small>`
+      value: row.id,
+      text: `${row.FIRST_NAME} ${row.LAST_NAME} (${row.id})`,
+      "data-content": `${row.FIRST_NAME} ${row.LAST_NAME} <small class='text-muted'> (${row.id})</small>`
     })
   }
 };

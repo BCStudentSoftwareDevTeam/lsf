@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import fn, DoesNotExist
+from peewee import fn
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -65,12 +65,12 @@ def supervisorPortal():
         return getDatatableData(request)
 
     return render_template('main/supervisorPortal.html',
-                            terms = terms,
-                            supervisors = supervisors,
-                            students = students,
-                            departments = departments,
-                            department = department,
-                            currentUser = currentUser
+                            terms = [],
+                            supervisors = [],
+                            students = [],
+                            departments = [],
+                            department = [],
+                            currentUser = []
                             )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
@@ -114,68 +114,71 @@ def downloadSupervisorPortalResults():
 @main_bp.route('/supervisorPortal/liveSearch', methods=['GET'])
 def SupervisorPortalSearch():
     """
-        ADD DESCRIPTION HERE
-        Logic copied from adminManagement live search function
+    Returns a list of users that match a given string
     """
     def searchSupervisorPortal(searchType, userInput):
-        if searchType == "termSelect":
-            termList = []
-            terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
-            for term in terms:
-                termList.append({'termCode': term.termCode,
-                                'termName': term.termName
-                                })
-            print("this is our term list:", termList)
-            return termList
-        elif searchType == "departmentSelect":
-            pass
-        elif searchType == "supervisorSelect":
-            pass
-        elif searchType == "studentSelect":
-            pass
+        currentUser = require_login()
+        if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+            allowed_departments = None  # unrestricted
+        else:
+            allowed_departments = getDepartmentsForSupervisor(currentUser)
 
-        # userList = []
-        # if adminType == "addlaborAdmin":
-        #     tracyStudents = Tracy().getStudentsFromUserInput(userInput)
-        #     students = []
-        #     for student in tracyStudents:
-        #         try:
-        #             existingUser = User.get(User.student == student.ID)
-        #             if existingUser.isLaborAdmin:
-        #                 pass
-        #             else:
-        #                 students.append(student)
-        #         except DoesNotExist as e:
-        #             students.append(student)
-        #     for student in students:
-        #         username = student.STU_EMAIL.split('@', 1)
-        #         userList.append({'username': username[0],
-        #                         'firstName': student.FIRST_NAME,
-        #                         'lastName': student.LAST_NAME,
-        #                         'type': 'Student'
-        #                         })
-        # tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
-        # supervisors = []
-        # for supervisor in tracySupervisors:
-        #     try:
-        #         existingUser = User.get(User.supervisor == supervisor.ID)
-        #         if ((existingUser.isLaborAdmin and adminType == "addlaborAdmin")
-        #             or (existingUser.isSaasAdmin and adminType == "addSaasAdmin")
-        #             or (existingUser.isFinancialAidAdmin and adminType == "addFinAidAdmin")):
-        #             pass
-        #         else:
-        #             supervisors.append(supervisor)
-        #     except DoesNotExist as e:
-        #         supervisors.append(supervisor)
-        # for sup in supervisors:
-        #     username = sup.EMAIL.split('@', 1)
-        #     userList.append({'username': username[0],
-        #                     'firstName': sup.FIRST_NAME,
-        #                     'lastName': sup.LAST_NAME,
-        #                     'type': 'Supervisor'})
-        # return userList
+        if searchType == "termSelect":
+            terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
+            return [{'termCode': term.termCode, 'termName': term.termName} for term in terms]
+
+        elif searchType == "departmentSelect":
+            query = Department.select().where(Department.DEPT_NAME.contains(userInput))
+            if allowed_departments is not None:
+                query = query.where(Department.DEPT_NAME.in_(allowed_departments))
+            query = query.order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()).limit(10)
+            return [
+                {'DEPT_NAME': dept.DEPT_NAME, 'id': dept.id, 'isActive': dept.isActive} 
+                for dept in query
+            ]
+
+        elif searchType == "supervisorSelect":
+            query = (
+                    Supervisor
+                     .select(Supervisor, fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name).alias("FIRST_NAME"))
+                     .where(
+                            fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name).contains(userInput),
+                            Supervisor.LAST_NAME.contains(userInput)
+                        )
+                    )
+            if allowed_departments is not None:
+                query = (query.join_from(Supervisor, LaborStatusForm)
+                              .join_from(LaborStatusForm, Department)
+                              .where(Department.DEPT_NAME.in_(allowed_departments))
+                              .distinct())
+            query = query.order_by(Supervisor.isActive.desc()).limit(10)
+            return [
+                {'id': sup.id, 'FIRST_NAME': sup.name, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
+                for sup in query
+            ]
+
+        elif searchType == "studentSelect":
+            query = (
+                    Student
+                     .select(Student, fn.COALESCE(Student.preferred_name, Student.legal_name).alias("name"))
+                     .where(
+                            fn.COALESCE(Student.preferred_name, Student.legal_name).contains(userInput) |
+                            Student.LAST_NAME.contains(userInput)
+                            )
+                    )
+            if allowed_departments is not None:
+                query = (query.join_from(Student, LaborStatusForm)
+                              .join_from(LaborStatusForm, Department)
+                              .where(Department.DEPT_NAME.in_(allowed_departments))
+                              .distinct())
+            query = query.order_by(Student.LAST_NAME.asc()).limit(10)
+            return [
+                {'id': stu.id, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
+                for stu in query
+            ]
+
+        return []
     
-    # The acutal function code starts here***********************
     try:
         searchType = request.args.get("searchType")
         userInput = request.args.get("userInput")
