@@ -446,13 +446,9 @@ function resetSelect(selectPickerID) {
 
 function liveSearch(selectPickerID, e) {
   const searchQuery = e.target.value;
-  if (searchQuery.length < 3) {
-    resetSelect(selectPickerID);
-    return;
-  }
-
   const selectObject = $("#" + selectPickerID);
   const searchType = selectPickerID;
+  const allOption = selectObject.find("option").filter(function() {return $(this).val() === "";});
 
   $.ajax({
     type: "GET",
@@ -463,6 +459,9 @@ function liveSearch(selectPickerID, e) {
           },
     success: function(response) {
       selectObject.empty();
+      if (response.length > 0 && allOption.length > 0) {
+        selectObject.append(allOption);
+      }
       const buildOption = selectConfig[selectPickerID].build;
       response.forEach(row => {
         const option = buildOption(row);
@@ -476,4 +475,3 @@ function liveSearch(selectPickerID, e) {
     }
   });
 };
-

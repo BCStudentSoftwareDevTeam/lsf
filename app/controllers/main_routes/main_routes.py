@@ -45,7 +45,7 @@ def supervisorPortal():
                             students = [],
                             departments = [],
                             department = [],
-                            currentUser = []
+                            currentUser = currentUser
                             )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
