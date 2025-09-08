@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from uuid import uuid4
-
+from datetime import datetime
 # All caps fields are pulled from TRACY
 class LaborStatusForm (baseModel):
     studentName                 = CharField(null=True)
@@ -27,8 +27,13 @@ class LaborStatusForm (baseModel):
     studentConfirmation         = BooleanField(null=True)    # Pending is None, Accepted is True, Denied is False
     confirmationToken           = UUIDField(default=uuid4, null=True)
     studentExpirationDate       = DateField(null=True)
-    studentResponseDate       = DateTimeField(null=True)
-
+    studentResponseDate         = DateTimeField(null=True)
 
     def __str__(self):
         return str(self.__dict__)
+
+    @property
+    def isExpired(self):
+        if self.studentExpirationDate and self.studentExpirationDate < datetime.now().date():
+            return True
+        return False
