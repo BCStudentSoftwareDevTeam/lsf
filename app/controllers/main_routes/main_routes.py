@@ -43,11 +43,7 @@ def supervisorPortal():
         departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     return render_template('main/supervisorPortal.html',
-                            terms = [],
-                            supervisors = [],
-                            students = [],
                             departments = departments,
-                            department = [],
                             currentUser = currentUser
                             )
 
