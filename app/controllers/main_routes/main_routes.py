@@ -94,7 +94,7 @@ def SupervisorPortalSearch():
         if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
             allowed_departments = None  # unrestricted
         else:
-            allowed_departments = getDepartmentsForSupervisor(currentUser)
+            allowed_departments = [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]
 
         if searchType == "termSelect":
             terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
