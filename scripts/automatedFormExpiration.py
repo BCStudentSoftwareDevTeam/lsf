@@ -9,5 +9,4 @@ def expireStudentConfirmations():
         ))
     for form in forms:
 
-
-expireStudentConfirmations()
+def main

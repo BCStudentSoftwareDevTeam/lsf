@@ -138,7 +138,7 @@ class emailHandler():
                           "Primary Position Labor Status Form Submitted")
             
     def laborStatusFromExpired(self):
-        if self.laborStatusForm.:
+        if self.laborStatusForm.isExpired:
             self.checkRecipient(False,"Email when Labor Status Form is expired")
 
     def laborStatusFormApproved(self):
