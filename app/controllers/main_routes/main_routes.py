@@ -16,8 +16,6 @@ from app.logic.search import getDepartmentsForSupervisor
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.models.user import User # remove later?
-from app.logic.tracy import Tracy # remove later?
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -90,6 +88,7 @@ def SupervisorPortalSearch():
     """
     Returns a list of users that match a given string
     """
+    print('liveSearch called')
     def searchSupervisorPortal(searchType, userInput):
         currentUser = require_login()
         if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:

@@ -127,20 +127,35 @@ $(document).ready(function () {
   }
 
   // Live search handling for dropdowns
-  $("#termSelectParent .bs-searchbox input").on("keyup", function(e) {
-    liveSearch("termSelect", e);
-  });
-  $("#departmentSelectParent .bs-searchbox input").on("keyup", function(e) {
-    liveSearch("departmentSelect", e);
-  });
-  $("#supervisorSelectParent .bs-searchbox input").on("keyup", function(e) {
-    liveSearch("supervisorSelect", e);
-  });
-  $("#studentSelectParent .bs-searchbox input").on("keyup", function(e) {
-    liveSearch("studentSelect", e);
-  });
+  $("#termSelectParent .bs-searchbox input").on("keyup", debouncedSearchTerm);
+  $("#departmentSelectParent .bs-searchbox input").on("keyup", debouncedSearchDepartment); 
+  $("#supervisorSelectParent .bs-searchbox input").on("keyup", debouncedSearchSupervisor); 
+  $("#studentSelectParent .bs-searchbox input").on("keyup", debouncedSearchStudent);
 
 });
+
+function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+const debouncedSearchTerm = debounce(function(e) {
+    liveSearch("termSelect", e);
+}, 500);
+const debouncedSearchDepartment = debounce(function(e) {
+    liveSearch("departmentSelect", e);
+}, 500);
+const debouncedSearchSupervisor = debounce(function(e) {
+    liveSearch("supervisorSelect", e);
+}, 500);
+const debouncedSearchStudent = debounce(function(e) {
+    liveSearch("studentSelect", e);
+}, 500);
 
 // this is a mapping which maps the column option to its field options.
 // many do not have multiple fields so the field is just the column itself (e.g. term)
@@ -445,6 +460,7 @@ function resetSelect(selectPickerID) {
 }
 
 function liveSearch(selectPickerID, e) {
+
   const searchQuery = e.target.value;
   const selectObject = $("#" + selectPickerID);
   const searchType = selectPickerID;
