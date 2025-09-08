@@ -36,12 +36,17 @@ def supervisorPortal():
     
     if request.method == 'POST':
         return getDatatableData(request)
+    
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    else:
+        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     return render_template('main/supervisorPortal.html',
                             terms = [],
                             supervisors = [],
                             students = [],
-                            departments = [],
+                            departments = departments,
                             department = [],
                             currentUser = currentUser
                             )
