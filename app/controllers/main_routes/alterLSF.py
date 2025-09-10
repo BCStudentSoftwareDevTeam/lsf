@@ -72,7 +72,7 @@ def alterLSF(laborStatusKey):
         try:
             oldSupervisor = Tracy().getSupervisorFromID(form.supervisor.ID)
         except InvalidQueryException:
-            print("The bnumber {} was not found in Supervisor or Tracy", form.supervisor.ID)
+            ("The bnumber {} was not found in Supervisor or Tracy", form.supervisor.ID)
             oldSupervisor = {'ID': form.supervisor.ID}
 
     notes = Notes.select().where(Notes.formID == laborStatusKey, Notes.noteType == "Supervisor Note") # Gets labor department notes from the laborofficenotes table
@@ -158,7 +158,7 @@ def submitAlteredLSF(laborStatusKey):
                     else:
                         email.laborStatusFormAdjusted()
                 except Exception as e:
-                    print("An error occured while attempting to send adjustment form emails: ", e)
+                    ("An error occured while attempting to send adjustment form emails: ", e)
                 message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
         else:
             message = "Your labor status form for {0} {1} has been modified.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
@@ -170,7 +170,7 @@ def submitAlteredLSF(laborStatusKey):
                                                                                                     student.studentSupervisee.FIRST_NAME,
                                                                                                     student.studentSupervisee.LAST_NAME)
         flash(message, "danger")
-        print("An error occured during form submission:", e)
+        ("An error occured during form submission:", e)
         return jsonify({"Success": False}), 500
 
 

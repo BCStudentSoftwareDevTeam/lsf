@@ -44,7 +44,7 @@ def adminSearch():
         userList = searchForAdmin(rsp)
         return jsonify(userList)
     except Exception as e:
-        print('ERROR Loading Non Labor Admins:', e, type(e))
+        ('ERROR Loading Non Labor Admins:', e, type(e))
         return jsonify(userList)
 
 @admin.route("/adminManagement/userInsert", methods=['POST'])

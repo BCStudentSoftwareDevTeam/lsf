@@ -88,9 +88,9 @@ class emailHandler():
         except Exception as e:
             # The error you should get when the form is not a release form
             # is the 'AttributeError' error. We expect to get the 'AttributeError',
-            # but if we get anything else then we want to print the error
+            # but if we get anything else then we want to  the error
             if e.__class__.__name__ != "AttributeError":
-                print (e)
+                 (e)
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
@@ -101,14 +101,14 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            # print("Debugging emailHandler.py: ", app.config)
+            # ("Debugging emailHandler.py: ", app.config)
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':
             # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
             pass
         else:
-            print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
+            ("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
 
 
 

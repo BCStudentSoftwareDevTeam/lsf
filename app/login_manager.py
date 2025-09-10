@@ -20,7 +20,7 @@ def logout():
         Erases the session and returns the URL for redirection
     """
     if 'username' in session:
-        print("Logging out", session['username'])
+        ("Logging out", session['username'])
     session.clear()
 
     url ="/"
@@ -34,14 +34,14 @@ def require_login():
     try:
         user = auth_user(env, username)
     except InvalidUserException as e:
-        print("Invalid User:", e)
+        ("Invalid User:", e)
         return False
     
     # Update the user's name
     user = updateUserFromTracy(user)
 
     if 'username' not in session:
-        print("Logging in as", user.username)
+        ("Logging in as", user.username)
         session['username'] = user.username
 
     return user
@@ -63,13 +63,10 @@ def auth_user(env, username):
         description = env['description'].lower()
         supervisor = student = None
         if description == 'student':
-            print("Adding {} to student table".format(username))
             student = createStudentFromTracy(username)
         else:
-            print("Adding {} to supervisor table".format(username))
             supervisor = createSupervisorFromTracy(username)
 
-        print("Creating record for {} in user table".format(username))
         return createUser(username, student=student, supervisor=supervisor)
 
 def getOpenTerm():

@@ -9,7 +9,7 @@ def connect_to_server(user,password):
     server = Server ('berea.edu', port=389, use_ssl=False, get_info='ALL')
     conn   = Connection (server, user=user, password=password)
     if not conn.bind():
-        print(conn.result)
+        (conn.result)
         raise Exception("BindError")
 
     return conn
@@ -29,7 +29,7 @@ def update_records(table, people):
 
         count = table.update(preferred_name=preferred).where(table.ID == bnumber).execute()
         if count:
-            print("Updating",bnumber,"name to",preferred)
+            ("Updating",bnumber,"name to",preferred)
 
 def alphaRange(start,end):
     return [chr(i) for i in range(ord(start), ord(end)+1)]
@@ -43,7 +43,7 @@ def fetch_descriptions(conn, descriptions):
         conn.search('dc=berea,dc=edu', f"(&{letterQuery}{descriptionQuery})",
           attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
           )
-        print(f"Found {len(conn.entries)} {descriptions} {letters[0]}-{letters[-1]} in AD");
+        (f"Found {len(conn.entries)} {descriptions} {letters[0]}-{letters[-1]} in AD");
         people += conn.entries
 
     return people

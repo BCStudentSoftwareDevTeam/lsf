@@ -160,7 +160,7 @@ def allPendingForms(formType):
                 except DoesNotExist:
                     pass
                 except Exception as e:
-                    print(e)
+                    (e)
 
             checkAdjustment(allForms)
         result = make_response(render_template(
@@ -184,7 +184,7 @@ def allPendingForms(formType):
     
     
     except Exception as e:
-        print("Error Loading all Pending Forms:", e)
+        ("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
 
 
@@ -192,7 +192,7 @@ def allPendingForms(formType):
 def downloadAllPendingForms():
     searchResult = retrieveFormSearchResult(request.form.get('downloadId'))
     if not searchResult:
-        print(f"[ERROR] Missing or invalid download id was provided by the user.")
+        (f"[ERROR] Missing or invalid download id was provided by the user.")
         abort(500)
 
     formHistoryIds = json.loads(searchResult.formHistoryIds)
@@ -223,7 +223,7 @@ def approved_and_denied_Forms():
             approved_details =  modal_approval_and_denial_data(rsp)
             return jsonify(approved_details)
     except Exception as e:
-        print(e)
+        (e)
         return jsonify({"Success": False}),500
 
 @admin.route('/admin/skipStudentApproval', methods=['POST'])
@@ -264,7 +264,7 @@ def skipStudentApproval():
             Notes.create(formID=form.laborStatusFormID, createdBy=g.currentUser, date=date.today(), notesContents=note, noteType = "Labor Note")
 
     except Exception as e:
-        print("Error skipping student approval", e)
+        ("Error skipping student approval", e)
         flash("Error skipping student approval. Please try again.","danger")
 
     return redirect('/admin/pendingForms/preStudentApproval')
@@ -292,7 +292,7 @@ def resendStudentConfirmation(formID):
         return jsonify({"student_email":formhistory.formID.studentSupervisee.STU_EMAIL});
 
     except Exception as e:
-        print("Error sending confirmation email. Invalid Form ID.", e)
+        ("Error sending confirmation email. Invalid Form ID.", e)
         flash("Error sending confirmation email. Please try again.","danger")
         abort(500)
 
@@ -314,7 +314,7 @@ def finalUpdateStatus(raw_status):
     elif raw_status == 'pending':
         new_status = "Pending"
     else:
-        print("Unknown status: ", raw_status)
+        ("Unknown status: ", raw_status)
         return jsonify({"success": False})
 
     flash("Forms have been successfully updated.", "success")
@@ -348,7 +348,7 @@ def getNotes(formid):
         return jsonify(notesDict)
 
     except Exception as e:
-        print("Error on getting notes: ", e)
+        ("Error on getting notes: ", e)
         return jsonify({"Success": False})
 
 @admin.route('/admin/notesInsert/<formId>', methods=['POST'])
@@ -376,7 +376,7 @@ def insertNotes(formId):
             return jsonify({"Success": False})
 
     except Exception as e:
-        print(e)
+        (e)
         return jsonify({"Success": False}), 500
 
 @admin.route('/admin/overloadModal/<formHistoryID>', methods=['GET'])
@@ -452,7 +452,7 @@ def getOverloadModalData(formHistoryID):
                                             studentLinks = studentLinks
                                             )
     except Exception as e:
-        print("Error Populating Overload Modal:", e)
+        ("Error Populating Overload Modal:", e)
         return render_template('errors/500.html'), 500
 
 @admin.route('/admin/releaseModal/<formHistoryID>', methods=['GET'])
@@ -470,7 +470,7 @@ def getReleaseModalData(formHistoryID):
                                             noteTotal = noteTotal
                                             )
     except Exception as e:
-        print("Error Populating Release Modal:", e)
+        ("Error Populating Release Modal:", e)
         return render_template('errors/500.html'), 500
 
 @admin.route('/admin/modalFormUpdate', methods=['POST'])
@@ -539,7 +539,7 @@ def modalFormUpdate():
             return jsonify({"Success": True})
 
     except Exception as e:
-        print("Error Updating Release/Overload Forms:", e)
+        ("Error Updating Release/Overload Forms:", e)
         return jsonify({"Success": False}),500
 
 @admin.route('/admin/sendVerificationEmail', methods=['POST'])
@@ -579,7 +579,7 @@ def sendEmail():
                                     }
             return jsonify(newEmailInformation)
     except Exception as e:
-        print("Error sending verification email to SASS/Financial Aid:", e)
+        ("Error sending verification email to SASS/Financial Aid:", e)
         return jsonify({"Success": False}),500
 
 @admin.route('/admin/notesCounter', methods=['POST'])
@@ -594,5 +594,5 @@ def getNotesCounter():
             noteDictionary = {'noteTotal': noteTotal}
             return jsonify(noteDictionary)
     except Exception as e:
-        print("Error selecting admin notes:", e)
+        ("Error selecting admin notes:", e)
         return jsonify({"Success": False}),500

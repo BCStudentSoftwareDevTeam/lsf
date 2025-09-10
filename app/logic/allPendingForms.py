@@ -73,11 +73,11 @@ def saveStatus(new_status, formHistoryIds, currentUser):
                     overrideOriginalStatusFormOnAdjustmentFormApproval(formHistory, LSF)
 
             else:
-                print("Unable to update form status for formHistoryID {}.".format(id))
+                ("Unable to update form status for formHistoryID {}.".format(id))
                 return jsonify({"success": False}), 500
 
     except Exception as e:
-        print("Error preparing form for status update:", e)
+        ("Error preparing form for status update:", e)
         return jsonify({"success": False}), 500
 
     return jsonify({"success": True})
@@ -160,7 +160,7 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
         except DoesNotExist:
             pass
         except Exception as e:
-            print(e)
+            (e)
     if 'denialReason' in rsp.keys():
         # We only update the reject reason if one was given on the UI
         historyForm.rejectReason = rsp['denialReason']

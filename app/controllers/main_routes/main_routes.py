@@ -88,7 +88,7 @@ def addUserToDept():
             return "True"
     
     except Exception as e:
-        print(f'Could not add user to department: {e}')
+        (f'Could not add user to department: {e}')
         return "", 500
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
@@ -99,7 +99,7 @@ def downloadSupervisorPortalResults():
     '''
     formSearchResults = retrieveFormSearchResult(request.form.get('downloadId'))
     if not formSearchResults:
-        print(f"[ERROR] Missing or invalid download ID for form search.")
+        (f"[ERROR] Missing or invalid download ID for form search.")
         return "", 500
 
     formSearchResultIds = json.loads(formSearchResults.formHistoryIds)
@@ -122,7 +122,7 @@ def submitToBanner(formHistoryId):
         save_form_status = conn.insert(formHistoryId)
     except Exception as e:
         save_form_status = False
-        print(f"Error saving form history ({formHistoryId}) to Banner.")
+        (f"Error saving form history ({formHistoryId}) to Banner.")
 
     if save_form_status:
         return "Form successfully submitted to Banner.", 200

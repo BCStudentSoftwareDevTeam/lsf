@@ -79,7 +79,7 @@ def userInsert():
             student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
             supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
         except InvalidUserException as e:
-            print(e)
+            (e)
             return "", 500
 
         department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
@@ -90,12 +90,12 @@ def userInsert():
             try:
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
             except Exception as e:
-                print("Error when sending emails during break: " + str(e))
+                ("Error when sending emails during break: " + str(e))
 
             all_forms.append(True)
         except Exception as e:
             all_forms.append(False)
-            print("ERROR on creating Labor Status Form/Overload Form" + str(e))
+            ("ERROR on creating Labor Status Form/Overload Form" + str(e))
 
     flash("Form(s) submitted successfully! They will be eligible for approval in one business day.", "success")
     return jsonify(all_forms)
@@ -201,5 +201,5 @@ def releaseAndRehire():
         flash("Form has been successfully released and submitted.", "success")
         return jsonify({"Success":True})
     except Exception as e:
-        print("Error on release and rehire: ", e)
+        ("Error on release and rehire: ", e)
         return jsonify({"Success": False})

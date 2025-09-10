@@ -14,7 +14,7 @@ importf.DEBUG = False
 # :%s/ctrl-v ctrl-r/,/g
 # :%s/&amp;/\&/g
 
-print("Creating terms...")
+("Creating terms...")
 createTerms(2015)
 createTerms(2016)
 createTerms(2017)
@@ -70,24 +70,24 @@ current_fields = [
 
 def import_file(filepath, fields):
     with open(filepath,'r',encoding="cp1252",newline='') as reader:
-        print("Importing {}...".format(filepath))
-        print("  * Validating...")
+        ("Importing {}...".format(filepath))
+        ("  * Validating...")
         if importf.validate_file(reader, fields):
-            print("  * Getting records...")
+            ("  * Getting records...")
             data = importf.getList(reader, fields)
             saved = 0
             terms = {}
-            print("  * Creating forms...")
+            ("  * Creating forms...")
             for record in data:
                 if importf.importRecord(record, terms):
                     saved += 1
-                    print(".", end="", flush=True)
+                    (".", end="", flush=True)
                     if saved % 100 == 0:
-                        print(str(saved).rjust(8))
+                        (str(saved).rjust(8))
                 else:
-                    print("X", end="", flush=True)
+                    ("X", end="", flush=True)
 
-            print("\nCreated {} forms\n".format(saved))
+            ("\nCreated {} forms\n".format(saved))
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(terms)
 

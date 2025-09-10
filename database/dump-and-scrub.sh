@@ -29,7 +29,7 @@ echo -e "done.\n"
 # Execute SQL in data-scrub.sql
 # watch out for those escaped quotes if you have to change something
 awk "
-    /--/ {print}
+    /--/ {}
     /^[^-]/ {
         printf \"EXECUTING: %s\n\n\",\$0
         system(\"mysql $CONN $TMPDB -e \\\" \" \$0 \" \\\" \")

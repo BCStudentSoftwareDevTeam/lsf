@@ -69,7 +69,7 @@ def updateUserFromTracy(user):
         baseObj.save()
 
     except Exception as e:
-        print( f"We don't want to break our login if an old tracy user doesn't exist or something")
+        ( f"We don't want to break our login if an old tracy user doesn't exist or something")
 
     return user
 
@@ -175,7 +175,7 @@ def createStudentFromTracy(username=None, bnumber=None):
     try:
         return Student.get(Student.ID == tracyStudent.ID.strip())
     except DoesNotExist:
-        #print('Could not find {0} {1} in Student table, creating new entry.'.format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
+        #('Could not find {0} {1} in Student table, creating new entry.'.format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
         return Student.create(ID = tracyStudent.ID.strip(),
                             PIDM = tracyStudent.PIDM,
                             legal_name = tracyStudent.FIRST_NAME,
@@ -224,5 +224,5 @@ def createSupervisorFromTracy(username=None, bnumber=None):
                                  ORG = tracyUser.ORG,
                                  DEPT_NAME = tracyUser.DEPT_NAME)
     except Exception as e:
-        print(e)
+        (e)
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))

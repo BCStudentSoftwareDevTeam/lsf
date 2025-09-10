@@ -30,10 +30,10 @@ class Test_Routes(MultipleBrowserTest):
             pass
             urls = self.get_urls("GET")
             for browser in self.drivers:
-                print("\nTesting {}".format(browser.name))
+                ("\nTesting {}".format(browser.name))
 
                 for url in urls:
-                    print("  {}:".format(url), end=" ")
+                    ("  {}:".format(url), end=" ")
                     browser.get(base_url + url)
                     #assert 200 == urllib.request.urlopen('{}/{}'.format(base_url, url)).getcode()
-                    print(colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
+                    (colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)

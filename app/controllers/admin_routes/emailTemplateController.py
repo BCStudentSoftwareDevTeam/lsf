@@ -45,7 +45,7 @@ def getPurpose(fieldsDictSTR):
         subjectList.append({"Subject":emailSubjects[0].subject})
         return json.dumps(subjectList)
     except Exception as e:
-        print("ERROR in getPurpose(): ", e)
+        ("ERROR in getPurpose(): ", e)
         return jsonify({"Success": False}), 500
 
 @admin.route('/admin/emailTemplates/getEmail/<fieldsDictSTR>', methods=['GET'])
@@ -57,7 +57,7 @@ def getEmail(fieldsDictSTR):
         purposeList = {"emailBody": email.body, "emailSubject": email.subject}
         return json.dumps(purposeList)
     except Exception as e:
-        print("ERROR getEmail(): ", e)
+        ("ERROR getEmail(): ", e)
         return jsonify({"Success": False})
 
 @admin.route('/admin/emailTemplates/postEmail', methods=['POST'])
@@ -71,5 +71,5 @@ def postEmail():
         flash(message, "success")
         return (jsonify({"Success": True}))
     except Exception as e:
-        print("ERROR in postEmail: ", e)
+        ("ERROR in postEmail: ", e)
         return jsonify({"Success": False})

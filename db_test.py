@@ -15,7 +15,6 @@ pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_V
 pyconn = pyodbc.connect(pyodbc_uri)
 c = pyconn.cursor()
 for row in c.execute('select * from STUPOSN'):
-    print("PYODBC:",row)
     break
 
 ###########################
@@ -34,7 +33,6 @@ uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=14
 
 engine = sqlalchemy.create_engine(uri)
 for row in engine.execute('select * from STUPOSN'):
-    print("SQLALCHEMY:",row)
     break
 
 ###########################
@@ -53,7 +51,7 @@ uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=14
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 db = SQLAlchemy(app)
 
-print("FLASK:",Tracy().getPositionFromCode("S01015"))
+("FLASK:",Tracy().getPositionFromCode("S01015"))
 
 ###########################
 # Test Banner connection
@@ -63,7 +61,7 @@ from app.logic.banner import Banner
 from app.models.formHistory import FormHistory
 b = Banner()
 cursor = b.conn.cursor()
-print(cursor)
+
 
 # NOT FOR PROD
 # b.insert(FormHistory.get_by_id(39061))

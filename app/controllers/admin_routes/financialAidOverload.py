@@ -120,5 +120,5 @@ def formApproval(status):
         return jsonify({'success':True}), 200
 
     except Exception as e:
-        print("Unable to Deny the OverloadForm",type(e).__name__ + ":", e)
+        ("Unable to Deny the OverloadForm",type(e).__name__ + ":", e)
         return jsonify({'error': "Unable to Deny the form"}), 500

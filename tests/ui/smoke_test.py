@@ -90,11 +90,11 @@ class Test_Routes:
             """Test a list of URLs"""
 
             if(self.verbose):
-                print()
+                ()
             for url,params in urls:
                 sleep(.05) # Without this sleep we end up with Remote Disconnect exceptions
                 if(self.verbose):
-                    print("  {}:".format(url), end=" ")
+                    ("  {}:".format(url), end=" ")
 
                 try:
                     req = urllib.request.Request('{}{}'.format(base_url, url))
@@ -120,7 +120,7 @@ class Test_Routes:
                     pytest.fail("Remote Disconnected!")
                 else:
                     if(self.verbose):
-                        print(colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
+                        (colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
                     pass
 
         def check_verbose_level(self, request):

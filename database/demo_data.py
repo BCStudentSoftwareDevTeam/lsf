@@ -16,7 +16,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 
-print("Inserting data for demo and testing purposes")
+("Inserting data for demo and testing purposes")
 
 #############################
 # Students (TRACY)
@@ -63,7 +63,7 @@ bothStudents = [
                 "MAJOR":"Computer Science",
                 "PROBATION":"0",
                 "ADVISOR":"Jan Pearce",
-                "STU_EMAIL":"cruzg@berea.edu",
+                "STU_EMAIL":"u0125324935@gmail.com",
                 "STU_CPO":"300",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
@@ -165,7 +165,7 @@ for student in (localStudents + bothStudents):
 
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
-print(" * students (TRACY) added")
+(" * students (TRACY) added")
 
 #############################
 # Positions (TRACY)
@@ -258,7 +258,7 @@ for position in positions:
     db.session.add(STUPOSN(**position))
     db.session.commit()
 
-print(" * positions (TRACY) added")
+(" * positions (TRACY) added")
 
 #############################
 # TRACY Staff
@@ -364,7 +364,7 @@ for staff in non_supervisor_staffs:
     db.session.add(STUSTAFF(**staff))
     db.session.commit()
 
-print(" * staff added")
+(" * staff added")
 
 
 #############################
@@ -445,7 +445,7 @@ users = [
         }
         ]
 User.insert_many(users).on_conflict_replace().execute()
-print(" * users added")
+(" * users added")
 
 
 
@@ -492,7 +492,7 @@ departments = [
 
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
-print(" * departments added")
+(" * departments added")
 
 #############################
 # Term
@@ -523,7 +523,7 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(f" * terms for {current_year}-{current_year+1} added")
+(" * terms added")
 
 #############################
 # Create a Pending Labor Status Form
@@ -603,4 +603,4 @@ notes = [
             },
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
-print(" * laborOfficeNotes added")
+(" * laborOfficeNotes added")

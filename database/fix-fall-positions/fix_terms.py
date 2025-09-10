@@ -7,11 +7,11 @@ fall_term = Term.get(termCode=202011)
 ay_term = Term.get(termCode=202000)
 
 with open('activepositions.csv','r',encoding="cp1252",newline='') as f:
-    print("  * Getting records...")
+    ("  * Getting records...")
     reader = csv.DictReader(f, delimiter=',', restkey='extra', restval='XXXX')
     reader.__next__() # skip headers
     for row in reader:
-        #print(row)
+        #(row)
         bnumber = row['ID']
         position = row['Position']
 
@@ -21,10 +21,10 @@ with open('activepositions.csv','r',encoding="cp1252",newline='') as f:
                 LaborStatusForm.POSN_CODE==position)
 
         if not forms:
-            print(f"No form found in Fall for {bnumber}, {position}")
+            (f"No form found in Fall for {bnumber}, {position}")
             break
 
         for lsf in forms:
-            print(f"Updating {position} form for {bnumber}")
+            (f"Updating {position} form for {bnumber}")
             lsf.termCode = ay_term.termCode
             lsf.save()

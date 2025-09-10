@@ -4,7 +4,7 @@ from app.models.emailTemplate import EmailTemplate
 from app.models.user import User
 from app.models.user import Supervisor
 
-print("Inserting base data for all environments")
+("Inserting base data for all environments")
 
 #############################
 # Status
@@ -17,7 +17,7 @@ stats = [
             {"statusName":"Pre-Student Approval" }
         ]
 Status.insert_many(stats).on_conflict_replace().execute()
-print(" * status added")
+(" * status added")
 
 #############################
 # History Type
@@ -33,7 +33,7 @@ types = [
             }
         ]
 HistoryType.insert_many(types).on_conflict_replace().execute()
-print(" * history types added")
+(" * history types added")
 
 #############################
 #emailtemplates
@@ -589,4 +589,4 @@ emailtemps= [
                 }
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
-print(" * emailtemplates added")
+(" * emailtemplates added")

@@ -16,10 +16,10 @@ class Banner():
                         app.config["banner"]["user"],
                         app.config["banner"]["password"],
                         "{url}:{port}/{sid}".format(**app.config["banner"]))
-                print("BANNER connection initialized. Oracle version {}".format(self.conn.version))
+                ("BANNER connection initialized. Oracle version {}".format(self.conn.version))
 
             except Exception as err:
-                print("BANNER connection failed: {}: {}".format(type(err).__name__, err))
+                ("BANNER connection failed: {}: {}".format(type(err).__name__, err))
                 self.database_exists = False
                 raise err
 
@@ -33,7 +33,7 @@ class Banner():
                 cursor.execute(sql)
                 return cursor.fetchall()
             except Exception as err:
-                print("Error querying BANNER db:", err)
+                ("Error querying BANNER db:", err)
                 return []
         return []
 
@@ -87,10 +87,10 @@ class Banner():
                 cursor = self.conn.cursor()
                 result = cursor.execute(stmt, params)
                 self.conn.commit()
-                print("Form {} inserted into banner".format(form.laborStatusFormID))
+                ("Form {} inserted into banner".format(form.laborStatusFormID))
 
             except Exception as err:
-                print("Error inserting into BANNER db:", err)
+                ("Error inserting into BANNER db:", err)
                 return False
         
         return True # If we got here, we are successful (even if we didn't even try to insert)

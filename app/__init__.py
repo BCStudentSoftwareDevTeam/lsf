@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
-
+('#############')
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 api = Api(app)
@@ -18,6 +18,11 @@ app.config['use_tracy'] = (app.config['ENV'] in ('production','staging'))
 if 'use_banner' not in app.config.keys():
     app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
 
+print('############')
+
+
+print("MAIL_OVERRIDE_ALL =", app.config.get("MAIL_OVERRIDE_ALL"))
+
 # Record and output queries if requested
 from flask import session
 from peewee import BaseQuery
@@ -30,8 +35,7 @@ if app.config.get('show_queries'):
 
             session['querycount'] += 1
             if app.config.get('show_queries'): # in case we selectively disable
-                print("**Running query {}**".format(session['querycount']))
-                print(args[0])
+                (args[0])
         return old_execute(*args, **kwargs)
     BaseQuery.execute = new_execute
 

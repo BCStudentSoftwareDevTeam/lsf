@@ -106,7 +106,7 @@ def studentOverloadApp(formHistoryId):
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
     if formHistory.historyType_id != "Labor Overload Form":
-        print("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
+        ("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
         abort(500)
 
     # send a withdrawal notification to student and supervisor
@@ -163,5 +163,5 @@ def updateDatabase(overloadFormHistoryID):
         return g.currentUser.student.ID
 
     except Exception as e:
-        print("ERROR: " + str(e))
+        ("ERROR: " + str(e))
         abort(500)
