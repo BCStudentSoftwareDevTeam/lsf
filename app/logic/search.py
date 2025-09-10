@@ -5,6 +5,10 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
 
+from functools import reduce
+import operator
+from peewee import JOIN
+
 def limitSearchByUserDepartment(students, currentUser):
     """
     Given a list of student dictionaries and the currentUser the function will only return a
@@ -63,3 +67,32 @@ def getDepartmentsForSupervisor(currentUser):
 def getSupervisorsForDepartment(departmentId):
     departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()
     return departmentSupervisors
+
+def searchPerson(model, userInput, allowed_departments=None):
+    """
+    Returns a Peewee SelectObject filtered so that all words in userInput
+    must appear in at least one of the model's fields.
+    """
+    words = userInput.strip().split()
+
+    word_conditions = []
+    for word in words:
+        word_conditions.append(
+            (model.preferred_name.contains(word)) |
+            (model.legal_name.contains(word)) |
+            (model.LAST_NAME.contains(word)) |
+            (model.ID.contains(word))
+        )
+
+    query = model.select().where(reduce(operator.and_, word_conditions))
+
+    if allowed_departments is not None:
+        query = (
+            query
+            .join_from(model, LaborStatusForm, JOIN.LEFT_OUTER)
+            .join_from(LaborStatusForm, Department, JOIN.LEFT_OUTER)
+            .where(Department.DEPT_NAME.in_(allowed_departments))
+            .distinct()
+        )
+
+    return query

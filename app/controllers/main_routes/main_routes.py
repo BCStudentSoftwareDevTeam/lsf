@@ -12,7 +12,7 @@ from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor
+from app.logic.search import getDepartmentsForSupervisor, searchPerson
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
@@ -111,7 +111,7 @@ def SupervisorPortalSearch():
             ]
 
         elif searchType == "supervisorSelect":
-            supervisor_query = search_person(Supervisor, userInput, allowed_departments)
+            supervisor_query = searchPerson(Supervisor, userInput, allowed_departments)
             supervisor_query = supervisor_query.order_by(Supervisor.isActive.desc()).limit(10)
             return [
                 {'id': sup.ID, 'FIRST_NAME': sup.FIRST_NAME, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
@@ -119,7 +119,7 @@ def SupervisorPortalSearch():
             ]
 
         elif searchType == "studentSelect":
-            student_query = search_person(Student, userInput, allowed_departments)
+            student_query = searchPerson(Student, userInput, allowed_departments)
             student_query = student_query.order_by(Student.LAST_NAME.asc()).limit(10)
             return [
                 {'id': stu.ID, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
@@ -128,45 +128,13 @@ def SupervisorPortalSearch():
 
         return []
     
-    try:
-        searchType = request.args.get("searchType")
-        userInput = request.args.get("userInput")
+    searchType = request.args.get("searchType")
+    userInput = request.args.get("userInput")
 
-        if not searchType or not userInput:
-            return jsonify({""}), 400
-        userList = searchSupervisorPortal(searchType, userInput)
-        return jsonify(userList)
-    except Exception as e:
-        print('ERROR:', e, type(e))
-
-def search_person(model, userInput, allowed_departments=None):
-    """
-    Returns a Peewee SelectObject filtered so that all words in userInput
-    must appear in at least one of the model's fields.
-    """
-    words = userInput.strip().split()
-
-    word_conditions = []
-    for word in words:
-        word_conditions.append(
-            (model.preferred_name.contains(word)) |
-            (model.legal_name.contains(word)) |
-            (model.LAST_NAME.contains(word)) |
-            (model.ID.contains(word))
-        )
-
-    query = model.select().where(reduce(operator.and_, word_conditions))
-
-    if allowed_departments is not None:
-        query = (
-            query
-            .join_from(model, LaborStatusForm, JOIN.LEFT_OUTER)
-            .join_from(LaborStatusForm, Department, JOIN.LEFT_OUTER)
-            .where(Department.DEPT_NAME.in_(allowed_departments))
-            .distinct()
-        )
-
-    return query
+    if not searchType or not userInput:
+        return jsonify({""}), 400
+    userList = searchSupervisorPortal(searchType, userInput)
+    return jsonify(userList)
 
 @main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
 def submitToBanner(formHistoryId):
