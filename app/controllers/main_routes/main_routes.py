@@ -89,7 +89,6 @@ def SupervisorPortalSearch():
     """
     Returns a list of users that match a given string
     """
-    print('liveSearch called')
     def searchSupervisorPortal(searchType, userInput):
         currentUser = require_login()
         if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
