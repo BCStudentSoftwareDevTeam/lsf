@@ -4,6 +4,7 @@ BEGIN;
 
 INSERT INTO status VALUES ('Denied by Admin');
 INSERT INTO status VALUES ('Denied by Student');
+INSERT INTO status VALUES ('Expired');
 
 update overloadform set financialAidApproved_id='Denied by Admin' where financialAidApproved_id='Denied';
 update overloadform set SAASApproved_id='Denied by Admin' where SAASApproved_id='Denied';
@@ -137,5 +138,20 @@ SET
 <p>labor_program@berea.edu</p>
 <p>859-985-3611</p>'
 WHERE purpose = 'Break Labor Status Form Submitted For Supervisor';
+
+-- Update emailtemplate for Expired Labor Status Form 
+UPDATE emailtemplate 
+SET 
+    subject = 'Labor Status Form Expired',
+    body = '<p>Dear <strong>@@Supervisor@@</strong>,</p>
+            <p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>
+            <p>&nbsp;</p>
+            <p> You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>. </p> 
+            <p>Sincerely,</p>
+            <p>Labor Program Office</p>
+            <p>labor_program@berea.edu</p>
+            <p>859-985-3611</p>',
+    audience = 'Supervisor'
+WHERE purpose = 'Email when Labor Status Form is expired';
 
 COMMIT;

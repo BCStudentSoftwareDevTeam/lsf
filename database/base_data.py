@@ -67,21 +67,6 @@ emailtemps= [
 
                 "audience":"Student"
                  },
-                {#Expired Labor Status Form
-                "purpose":"Email when Labor Status Form is expired",
-                "formType":"Labor Status Form",
-                "action":"Expired",
-                "subject":"Labor Status Form Expired",
-                "body":'''<p>Dear <strong>@@Supervisor@@</strong>,</p>
-                          <p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>
-                          <p>&nbsp;</p>
-                          <p> You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>. </p> 
-                          <p>Sincerely,</p>
-                          <p>Labor Program Office</p>
-                          <p>labor_program@berea.edu</p>
-                          <p>859-985-3611</p>''',
-                "audience":"Supervisor"
-                 },
                 {
                 "purpose":"Secondary Position Labor Status Form Submitted",
                 "formType":"Secondary Labor Status Form",
