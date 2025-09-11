@@ -15,15 +15,16 @@
 <a class="skipContent"
    href="#addlaborAdmin"
    tabindex="1">Click to Skip</a>
-<form id="titleBlock"
-      action="/adminManagement/userInsert"
-      method="POST">
     <div align="center" >
       <h1>Manage Administrators</h1>
       <span id="ManageAdminInfo">Add or Remove administrators here</span>
     </div>
-
+    
 {# This is for adding is labor admins #}
+
+<form id=" laborAdminForm"
+      action="/adminManagement/userInsert"
+      method="POST">
 
   <div class="row text-center">
       <div id="borders" class="col-lg-4">
@@ -80,8 +81,13 @@
       </button>
     </div>
   </div>
+</form>
 
 {# Financial Aid Admins #}
+
+<form id=" finAidAdminForm"
+      action="/adminManagement/userInsert"
+      method="POST">
 
 <div id="borders1" class="col-lg-4">
   <h3 id="header">Financial Aid Administrators</h3>
@@ -130,8 +136,13 @@
   </button>
  </div>
 </div>
+</form>
 
 {# SAAS admins #}
+
+<form id=" SAASAdminForm"
+      action="/adminManagement/userInsert"
+      method="POST">
 
 <div id="borders2" class="col-lg-4">
   <h3 id="header">SAAS Administrators</h3>
