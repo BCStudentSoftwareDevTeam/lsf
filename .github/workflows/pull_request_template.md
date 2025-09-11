@@ -5,10 +5,10 @@ Fixes #<!-- add issue number -->
 
 ## Changes
 
-<!-- - Use bullet points to provide a description of added changes.
-- Add images, where possible, to provide more context to your changes. -->
+<!-- - Use bullet points to provide a description of added changes. -->
+<!-- - Add images, where possible, to provide more context to your changes. -->
 
 ## Testing
 
-<!-- - Use `backticks` to highlight shell commands or file directories in your test descriptions.
-- Use bullet points to provide a concise description of testing procedure. -->
+<!-- - Use `backticks` to highlight shell commands or file directories in your test descriptions. -->
+<!-- - Use bullet points to provide a concise description of testing procedure. -->
