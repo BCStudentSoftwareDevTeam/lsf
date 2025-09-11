@@ -8,12 +8,15 @@ from app.models.formHistory import FormHistory
 
 from app.controllers.main_routes import main_bp
 
-print('#####')
+
 
 @main_bp.route('/studentResponse/confirm', methods=['GET'])
 def confirm():
-    print('####')
+    print('HEllo')
+    print(request.args)
     token = request.args.get('token')
+    print(request.args)
+    print("token received:", token)
 
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
@@ -22,7 +25,6 @@ def confirm():
                                    ,LaborStatusForm.studentSupervisee == g.currentUser.student))
     try:
         form = forms.get()
-        print('###')
         print(form)
     except DoesNotExist as e:
         flash("This contract is invalid or has expired.", "danger")
