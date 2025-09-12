@@ -43,7 +43,7 @@ function mailToLabor(){
   body = body.replace(/(\s+|\&)/g, function(match) { //regex searches for whitespace characters or ampersand and replaces them accordingly
     return match === "&" ? "%26" : "%20";
   });
-  window.location.href = `mailto:labor@berea.edu?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:labor_program@berea.edu?subject=${subject}&body=${body}`;
 }
 
 function fillPDF(laborStatusKey){
