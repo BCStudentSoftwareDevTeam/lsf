@@ -11,7 +11,6 @@ from app.controllers.main_routes import main_bp
 @main_bp.route('/studentResponse/confirm', methods=['GET'])
 def confirm():
     token = request.args.get('token')
-
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
                             .join(FormHistory)
