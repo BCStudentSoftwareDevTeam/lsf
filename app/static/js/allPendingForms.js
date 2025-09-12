@@ -473,7 +473,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
     }
 
 
-    if ($('#initials').val().trim() == ""){
+    if ( $('#initials').length && $('#initials').val().trim() == ""){
       createAJAX = false
       $('.status-warning').html('<span class="glyphicon glyphicon-exclamation-sign"></span><strong> Please fill out all required fields.</strong>')
       $('.status-warning').show();
