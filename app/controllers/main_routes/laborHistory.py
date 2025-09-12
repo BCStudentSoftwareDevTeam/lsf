@@ -2,7 +2,6 @@ import datetime
 import re
 import types
 from fpdf import FPDF
-from urllib.parse import urlparse
 
 from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
@@ -62,6 +61,9 @@ def laborhistory(id):
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
+
+        approveLink = 'http://127.0.0.1:5000/studentResponse/confirm?token=5e145d00-f4ef-4dcb-87c3-db2816f0a338'
+
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
@@ -155,13 +157,16 @@ def populateModal(statusKey):
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
 
+        confirmationToken = statusForm.confirmationToken
+        approveLink = f"{request.host_url}studentResponse/confirm?token={confirmationToken}"
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
                                             statusForm = statusForm,
                                             currentDate = currentDate,
                                             pendingformType = pendingformType,
-                                            buttonState = buttonState
+                                            buttonState = buttonState,
+                                            approveLink = approveLink,
                                             ))
         return (resp)
     except Exception as e:
