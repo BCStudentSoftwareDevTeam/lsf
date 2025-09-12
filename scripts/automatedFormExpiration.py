@@ -5,13 +5,13 @@ from app.logic.emailHandler import emailHandler
 
 def expireStudentConfirmations():
     forms = (LaborStatusForm.select().where(
-        LaborStatusForm.studentExpirationDate != None, 
+        LaborStatusForm.studentExpirationDate.is_null(False), 
         ))
     for form in forms:
-        if form.isExpired():
-            # resend but only to students
-            emailer = emailHandler(form.lsf.formID)
-            emailer.laborStatusFromExpired(toStudent=False, toSupervisor=True, toDept=False)
+        if form.isExpired:
+            print(f"Expiring form ID: {form.get_id()} ")
+            emailer = emailHandler(form.get_id())
+            emailer.laborStatusFromExpired()
 def main():
     expireStudentConfirmations()
 
