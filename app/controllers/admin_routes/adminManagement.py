@@ -85,37 +85,34 @@ def adminSearch():
 
 @admin.route("/adminManagement/userInsert", methods=['POST'])
 def manageLaborAdmin():
-    if request.form.get("addAdmin"):
-        newAdmin = getUser('addAdmin')
-        addAdmin(newAdmin, 'labor')
-        flashMessage(newAdmin, 'added', 'Labor')
-
-    elif request.form.get("removeAdmin"):
-        oldAdmin = getUser('removeAdmin')
-        removeAdmin(oldAdmin, 'labor')
-        flashMessage(oldAdmin, 'removed', 'Labor')
-
-    elif request.form.get("addFinancialAidAdmin"):
-        newAdmin = getUser('addFinancialAidAdmin')
-        addAdmin(newAdmin, 'finAid')
-        flashMessage(newAdmin, 'added', 'Financial Aid')
-
-    elif request.form.get("removeFinancialAidAdmin"):
-        oldAdmin = getUser('removeFinancialAidAdmin')
-        removeAdmin(oldAdmin, 'finAid')
-        flashMessage(oldAdmin, 'removed', 'Financial Aid')
-
-    elif request.form.get("addSAASAdmin"):
-        newAdmin = getUser('addSAASAdmin')
-        addAdmin(newAdmin, 'saas')
-        flashMessage(newAdmin, 'added', 'SAAS')
-
-    elif request.form.get("removeSAASAdmin"):
-        oldAdmin = getUser('removeSAASAdmin')
-        removeAdmin(oldAdmin, 'saas')
-        flashMessage(oldAdmin, 'removed', 'SAAS')
-
+    actionMap = {
+    "addAdmin":                {"type": "labor", "action": "add", "pretty": "Labor"},
+    "removeAdmin":             {"type": "labor", "action": "remove", "pretty": "Labor"},
+    "addFinancialAidAdmin":    {"type": "finAid", "action": "add", "pretty": "Financial Aid"},
+    "removeFinancialAidAdmin": {"type": "finAid", "action": "remove", "pretty": "Financial Aid"},
+    "addSAASAdmin":            {"type": "saas", "action": "add", "pretty": "SAAS"},
+    "removeSAASAdmin":         {"type": "saas", "action": "remove", "pretty": "SAAS"},
+    }
+    for key, meta in actionMap.items():
+        if request.form.get(key):
+            user = getUser(key)
+            
+            # pick addAdmin or removeAdmin dynamically
+            (addAdmin if meta["action"] == "add" else removeAdmin)(user, meta["type"])
+            
+            flashMessage(user, 
+                         'added' if meta["action"] == "add" else 'removed', 
+                         meta["pretty"])
+            break 
     return redirect(url_for('admin.admin_Management'))
+
+def addAdmin(user, adminType):
+    setattr(user, f"is{adminType.capitalize()}Admin", True)
+    user.save()
+
+def removeAdmin(user, adminType):
+    setattr(user, f"is{adminType.capitalize()}Admin", False)
+    user.save()
 
 def getUser(selectpickerID):
     username = request.form.get(selectpickerID)
@@ -130,24 +127,6 @@ def getUser(selectpickerID):
             supervisor = createSupervisorFromTracy(username)
         user = createUser(username, student=student, supervisor=supervisor)
     return user
-
-def addAdmin(newAdmin, adminType):
-    if adminType == 'labor':
-        newAdmin.isLaborAdmin = True
-    if adminType == 'finAid':
-        newAdmin.isFinancialAidAdmin = True
-    if adminType == 'saas':
-        newAdmin.isSaasAdmin = True
-    newAdmin.save()
-
-def removeAdmin(oldAdmin, adminType):
-    if adminType == 'labor':
-        oldAdmin.isLaborAdmin = False
-    if adminType == 'finAid':
-        oldAdmin.isFinancialAidAdmin = False
-    if adminType == 'saas':
-        oldAdmin.isSaasAdmin = False
-    oldAdmin.save()
 
 def flashMessage(user, action, adminType):
     message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
