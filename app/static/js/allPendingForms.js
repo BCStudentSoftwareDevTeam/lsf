@@ -146,7 +146,7 @@ function finalApproval() { //this method changes the status of the lsf from pend
           $("#approveModalButton").text("Approve");
           $("#approvalModal").data("bs.modal").options.backdrop = true;
           $("#approvalModal").data("bs.modal").options.keyboard = true;
-
+          msgFlash("Approval successful!", "success");
 
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
