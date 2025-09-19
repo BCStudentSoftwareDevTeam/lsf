@@ -4,6 +4,9 @@ from app import app as flask_app
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.logic.emailHandler import emailHandler
+from app.models.emailTemplate import*
+from flask import request
+from flask import has_request_context
 
 BASE_URL = os.getenv("EXTERNAL_BASE_URL", "http://localhost:5000/")
 
@@ -32,10 +35,8 @@ def expireStudentConfirmations():
                 print(f"[SKIP] No FormHistory for LSF#{lsfID}")
                 continue
 
-            fh_pk = latest_history.formHistoryID
-            print(f"[LOOP] LSF#{lsfID} exp={form.studentExpirationDate} → FH#{fh_pk}")
-
-            emailer = emailHandler(fh_pk)
+            lsfHistory = latest_history.formHistoryID
+            emailer = emailHandler(lsfHistory)
             emailer.laborStatusFromExpired()
 
         except Exception as e:
@@ -46,12 +47,10 @@ def expireStudentConfirmations():
 def main():
     # Ensure Flask context and a request base_url so templates/links render correctly
     with flask_app.app_context():
-        from flask import has_request_context
         if not has_request_context():
-            from flask import request
         # Provide a fake request context so request.host_url exists in email templates
-        with flask_app.test_request_context("/", base_url=BASE_URL):
-            expireStudentConfirmations()
+            with flask_app.test_request_context("/", base_url=BASE_URL):
+                expireStudentConfirmations()
 
 if __name__ == "__main__":
     main()
