@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from uuid import uuid4
-from datetime import datetime
+from datetime import date, datetime
 # All caps fields are pulled from TRACY
 class LaborStatusForm (baseModel):
     studentName                 = CharField(null=True)
@@ -34,6 +34,7 @@ class LaborStatusForm (baseModel):
 
     @property
     def isExpired(self):
-        if self.studentExpirationDate and self.studentExpirationDate < datetime.now().date():
-            return True
-        return False
+        exp = self.studentExpirationDate
+        if not exp:
+            return False
+        return exp < date.today() 

@@ -16,6 +16,8 @@ import string
 from app import app
 import os
 from datetime import datetime, date
+import traceback
+
 
 class emailHandler():
     def __init__(self, formHistoryKey):
@@ -136,12 +138,42 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
-            
+    # This method was commented out because it was causing issues with the automated script that checks for expired formsdef laborStatusFromExpired(self):
     def laborStatusFromExpired(self):
-        if self.laborStatusForm.isExpired:
-            self.checkRecipient(studentEmailPurpose=False,
-                                emailPurpose="Email when Labor Status Form is expired",
-                                secondaryEmailPurpose=False) 
+        """
+        Sends email to labor supervisor and student when LSF is expired.
+        """
+        lsfID = self.laborStatusForm.laborStatusFormID
+        expired = self.laborStatusForm.isExpired
+        if not expired:
+            print("LSF not expired, skipping")
+            return
+        supervisorTemplate = EmailTemplate.get_or_none(
+            EmailTemplate.purpose == "Email when Labor Status Form is expired"
+        )
+        if not supervisorTemplate:
+            print("Missing Supervisor EmailTemplate: 'Email when Labor Status Form is expired' — skipping send.")
+            return
+        try:
+            today_val = date.today()  # works if EmailTracker.date is a DATE; if it's a string, cast to str below
+            already_sent = (EmailTracker
+                            .select()
+                            .where(
+                                (EmailTracker.formID == lsfID) &
+                                (EmailTracker.subject == supervisorTemplate.subject) &
+                                (EmailTracker.date == today_val)  # if EmailTracker.date is a VARCHAR, use str(today_val)
+                            )
+                            .exists())
+            if already_sent:
+                print(f"Already sent today for LSF#{lsfID}, subject='{supervisorTemplate.subject}'. Skipping.")
+                return
+        except Exception as e:
+            print(f"Check failed for LSF#{lsfID}: {e}. Proceeding to send.")
+        self.checkRecipient(
+            studentEmailPurpose=False,
+            emailPurpose=supervisorTemplate.purpose,
+            secondaryEmailPurpose=None
+        )
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':
@@ -312,11 +344,13 @@ class emailHandler():
         formTemplate = template.body
         formTemplate = self.replaceText(formTemplate)
         if sendTo == "student":
+            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.studentEmail])
             recipient = 'Student'
         elif sendTo == "secondary":
             if self.term.isBreak:
+                print("here", template.subject, self.supervisorEmail)
                 supervisorEmails = []
                 for supervisor in self.supervisors:
                     supervisorEmails.append(supervisor.EMAIL)
@@ -325,14 +359,17 @@ class emailHandler():
                     recipients=supervisorEmails)
                 recipient = 'Secondary Supervisor'
             else:
+                print("here", template.subject, self.supervisorEmail)
                 message = Message(template.subject,
                     recipients=[self.supervisorEmail, self.primaryEmail])
                 recipient = 'Primary Supervisor'
         elif sendTo == "Labor Office":
+            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[""]) #TODO: Email for the Labor Office
             recipient = 'Labor Office'
         elif sendTo == 'supervisor':
+            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.supervisorEmail])
             recipient = 'Primary Supervisor'
