@@ -214,11 +214,19 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 departmentName = form.formID.department.DEPT_NAME
                 statusFormId = form.formID.laborStatusFormID
 
+                formStatus = str(form.status)
+                displayStatus = formStatus
+
+                if form.overloadForm is not None:
+                    displayStatus = "Overload " + formStatus
+                if form.releaseForm is not None:
+                    displayStatus = "Released"
+
                 html = f"""
                 <a href="/laborHistory/{bNumber}">
                     <span class="h4">{firstName} {lastName} ({bNumber})</span>
                 </a>
-                <span class="pushRight">{form.status}</span>
+                <span class="pushRight">{displayStatus}</span>
                 <br>
                 <span class="pushLeft h6">
                     {term} - <a><span onclick=loadFormHistoryModal({statusFormId})>{positionTitle} ({jobType})</span></a> - {departmentName}
