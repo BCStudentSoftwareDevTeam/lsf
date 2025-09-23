@@ -220,7 +220,10 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 if form.overloadForm is not None:
                     displayStatus = "Overload " + formStatus
                 if form.releaseForm is not None:
-                    displayStatus = "Released"
+                    if formStatus == "Pending":
+                        displayStatus = "Release Pending"
+                    else:
+                        displayStatus = "Released"
 
                 html = f"""
                 <a href="/laborHistory/{bNumber}">
