@@ -62,6 +62,18 @@ def laborhistory(id):
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
+        # modify status display for overload and release forms
+        for form in authorizedForms:
+            displayStatus = form.status
+            if form.overloadForm is not None:
+                displayStatus = "Overload " + str(form.status)
+            if form.releaseForm is not None:
+                if form.status == "Pending":
+                    displayStatus = "Release Pending"
+                else:
+                    displayStatus = "Released"
+            form.display_status = displayStatus
+            print("display here", form.display_status)
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
