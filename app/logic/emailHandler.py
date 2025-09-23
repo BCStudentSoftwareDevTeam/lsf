@@ -149,7 +149,7 @@ class emailHandler():
             print("LSF not expired, skipping")
             return
         supervisorTemplate = EmailTemplate.get_or_none(
-            EmailTemplate.purpose == "Email when Labor Status Form is expired"
+            EmailTemplate.purpose == "Email when Labor Status Form is expired to Supervisor"
         )
         if not supervisorTemplate:
             print("Missing Supervisor EmailTemplate: 'Email when Labor Status Form is expired' — skipping send.")
@@ -165,10 +165,10 @@ class emailHandler():
                             )
                             .exists())
             if already_sent:
-                print(f"Already sent today for LSF#{lsfID}, subject='{supervisorTemplate.subject}'. Skipping.")
+                print(f"Already sent today for LSF{lsfID}, subject='{supervisorTemplate.subject}'. Skipping.")
                 return
         except Exception as e:
-            print(f"Check failed for LSF#{lsfID}: {e}. Proceeding to send.")
+            print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
         self.checkRecipient(
             studentEmailPurpose=False,
             emailPurpose=supervisorTemplate.purpose,
