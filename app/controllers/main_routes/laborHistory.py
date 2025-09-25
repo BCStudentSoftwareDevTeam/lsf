@@ -71,20 +71,15 @@ def laborhistory(id):
                  ))
         relatedMap = {}
         for related in relatedForms:
-            print("getting related info", related.status)
             relatedMap.setdefault(related.formID.laborStatusFormID, []).append(related)
 
         for form in authorizedForms:
             displayStatus = str(form.status)
-            print("display status", displayStatus)
             for related in relatedMap.get(form.formID.laborStatusFormID, []):
-                print("post map ", related)
                 if related.overloadForm:
                     displayStatus = "Overload " + displayStatus
-                    print("GOT OVERLOAD FORM", displayStatus)
                 if related.releaseForm:
                     displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
-                    print("GOT RELEASE FORM", displayStatus)
             form.display_status = displayStatus
             ###############################################################
         return render_template('main/formHistory.html',
