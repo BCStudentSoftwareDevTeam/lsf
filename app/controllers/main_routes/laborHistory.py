@@ -57,23 +57,36 @@ def laborhistory(id):
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
         
-        
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         # modify status display for overload and release forms
+        # NEW TAKE######################################################
+        form_ids = [form.formID for form in authorizedForms]
+
+        relatedForms = (FormHistory.select().where(
+                     (FormHistory.formID.in_(form_ids)) &
+                     ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)))
+                 ))
+        relatedMap = {}
+        for related in relatedForms:
+            print("getting related info", related.status)
+            relatedMap.setdefault(related.formID.laborStatusFormID, []).append(related)
+
         for form in authorizedForms:
-            displayStatus = form.status
-            if form.overloadForm is not None:
-                displayStatus = "Overload " + str(form.status)
-            if form.releaseForm is not None:
-                if form.status == "Pending":
-                    displayStatus = "Release Pending"
-                else:
-                    displayStatus = "Released"
+            displayStatus = str(form.status)
+            print("display status", displayStatus)
+            for related in relatedMap.get(form.formID.laborStatusFormID, []):
+                print("post map ", related)
+                if related.overloadForm:
+                    displayStatus = "Overload " + displayStatus
+                    print("GOT OVERLOAD FORM", displayStatus)
+                if related.releaseForm:
+                    displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
+                    print("GOT RELEASE FORM", displayStatus)
             form.display_status = displayStatus
-            print("display here", form.display_status)
+            ###############################################################
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
