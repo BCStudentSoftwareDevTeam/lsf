@@ -71,7 +71,6 @@ def studentOverloadApp(formHistoryId):
                                     FormHistory.formID == secondaryForm,
                                     FormHistory.historyType == "Labor Status Form",
                                     FormHistory.status.in_(["Approved","Pending"]) ))
-                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
         formIDSecondary.append(studentSecondaryHistory)
 
     totalCurrentHours = 0

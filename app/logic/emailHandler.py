@@ -211,6 +211,27 @@ class emailHandler():
         self.checkRecipient("Labor Release Form Submitted For Student",
                       "Labor Release Form Submitted For Supervisor")
 
+    def laborAdminNotified(self):
+        self.link = link
+        emailList = []
+        if dept == "SAAS":
+            admins = User.select(User.username).where(User.isSaasAdmin == True)
+            for admin in admins:
+                emailList.append(admin.username + "@berea.edu")
+        elif dept == "Financial Aid":
+            emailList.append(app.config["financial_aid"]["email"])
+        emailTemplateID = EmailTemplate.get(EmailTemplate.purpose == "SAAS and Financial Aid Office")
+        message = Message(emailTemplateID.subject, recipients=emailList)
+        newEmailTracker = EmailTracker.create(
+                        formID = self.laborStatusForm.laborStatusFormID,
+                        date = datetime.today().strftime('%Y-%m-%d'),
+                        recipient = dept,
+                        subject = emailTemplateID.subject
+                        )
+        message.html = self.replaceText(emailTemplateID.body)
+
+        self.send(message)
+
     def laborReleaseFormApproved(self):
         self.checkRecipient("Labor Release Form Approved For Student",
                       "Labor Release Form Approved For Supervisor")

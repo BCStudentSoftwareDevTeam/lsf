@@ -57,6 +57,7 @@ def laborReleaseForm(laborStatusKey):
 
             email = emailHandler(formHistoryID.formHistoryID)
             email.laborReleaseFormSubmitted()
+            email.laborAdminNotified()
             # Once all the forms are created, the user gets redirected to the
             # home page and gets a flash message telling them the forms were
             # submiteds

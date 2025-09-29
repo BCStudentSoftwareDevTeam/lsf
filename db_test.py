@@ -2,7 +2,7 @@ import pyodbc
 
 details = {
     "user": "ute_limited",
-    "password": "REPLACE",
+    "password": "",
     "server": "timemachine1sql.berea.edu",
     "db": "UTE"
 }
