@@ -17,19 +17,12 @@ $('#positionTable tbody tr td').on('click',function(){
 
 function loadFormHistoryModal(formHistory) {
   $("#modal").modal("show");
-  $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory);
-  setTimeout(function(){ $(".loader").fadeOut("slow"); }, 500);
-}
-
-function redirection(laborStatusKey){
-  /*
-  When any of the three buttons is clicked, this function will append the 'href' attribute with the
-  correct redirection link and LSF primary key to each button
-  */
-  $("#alter").attr("href", "/alterLSF/" + laborStatusKey); // will go to the alterLSF controller
-  $("#rehire").attr("href", "/laborstatusform/" + laborStatusKey); // will go to the lsf controller
-  $("#release").attr("href", "/laborReleaseForm/" + laborStatusKey); // will go to labor release form controller
-  $("#sle").attr("href", "/sle/" + laborStatusKey); // will go to student labor evaluations controller
+  $(".loader").show();
+  
+  // This function is called when the modal content is loaded
+  $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory, function() {
+    $(".loader").fadeOut("slow"); // Hide the loader after content is loaded
+  });
 }
 
 $("#modal").on('transitionend', function(){ //Had to search for css element visibility changes to make this work
@@ -50,7 +43,7 @@ function mailToLabor(){
   body = body.replace(/(\s+|\&)/g, function(match) { //regex searches for whitespace characters or ampersand and replaces them accordingly
     return match === "&" ? "%26" : "%20";
   });
-  window.location.href = `mailto:labor@berea.edu?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:labor_program@berea.edu?subject=${subject}&body=${body}`;
 }
 
 function fillPDF(laborStatusKey){
@@ -116,3 +109,16 @@ function withdrawform(formID){
            }
          });
        }
+function resubmitform(formHistoryId){
+  $.ajax({
+         method: "GET",
+         url: '/lsf/' + formHistoryId + '/submitToBanner',
+         contentType: 'application/json',
+         success: function(response) {
+            msgFlash(response,"success");
+         },
+         error: function(xhr) {
+            msgFlash(xhr.responseText,"fail");
+         }
+        });
+};
