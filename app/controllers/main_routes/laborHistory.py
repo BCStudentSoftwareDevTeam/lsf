@@ -62,26 +62,28 @@ def laborhistory(id):
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         # modify status display for overload and release forms
-        # NEW TAKE######################################################
         form_ids = [form.formID for form in authorizedForms]
 
         relatedForms = (FormHistory.select().where(
                      (FormHistory.formID.in_(form_ids)) &
                      ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)))
                  ))
-        relatedMap = {}
-        for related in relatedForms:
-            relatedMap.setdefault(related.formID.laborStatusFormID, []).append(related)
 
+        formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
+
+        # Pre-initialize display_status with each form's base status
         for form in authorizedForms:
-            displayStatus = str(form.status)
-            for related in relatedMap.get(form.formID.laborStatusFormID, []):
-                if related.overloadForm:
-                    displayStatus = "Overload " + displayStatus
-                if related.releaseForm:
-                    displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
-            form.display_status = displayStatus
-            ###############################################################
+            form.display_status = str(form.status)
+
+        # Iterate once over relatedForms and update form.display_status incrementally
+        for related in relatedForms:
+            form = formMap.get(related.formID.laborStatusFormID)
+
+            if related.overloadForm:
+                form.display_status = "Overload " + str(related.status)
+            if related.releaseForm:
+                form.display_status = "Release Pending" if str(related.status) == "Pending" else "Released"
+
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
