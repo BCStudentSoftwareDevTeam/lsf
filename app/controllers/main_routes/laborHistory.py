@@ -71,11 +71,10 @@ def laborhistory(id):
 
         formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
 
-        # Pre-initialize display_status with each form's base status
+        # initialize display_status with each form's base status
         for form in authorizedForms:
             form.display_status = str(form.status)
-
-        # Iterate once over relatedForms and update form.display_status incrementally
+        # iterate once over relatedForms and update each form display_status
         for related in relatedForms:
             form = formMap.get(related.formID.laborStatusFormID)
 
