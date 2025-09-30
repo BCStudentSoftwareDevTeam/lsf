@@ -74,7 +74,7 @@
               <br>
               <label for="termSelect">Term</label>
               <div>
-                <select class="selectpicker" name='term' id='termSelect' data-live-search='true' title="All terms">
+                <select class="selectpicker" name='term' data-live-search-placeholder="Type term to search" id='termSelect' data-live-search='true' title="All terms">
                   <option value="">All terms</option>
                   <option value="activeTerms">All Active Terms</option>
                   
@@ -84,7 +84,7 @@
             <div class="form-group" id="departmentSelectParent">
               <label for="departmentSelect">Department</label>
               <div>
-                <select class="selectpicker" id="departmentSelect" data-live-search='true' title="Department">
+                <select class="selectpicker" id="departmentSelect" data-live-search-placeholder="Type department to search" data-live-search='true' title="Department">
                   <option value="" selected>All departments</option>
                   {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
@@ -102,7 +102,7 @@
             <div class="form-group" id="supervisorSelectParent">
               <label for="supervisorSelect">Supervisor</label>
               <div class="dropdown">
-                <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search='true'
+                <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search-placeholder="Type name or B# to search" data-live-search='true'
                   title="All supervisors">
                   <option value="">All supervisors</option>
                 </select>
@@ -111,7 +111,7 @@
             <div class="form-group" id="studentSelectParent">
               <label for="studentSelect">Student</label>
               <div>
-                <select class="selectpicker" name='student' id='studentSelect' data-live-search='true'
+                <select class="selectpicker" name='student' id='studentSelect' data-live-search-placeholder="Type name or B# to search" data-live-search='true'
                   title="All students">
                   <option value="">All students</option>
                 </select>
