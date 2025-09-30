@@ -43,6 +43,7 @@ function liveSearch(selectPickerID, e) {
         }
       });
     }
+    else{$("#"+ selectPickerID).selectpicker("refresh");} // clear search list if <3 chars
 };
 
 let formToSubmit = null; // store form clicked
