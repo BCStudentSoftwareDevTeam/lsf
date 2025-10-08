@@ -141,6 +141,7 @@ function finalApproval() { //this method changes the status of the lsf from pend
     contentType: 'application/json',
     success: function(response) {
       if (response && response.success) {
+          msgFlash("The selected forms have been approved.","success");
           $(".btn").prop("disabled", false);
           $(".close").prop("disabled", false);
           $("#approveModalButton").text("Approve");
