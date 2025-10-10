@@ -1,11 +1,4 @@
-import os
-from datetime import date
-from app import app as flask_app
-from app.models.laborStatusForm import LaborStatusForm
-from app.models.formHistory import FormHistory
-from app.logic.emailHandler import emailHandler
 from app.models.emailTemplate import*
-from flask import has_request_context
 
 emailTemplates = {
     # Email sent to admins when a labor release form is submitted
@@ -25,11 +18,11 @@ emailTemplates = {
             "<p>labor_program@berea.edu</p>"
             "<p>859-985-3611</p>"
         ),
-        "audience": "Supervisor",
+        "audience": "Admin",
     },
 }
 
-def checkForTemplates():
+def addingTemplates():
     for template in emailTemplates.values():
         if EmailTemplate.select().where(EmailTemplate.purpose == template["purpose"]).count() == 0:
             print(f"No email template found. Creating one.")
@@ -42,4 +35,9 @@ def checkForTemplates():
                 audience=template["audience"])
             print(f"Created email template.")
 
-checkForTemplates()
+def main():
+    addingTemplates()
+    print("Finished adding email templates.")
+
+if __name__ == "__main__":
+    main()

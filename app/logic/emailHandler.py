@@ -138,42 +138,6 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
-    # This method was commented out because it was causing issues with the automated script that checks for expired formsdef laborStatusFromExpired(self):
-    def laborStatusFromExpired(self):
-        """
-        Sends email to labor supervisor and student when LSF is expired.
-        """
-        lsfID = self.laborStatusForm.laborStatusFormID
-        expired = self.laborStatusForm.isExpired
-        if not expired:
-            print("LSF not expired, skipping")
-            return
-        supervisorTemplate = EmailTemplate.get_or_none(
-            EmailTemplate.purpose == "Email when Labor Status Form is expired to Supervisor"
-        )
-        if not supervisorTemplate:
-            print("Missing Supervisor EmailTemplate: 'Email when Labor Status Form is expired' — skipping send.")
-            return
-        try:
-            today_val = date.today()  # works if EmailTracker.date is a DATE; if it's a string, cast to str below
-            already_sent = (EmailTracker
-                            .select()
-                            .where(
-                                (EmailTracker.formID == lsfID) &
-                                (EmailTracker.subject == supervisorTemplate.subject) &
-                                (EmailTracker.date == today_val)  # if EmailTracker.date is a VARCHAR, use str(today_val)
-                            )
-                            .exists())
-            if already_sent:
-                print(f"Already sent today for LSF{lsfID}, subject='{supervisorTemplate.subject}'. Skipping.")
-                return
-        except Exception as e:
-            print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
-        self.checkRecipient(
-            studentEmailPurpose=False,
-            emailPurpose=supervisorTemplate.purpose,
-            secondaryEmailPurpose=None
-        )
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':
@@ -212,15 +176,12 @@ class emailHandler():
                       "Labor Release Form Submitted For Supervisor")
 
     def laborAdminNotified(self, adminEmail, adminName):
-        print(adminEmail, "iamstupid")
-        print("I am testing")
         self.adminName = adminName
         emailAddress = adminEmail + "@berea.edu"
         emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification")
         message = Message(emailTemplate.subject, recipients=[emailAddress])
         message.html = self.replaceText(emailTemplate.body)
         self.send(message)
-        return True
 
     def laborReleaseFormApproved(self):
         self.checkRecipient("Labor Release Form Approved For Student",
