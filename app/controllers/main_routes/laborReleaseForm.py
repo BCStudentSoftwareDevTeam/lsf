@@ -33,8 +33,10 @@ def laborReleaseForm(laborStatusKey):
     if(request.method == 'POST'):
         try:
             historyForms = FormHistory.select().where((FormHistory.formID == laborStatusKey) & (FormHistory.releaseForm != None))
+            print(historyForms.__dict__, "lol")
             if historyForms:
                 for form in historyForms:
+                    print(form, "rue")
                     if "Denied" not in form.status.statusName: # we have two denied statuses
                         # If there is currently a pending labor release form for the labor status form
                         # then the user should not be able submit another one
@@ -44,6 +46,7 @@ def laborReleaseForm(laborStatusKey):
             # If the labor status form does not have a pending labor release form, then the user
             # will be able to submit a labor release form. This section will create the new
             # labor release form, and a new form in the form history table.
+            print("**************"*4)
             laborStatusForiegnKey = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
             formHistoryID = FormHistory.get(FormHistory.formID == laborStatusKey) #need formHistoryID for emailHandler
             datepickerDate = request.form.get("date")
@@ -52,12 +55,18 @@ def laborReleaseForm(laborStatusKey):
             releaseCondition = request.form.get("condition")
             releaseContactUsername = request.form.get("contactPerson")
             releaseContactPerson = User.get(User.username == releaseContactUsername)
-
+            releaseContactFullName = releaseContactPerson.firstName + " " + releaseContactPerson.lastName
+            print(releaseContactUsername, "imran", releaseContactFullName)
             createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
-
+            print("imrannnnnnnnn")
             email = emailHandler(formHistoryID.formHistoryID)
+            print("leeeeee")
+            print(email.laborAdminNotified(releaseContactUsername, releaseContactFullName))
+            print("kekekeke")
             email.laborReleaseFormSubmitted()
-            email.laborAdminNotified()
+            print("sheeeeeee")
+
+
             # Once all the forms are created, the user gets redirected to the
             # home page and gets a flash message telling them the forms were
             # submiteds
@@ -77,6 +86,7 @@ def laborReleaseForm(laborStatusKey):
                           )
 
 def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition,  releaseReason, releaseContactPerson, status="Pending", reviewedDate=None, reviewedBy=None):
+    print("hereme")
     newLaborReleaseForm = LaborReleaseForm.create(
                                 conditionAtRelease = releaseCondition,
                                 releaseDate = releaseDate,
@@ -98,3 +108,5 @@ def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, rele
                                 status = status.statusName,
                                 rejectReason = None
                                 )
+    print("hereme2")
+
