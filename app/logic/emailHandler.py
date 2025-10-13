@@ -146,13 +146,11 @@ class emailHandler():
         lsfID = self.laborStatusForm.laborStatusFormID
         expired = self.laborStatusForm.isExpired
         if not expired:
-            print("LSF not expired, skipping")
             return
         supervisorTemplate = EmailTemplate.get_or_none(
             EmailTemplate.purpose == "Email when Labor Status Form is expired to Supervisor"
         )
         if not supervisorTemplate:
-            print("Missing Supervisor EmailTemplate: 'Email when Labor Status Form is expired' — skipping send.")
             return
         try:
             today_val = date.today()  # works if EmailTracker.date is a DATE; if it's a string, cast to str below
@@ -165,7 +163,7 @@ class emailHandler():
                             )
                             .exists())
             if already_sent:
-                print(f"Already sent today for LSF{lsfID}, subject='{supervisorTemplate.subject}'. Skipping.")
+                
                 return
         except Exception as e:
             print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
