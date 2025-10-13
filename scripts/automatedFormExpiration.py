@@ -32,7 +32,6 @@ emailTemplates = {
 def checkForTemplates():
     for template in emailTemplates.values():
         if EmailTemplate.select().where(EmailTemplate.purpose == template["purpose"]).count() == 0:
-            print(f"No email template found. Creating one.")
             EmailTemplate.create(
                 purpose=template["purpose"], 
                 formType=template["formType"],
@@ -40,7 +39,6 @@ def checkForTemplates():
                 subject=template["subject"], 
                 body=template["body"], 
                 audience=template["audience"])
-            print(f"Created email template.")
         
 def expireStudentConfirmations():
     expired_forms = (
@@ -63,7 +61,6 @@ def expireStudentConfirmations():
                 .first()
             )
             if not latest_history:
-                print(f"Skip No FormHistory for LSF#{lsfID}")
                 continue
 
             lsfHistory = latest_history.formHistoryID
@@ -72,17 +69,13 @@ def expireStudentConfirmations():
 
         except Exception as e:
             import traceback
-            print(f"Error while processing LSF#{form.laborStatusFormID}: {e}")
             traceback.print_exc()
 
 def main():
-    #Ensure Flask context and a request base_url so templates/links render correctly
     with flask_app.app_context():
         if not has_request_context():
-        # Provide a fake request context so request.host_url exists in email templates
             with flask_app.test_request_context("/", base_url=BASE_URL):
                 expireStudentConfirmations()
 
 if __name__ == "__main__":
     main()
-    print("Automated Form Expiration Script Executed")
