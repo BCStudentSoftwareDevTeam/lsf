@@ -1,7 +1,7 @@
 from app.models.emailTemplate import*
 
 emailTemplates = {
-    # Email sent to admins when a labor release form is submitted
+    # Email sent to labor admins when a labor release form is submitted
     "laborReleaseAdminNotification": {
         "purpose": "Labor Release Form Admin Notification",
         "formType": "Labor Status Form",
@@ -9,10 +9,9 @@ emailTemplates = {
         "subject": "Student has been proposed to be released by their supervisor",
         "body": (
             "<p>Dear <strong>@@Admin@@</strong>,</p>"
-            "<p>This email is to notify that the Labor Status Form submitted by "
-            "<strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>"
+            "<p>A Labor Release Form has been submitted by "
+            "<strong>@@Supervisor@@</strong> for <strong>@@Student@@</strong>. This is to notify the Labor Department so that a new labor position can be assigned for <strong>@@Student@@</strong>.</p>"
             "<p>&nbsp;</p>"
-            "<p>You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>.</p>"
             "<p>Sincerely,</p>"
             "<p>Labor Program Office</p>"
             "<p>labor_program@berea.edu</p>"
