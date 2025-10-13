@@ -149,7 +149,7 @@ def submitAlteredLSF(laborStatusKey):
             if formStatus =="Pending" or formStatus == "Pre-Student Approval":
                 modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
             elif formStatus =="Approved":
-                changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
+                changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host) 
                 if changedForm:
                     formHistoryIDs.append(changedForm)
         if formStatus == "Approved":
@@ -233,10 +233,12 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         newNoteEntry.save()
         return None
     else:
-        adjustedforms = AdjustedForm.create(fieldAdjusted = fieldName,
+        adjustedforms = AdjustedForm.create(lsfId         = lsf,
+                                            fieldAdjusted = fieldName,
                                             oldValue      = fieldsChanged[fieldName]["oldValue"],
                                             newValue      = fieldsChanged[fieldName]["newValue"],
-                                            effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"))
+                                            effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"),
+                                            )
         historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Adjustment Form")
         status = Status.get(Status.statusName == "Pending")
         adjustedFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,
