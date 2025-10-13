@@ -51,7 +51,6 @@ def expireStudentConfirmations():
     )
     checkForTemplates()
     for form in expired_forms:
-        try:
             lsfID = form.laborStatusFormID
             latest_history = (
                 FormHistory
@@ -67,9 +66,7 @@ def expireStudentConfirmations():
             emailer = emailHandler(lsfHistory)
             emailer.laborStatusFromExpired()
 
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
+        
 
 def main():
     with flask_app.app_context():
