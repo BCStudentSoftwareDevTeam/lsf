@@ -114,6 +114,7 @@ $(document).ready(function () {
       fetchSimpleView(cookieStr)
       switchViewButton('simple')
     }
+    loadSavedSearchOptions(cookieJSON)
     setFormSearchValues(cookieJSON)
 
   } else {
@@ -247,14 +248,21 @@ case "mySupervisees":
   queryDict = {
     'view': currentView,
     'termCode': termCode,
+    'termName': $('#termSelect option:selected').text(),
     'departmentID': departmentID,
+    'departmentName': $('#departmentSelect option:selected').text(),
+    'departmentContent': $('#departmentSelect option:selected').attr('data-content'),
     'supervisorID': supervisorID,
+    'supervisorName': $('#supervisorSelect option:selected').text(),
+    'supervisorContent': $('#supervisorSelect option:selected').attr('data-content'),
     'studentID': studentID,
+    'studentName': $('#studentSelect option:selected').text(),
+    'studentContent': $('#studentSelect option:selected').attr('data-content'),
     'formStatus': formStatusList,
     'formType': formTypeList,
     'sortBy': sortBy,
     'order': order
-  };
+};
   setFormSearchValues(queryDict)
   data = JSON.stringify(queryDict)
 
@@ -382,6 +390,50 @@ function updateDownloadButton(response){
         } else {
           $("#download").prop('disabled', true);
         }
+}
+
+function loadSavedSearchOptions(searchDict) {
+  // creates the search options that setFormSearchValues uses
+  if (searchDict.termCode && searchDict.termCode !== "" && searchDict.termCode !== "activeTerms") {
+    if ($(`#termSelect option[value="${searchDict.termCode}"]`).length === 0) {
+      $('#termSelect').append($("<option>", {
+        value: searchDict.termCode,
+        text: searchDict.termName
+      }));
+    }
+  }
+  
+  if (searchDict.supervisorID && searchDict.supervisorID !== "" && searchDict.supervisorID !== "currentUser") {
+    if ($(`#supervisorSelect option[value="${searchDict.supervisorID}"]`).length === 0) {
+      $('#supervisorSelect').append($("<option>", {
+        value: searchDict.supervisorID,
+        text: searchDict.supervisorName,
+        "data-content": searchDict.supervisorContent || searchDict.supervisorName
+      }));
+    }
+  }
+  
+  if (searchDict.studentID && searchDict.studentID !== "") {
+    if ($(`#studentSelect option[value="${searchDict.studentID}"]`).length === 0) {
+      $('#studentSelect').append($("<option>", {
+        value: searchDict.studentID,
+        text: searchDict.studentName,
+        "data-content": searchDict.studentContent || searchDict.studentName
+      }));
+    }
+  }
+  
+  if (searchDict.departmentID && searchDict.departmentID !== "") {
+    if ($(`#departmentSelect option[value="${searchDict.departmentID}"]`).length === 0) {
+      $('#departmentSelect').append($("<option>", {
+        value: searchDict.departmentID,
+        text: searchDict.departmentName,
+        "data-content": searchDict.departmentContent || searchDict.departmentName
+      }));
+    }
+  }
+  
+  $('.selectpicker').selectpicker('refresh');
 }
 
 function setFormSearchValues(searchDict) {
