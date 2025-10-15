@@ -4,6 +4,7 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.department import Department
 from app.models.formHistory import FormHistory
+from app.models.term import Term
 
 from functools import reduce
 import operator
@@ -67,6 +68,44 @@ def getDepartmentsForSupervisor(currentUser):
 def getSupervisorsForDepartment(departmentId):
     departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()
     return departmentSupervisors
+
+def searchSupervisorPortal(currentUser, searchType, userInput):
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        allowed_departments = None  # unrestricted
+    else:
+        allowed_departments = [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]
+
+    if searchType == "termSelect":
+        terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
+        return [{'termCode': term.termCode, 'termName': term.termName} for term in terms]
+
+    elif searchType == "departmentSelect":
+        query = Department.select().where(Department.DEPT_NAME.contains(userInput))
+        if allowed_departments is not None:
+            query = query.where(Department.DEPT_NAME.in_(allowed_departments))
+        query = query.order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()).limit(10)
+        return [
+            {'DEPT_NAME': dept.DEPT_NAME, 'id': dept.departmentID, 'isActive': dept.isActive} 
+            for dept in query
+        ]
+
+    elif searchType == "supervisorSelect":
+        supervisor_query = searchPerson(Supervisor, userInput, allowed_departments)
+        supervisor_query = supervisor_query.order_by(Supervisor.isActive.desc()).limit(10)
+        return [
+            {'id': sup.ID, 'FIRST_NAME': sup.FIRST_NAME, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
+            for sup in supervisor_query
+        ]
+
+    elif searchType == "studentSelect":
+        student_query = searchPerson(Student, userInput, allowed_departments)
+        student_query = student_query.order_by(Student.LAST_NAME.asc()).limit(10)
+        return [
+            {'id': stu.ID, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
+            for stu in student_query
+        ]
+
+    return []
 
 def searchPerson(model, userInput, allowed_departments=None):
     """

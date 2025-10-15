@@ -12,7 +12,7 @@ from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor, searchPerson
+from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
@@ -89,51 +89,13 @@ def SupervisorPortalSearch():
     """
     Returns a list of users that match a given string
     """
-    def searchSupervisorPortal(searchType, userInput):
-        currentUser = require_login()
-        if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-            allowed_departments = None  # unrestricted
-        else:
-            allowed_departments = [dept.DEPT_NAME for dept in getDepartmentsForSupervisor(currentUser)]
-
-        if searchType == "termSelect":
-            terms = Term.select().where(Term.termName.contains(userInput)).order_by(Term.termCode.desc())
-            return [{'termCode': term.termCode, 'termName': term.termName} for term in terms]
-
-        elif searchType == "departmentSelect":
-            query = Department.select().where(Department.DEPT_NAME.contains(userInput))
-            if allowed_departments is not None:
-                query = query.where(Department.DEPT_NAME.in_(allowed_departments))
-            query = query.order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()).limit(10)
-            return [
-                {'DEPT_NAME': dept.DEPT_NAME, 'id': dept.departmentID, 'isActive': dept.isActive} 
-                for dept in query
-            ]
-
-        elif searchType == "supervisorSelect":
-            supervisor_query = searchPerson(Supervisor, userInput, allowed_departments)
-            supervisor_query = supervisor_query.order_by(Supervisor.isActive.desc()).limit(10)
-            return [
-                {'id': sup.ID, 'FIRST_NAME': sup.FIRST_NAME, "LAST_NAME": sup.LAST_NAME, "isActive": sup.isActive} 
-                for sup in supervisor_query
-            ]
-
-        elif searchType == "studentSelect":
-            student_query = searchPerson(Student, userInput, allowed_departments)
-            student_query = student_query.order_by(Student.LAST_NAME.asc()).limit(10)
-            return [
-                {'id': stu.ID, 'FIRST_NAME': stu.FIRST_NAME, 'LAST_NAME': stu.LAST_NAME} 
-                for stu in student_query
-            ]
-
-        return []
-    
     searchType = request.args.get("searchType")
     userInput = request.args.get("userInput")
 
     if not searchType or not userInput:
         return jsonify({}), 400
-    userList = searchSupervisorPortal(searchType, userInput)
+    currentUser = require_login()
+    userList = searchSupervisorPortal(currentUser, searchType, userInput)
     return jsonify(userList)
 
 @main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
