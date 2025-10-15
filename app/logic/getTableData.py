@@ -152,6 +152,7 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 displayStatus = formStatus
                 if form.overloadForm is not None:
                     displayStatus = "Overload " + formStatus
+                if form.releaseForm is not None:
                     displayStatus = "Release Pending" if formStatus == "Pending" else "Released"
 
                 html = f"""
