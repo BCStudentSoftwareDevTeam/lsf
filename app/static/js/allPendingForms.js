@@ -121,6 +121,10 @@ $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functi
 function approvalModalClose(){// on close of approval modal we are clearing the table to prevent duplicate data.
   $('#classTableBody').empty();
   labor_details_ids = [] // emptying the list, becuase otherwise will cause duplicate data.
+  if (window.approvalSuccess) {
+    msgFlash("The selected forms have been approved.","success");
+    window.approvalSuccess = false;
+  }
 }
 
 
@@ -141,7 +145,7 @@ function finalApproval() { //this method changes the status of the lsf from pend
     contentType: 'application/json',
     success: function(response) {
       if (response && response.success) {
-          msgFlash("The selected forms have been approved.","success");
+          window.approvalSuccess = true;
           $(".btn").prop("disabled", false);
           $(".close").prop("disabled", false);
           $("#approveModalButton").text("Approve");
