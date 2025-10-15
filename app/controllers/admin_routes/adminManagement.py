@@ -54,18 +54,21 @@ def manageLaborAdmin():
     "removeFinancialAidAdmin": {"type": "finAid", "action": "remove", "pretty": "Financial Aid"},
     "addSAASAdmin":            {"type": "saas", "action": "add", "pretty": "SAAS"},
     "removeSAASAdmin":         {"type": "saas", "action": "remove", "pretty": "SAAS"},
-    }
+    }    
+
     for key, meta in actionMap.items():
         if request.form.get(key):
             user = getUser(key)
-            
-            # pick addAdmin or removeAdmin dynamically
-            (addAdmin if meta["action"] == "add" else removeAdmin)(user, meta["type"])
-            
-            flashMessage(user, 
-                         'added' if meta["action"] == "add" else 'removed', 
-                         meta["pretty"])
-            break 
+        # pick addAdmin or removeAdmin dynamically
+        if meta['action'] == 'add':
+            addAdmin(user, meta['type'])
+        else:
+            removeAdmin(user, meta['type'])
+        
+        flashMessage(user, 
+                        'added' if meta["action"] == "add" else 'removed', 
+                        meta["pretty"])
+             
     return redirect(url_for('admin.admin_Management'))
 
 def addAdmin(user, adminType):

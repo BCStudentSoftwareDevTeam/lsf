@@ -50,7 +50,7 @@ let formToSubmit = null; // store form clicked
 
 function modal(button) {
   // map button IDs to {selectID, formID, header, actionText}
-  const config = {
+  const formButtons = {
     add:   { select: "#addlaborAdmin",       form: "#laborAdminForm",   header: "Labor Administrators",       action: "add",    noun: "Labor Administrator" },
     add1:  { select: "#addFinAidAdmin",      form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "add",    noun: "Financial Aid Administrator" },
     add2:  { select: "#addSaasAdmin",        form: "#SAASAdminForm",    header: "SAAS Administrators",        action: "add",    noun: "SAAS Administrator" },
@@ -59,24 +59,21 @@ function modal(button) {
     remove2:{ select: "#removeSaasAdmin",    form: "#SAASAdminForm",    header: "SAAS Administrators",        action: "remove", noun: "SAAS Administrator" }
   };
 
-  const cfg = config[button];
+  const adminForm = formButtons[button];
 
-  const select = $(cfg.select);
+  const select = $(adminForm.select);
   if (!select.val()) {
     // no user selected
-    $("#flash_container").html(
-      '<div class="alert alert-danger" role="alert" id="flasher">Please select a user.</div>'
-    );
-    $("#flasher").delay(3000).fadeOut();
+    msgFlash("Please select a user", "warning");
     return;
   }
 
-  formToSubmit = $(cfg.form);
+  formToSubmit = $(adminForm.form);
   const selectedText = select.find("option:selected").text();
-  const message = `Are you sure you want to ${cfg.action} ${selectedText} as a ${cfg.noun}?`;
+  const message = `Are you sure you want to ${adminForm.action} ${selectedText} as a ${adminForm.noun}?`;
 
   // populate modal
-  $("#adminModalHeader").html(cfg.header);
+  $("#adminModalHeader").html(adminForm.header);
   $("#adminModalText").html(message);
   $("#modal").modal("show");
 }
