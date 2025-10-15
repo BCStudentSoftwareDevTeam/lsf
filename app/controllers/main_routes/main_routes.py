@@ -132,7 +132,7 @@ def SupervisorPortalSearch():
     userInput = request.args.get("userInput")
 
     if not searchType or not userInput:
-        return jsonify({""}), 400
+        return jsonify({}), 400
     userList = searchSupervisorPortal(searchType, userInput)
     return jsonify(userList)
 

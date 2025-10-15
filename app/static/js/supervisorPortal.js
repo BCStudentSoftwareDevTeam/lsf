@@ -248,21 +248,34 @@ case "mySupervisees":
   queryDict = {
     'view': currentView,
     'termCode': termCode,
-    'termName': $('#termSelect option:selected').text(),
+    'termOption': {
+      value: termCode,
+      text: $('#termSelect option:selected').text()
+    },
     'departmentID': departmentID,
-    'departmentName': $('#departmentSelect option:selected').text(),
-    'departmentContent': $('#departmentSelect option:selected').attr('data-content'),
+    'departmentOption': {
+      value: departmentID,
+      text: $('#departmentSelect option:selected').text(),
+      'data-content': $('#departmentSelect option:selected').attr('data-content')
+    },
     'supervisorID': supervisorID,
-    'supervisorName': $('#supervisorSelect option:selected').text(),
-    'supervisorContent': $('#supervisorSelect option:selected').attr('data-content'),
+    'supervisorOption': {
+      value: supervisorID,
+      text: $('#supervisorSelect option:selected').text(),
+      'data-content': $('#supervisorSelect option:selected').attr('data-content')
+    },
     'studentID': studentID,
-    'studentName': $('#studentSelect option:selected').text(),
-    'studentContent': $('#studentSelect option:selected').attr('data-content'),
+    'studentOption': {
+      value: studentID,
+      text: $('#studentSelect option:selected').text(),
+      'data-content': $('#studentSelect option:selected').attr('data-content')
+    },
     'formStatus': formStatusList,
     'formType': formTypeList,
     'sortBy': sortBy,
     'order': order
-};
+  };
+
   setFormSearchValues(queryDict)
   data = JSON.stringify(queryDict)
 
@@ -392,46 +405,28 @@ function updateDownloadButton(response){
         }
 }
 
-function loadSavedSearchOptions(searchDict) {
-  // creates the search options that setFormSearchValues uses
-  if (searchDict.termCode && searchDict.termCode !== "" && searchDict.termCode !== "activeTerms") {
-    if ($(`#termSelect option[value="${searchDict.termCode}"]`).length === 0) {
-      $('#termSelect').append($("<option>", {
-        value: searchDict.termCode,
-        text: searchDict.termName
-      }));
-    }
-  }
+function loadSavedSearchOptions(cookies) {
+  const selectMap = {
+    'termOption': 'termSelect',
+    'supervisorOption': 'supervisorSelect', 
+    'studentOption': 'studentSelect',
+    'departmentOption': 'departmentSelect'
+  };
   
-  if (searchDict.supervisorID && searchDict.supervisorID !== "" && searchDict.supervisorID !== "currentUser") {
-    if ($(`#supervisorSelect option[value="${searchDict.supervisorID}"]`).length === 0) {
-      $('#supervisorSelect').append($("<option>", {
-        value: searchDict.supervisorID,
-        text: searchDict.supervisorName,
-        "data-content": searchDict.supervisorContent || searchDict.supervisorName
-      }));
-    }
-  }
+  const skipValues = ['', 'currentUser', 'currentTerm', 'activeTerms'];
   
-  if (searchDict.studentID && searchDict.studentID !== "") {
-    if ($(`#studentSelect option[value="${searchDict.studentID}"]`).length === 0) {
-      $('#studentSelect').append($("<option>", {
-        value: searchDict.studentID,
-        text: searchDict.studentName,
-        "data-content": searchDict.studentContent || searchDict.studentName
-      }));
+  Object.keys(selectMap).forEach(optionKey => {
+    const selectId = selectMap[optionKey];
+    const option = cookies[optionKey];
+    
+    // Check if option exists and has a valid value
+    if (option && option.value && !skipValues.includes(option.value)) {
+      // Check if option doesn't already exist in the select
+      if ($(`#${selectId} option[value="${option.value}"]`).length === 0) {
+        $(`#${selectId}`).append($("<option>", option));
+      }
     }
-  }
-  
-  if (searchDict.departmentID && searchDict.departmentID !== "") {
-    if ($(`#departmentSelect option[value="${searchDict.departmentID}"]`).length === 0) {
-      $('#departmentSelect').append($("<option>", {
-        value: searchDict.departmentID,
-        text: searchDict.departmentName,
-        "data-content": searchDict.departmentContent || searchDict.departmentName
-      }));
-    }
-  }
+  });
   
   $('.selectpicker').selectpicker('refresh');
 }
