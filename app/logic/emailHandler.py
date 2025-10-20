@@ -16,8 +16,6 @@ import string
 from app import app
 import os
 from datetime import datetime, date
-import traceback
-
 
 class emailHandler():
     def __init__(self, formHistoryKey):
@@ -103,7 +101,6 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            # print("Debugging emailHandler.py: ", app.config)
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':
@@ -138,11 +135,12 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
-    # This method was commented out because it was causing issues with the automated script that checks for expired formsdef laborStatusFromExpired(self):
-    def laborStatusFromExpired(self):
+
+    def StatusResendEmail(self):
         """
         Sends email to labor supervisor and student when LSF is expired.
         """
+
         lsfID = self.laborStatusForm.laborStatusFormID
         expired = self.laborStatusForm.isExpired
         if not expired:
@@ -153,13 +151,13 @@ class emailHandler():
         if not supervisorTemplate:
             return
         try:
-            today_val = date.today()  # works if EmailTracker.date is a DATE; if it's a string, cast to str below
+            Presentday = date.today()  
             already_sent = (EmailTracker
                             .select()
                             .where(
                                 (EmailTracker.formID == lsfID) &
                                 (EmailTracker.subject == supervisorTemplate.subject) &
-                                (EmailTracker.date == today_val)  # if EmailTracker.date is a VARCHAR, use str(today_val)
+                                (EmailTracker.date == Presentday)  
                             )
                             .exists())
             if already_sent:
@@ -342,13 +340,11 @@ class emailHandler():
         formTemplate = template.body
         formTemplate = self.replaceText(formTemplate)
         if sendTo == "student":
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.studentEmail])
             recipient = 'Student'
         elif sendTo == "secondary":
             if self.term.isBreak:
-                print("here", template.subject, self.supervisorEmail)
                 supervisorEmails = []
                 for supervisor in self.supervisors:
                     supervisorEmails.append(supervisor.EMAIL)
@@ -357,17 +353,14 @@ class emailHandler():
                     recipients=supervisorEmails)
                 recipient = 'Secondary Supervisor'
             else:
-                print("here", template.subject, self.supervisorEmail)
                 message = Message(template.subject,
                     recipients=[self.supervisorEmail, self.primaryEmail])
                 recipient = 'Primary Supervisor'
         elif sendTo == "Labor Office":
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[""]) #TODO: Email for the Labor Office
             recipient = 'Labor Office'
         elif sendTo == 'supervisor':
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.supervisorEmail])
             recipient = 'Primary Supervisor'

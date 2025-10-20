@@ -5,10 +5,16 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.logic.emailHandler import emailHandler
 from app.models.emailTemplate import*
-from flask import has_request_context
+from flask import request, has_request_context
 
-#emailhistory requires an active flask app context so we create one to supllement it
-BASE_URL = os.getenv("EXTERNAL_BASE_URL", "http://localhost:5000/")
+#emailhistory requires an active flask app context so we create one to supplement it
+def get_base_url():
+    if has_request_context():
+        # Build the full root URL (e.g., http://localhost:8080)
+        return request.url_root.rstrip('/')
+    else:
+        # Fallback if there’s no request context 
+        return os.getenv("EXTERNAL_BASE_URL", "http://localhost:5000")
 
 emailTemplates = {
     "supervisorTemplate":{
@@ -32,13 +38,7 @@ emailTemplates = {
 def checkForTemplates():
     for template in emailTemplates.values():
         if EmailTemplate.select().where(EmailTemplate.purpose == template["purpose"]).count() == 0:
-            EmailTemplate.create(
-                purpose=template["purpose"], 
-                formType=template["formType"],
-                action=template["action"], 
-                subject=template["subject"], 
-                body=template["body"], 
-                audience=template["audience"])
+            EmailTemplate.create(**template)
         
 def expireStudentConfirmations():
     expired_forms = (
@@ -64,14 +64,14 @@ def expireStudentConfirmations():
 
             lsfHistory = latest_history.formHistoryID
             emailer = emailHandler(lsfHistory)
-            emailer.laborStatusFromExpired()
+            emailer.StatusResendEmail()
 
         
 
 def main():
     with flask_app.app_context():
         if not has_request_context():
-            with flask_app.test_request_context("/", base_url=BASE_URL):
+            with flask_app.test_request_context("/", base_url=get_base_url()):
                 expireStudentConfirmations()
 
 if __name__ == "__main__":
