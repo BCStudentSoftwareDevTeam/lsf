@@ -37,8 +37,7 @@ emailTemplates = {
          
 def checkForTemplates():
     for template in emailTemplates.values():
-        if EmailTemplate.select().where(EmailTemplate.purpose == template["purpose"]).count() == 0:
-            EmailTemplate.create(**template)
+        EmailTemplate.insert(**template).on_conflict_replace().execute()
         
 def expireStudentConfirmations():
     expired_forms = (
