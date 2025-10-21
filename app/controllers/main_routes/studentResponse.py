@@ -18,11 +18,18 @@ def confirm():
     print(request.args)
     print("token received:", token)
 
+    print("g.currentUser.student:", g.currentUser.student)
+    print("Type:", type(g.currentUser.student))
+    print("Student ID:", getattr(g.currentUser.student, "id", None))
+
+    if not g.currentUser.student:
+        print("You must be logged in as a student to confirm this form")
+
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
                             .join(FormHistory)
-                            .where(LaborStatusForm.confirmationToken == token
-                                   ,LaborStatusForm.studentSupervisee == g.currentUser.student))
+                            .where(LaborStatusForm.confirmationToken == token,
+                                   LaborStatusForm.studentSupervisee == g.currentUser.student))
     try:
         form = forms.get()
         print(form)

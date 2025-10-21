@@ -163,7 +163,8 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, newSupervisor=False):
+    def laborStatusFormAdjusted(self, link, newSupervisor=False):
+        self.link = link
         self.checkRecipient("Labor Status Form Adjusted For Student",
                       "Labor Status Form Adjusted For Supervisor")
         if newSupervisor:
@@ -382,3 +383,4 @@ class emailHandler():
         if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
             form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)
+ 

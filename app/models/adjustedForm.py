@@ -8,3 +8,4 @@ class AdjustedForm(baseModel):
     oldValue                = CharField()
     newValue                = CharField()
     effectiveDate           = DateField()
+    studentAdjustmentReason   = TextField(null=True)
