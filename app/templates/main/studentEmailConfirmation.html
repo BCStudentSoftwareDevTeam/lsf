@@ -80,6 +80,18 @@
         </label><br>
       {% endif %}
     </div>
+
+    {% if adjustedForms %}
+  <h4>Adjusted Forms</h4>
+  <ul>
+    {% for a in adjustedForms %}
+      <li>{{ a.oldValue }} → {{ a.newValue }} ({{ a.adjustedField }})</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No adjustments found.</p>
+{% endif %}
+
 </div>
 
 <form action="/studentResponse/submit" method="post">

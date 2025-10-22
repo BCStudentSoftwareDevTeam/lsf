@@ -240,7 +240,7 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
                                             effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"),
                                             )
         historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Adjustment Form")
-        status = Status.get(Status.statusName == "Pending")
+        status = Status.get(Status.statusName == "Pre-Student Approval")
         adjustedFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,
                                            historyType  = historyType.historyTypeName,
                                            adjustedForm = adjustedforms.adjustedFormID,

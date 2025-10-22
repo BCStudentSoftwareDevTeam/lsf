@@ -49,6 +49,7 @@ def allPendingForms(formType):
         adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
         preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm.is_null()).count()
+        preStudentApprovalAdjustmentCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Adjustment Form',FormHistory.overloadForm.is_null()).count()
 
         if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
             overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
@@ -98,6 +99,11 @@ def allPendingForms(formType):
             historyType = "Labor Status Form"
             approvalTarget = ""
             pageTitle = "Pre-Student Approval"
+
+        elif formType == "preStudentAdjustmentApproval": 
+            historyType = "Labor Adjustment Form"
+            approvalTarget = ""
+            pageTitle = "Pre-Student Adjustment Approval"
             
 
 
@@ -139,6 +145,8 @@ def allPendingForms(formType):
             if formType == "pendingOverload":
                 baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
             elif formType == "preStudentApproval":
+                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm.is_null())
+            elif formType == "preStudentAdjustmentApproval":
                 baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm.is_null())
             elif formType in ("pendingLabor","pendingAdjustment","pendingRelease"):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
@@ -192,8 +200,9 @@ def checkAdjustment(allForms):
         Retrieve supervisor and position information for adjusted forms using the new values
         stored in adjusted table and update allForms
     """
+    print("checkAdjustment() called")
     if allForms.adjustedForm:
-
+            
         if allForms.adjustedForm.fieldAdjusted == "supervisor":
             # use the supervisor id in the field adjusted to find supervisor in User table.
             newSupervisorID = allForms.adjustedForm.newValue
