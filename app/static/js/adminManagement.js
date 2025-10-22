@@ -51,24 +51,27 @@ let formToSubmit = null; // store form clicked
 function modal(button) {
   // map button IDs to {selectID, formID, header, actionText}
   const formButtons = {
-    add:   { select: "#addlaborAdmin",       form: "#laborAdminForm",   header: "Labor Administrators",       action: "add",    noun: "Labor Administrator" },
-    add1:  { select: "#addFinAidAdmin",      form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "add",    noun: "Financial Aid Administrator" },
-    add2:  { select: "#addSaasAdmin",        form: "#SAASAdminForm",    header: "SAAS Administrators",        action: "add",    noun: "SAAS Administrator" },
-    remove:{ select: "#removelaborAdmin",    form: "#laborAdminForm",   header: "Labor Administrators",       action: "remove", noun: "Labor Administrator" },
-    remove1:{ select: "#removeFinAidAdmin",  form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "remove", noun: "Financial Aid Administrator" },
-    remove2:{ select: "#removeSaasAdmin",    form: "#SAASAdminForm",    header: "SAAS Administrators",        action: "remove", noun: "SAAS Administrator" }
+    add:   { select: "#addlaborAdmin",       form: "#laborAdminForm",   header: "Labor Administrators",         action: "add",    noun: "Labor Administrator",         key: "addLaborAdmin" },
+    add1:  { select: "#addFinAidAdmin",      form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "add",    noun: "Financial Aid Administrator", key: "addFinAidAdmin" },
+    add2:  { select: "#addSaasAdmin",        form: "#SAASAdminForm",    header: "SAAS Administrators",          action: "add",    noun: "SAAS Administrator",          key: "addSaasAdmin" },
+    remove:{ select: "#removelaborAdmin",    form: "#laborAdminForm",   header: "Labor Administrators",         action: "remove", noun: "Labor Administrator",         key: "removeLaborAdmin" },
+    remove1:{ select: "#removeFinAidAdmin",  form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "remove", noun: "Financial Aid Administrator", key: "removeFinAidAdmin" },
+    remove2:{ select: "#removeSaasAdmin",    form: "#SAASAdminForm",    header: "SAAS Administrators",          action: "remove", noun: "SAAS Administrator",          key: "removeSaasAdmin" }
   };
 
   const adminForm = formButtons[button];
-
   const select = $(adminForm.select);
+  
   if (!select.val()) {
     // no user selected
     msgFlash("Please select a user", "warning");
     return;
   }
 
+  // set hidden field value
+  $("#formActionField").val(adminForm.key);
   formToSubmit = $(adminForm.form);
+
   const selectedText = select.find("option:selected").text();
   const message = `Are you sure you want to ${adminForm.action} ${selectedText} as a ${adminForm.noun}?`;
 

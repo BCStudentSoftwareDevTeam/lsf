@@ -48,26 +48,28 @@ def adminSearch():
 @admin.route("/adminManagement/userInsert", methods=['POST'])
 def manageLaborAdmin():
     actionMap = {
-    "addAdmin":                {"type": "labor", "action": "add", "pretty": "Labor"},
-    "removeAdmin":             {"type": "labor", "action": "remove", "pretty": "Labor"},
-    "addFinancialAidAdmin":    {"type": "finAid", "action": "add", "pretty": "Financial Aid"},
-    "removeFinancialAidAdmin": {"type": "finAid", "action": "remove", "pretty": "Financial Aid"},
-    "addSAASAdmin":            {"type": "saas", "action": "add", "pretty": "SAAS"},
-    "removeSAASAdmin":         {"type": "saas", "action": "remove", "pretty": "SAAS"},
+    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "labor", "action": "add", "pretty": "Labor"},
+    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "labor", "action": "remove", "pretty": "Labor"},
+    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "finAid", "action": "add", "pretty": "Financial Aid"},
+    "removeFinAidAdmin": {"selectPickerID": "removeFinancialAidAdmin", "type": "finAid", "action": "remove", "pretty": "Financial Aid"},
+    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "saas", "action": "add", "pretty": "SAAS"},
+    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "saas", "action": "remove", "pretty": "SAAS"},
     }    
 
-    for key, meta in actionMap.items():
-        if request.form.get(key):
-            user = getUser(key)
-        # pick addAdmin or removeAdmin dynamically
-        if meta['action'] == 'add':
-            addAdmin(user, meta['type'])
-        else:
-            removeAdmin(user, meta['type'])
-        
-        flashMessage(user, 
-                        'added' if meta["action"] == "add" else 'removed', 
-                        meta["pretty"])
+    key = request.form.get('action')
+    print("THE KEY ", key)
+    meta = actionMap[key]
+    selectPicker = actionMap[key]['selectPickerID']
+    user = getUser(selectPicker)
+    # pick addAdmin or removeAdmin dynamically
+    if meta['action'] == 'add':
+        addAdmin(user, meta['type'])
+    else:
+        removeAdmin(user, meta['type'])
+    
+    flashMessage(user, 
+                    'added' if meta["action"] == "add" else 'removed', 
+                    meta["pretty"])
              
     return redirect(url_for('admin.admin_Management'))
 
