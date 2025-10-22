@@ -62,26 +62,26 @@ def laborhistory(id):
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         # modify status display for overload and release forms
-        form_ids = [form.formID for form in authorizedForms]
+        formIds = [form.formID for form in authorizedForms]
 
         relatedForms = (FormHistory.select().where(
-                     (FormHistory.formID.in_(form_ids)) &
+                     (FormHistory.formID.in_(formIds)) &
                      ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)))
                  ))
 
         formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
 
-        # initialize display_status with each form's base status
+        # initialize displayStatus with each form's base status
         for form in authorizedForms:
-            form.display_status = str(form.status)
-        # iterate once over relatedForms and update each form display_status
+            form.displayStatus = str(form.status)
+        # iterate once over relatedForms and update each form displayStatus
         for related in relatedForms:
             form = formMap.get(related.formID.laborStatusFormID)
 
             if related.overloadForm:
-                form.display_status = "Overload " + str(related.status)
+                form.displayStatus = "Overload " + str(related.status)
             if related.releaseForm:
-                form.display_status = "Release Pending" if str(related.status) == "Pending" else "Released"
+                form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
 
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
