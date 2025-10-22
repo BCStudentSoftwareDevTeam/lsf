@@ -50,7 +50,7 @@ def allPendingForms(formType):
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
         preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm.is_null()).count()
         preStudentApprovalAdjustmentCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Adjustment Form',FormHistory.overloadForm.is_null()).count()
-
+  
         if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
             overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
