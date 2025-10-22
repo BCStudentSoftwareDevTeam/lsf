@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from playhouse.shortcuts import model_to_dict
 from flask import json, jsonify, request, redirect, url_for, abort, flash
 
@@ -62,7 +62,7 @@ def studentOverloadApp(formHistoryId):
         studentPrimaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == primaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending"]) ))
+                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending","Pre-Student Approval"]) ))
         formIDPrimary.append(studentPrimaryHistory)
     formIDSecondary = []
 
@@ -70,17 +70,17 @@ def studentOverloadApp(formHistoryId):
         studentSecondaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == secondaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending"]) ))
+                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending","Pre-Student Approval"]) ))
         formIDSecondary.append(studentSecondaryHistory)
 
     totalCurrentHours = 0
     for i in formIDPrimary:
         for j in i:
-            if str(j.status) != "Pending":
+            if str(j.status) == "Approved":
                 totalCurrentHours += j.formID.weeklyHours
     for i in formIDSecondary:
         for j in i:
-            if str(j.status) != "Pending":
+            if str(j.status) == "Approved":
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
@@ -139,10 +139,18 @@ def updateDatabase(overloadFormHistoryID):
                                            .where(FormHistory.historyType_id == "Labor Status Form")).get()
 
         with mainDB.atomic() as transaction:
+            # Update statuses
             overloadFormHistory.status = newStatus
             overloadFormHistory.save()
             originalFormHistory.status = newStatus
             originalFormHistory.save()
+
+            # Update base student confirmation
+            originalFormHistory.formID.studentResponseDate = datetime.now()
+            originalFormHistory.formID.studentConfirmation = True
+            originalFormHistory.formID.save()
+
+            # Update overload form
             overloadForm = overloadFormHistory.overloadForm
             overloadForm.studentOverloadReason = overloadReason
             overloadForm.save()
@@ -150,8 +158,11 @@ def updateDatabase(overloadFormHistoryID):
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
-        currentUser = require_login()
-        return (currentUser.student.ID)
+
+    
+        flash("Overload Request Submitted", "success")
+
+        return ""
 
     except Exception as e:
         print("ERROR: " + str(e))
