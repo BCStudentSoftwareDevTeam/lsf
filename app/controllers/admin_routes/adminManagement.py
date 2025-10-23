@@ -74,7 +74,6 @@ def manageLaborAdmin():
 
 def addAdmin(user, adminType):
     setattr(user, f"is{adminType}Admin", True)
-    print("HERE USER", user)
     user.save()
 
 def removeAdmin(user, adminType):
