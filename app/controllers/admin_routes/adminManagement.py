@@ -48,19 +48,18 @@ def adminSearch():
 @admin.route("/adminManagement/userInsert", methods=['POST'])
 def manageLaborAdmin():
     actionMap = {
-    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "labor", "action": "add", "pretty": "Labor"},
-    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "labor", "action": "remove", "pretty": "Labor"},
-    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "finAid", "action": "add", "pretty": "Financial Aid"},
+    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "labor",  "action": "add",    "pretty": "Labor"},
+    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "labor",  "action": "remove", "pretty": "Labor"},
+    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "finAid", "action": "add",    "pretty": "Financial Aid"},
     "removeFinAidAdmin": {"selectPickerID": "removeFinancialAidAdmin", "type": "finAid", "action": "remove", "pretty": "Financial Aid"},
-    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "saas", "action": "add", "pretty": "SAAS"},
-    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "saas", "action": "remove", "pretty": "SAAS"},
+    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "saas",   "action": "add",    "pretty": "SAAS"},
+    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "saas",   "action": "remove", "pretty": "SAAS"},
     }    
 
     key = request.form.get('action')
-    print("THE KEY ", key)
     meta = actionMap[key]
-    selectPicker = actionMap[key]['selectPickerID']
-    user = getUser(selectPicker)
+    user = getUser(actionMap[key]['selectPickerID'])
+
     # pick addAdmin or removeAdmin dynamically
     if meta['action'] == 'add':
         addAdmin(user, meta['type'])

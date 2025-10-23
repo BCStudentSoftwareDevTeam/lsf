@@ -49,7 +49,7 @@ function liveSearch(selectPickerID, e) {
 let formToSubmit = null; // store form clicked
 
 function modal(button) {
-  // map button IDs to {selectID, formID, header, actionText}
+  // map button IDs to {selectID, formID, header, actionText, key}
   const formButtons = {
     add:   { select: "#addlaborAdmin",       form: "#laborAdminForm",   header: "Labor Administrators",         action: "add",    noun: "Labor Administrator",         key: "addLaborAdmin" },
     add1:  { select: "#addFinAidAdmin",      form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "add",    noun: "Financial Aid Administrator", key: "addFinAidAdmin" },
@@ -68,8 +68,7 @@ function modal(button) {
     return;
   }
 
-  // set hidden field value
-  $("#formActionField").val(adminForm.key);
+  $(adminForm.form).find("#formActionField").val(adminForm.key);   // set hidden field value
   formToSubmit = $(adminForm.form);
 
   const selectedText = select.find("option:selected").text();
