@@ -48,12 +48,12 @@ def adminSearch():
 @admin.route("/adminManagement/userInsert", methods=['POST'])
 def manageLaborAdmin():
     actionMap = {
-    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "labor",  "action": "add",    "pretty": "Labor"},
-    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "labor",  "action": "remove", "pretty": "Labor"},
-    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "finAid", "action": "add",    "pretty": "Financial Aid"},
-    "removeFinAidAdmin": {"selectPickerID": "removeFinancialAidAdmin", "type": "finAid", "action": "remove", "pretty": "Financial Aid"},
-    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "saas",   "action": "add",    "pretty": "SAAS"},
-    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "saas",   "action": "remove", "pretty": "SAAS"},
+    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "Labor",        "action": "add",    "pretty": "Labor"},
+    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "Labor",        "action": "remove", "pretty": "Labor"},
+    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "FinancialAid", "action": "add",    "pretty": "Financial Aid"},
+    "removeFinAidAdmin": {"selectPickerID": "removeFinancialAidAdmin", "type": "FinancialAid", "action": "remove", "pretty": "Financial Aid"},
+    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "Saas",         "action": "add",    "pretty": "SAAS"},
+    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "Saas",         "action": "remove", "pretty": "SAAS"},
     }    
 
     key = request.form.get('action')
@@ -73,11 +73,12 @@ def manageLaborAdmin():
     return redirect(url_for('admin.admin_Management'))
 
 def addAdmin(user, adminType):
-    setattr(user, f"is{adminType.capitalize()}Admin", True)
+    setattr(user, f"is{adminType}Admin", True)
+    print("HERE USER", user)
     user.save()
 
 def removeAdmin(user, adminType):
-    setattr(user, f"is{adminType.capitalize()}Admin", False)
+    setattr(user, f"is{adminType}Admin", False)
     user.save()
 
 def flashMessage(user, action, adminType):
