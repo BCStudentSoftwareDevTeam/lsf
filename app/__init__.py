@@ -15,7 +15,8 @@ app.secret_key = app.config["secret_key"]
 
 app.config['use_shibboleth'] = (app.config['ENV'] == 'production')
 app.config['use_tracy'] = (app.config['ENV'] in ('production','staging'))
-app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
+if 'use_banner' not in app.config.keys():
+    app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
 
 # Record and output queries if requested
 from flask import session
