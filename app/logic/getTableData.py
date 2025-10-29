@@ -148,11 +148,23 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 departmentName = form.formID.department.DEPT_NAME
                 statusFormId = form.formID.laborStatusFormID
 
+                # determine display status for each student
                 formStatus = str(form.status)
                 displayStatus = formStatus
-                if form.overloadForm is not None:
+
+                hasRelease = FormHistory.select().where(
+                    (FormHistory.formID == form.formID) &
+                    (FormHistory.releaseForm.is_null(False))
+                ).exists()
+
+                hasOverload = FormHistory.select().where(
+                    (FormHistory.formID == form.formID) &
+                    (FormHistory.overloadForm.is_null(False))
+                ).exists()
+
+                if hasOverload:
                     displayStatus = "Overload " + formStatus
-                if form.releaseForm is not None:
+                if hasRelease:
                     displayStatus = "Release Pending" if formStatus == "Pending" else "Released"
 
                 html = f"""
@@ -251,6 +263,9 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
         # formType(Status)
         formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
+        print("HERE IS RECORD AND ALSO I HATE THIS SORTING")
+        print(record)
+        print(formTypeStatusField)
 
         formattedData.append(record)
 
