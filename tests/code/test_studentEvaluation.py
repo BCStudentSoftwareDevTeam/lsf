@@ -11,7 +11,7 @@ from app.models.formHistory import FormHistory
 from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.user import User
-from app.logic.userInsertFunctions import createLaborStatusForm
+from app.logic.statusFormFunctions import createLaborStatusForm
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 import json
 

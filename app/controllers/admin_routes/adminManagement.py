@@ -1,5 +1,4 @@
 from app.controllers.admin_routes import *
-from app.models.user import User, DoesNotExist
 from app.models.user import *
 from app.controllers.admin_routes import admin
 from flask import request
@@ -8,7 +7,10 @@ from flask import Flask, redirect, url_for, flash, jsonify
 from app.models.supervisor import Supervisor
 from app.models.student import Student
 from app.logic.tracy import Tracy
-from app.logic.userInsertFunctions import createUser, createSupervisorFromTracy, createStudentFromTracy
+from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
+from app.logic.adminManagement import searchForAdmin,  getUser, addAdmin, removeAdmin
+from app.logic.utils import adminFlashMessage
+
 
 @admin.route('/admin/adminManagement', methods=['GET'])
 # @login_required
@@ -37,47 +39,7 @@ def adminSearch():
     """
     try:
         rsp = eval(request.data.decode("utf-8"))
-        userInput = rsp[1]
-        adminType = rsp[0]
-        userList = []
-        if adminType == "addlaborAdmin":
-            tracyStudents = Tracy().getStudentsFromUserInput(userInput)
-            students = []
-            for student in tracyStudents:
-                try:
-                    existingUser = User.get(User.student == student.ID)
-                    if existingUser.isLaborAdmin:
-                        pass
-                    else:
-                        students.append(student)
-                except DoesNotExist as e:
-                    students.append(student)
-            for student in students:
-                username = student.STU_EMAIL.split('@', 1)
-                userList.append({'username': username[0],
-                                'firstName': student.FIRST_NAME,
-                                'lastName': student.LAST_NAME,
-                                'type': 'Student'
-                                })
-        tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
-        supervisors = []
-        for supervisor in tracySupervisors:
-            try:
-                existingUser = User.get(User.supervisor == supervisor.ID)
-                if ((existingUser.isLaborAdmin and adminType == "addlaborAdmin")
-                    or (existingUser.isSaasAdmin and adminType == "addSaasAdmin")
-                    or (existingUser.isFinancialAidAdmin and adminType == "addFinAidAdmin")):
-                    pass
-                else:
-                    supervisors.append(supervisor)
-            except DoesNotExist as e:
-                supervisors.append(supervisor)
-        for sup in supervisors:
-            username = sup.EMAIL.split('@', 1)
-            userList.append({'username': username[0],
-                            'firstName': sup.FIRST_NAME,
-                            'lastName': sup.LAST_NAME,
-                            'type': 'Supervisor'})
+        userList = searchForAdmin(rsp)
         return jsonify(userList)
     except Exception as e:
         print('ERROR Loading Non Labor Admins:', e, type(e))
@@ -88,71 +50,32 @@ def manageLaborAdmin():
     if request.form.get("addAdmin"):
         newAdmin = getUser('addAdmin')
         addAdmin(newAdmin, 'labor')
-        flashMessage(newAdmin, 'added', 'Labor')
+        adminFlashMessage(newAdmin, 'added', 'Labor')
 
     elif request.form.get("removeAdmin"):
         oldAdmin = getUser('removeAdmin')
         removeAdmin(oldAdmin, 'labor')
-        flashMessage(oldAdmin, 'removed', 'Labor')
+        adminFlashMessage(oldAdmin, 'removed', 'Labor')
 
     elif request.form.get("addFinancialAidAdmin"):
         newAdmin = getUser('addFinancialAidAdmin')
         addAdmin(newAdmin, 'finAid')
-        flashMessage(newAdmin, 'added', 'Financial Aid')
+        adminFlashMessage(newAdmin, 'added', 'Financial Aid')
 
     elif request.form.get("removeFinancialAidAdmin"):
         oldAdmin = getUser('removeFinancialAidAdmin')
         removeAdmin(oldAdmin, 'finAid')
-        flashMessage(oldAdmin, 'removed', 'Financial Aid')
+        adminFlashMessage(oldAdmin, 'removed', 'Financial Aid')
 
     elif request.form.get("addSAASAdmin"):
         newAdmin = getUser('addSAASAdmin')
         addAdmin(newAdmin, 'saas')
-        flashMessage(newAdmin, 'added', 'SAAS')
+        adminFlashMessage(newAdmin, 'added', 'SAAS')
 
     elif request.form.get("removeSAASAdmin"):
         oldAdmin = getUser('removeSAASAdmin')
         removeAdmin(oldAdmin, 'saas')
-        flashMessage(oldAdmin, 'removed', 'SAAS')
+        adminFlashMessage(oldAdmin, 'removed', 'SAAS')
 
     return redirect(url_for('admin.admin_Management'))
 
-def getUser(selectpickerID):
-    username = request.form.get(selectpickerID)
-    try:
-        user = User.get(User.username == username)
-    except DoesNotExist as e:
-        usertype = Tracy().checkStudentOrSupervisor(username)
-        supervisor = student = None
-        if usertype == "Student":
-            student = createStudentFromTracy(username)
-        else:
-            supervisor = createSupervisorFromTracy(username)
-        user = createUser(username, student=student, supervisor=supervisor)
-    return user
-
-def addAdmin(newAdmin, adminType):
-    if adminType == 'labor':
-        newAdmin.isLaborAdmin = True
-    if adminType == 'finAid':
-        newAdmin.isFinancialAidAdmin = True
-    if adminType == 'saas':
-        newAdmin.isSaasAdmin = True
-    newAdmin.save()
-
-def removeAdmin(oldAdmin, adminType):
-    if adminType == 'labor':
-        oldAdmin.isLaborAdmin = False
-    if adminType == 'finAid':
-        oldAdmin.isFinancialAidAdmin = False
-    if adminType == 'saas':
-        oldAdmin.isSaasAdmin = False
-    oldAdmin.save()
-
-def flashMessage(user, action, adminType):
-    message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
-
-    if action == 'added':
-        flash(message, "success")
-    elif action == 'removed':
-        flash(message, "danger")

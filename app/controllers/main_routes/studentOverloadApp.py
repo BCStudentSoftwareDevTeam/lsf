@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from playhouse.shortcuts import model_to_dict
-from flask import json, jsonify, request, redirect, url_for, abort, flash
+from flask import json, jsonify, request, redirect, url_for, abort, flash, g
 
 from app.controllers.main_routes import *
 from app.logic.emailHandler import*
@@ -62,7 +62,7 @@ def studentOverloadApp(formHistoryId):
         studentPrimaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == primaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending","Pre-Student Approval"]) ))
+                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
         formIDPrimary.append(studentPrimaryHistory)
     formIDSecondary = []
 
@@ -70,7 +70,7 @@ def studentOverloadApp(formHistoryId):
         studentSecondaryHistory = (FormHistory.select().where(
                                     FormHistory.formID == secondaryForm,
                                     FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Approved Reluctantly","Pending","Pre-Student Approval"]) ))
+                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
         formIDSecondary.append(studentSecondaryHistory)
 
     totalCurrentHours = 0
@@ -159,10 +159,8 @@ def updateDatabase(overloadFormHistoryID):
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
 
-    
         flash("Overload Request Submitted", "success")
-
-        return ""
+        return g.currentUser.student.ID
 
     except Exception as e:
         print("ERROR: " + str(e))
