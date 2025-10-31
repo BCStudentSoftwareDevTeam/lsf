@@ -155,8 +155,9 @@ def submitAlteredLSF(laborStatusKey):
                     email = emailHandler(formHistory)
                     if "supervisor" in fieldsChanged:
                         email.laborStatusFormAdjusted(fieldsChanged["supervisor"]["newValue"])
+                        link = url_for('verify_adjustment', formID=formHistory.LaborStatusForm.laborStatusFormID, _external=True)
                     else:
-                        email.laborStatusFormAdjusted()
+                        email.laborStatusFormAdjusted(link)
                 except Exception as e:
                     ("An error occured while attempting to send adjustment form emails: ", e)
                 message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)

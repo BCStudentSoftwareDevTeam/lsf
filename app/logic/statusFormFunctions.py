@@ -78,6 +78,7 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
         email = emailHandler(formOverload.formHistoryID)
         link = makeThirdPartyLink("student", host, formOverload.formHistoryID)
         email.LaborOverLoadFormSubmitted(link)
+ 
 
     formHistory = FormHistory.create( formID = lsf.laborStatusFormID,
                         historyType = "Labor Status Form",

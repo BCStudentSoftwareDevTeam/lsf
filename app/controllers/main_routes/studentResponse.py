@@ -2,7 +2,7 @@ import datetime
 
 from flask import Blueprint, request, render_template, redirect, flash, abort, g
 from peewee import DoesNotExist
-
+from app.login_manager import require_login
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 
@@ -12,18 +12,9 @@ from app.controllers.main_routes import main_bp
 
 @main_bp.route('/studentResponse/confirm', methods=['GET'])
 def confirm():
-    print('HEllo')
-    print(request.args)
     token = request.args.get('token')
-    print(request.args)
-    print("token received:", token)
-
-    print("g.currentUser.student:", g.currentUser.student)
-    print("Type:", type(g.currentUser.student))
-    print("Student ID:", getattr(g.currentUser.student, "id", None))
-
-    if not g.currentUser.student:
-        print("You must be logged in as a student to confirm this form")
+    
+   
 
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
@@ -32,7 +23,7 @@ def confirm():
                                    LaborStatusForm.studentSupervisee == g.currentUser.student))
     try:
         form = forms.get()
-        print(form)
+
     except DoesNotExist as e:
         flash("This contract is invalid or has expired.", "danger")
         abort(404)
