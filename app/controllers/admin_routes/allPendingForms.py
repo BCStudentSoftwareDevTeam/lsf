@@ -559,7 +559,7 @@ def sendEmail():
                 email = emailHandler(historyForm.formHistoryID)
                 link = makeThirdPartyLink("student", request.host, rsp['formHistoryID'])
                 email.LaborOverloadFormStudentReminder(link)
-                email.laborStatusFormAdjusted(link)
+            
 
             else:
                 if rsp['emailRecipient'] == 'SAASEmail':

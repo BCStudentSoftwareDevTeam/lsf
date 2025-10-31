@@ -257,7 +257,7 @@ emailtemps= [
                 "body":''' 
                     <p>Dear <strong>@@Student@@</strong>,</p>
                     <p>&nbsp;</p>
-                    <p>Please follow the attached link to verify information needed for the approval of an overload form: <a href="@@link@@">@@link@@</a></p>
+                    <p>Please follow the attached link to verify information needed for the approval of a labor adjustment  form: <a href="@@link@@">@@link@@</a></p>
                     ''',
                 "audience":"Student"
                 },

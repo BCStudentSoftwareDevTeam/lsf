@@ -86,6 +86,7 @@ def studentOverloadApp(formHistoryId):
 
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
+                            # isAdjustment=False,   potential solution for Labor Adjustment Form
                             username = currentUser,
                             overloadForm = overloadForm,
                             prefillStudentName = prefillStudentName,
@@ -101,6 +102,12 @@ def studentOverloadApp(formHistoryId):
                             totalCurrentHours = totalCurrentHours,
                             totalFormHours = totalFormHours
                           )
+
+@main_bp.route('/studentAdjustmentApp/<formHistoryId>', methods=['POST'])
+def studentAdjsutmentApp(formHistoryId):
+    return render_template('main/studentOverloadApp.html',
+                           title=("Labor Adjustment Application"),
+                           isAdjustment=True)
 
 @main_bp.route('/studentOverloadApp/withdraw/<formHistoryId>', methods=['POST'])
 def withdrawRequest(formHistoryId):

@@ -163,8 +163,7 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, link, newSupervisor=False):
-        self.link = link
+    def laborStatusFormAdjusted(self, newSupervisor=False):
         self.checkRecipient("Labor Status Form Adjusted For Student",
                       "Labor Status Form Adjusted For Supervisor")
         if newSupervisor:
@@ -286,6 +285,7 @@ class emailHandler():
         The method then checks whether to send the email to only the primary or both the primary and secondary supervisors.
         The method sendEmail is then called to handle the actual sending of the emails.
         """
+        print(studentEmailPurpose, emailPurpose, secondaryEmailPurpose, "please send")
         if studentEmailPurpose:
             studentEmail = EmailTemplate.get(EmailTemplate.purpose == studentEmailPurpose)
             self.sendEmail(studentEmail, "student")
