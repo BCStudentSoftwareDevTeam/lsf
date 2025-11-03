@@ -134,7 +134,7 @@ def populateModal(statusKey):
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
                     newPosition = Tracy().getPositionFromCode(newValue)
                     try:
-                        oldPosition = form.formID.Tracy().getPositionFromCode(oldValue)
+                        oldPosition = Tracy().getPositionFromCode(oldValue)
                     except:
                         oldPosition = types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?")
 
@@ -148,7 +148,8 @@ def populateModal(statusKey):
                     oldDepartment = Department.get(Department.ORG == oldValue)
                     form.adjustedForm.newValue = newDepartment.DEPT_NAME
                     form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
-                # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
+
+                # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
             # Pending release or adjustment forms need the historyType known
