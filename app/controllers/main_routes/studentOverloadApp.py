@@ -86,7 +86,6 @@ def studentOverloadApp(formHistoryId):
 
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
-                            # isAdjustment=False,   potential solution for Labor Adjustment Form
                             username = currentUser,
                             overloadForm = overloadForm,
                             prefillStudentName = prefillStudentName,
@@ -100,14 +99,120 @@ def studentOverloadApp(formHistoryId):
                             currentPrimary = formIDPrimary,
                             currentSecondary = formIDSecondary,
                             totalCurrentHours = totalCurrentHours,
-                            totalFormHours = totalFormHours
+                            totalFormHours = totalFormHours,
+                            isAdjustment = False,
+                            adjustmentForm = None 
                           )
 
-@main_bp.route('/studentAdjustmentApp/<formHistoryId>', methods=['POST'])
-def studentAdjsutmentApp(formHistoryId):
-    return render_template('main/studentOverloadApp.html',
-                           title=("Labor Adjustment Application"),
-                           isAdjustment=True)
+@main_bp.route('/studentAdjustmentApp/<formHistoryId>', methods=['GET'])
+def studentAdjustmentApp(formHistoryId):
+    currentUser = require_login()
+    AdjustmentForm = FormHistory.get_by_id(formHistoryId)
+    if not currentUser.isLaborAdmin:
+        if not currentUser:        # Not logged in
+            return render_template('errors/403.html'), 403
+        if not currentUser.student:
+            return render_template('errors/403.html'), 403
+        
+        if currentUser.student.ID != AdjustmentForm.formID.studentSupervisee.ID:
+            return render_template('errors/403.html'), 403
+    lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
+                    .join(Student, attr="studentSupervisee").switch()
+                    .join(Term).switch()
+                    .join(Department)
+                    .where(LaborStatusForm.laborStatusFormID == AdjustmentForm.formID)).get()
+    prefillStudentName = lsfForm.studentSupervisee.FIRST_NAME + " "+ lsfForm.studentSupervisee.LAST_NAME
+    prefillStudentBnum = lsfForm.studentSupervisee.ID
+    prefillStudentCPO = lsfForm.studentSupervisee.STU_CPO
+    prefillStudentClass = lsfForm.studentSupervisee.CLASS_LEVEL
+    prefillTerm = lsfForm.termCode.termName
+    prefillDepartment = lsfForm.department.DEPT_NAME
+    prefillPosition = lsfForm.POSN_TITLE
+    prefillHoursOverload = lsfForm.weeklyHours
+
+   
+    today = date.today()
+    termYear = today.year * 100
+    termsInYear = Term.select(Term).where(Term.termCode.between(termYear-1, termYear + 15))
+    TermsNeeded=[]
+    for term in termsInYear:
+        if not term.isBreak:
+            TermsNeeded.append(term.termCode)
+
+    studentSecondaryLabor = (LaborStatusForm.select(LaborStatusForm.laborStatusFormID)
+                                .where( LaborStatusForm.studentSupervisee_id == prefillStudentBnum,
+                                        LaborStatusForm.jobType == "Secondary",
+                                        LaborStatusForm.termCode.in_(TermsNeeded)))
+
+    studentPrimaryLabor = (LaborStatusForm.select(LaborStatusForm.laborStatusFormID)
+                                .where( LaborStatusForm.studentSupervisee_id == prefillStudentBnum,
+                                        LaborStatusForm.jobType == "Primary",
+                                        LaborStatusForm.termCode.in_(TermsNeeded)))
+    formIDPrimary = []
+    for primaryForm in studentPrimaryLabor:
+        studentPrimaryHistory = (FormHistory.select().where(
+                                    FormHistory.formID == primaryForm,
+                                    FormHistory.historyType == "Labor Status Form",
+                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
+        formIDPrimary.append(studentPrimaryHistory)
+    formIDSecondary = []
+
+    for secondaryForm in studentSecondaryLabor:
+        studentSecondaryHistory = (FormHistory.select().where(
+                                    FormHistory.formID == secondaryForm,
+                                    FormHistory.historyType == "Labor Status Form",
+                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
+        formIDSecondary.append(studentSecondaryHistory)
+
+    totalCurrentHours = 0
+    for i in formIDPrimary:
+        for j in i:
+            if str(j.status) == "Approved":
+                totalCurrentHours += j.formID.weeklyHours
+    for i in formIDSecondary:
+        for j in i:
+            if str(j.status) == "Approved":
+                totalCurrentHours += j.formID.weeklyHours
+    totalFormHours = totalCurrentHours + prefillHoursOverload
+
+
+    # Access the related AdjustedForm record directly
+    adjusted_change = AdjustmentForm.adjustedForm  
+    print("testign adjustment")
+    print(adjusted_change)
+
+    field_name = adjusted_change.fieldAdjusted
+    old_value  = adjusted_change.oldValue
+    new_value  = adjusted_change.newValue
+
+    print("old=", old_value)
+
+
+    return render_template( 'main/studentOverloadApp.html',
+				            title=('student Adjustment Application'),
+                            username = currentUser,
+                            AdjustmentForm = AdjustmentForm,
+                            adjusted_change = adjusted_change,
+                            field_name = field_name,
+                            old_value = old_value,
+                            new_value = new_value,
+                            prefillStudentName = prefillStudentName,
+                            prefillStudentBnum = prefillStudentBnum,
+                            prefillStudentCPO = prefillStudentCPO,
+                            prefillStudentClass = prefillStudentClass,
+                            prefillTerm = prefillTerm,
+                            prefillDepartment = prefillDepartment,
+                            prefillPosition = prefillPosition,
+                            prefillHoursOverload = prefillHoursOverload,
+                            currentPrimary = formIDPrimary,
+                            currentSecondary = formIDSecondary,
+                            totalCurrentHours = totalCurrentHours,
+                            totalFormHours = totalFormHours,
+                            isAdjustment = True,
+                            overloadForm = None
+                          )
+        
+
 
 @main_bp.route('/studentOverloadApp/withdraw/<formHistoryId>', methods=['POST'])
 def withdrawRequest(formHistoryId):

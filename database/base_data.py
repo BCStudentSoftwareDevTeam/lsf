@@ -4,7 +4,7 @@ from app.models.emailTemplate import EmailTemplate
 from app.models.user import User
 from app.models.user import Supervisor
 
-("Inserting base data for all environments")
+print("Inserting base data for all environments")
 
 #############################
 # Status
@@ -17,7 +17,7 @@ stats = [
             {"statusName":"Pre-Student Approval" }
         ]
 Status.insert_many(stats).on_conflict_replace().execute()
-(" * status added")
+print(" * status added")
 
 #############################
 # History Type
@@ -33,7 +33,7 @@ types = [
             }
         ]
 HistoryType.insert_many(types).on_conflict_replace().execute()
-(" * history types added")
+print(" * history types added")
 
 #############################
 #emailtemplates
@@ -254,11 +254,8 @@ emailtemps= [
                 "formType":"Labor Status Form",
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
-                "body":''' 
-                    <p>Dear <strong>@@Student@@</strong>,</p>
-                    <p>&nbsp;</p>
-                    <p>Please follow the attached link to verify information needed for the approval of a labor adjustment  form: <a href="@@link@@">@@link@@</a></p>
-                    ''',
+                "body":'''
+                            ''',
                 "audience":"Student"
                 },
                 {
@@ -592,4 +589,4 @@ emailtemps= [
                 }
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
-(" * emailtemplates added")
+print(" * emailtemplates added")
