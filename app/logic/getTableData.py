@@ -263,9 +263,6 @@ def getFormattedData(filteredSearchResults, view ='simple'):
         mappedFormTypeName = formTypeNameMapping[originalFormTypeName]
         # formType(Status)
         formTypeStatusField = record.append(formTypeStatus.format(f'{mappedFormTypeName} ({form.status.statusName})'))
-        print("HERE IS RECORD AND ALSO I HATE THIS SORTING")
-        print(record)
-        print(formTypeStatusField)
 
         formattedData.append(record)
 
