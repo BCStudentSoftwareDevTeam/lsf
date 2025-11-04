@@ -16,7 +16,6 @@ import string
 from app import app
 import os
 from datetime import datetime, date
-import traceback
 
 
 class emailHandler():
