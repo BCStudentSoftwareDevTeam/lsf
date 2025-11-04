@@ -154,6 +154,8 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 formStatus = str(form.status)
                 displayStatus = formStatus
 
+                if form.adjustedForm is not None:
+                    displayStatus = "Adjustment " + formStatus
                 if form.overloadForm is not None:
                     displayStatus = "Overload " + formStatus
                 if form.releaseForm is not None:
