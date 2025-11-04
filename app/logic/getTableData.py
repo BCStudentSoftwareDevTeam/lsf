@@ -62,7 +62,11 @@ def getDatatableData(request):
     for field, value in fieldValueMap.items():
         if value != "" and value:
             if type(value) is list:
-                clauses.append(field.in_(value))
+                if field == FormHistory.historyType:
+                    if "Labor Status Form" not in value:
+                        clauses.append(field.in_(value))    # if "original" is selected, we include all forms, so no need to filter by historyType
+                else:
+                    clauses.append(field.in_(value))
             elif field is StudentLaborEvaluation.ID:
                 sleJoin=value[0]
             else:
@@ -126,18 +130,16 @@ def getFormattedData(filteredSearchResults, view ='simple'):
     '''
     if view == "simple":
         formattedData = {}
-        todaysDate = date.today()
         filteredSearchResults.order_by(FormHistory.formID.startDate.desc())
         isMostCurrent = False
         for form in filteredSearchResults:
-            startDate = form.formID.startDate
-            endDate = form.formID.endDate
+            createdDate = form.createdDate
             bNumber = form.formID.studentSupervisee.ID
             if bNumber not in formattedData:
                 absentInFormatting = True
             else:
                 absentInFormatting = False 
-                isMostCurrent = (startDate > formattedData[bNumber][1]) or (startDate <= todaysDate <= endDate)
+                isMostCurrent = (createdDate > formattedData[bNumber][1])
             if absentInFormatting or isMostCurrent:
                 
                 # html fields
@@ -152,19 +154,9 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 formStatus = str(form.status)
                 displayStatus = formStatus
 
-                hasRelease = FormHistory.select().where(
-                    (FormHistory.formID == form.formID) &
-                    (FormHistory.releaseForm.is_null(False))
-                ).exists()
-
-                hasOverload = FormHistory.select().where(
-                    (FormHistory.formID == form.formID) &
-                    (FormHistory.overloadForm.is_null(False))
-                ).exists()
-
-                if hasOverload:
+                if form.overloadForm is not None:
                     displayStatus = "Overload " + formStatus
-                if hasRelease:
+                if form.releaseForm is not None:
                     displayStatus = "Release Pending" if formStatus == "Pending" else "Released"
 
                 html = f"""
@@ -178,9 +170,9 @@ def getFormattedData(filteredSearchResults, view ='simple'):
                 </span>
                 """
 
-                formattedData[bNumber] = (html, startDate, endDate)
-
-        formattedDataList = [[value] for value, _, _ in formattedData.values()]
+                formattedData[bNumber] = (html, createdDate)
+            
+        formattedDataList = [[value] for value, _S in formattedData.values()]
 
         return formattedDataList
 
