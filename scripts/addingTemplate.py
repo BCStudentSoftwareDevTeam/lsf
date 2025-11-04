@@ -24,7 +24,7 @@ emailTemplates = {
 def addingTemplates():
     for template in emailTemplates.values():
         if EmailTemplate.select().where(EmailTemplate.purpose == template["purpose"]).count() == 0:
-            print(f"No email template found. Creating one.")
+            print("No email template found. Creating one.")
             EmailTemplate.create(
                 purpose=template["purpose"], 
                 formType=template["formType"],
@@ -32,7 +32,7 @@ def addingTemplates():
                 subject=template["subject"], 
                 body=template["body"], 
                 audience=template["audience"])
-            print(f"Created email template.")
+            print("Created email template.")
 
 def main():
     addingTemplates()
