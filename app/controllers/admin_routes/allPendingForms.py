@@ -494,10 +494,8 @@ def modalFormUpdate():
 
             # send it to banner if they have approved an overload
             if rsp['formType'] == 'Overload' and "Approved" in rsp['status'] and historyForm.formID.POSN_CODE != "S12345":
-                # conn = Banner()
-                # save_form_status = conn.insert(historyForm)
-                save_form_status = True
-
+                conn = Banner()
+                save_form_status = conn.insert(historyForm)
 
             # if we are able to save
             if save_form_status:
