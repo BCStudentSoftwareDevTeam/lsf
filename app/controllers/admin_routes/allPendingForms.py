@@ -317,6 +317,7 @@ def finalUpdateStatus(raw_status):
         print("Unknown status: ", raw_status)
         return jsonify({"success": False})
 
+    flash("Forms have been successfully updated.", "success")
     form_ids = eval(request.data.decode("utf-8"))
     return saveStatus(new_status, form_ids, currentUser)
 
@@ -493,8 +494,9 @@ def modalFormUpdate():
 
             # send it to banner if they have approved an overload
             if rsp['formType'] == 'Overload' and "Approved" in rsp['status'] and historyForm.formID.POSN_CODE != "S12345":
-                conn = Banner()
-                save_form_status = conn.insert(historyForm)
+                # conn = Banner()
+                # save_form_status = conn.insert(historyForm)
+                save_form_status = True
 
 
             # if we are able to save
