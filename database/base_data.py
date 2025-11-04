@@ -14,7 +14,6 @@ stats = [
             {"statusName":"Approved" },
             {"statusName":"Denied by Admin" },
             {"statusName":"Denied by Student" },
-            {"statusName":"Approved Reluctantly" },
             {"statusName":"Pre-Student Approval" }
         ]
 Status.insert_many(stats).on_conflict_replace().execute()

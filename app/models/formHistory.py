@@ -10,7 +10,7 @@ from app.models.supervisor import Supervisor
 
 class FormHistory(baseModel):
     formHistoryID       = PrimaryKeyField()
-    formID              = ForeignKeyField(LaborStatusForm, on_delete="cascade", backref="lsf")               # foreign key to lsf
+    formID              = ForeignKeyField(LaborStatusForm, on_delete="cascade")               # foreign key to lsf
     # overloadID          = ForeignKeyField(OverloadForm, on_delete = "cascade")
     historyType         = ForeignKeyField(HistoryType)                                        # foreign key to historytype
     releaseForm         = ForeignKeyField(LaborReleaseForm, null=True, on_delete="cascade")  # if its a release form

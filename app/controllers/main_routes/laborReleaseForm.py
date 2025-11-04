@@ -52,11 +52,10 @@ def laborReleaseForm(laborStatusKey):
             releaseCondition = request.form.get("condition")
             releaseContactUsername = request.form.get("contactPerson")
             releaseContactPerson = User.get(User.username == releaseContactUsername)
-            releaseContactFullName = releaseContactPerson.firstName + " " + releaseContactPerson.lastName
+            releaseContactFullName = releaseContactPerson.fullName
             createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
             email = emailHandler(formHistoryID.formHistoryID)
-            email.laborAdminNotified(releaseContactUsername, releaseContactFullName)
-            email.laborReleaseFormSubmitted()
+            email.laborReleaseFormSubmitted(releaseContactUsername, releaseContactFullName)
 
 
             # Once all the forms are created, the user gets redirected to the

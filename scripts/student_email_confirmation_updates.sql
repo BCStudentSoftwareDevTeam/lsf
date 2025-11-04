@@ -4,7 +4,6 @@ BEGIN;
 
 INSERT INTO status VALUES ('Denied by Admin');
 INSERT INTO status VALUES ('Denied by Student');
-INSERT INTO status VALUES ('Expired');
 
 update overloadform set financialAidApproved_id='Denied by Admin' where financialAidApproved_id='Denied';
 update overloadform set SAASApproved_id='Denied by Admin' where SAASApproved_id='Denied';

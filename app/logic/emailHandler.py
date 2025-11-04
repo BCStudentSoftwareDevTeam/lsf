@@ -171,17 +171,13 @@ class emailHandler():
             self.checkRecipient(False,
                           "Labor Status Form Adjusted For Supervisor")
 
-    def laborReleaseFormSubmitted(self):
+    def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
+        self.adminName = adminName
+        self.adminEmail = adminUserName + "@berea.edu"
+        emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification")
         self.checkRecipient("Labor Release Form Submitted For Student",
                       "Labor Release Form Submitted For Supervisor")
-
-    def laborAdminNotified(self, adminEmail, adminName):
-        self.adminName = adminName
-        emailAddress = adminEmail + "@berea.edu"
-        emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification")
-        message = Message(emailTemplate.subject, recipients=[emailAddress])
-        message.html = self.replaceText(emailTemplate.body)
-        self.send(message)
+        self.sendEmail(emailTemplate, "admin")
 
     def laborReleaseFormApproved(self):
         self.checkRecipient("Labor Release Form Approved For Student",
@@ -316,13 +312,11 @@ class emailHandler():
         formTemplate = template.body
         formTemplate = self.replaceText(formTemplate)
         if sendTo == "student":
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.studentEmail])
             recipient = 'Student'
         elif sendTo == "secondary":
             if self.term.isBreak:
-                print("here", template.subject, self.supervisorEmail)
                 supervisorEmails = []
                 for supervisor in self.supervisors:
                     supervisorEmails.append(supervisor.EMAIL)
@@ -331,20 +325,21 @@ class emailHandler():
                     recipients=supervisorEmails)
                 recipient = 'Secondary Supervisor'
             else:
-                print("here", template.subject, self.supervisorEmail)
                 message = Message(template.subject,
                     recipients=[self.supervisorEmail, self.primaryEmail])
                 recipient = 'Primary Supervisor'
         elif sendTo == "Labor Office":
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[""]) #TODO: Email for the Labor Office
             recipient = 'Labor Office'
         elif sendTo == 'supervisor':
-            print("here", template.subject, self.supervisorEmail)
             message = Message(template.subject,
                 recipients=[self.supervisorEmail])
             recipient = 'Primary Supervisor'
+        elif sendTo == "admin":
+            message = Message(template.subject,
+                recipients=[self.adminEmail])
+            recipient = 'Admin'
         message.html = formTemplate
 
         newEmailTracker = EmailTracker.create(
