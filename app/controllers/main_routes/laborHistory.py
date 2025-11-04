@@ -66,7 +66,7 @@ def laborhistory(id):
 
         relatedForms = (FormHistory.select().where(
                      (FormHistory.formID.in_(formIds)) &
-                     ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)))
+                     ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)) | (FormHistory.adjustedForm.is_null(False)))
                  ))
 
         formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
@@ -80,6 +80,8 @@ def laborhistory(id):
 
             if related.overloadForm:
                 form.displayStatus = "Overload " + str(related.status)
+            if related.adjustedForm:
+                form.displayStatus = "Adjustment " + str(related.status)
             if related.releaseForm:
                 form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
 
