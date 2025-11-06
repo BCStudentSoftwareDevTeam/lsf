@@ -138,24 +138,4 @@ SET
 <p>859-985-3611</p>'
 WHERE purpose = 'Break Labor Status Form Submitted For Supervisor';
 
--- Insert emailtemplate for Expired Labor Status Form 
-INSERT INTO emailtemplate (purpose, formType, action, subject, body, audience)
-SELECT
-  'Email when Labor Status Form is expired',
-  'Labor Status Form',
-  'Expired',
-  'Labor Status Form Expired',
-  '<p>Dear <strong>@@Supervisor@@</strong>,</p>
-   <p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>
-   <p>&nbsp;</p>
-   <p>You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>.</p>
-   <p>Sincerely,</p>
-   <p>Labor Program Office</p>
-   <p>labor_program@berea.edu</p>
-   <p>859-985-3611</p>',
-  'Supervisor'
-WHERE NOT EXISTS (
-  SELECT 1 FROM emailtemplate WHERE purpose = 'Email when Labor Status Form is expired'
-);
-
 COMMIT;
