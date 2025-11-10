@@ -18,6 +18,7 @@ from app.models.overloadForm import *
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
     overloadForm = FormHistory.get_by_id(formHistoryId)
+    AdjustmentForm = FormHistory.get_by_id(formHistoryId)
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
@@ -84,115 +85,16 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
-    return render_template( 'main/studentOverloadApp.html',
-				            title=('student Overload Application'),
-                            username = currentUser,
-                            overloadForm = overloadForm,
-                            prefillStudentName = prefillStudentName,
-                            prefillStudentBnum = prefillStudentBnum,
-                            prefillStudentCPO = prefillStudentCPO,
-                            prefillStudentClass = prefillStudentClass,
-                            prefillTerm = prefillTerm,
-                            prefillDepartment = prefillDepartment,
-                            prefillPosition = prefillPosition,
-                            prefillHoursOverload = prefillHoursOverload,
-                            currentPrimary = formIDPrimary,
-                            currentSecondary = formIDSecondary,
-                            totalCurrentHours = totalCurrentHours,
-                            totalFormHours = totalFormHours,
-                            isAdjustment = False,
-                            adjustmentForm = None 
-                          )
-
-@main_bp.route('/studentAdjustmentApp/<formHistoryId>', methods=['GET'])
-def studentAdjustmentApp(formHistoryId):
-    currentUser = require_login()
-    AdjustmentForm = FormHistory.get_by_id(formHistoryId)
-    if not currentUser.isLaborAdmin:
-        if not currentUser:        # Not logged in
-            return render_template('errors/403.html'), 403
-        if not currentUser.student:
-            return render_template('errors/403.html'), 403
-        
-        if currentUser.student.ID != AdjustmentForm.formID.studentSupervisee.ID:
-            return render_template('errors/403.html'), 403
-    lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
-                    .join(Student, attr="studentSupervisee").switch()
-                    .join(Term).switch()
-                    .join(Department)
-                    .where(LaborStatusForm.laborStatusFormID == AdjustmentForm.formID)).get()
-    prefillStudentName = lsfForm.studentSupervisee.FIRST_NAME + " "+ lsfForm.studentSupervisee.LAST_NAME
-    prefillStudentBnum = lsfForm.studentSupervisee.ID
-    prefillStudentCPO = lsfForm.studentSupervisee.STU_CPO
-    prefillStudentClass = lsfForm.studentSupervisee.CLASS_LEVEL
-    prefillTerm = lsfForm.termCode.termName
-    prefillDepartment = lsfForm.department.DEPT_NAME
-    prefillPosition = lsfForm.POSN_TITLE
-    prefillHoursOverload = lsfForm.weeklyHours
-
-   
-    today = date.today()
-    termYear = today.year * 100
-    termsInYear = Term.select(Term).where(Term.termCode.between(termYear-1, termYear + 15))
-    TermsNeeded=[]
-    for term in termsInYear:
-        if not term.isBreak:
-            TermsNeeded.append(term.termCode)
-
-    studentSecondaryLabor = (LaborStatusForm.select(LaborStatusForm.laborStatusFormID)
-                                .where( LaborStatusForm.studentSupervisee_id == prefillStudentBnum,
-                                        LaborStatusForm.jobType == "Secondary",
-                                        LaborStatusForm.termCode.in_(TermsNeeded)))
-
-    studentPrimaryLabor = (LaborStatusForm.select(LaborStatusForm.laborStatusFormID)
-                                .where( LaborStatusForm.studentSupervisee_id == prefillStudentBnum,
-                                        LaborStatusForm.jobType == "Primary",
-                                        LaborStatusForm.termCode.in_(TermsNeeded)))
-    formIDPrimary = []
-    for primaryForm in studentPrimaryLabor:
-        studentPrimaryHistory = (FormHistory.select().where(
-                                    FormHistory.formID == primaryForm,
-                                    FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
-        formIDPrimary.append(studentPrimaryHistory)
-    formIDSecondary = []
-
-    for secondaryForm in studentSecondaryLabor:
-        studentSecondaryHistory = (FormHistory.select().where(
-                                    FormHistory.formID == secondaryForm,
-                                    FormHistory.historyType == "Labor Status Form",
-                                    FormHistory.status.in_(["Approved","Pending","Pre-Student Approval"]) ))
-        formIDSecondary.append(studentSecondaryHistory)
-
-    totalCurrentHours = 0
-    for i in formIDPrimary:
-        for j in i:
-            if str(j.status) == "Approved":
-                totalCurrentHours += j.formID.weeklyHours
-    for i in formIDSecondary:
-        for j in i:
-            if str(j.status) == "Approved":
-                totalCurrentHours += j.formID.weeklyHours
-    totalFormHours = totalCurrentHours + prefillHoursOverload
-
-
-    # Access the related AdjustedForm record directly
-    adjusted_change = AdjustmentForm.adjustedForm  
-    print("testign adjustment")
-    print(adjusted_change)
+    adjusted_change = AdjustmentForm.adjustedForm
 
     field_name = adjusted_change.fieldAdjusted
     old_value  = adjusted_change.oldValue
     new_value  = adjusted_change.newValue
 
-    print("old=", old_value)
-
-
     return render_template( 'main/studentOverloadApp.html',
-				            title=('student Adjustment Application'),
+				            title=('student Overload Application'),
                             username = currentUser,
-                            AdjustmentForm = AdjustmentForm,
-                            adjusted_change = adjusted_change,
+                            overloadForm = overloadForm,
                             field_name = field_name,
                             old_value = old_value,
                             new_value = new_value,
@@ -208,12 +110,9 @@ def studentAdjustmentApp(formHistoryId):
                             currentSecondary = formIDSecondary,
                             totalCurrentHours = totalCurrentHours,
                             totalFormHours = totalFormHours,
-                            isAdjustment = True,
-                            overloadForm = None
                           )
+
         
-
-
 @main_bp.route('/studentOverloadApp/withdraw/<formHistoryId>', methods=['POST'])
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
@@ -237,20 +136,50 @@ def withdrawRequest(formHistoryId):
 @main_bp.route('/studentOverloadApp/update/<overloadFormHistoryID>', methods=['POST'])
 def updateDatabase(overloadFormHistoryID):
     try:
+        print('is this the overload reason####')
         overloadReason = request.form.get('overloadReason')
+        print(request.form)
+        print("did you reach here ")
+
         if not overloadReason:
+            print("No Overload Reason has been submitted")
             abort(500)
 
-        oldStatus = Status.get(Status.statusName == "Pre-Student Approval")
+
+        # if status is pending that means we have an adjustment 
+        # if status is "pre-student then it means we have an overload"
+        oldStatus = Status.get(
+            (Status.statusName == "Pre-Student Approval") |
+            (Status.statusName == "Pending")  |
+            (Status.statusName == "Approved")
+        )
+        print('Why are not printing')
+        print(oldStatus)
+
+
         newStatus = Status.get(Status.statusName == "Pending")
 
+        print("heloooo")
         overloadFormHistory = FormHistory.get(FormHistory.formHistoryID == overloadFormHistoryID)
+        print(overloadFormHistory)
+        print("heloooo1")
+      
+        
         originalFormHistory = (FormHistory.select()
                                            .where(FormHistory.formID == overloadFormHistory.formID)
                                            .where(FormHistory.status == oldStatus)
-                                           .where(FormHistory.historyType_id == "Labor Status Form")).get()
-
+                                           .where(FormHistory.historyType_id.in_([
+                                               "Labor Status Form",
+                                               "Labor Overload Form",
+                                               "Labor Adjustment Form",
+                                           ]))
+                                           ).get()
+        
+        print(originalFormHistory, "originalFormHistory")
+       
+        print("did you get changes")
         with mainDB.atomic() as transaction:
+            print("what about here ")
             # Update statuses
             overloadFormHistory.status = newStatus
             overloadFormHistory.save()
@@ -263,7 +192,10 @@ def updateDatabase(overloadFormHistoryID):
             originalFormHistory.formID.save()
 
             # Update overload form
+            # this points to none # a query needs to be written to point to the original form that was created.
             overloadForm = overloadFormHistory.overloadForm
+            print(overloadFormHistory, "theoverloadformhistory")
+            print(overloadForm, "theoverloadform")
             overloadForm.studentOverloadReason = overloadReason
             overloadForm.save()
 
@@ -275,5 +207,6 @@ def updateDatabase(overloadFormHistoryID):
         return g.currentUser.student.ID
 
     except Exception as e:
-        ("ERROR: " + str(e))
+        print("error please print out")
+        print("ERROR: " + str(e))
         abort(500)

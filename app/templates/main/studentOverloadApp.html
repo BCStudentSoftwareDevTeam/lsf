@@ -13,28 +13,13 @@
 </head>
 <a class="skipContent" href="#checkbox1" tabindex="1" style="top:1%">Click to Skip</a>
 {% include "snips/freshmanWarning.html" %}
-  <div class="col-md-7 col-md-offset-3" >
-    {%  if isAdjustment %}
-    <h1>Labor Adjustment Application</h1>
-  </div>
-<div class="row">
-  <div class="col-md-12">
-    <p>
-      A labor adjustment form is a modification to an existing labor status form that 
-      <strong>does not necessarily result in an overload</strong>. 
-      Adjustments may involve hour changes, position reassignments, or term updates. 
-      These requests are still subject to review and approval by the Labor Program Office.
-    </p>
-  </div>
-</div>
-    {% else %}
+
+
+   
   <div class="col-md-7 col-md-offset-3" >
     <h1>Labor Overload Application </h1>
   </div>
-    <p>A labor overload is defined as more than 15 hours of labor per week during the regular academic year and may not be approved retroactively. All approvals are subject to periodic review.
-       Approval may be revoked if primary labor hours, labor performance, or academic performance become less than satisfactory.
-    </p>
-    {% endif %}
+
 
 
   <div class="col-md-2">
@@ -48,7 +33,11 @@
     }
 </style>
 <div class="container col-md-11" id="checkboxes" >
-     {% if not isAdjustment %}
+
+  <p>A labor overload is defined as more than 15 hours of labor per week during the regular academic year and may not be approved retroactively. All approvals are subject to periodic review.
+       Approval may be revoked if primary labor hours, labor performance, or academic performance become less than satisfactory.
+    </p>
+     
     <div>
         <p class="required-mark">* Marked fields are required</p>
     </div>
@@ -75,16 +64,8 @@
       <label for="checkbox5">The required 2.50 cumulative GPA may be waived if a 3.00 GPA is earned during the previous full term</label>
       <span class="required-mark"> *</span>
     </ul>
-    {% else %}
-    <h4>Adjustment Overview:</h4>
-    <ul>
-    <li>Used for approved hour modifications or position updates that do not trigger an overload.</li>
-    <li>Requires supervisor and labor office review.</li>
-    <li>Final approval depends on academic and labor performance standing.</li>
-  </ul>
-  {% endif %}
-
-  {% if not isAdjustment %}
+    
+  
   {% if totalFormHours > 20 %}
   <ul>
     <h6><strong><span class="tooltip-right" data-tooltip="Required">Requests for over 20 hours* are subject to the following additional guidelines:</span></strong></h6>
@@ -97,7 +78,7 @@
     <span class="required-mark"> *</span>
   </ul>
 {% endif %}
-{% endif %}
+
 </div>
 
 <div class="container col-md-11">
@@ -142,23 +123,23 @@
               <tr id="Primary" value="{{primary.formHistoryID}}">
                 <td>{{primary.formID.termCode.termName}}</td>
                 <td>
-                {% if  field_name == DEPT_NAME %}
-                <del>{{ old_value }}</del> → <span class="text-success">{{ new_value }}</span>
+                {% if  field_name == "DEPT_NAME" %}
+                <del>{{ old_value }}</del>  <span class="text-success">{{ new_value }}</span>
                 {% else %}
                   {{primary.formID.department.DEPT_NAME}}
                 {% endif %}
                 </td>
                 <td>{{primary.formID.jobType}}</td>
                 <td>
-                {% if  field_name == POSN_TITLE %}
-                 <del>{{ old_value }}</del> → <span class="text-success">{{ new_value }}</span>
+                {% if  field_name == "POSN_TITLE" %}
+                 <del>{{ old_value }}</del><span class="text-success">{{ new_value }}</span>
                 {% else %}
                   {{primary.formID.POSN_TITLE}}
                 {% endif %}
                 </td>
                 <td>
-                {% if  field_name == weeklyHours %}
-                <del>{{ old_value }}</del> → <span class="text-success">{{ new_value }}</span>
+                {% if  field_name == "weeklyHours" %}
+                <del>{{ old_value }}</del>  <span class="text-success">{{ new_value }}</span>
                 {% else %}
                   {{primary.formID.weeklyHours}}
                 {% endif %}
@@ -181,26 +162,23 @@
           {% endfor %}
           <tr>
             <td><strong>Total Approved Primary and Secondary Hours:</strong></td>
-            <td>{{totalCurrentHours}}</td>
+            <td>
+               {% if  field_name == "weeklyHours" %}
+                <del>{{ old_value }}</del>  <span class="text-success">{{ new_value }}</span>
+              {% else %}
+              {{totalCurrentHours}}
+              {% endif %}
+            </td>
           </tr>
         </table>
         </font>
       </div>
     </div>
       <div align="center">
-        {% if not isAdjustment %}
         <label for="Reason"><span class="tooltip-right" >Reason For Overload Request:<span class="required-mark">*</span></span></label>
-        {% else %}
-        <label for="Reason"><span class="tooltip-right" >Reason For Adjustment Request:<span class="required-mark">*</span></span></label>
-        {% endif %}
+    
         <div>
-          {% if not isAdjustment %}
-
-
           <textarea id="notes" name="notes" rows="8" cols="80"  style="resize:none;"required></textarea>
-          {% else %}
-          <textarea name="notes" rows="8" cols="80"  style="resize:none;"required></textarea>
-          {% endif %}
         </div>
       </div>
 </form>
@@ -210,22 +188,15 @@
 </div>
 <div class="container col-md-11">
   <div align="center" >
-    {% if not isAdjustment %}
     <button id="submit" type="submit" class="btn btn-success" onclick ="checkForEmptyFields()">Submit Overload Request</button>
-    {% else %}
-    <button id="submit" type="submit" class="btn btn-success" >Submit Adjustment Request</button>
-    {% endif %}
-    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#withdrawModal">Withdraw Request</button>
-    {% if isAdjustment %}
-     {% with adjustmentForm=adjustmentForm %}
-     {% endwith %}
 
-    {% else %}
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#withdrawModal">Withdraw Request</button>
+
      {% with overloadForm=overloadForm%}
       {% include "snips/studentOverloadSubmit.html" %}
       {% include "snips/studentOverloadWithdraw.html" %}
      {% endwith %}
-    {% endif %}
+
   </div>
 </div>
 <div class="col-md-1">

@@ -255,6 +255,9 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                        <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>Please follow the attached link to verify information needed for the approval of an adjusted form: <a href="@@link@@">@@link@@</a></p>
                             ''',
                 "audience":"Student"
                 },
@@ -264,6 +267,9 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                    <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>Please follow the attached link to verify information needed for the approval of an adjusted form: <a href="@@link@@">@@link@@</a></p>
                             ''',
                 "audience":"Supervisor"
                 },

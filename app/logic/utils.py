@@ -13,7 +13,7 @@ def makeThirdPartyLink(recipient, host, formHistoryId):
     if recipient == 'student':
         route = "studentOverloadApp"
     if recipient == "studentAdjustment":    
-        route = "studentAdjustmentApp"
+        route = "studentOverloadApp"
 
     return f"http://{host}/{route}/{formHistoryId}"
 
