@@ -130,11 +130,6 @@
           <b>Approve</b>
         {% endif %}
       </label>
-      {% if currentUser.isLaborAdmin %}
-      <label for="approveRel" class="radio-inline">
-        <input type="radio" id="approveRel" name="decision" value="approveRel" onclick="displayModalTextArea(this.value)"><b>Approve Reluctantly</b>
-      </label>
-      {% endif %}
       <label for="deny" class="radio-inline">
         <input type="radio" id="deny" name="decision" value="deny" onclick="displayModalTextArea(this.value)"><b>Deny</b>
       </label>

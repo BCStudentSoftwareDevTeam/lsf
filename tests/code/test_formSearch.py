@@ -1,4 +1,5 @@
-from app.controllers.main_routes.main_routes import getDatatableData, supervisorPortal
+from app.controllers.main_routes.main_routes import supervisorPortal
+from app.logic.getTableData import getDatatableData
 from app import app
 from flask import g
 import pytest
@@ -17,11 +18,14 @@ def test_getDatatableData():
         allEvalDict = {'length': 25, 'start': 0,'draw': 1,'order[0][column]': 0, 'order[0][dir]': 'desc', "data": '{"termCode": "", "departmentID": "", "supervisorID": "currentUser", "studentID": "", "formStatus": "[]", "formType": "[]", "evaluations": "[allEvalMissing]"}'}
         with app.test_request_context("/", method="POST", data=termCodeDict):
             app.config['show_queries'] = False
+            g.openTerm = 201500
+            g.currentUser = User.get_by_id(1)         
             runGetDatatableData = supervisorPortal()
         
         with app.test_request_context("/", method="POST", data=currentTermDict):
             app.config['show_queries'] = False
             g.openTerm = 201500
+            g.currentUser = User.get_by_id(1)         
             runGetDatatableData = supervisorPortal()
             
         with app.test_request_context("/", method="POST", data=currentUserDict):
@@ -38,11 +42,13 @@ def test_getDatatableData():
             
         with app.test_request_context("/", method="POST", data=studentIDDict):
             app.config['show_queries'] = False
+            g.openTerm = 201500
             g.currentUser = User.get_by_id(1) 
             runGetDatatableData = supervisorPortal()
         
         with app.test_request_context("/", method="POST", data=allEvalDict):
             app.config['show_queries'] = False
+            g.openTerm = 201500
             g.currentUser = User.get_by_id(1) 
             runGetDatatableData = supervisorPortal()
             
