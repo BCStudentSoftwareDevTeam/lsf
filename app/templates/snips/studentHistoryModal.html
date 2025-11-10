@@ -225,7 +225,10 @@
       <div class = "col-sm-{{12/buttonState.num_buttons}}">
 
       <a href="#"><button class="btn btn-primary" id="emailLabor">Email Labor</button></a>
-          <a href="{{ approveLink }}" class="btn btn-primary" id="" target="_blank">Approve</a>
+      
+      {% if buttonState.studentApprove %}
+      <a href="{{ approveLink }}" class="btn btn-primary" id="" target="_blank">Approve</a>
+      {% endif%}
       {% if buttonState.rehire %}
         <a id="rehire" href="#"><button type="submit" name="submit" value="submit" class="btn btn-success" onclick="redirection({{statusForm.laborStatusFormID}})">Rehire</button></a>
       {% endif %}

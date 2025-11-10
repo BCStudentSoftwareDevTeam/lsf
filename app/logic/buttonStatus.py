@@ -22,6 +22,8 @@ class ButtonStatus:
         self.correction = False
         self.evaluate = False
         self.evaluation_exists = False
+        self.approve = False
+        self.studentApprove = False 
         self.num_buttons = 0
 
     def get_history_form_from_lsf(self, historyForm):
@@ -73,6 +75,7 @@ class ButtonStatus:
             self.adjust = False
             self.correction = False
             self.evaluate = False
+            self.studentApprove = True
             self.num_buttons = 1
 
         ############################################################
