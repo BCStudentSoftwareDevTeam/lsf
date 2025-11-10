@@ -173,7 +173,7 @@ class emailHandler():
     def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
         self.adminName = adminName
         self.adminEmail = adminUserName + "@berea.edu"
-        emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification")
+        emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification") 
         self.checkRecipient("Labor Release Form Submitted For Student",
                       "Labor Release Form Submitted For Supervisor")
         self.sendEmail(emailTemplate, "admin")
