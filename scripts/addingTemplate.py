@@ -18,7 +18,7 @@ emailTemplates = {
         ),
         "audience": "Admin",
     },
-    "laborReleaseAdminNotification": {
+    "laborStatusExpiredNotification": {
         "purpose": "Labor Status Form Expired",
         "formType": "Labor Status Form",
         "action": "Expired",
