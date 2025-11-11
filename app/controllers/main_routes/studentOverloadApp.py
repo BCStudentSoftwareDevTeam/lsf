@@ -148,11 +148,7 @@ def updateDatabase(overloadFormHistoryID):
 
         # if status is pending that means we have an adjustment 
         # if status is "pre-student then it means we have an overload"
-        oldStatus = Status.get(
-            (Status.statusName == "Pre-Student Approval") |
-            (Status.statusName == "Pending")  |
-            (Status.statusName == "Approved")
-        )
+        oldStatus = Status.get((Status.statusName == "Pre-Student Approval"))
         print('Why are not printing')
         print(oldStatus)
 
@@ -194,10 +190,16 @@ def updateDatabase(overloadFormHistoryID):
             # Update overload form
             # this points to none # a query needs to be written to point to the original form that was created.
             overloadForm = overloadFormHistory.overloadForm
-            print(overloadFormHistory, "theoverloadformhistory")
-            print(overloadForm, "theoverloadform")
-            overloadForm.studentOverloadReason = overloadReason
-            overloadForm.save()
+
+            if overloadForm is None:
+                print("⚠️ No overload form found. Creating and linking one...")
+                overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
+                overloadFormHistory.overloadForm = overloadForm
+                overloadFormHistory.save()
+            else:
+                overloadForm.studentOverloadReason = overloadReason
+                overloadForm.save()
+      
 
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
