@@ -25,7 +25,9 @@ def admin_Management():
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
-    users = User.select()
+    users = (User.select(User,Supervisor,Student)
+                .join(Supervisor,join_type=JOIN.LEFT_OUTER).switch()
+                .join(Student,join_type=JOIN.LEFT_OUTER))
     return render_template( 'admin/adminManagement.html',
                             title=('Admin Management'),
                             users = users
