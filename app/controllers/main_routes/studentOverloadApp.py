@@ -192,7 +192,7 @@ def updateDatabase(overloadFormHistoryID):
             overloadForm = overloadFormHistory.overloadForm
 
             if overloadForm is None:
-                print("⚠️ No overload form found. Creating and linking one...")
+                print(" No overload form found. Creating and linking one...")
                 overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
                 overloadFormHistory.overloadForm = overloadForm
                 overloadFormHistory.save()
