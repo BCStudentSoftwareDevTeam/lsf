@@ -293,7 +293,6 @@ case "mySupervisees":
     'order': order
   };
 
-  console.log(queryDict)
   setFormSearchValues(queryDict)
   data = JSON.stringify(queryDict)
 
@@ -525,9 +524,7 @@ function resetSelect(selectPickerID) {
 }
 
 function injectCurrentTermOption() {
-  // Remove if it exists
   $('#termSelect option[value="' + g_currentTermOption.value + '"]').remove();
-  // Add it
   $('#termSelect').append($('<option>', g_currentTermOption));
   $('#termSelect').selectpicker('val', g_currentTermOption.value);
   $('#termSelect').selectpicker('refresh');
