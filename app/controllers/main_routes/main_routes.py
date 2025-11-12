@@ -42,9 +42,12 @@ def supervisorPortal():
     else:
         departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
+    currentTerm = Term.get(Term.termCode == g.openTerm)
+
     return render_template('main/supervisorPortal.html',
                             departments = departments,
-                            currentUser = currentUser
+                            currentUser = currentUser,
+                            currentTermName = currentTerm.termName
                             )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])

@@ -1,4 +1,21 @@
 $(document).ready(function () {
+  var termOption = $('#termSelect option[data-preloaded="current"]');
+  var supervisorOption = $('#supervisorSelect option[data-preloaded="current"]');
+  
+  g_currentTermOption = {
+    value: termOption.val(),
+    text: termOption.text()
+  };
+  
+  g_currentUserOption = {
+    value: supervisorOption.val(),
+    text: supervisorOption.text(),
+    'data-content': supervisorOption.attr('data-content')
+  };
+  
+  termOption.remove();
+  supervisorOption.remove();
+
   $('#formSearchButton').on('click', function () {
     runFormSearchQuery();
     $('#sortOptions').show();
@@ -132,7 +149,7 @@ $(document).ready(function () {
   $("#departmentSelectParent .bs-searchbox input").on("keyup", debouncedSearchDepartment); 
   $("#supervisorSelectParent .bs-searchbox input").on("keyup", debouncedSearchSupervisor); 
   $("#studentSelectParent .bs-searchbox input").on("keyup", debouncedSearchStudent);
-
+  
 });
 
 function debounce(func, delay) {
@@ -505,6 +522,34 @@ function resetSelect(selectPickerID) {
 
   $select.selectpicker("refresh");
 }
+
+function injectCurrentTermOption() {
+  $('#termSelect option[value="' + g_currentTermOption.value + '"]').remove();
+  $('#termSelect').append($('<option>', g_currentTermOption));
+  $('#termSelect').selectpicker('val', g_currentTermOption.value);
+  $('#termSelect').selectpicker('refresh');
+}
+
+function injectCurrentUserOption() {
+  $('#supervisorSelect option[value="' + g_currentUserOption.value + '"]').remove();
+  $('#supervisorSelect').append($('<option>', g_currentUserOption));
+  $('#supervisorSelect').selectpicker('val', g_currentUserOption.value);
+  $('#supervisorSelect').selectpicker('refresh');
+}
+
+$('#mySupervisees').on('click', function () {
+  $("input:checkbox").removeAttr("checked");
+  injectCurrentTermOption();
+  injectCurrentUserOption();
+  runFormSearchQuery("mySupervisees");
+});
+
+$('#superviseesPendingForms').on('click', function () {
+  $("input:checkbox").removeAttr("checked");
+  injectCurrentTermOption();
+  injectCurrentUserOption();
+  runFormSearchQuery("pendingForms");
+});
 
 function liveSearch(selectPickerID, e) {
 
