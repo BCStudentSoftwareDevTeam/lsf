@@ -11,20 +11,16 @@ from app.controllers.main_routes import main_bp
 @main_bp.route('/studentResponse/confirm', methods=['GET'])
 def confirm():
     token = request.args.get('token')
-    print(token)
-    print(g.currentUser)
-    print(g.currentUser.student, "/??")
 
     # Find the form and make sure the logged in user matches the student on the form
     forms = (LaborStatusForm.select()
                             .join(FormHistory)
                             .where(LaborStatusForm.confirmationToken == token
                                    ,LaborStatusForm.studentSupervisee == g.currentUser.student))
-    print(forms)
+   
     try:
         form = forms.get()
     except DoesNotExist as e:
-        print("failed attempt")
         flash("This contract is invalid or has expired.", "danger")
         abort(404)
 

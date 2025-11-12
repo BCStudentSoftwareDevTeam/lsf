@@ -18,10 +18,7 @@ app.config['use_tracy'] = (app.config['ENV'] in ('production','staging'))
 if 'use_banner' not in app.config.keys():
     app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
 
-print('############')
 
-
-print("MAIL_OVERRIDE_ALL =", app.config.get("MAIL_OVERRIDE_ALL"))
 
 # Record and output queries if requested
 from flask import session
