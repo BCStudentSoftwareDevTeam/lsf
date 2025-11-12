@@ -123,8 +123,9 @@
               <tr id="Primary" value="{{primary.formHistoryID}}">
                 <td>{{primary.formID.termCode.termName}}</td>
                 <td>
-                {% if  field_name == "DEPT_NAME" %}
-                <del>{{ old_value }}</del>  <span class="text-success">{{ new_value }}</span>
+                {% if  field_name == "department" %}
+                <del>{{ old_value }}</del> <br>
+                 <span class="text-success">{{ new_value }}</span>
                 {% else %}
                   {{primary.formID.department.DEPT_NAME}}
                 {% endif %}
@@ -132,7 +133,8 @@
                 <td>{{primary.formID.jobType}}</td>
                 <td>
                 {% if  field_name == "POSN_TITLE" %}
-                 <del>{{ old_value }}</del><span class="text-success">{{ new_value }}</span>
+                 <del>{{ old_value }}</del> <br>
+                 <span class="text-success">{{ new_value }}</span>
                 {% else %}
                   {{primary.formID.POSN_TITLE}}
                 {% endif %}
@@ -152,10 +154,30 @@
               {% for secondary in listSecondary %}
               <tr id="Secondary" value="{{secondary.formHistoryID}}">
                 <td>{{secondary.formID.termCode.termName}}</td>
-                <td>{{secondary.formID.department.DEPT_NAME}}</td>
+                <td>
+                {% if  field_name == "department" %}
+                <del>{{ old_value }}</del> <br>
+                 <span class="text-success">{{ new_value }}</span>
+                {% else %}
+                  {{secondary.formID.department.DEPT_NAME}}
+                {% endif %}
+                </td>
                 <td>{{secondary.formID.jobType}}</td>
-                <td>{{secondary.formID.POSN_TITLE}}</td>
-                <td>{{secondary.formID.weeklyHours}}</td>
+                <td>
+                {% if  field_name == "POSN_TITLE" %}
+                 <del>{{ old_value }} <br>
+                </del><span class="text-success">{{ new_value }}</span>
+                {% else %}
+                  {{secondary.formID.POSN_TITLE}}
+                {% endif %}
+                </td>
+                <td>
+                {% if  field_name == "weeklyHours" %}
+                <del>{{ old_value }}</del>  <span class="text-success">{{ new_value }}</span>
+                {% else %}
+                  {{secondary.formID.weeklyHours}}
+                {% endif %}
+                </td>
                 <td>{{secondary.status}}</td>
               </tr>
               {% endfor %}

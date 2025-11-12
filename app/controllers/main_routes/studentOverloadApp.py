@@ -91,6 +91,13 @@ def studentOverloadApp(formHistoryId):
     old_value  = adjusted_change.oldValue
     new_value  = adjusted_change.newValue
 
+    if field_name == "department":
+        old_dept = Department.get(Department.ORG == old_value)
+        new_dept = Department.get(Department.ORG == new_value)
+        old_value = old_dept.DEPT_NAME
+        new_value = new_dept.DEPT_NAME
+
+
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
                             username = currentUser,
@@ -136,29 +143,25 @@ def withdrawRequest(formHistoryId):
 @main_bp.route('/studentOverloadApp/update/<overloadFormHistoryID>', methods=['POST'])
 def updateDatabase(overloadFormHistoryID):
     try:
-        print('is this the overload reason####')
         overloadReason = request.form.get('overloadReason')
-        print(request.form)
-        print("did you reach here ")
+      
 
         if not overloadReason:
-            print("No Overload Reason has been submitted")
             abort(500)
 
 
         # if status is pending that means we have an adjustment 
         # if status is "pre-student then it means we have an overload"
         oldStatus = Status.get((Status.statusName == "Pre-Student Approval"))
-        print('Why are not printing')
-        print(oldStatus)
+        
 
 
         newStatus = Status.get(Status.statusName == "Pending")
 
-        print("heloooo")
+      
         overloadFormHistory = FormHistory.get(FormHistory.formHistoryID == overloadFormHistoryID)
-        print(overloadFormHistory)
-        print("heloooo1")
+
+    
       
         
         originalFormHistory = (FormHistory.select()
@@ -171,11 +174,10 @@ def updateDatabase(overloadFormHistoryID):
                                            ]))
                                            ).get()
         
-        print(originalFormHistory, "originalFormHistory")
+    
        
-        print("did you get changes")
+       
         with mainDB.atomic() as transaction:
-            print("what about here ")
             # Update statuses
             overloadFormHistory.status = newStatus
             overloadFormHistory.save()
@@ -187,18 +189,22 @@ def updateDatabase(overloadFormHistoryID):
             originalFormHistory.formID.studentConfirmation = True
             originalFormHistory.formID.save()
 
-            # Update overload form
-            # this points to none # a query needs to be written to point to the original form that was created.
-            overloadForm = overloadFormHistory.overloadForm
 
-            if overloadForm is None:
-                print(" No overload form found. Creating and linking one...")
+            overloadForm = overloadFormHistory.overloadForm
+            
+            
+            
+            if overloadForm is None: 
                 overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
-                overloadFormHistory.overloadForm = overloadForm
-                overloadFormHistory.save()
-            else:
-                overloadForm.studentOverloadReason = overloadReason
+                overloadForm.studentOverloadReason = overloadReason   
+                overloadFormHistory.overloadForm = overloadForm 
+                overloadFormHistory.save() 
+                
+            else: 
+                overloadForm.studentOverloadReason = overloadReason 
                 overloadForm.save()
+
+        
       
 
             email = emailHandler(overloadFormHistory.formHistoryID)
@@ -209,6 +215,5 @@ def updateDatabase(overloadFormHistoryID):
         return g.currentUser.student.ID
 
     except Exception as e:
-        print("error please print out")
         print("ERROR: " + str(e))
         abort(500)
