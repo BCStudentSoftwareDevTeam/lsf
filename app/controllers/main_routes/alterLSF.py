@@ -150,6 +150,8 @@ def submitAlteredLSF(laborStatusKey):
                 modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host)
             elif formStatus =="Approved":
                 changedForm = adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=request.host) 
+                # set studentConfirmation to None so that the student can re-approve the form after changes are made
+                lsf.studentConfirmation = None
                 if changedForm:
                     formHistoryIDs.append(changedForm)
         if formStatus == "Approved":

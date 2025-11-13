@@ -5,6 +5,7 @@ from peewee import DoesNotExist
 
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
+from app.models.adjustedForm import AdjustedForm
 
 from app.controllers.main_routes import main_bp
 
@@ -23,11 +24,21 @@ def confirm():
         flash("This contract is invalid or has expired.", "danger")
         abort(404)
 
+    print('###Form: ', form)
+    
     if form.studentConfirmation is not None: # 3 possible values, True, False, None
         verb = "accepted" if form.studentConfirmation else "denied"
         flash("This contract has already been " + verb + ".", "danger")
         abort(403)
 
+      # query adjustedform to get old/new values
+    lsfId = form.laborStatusFormID
+    adjustedForms = AdjustedForm.select().where(AdjustedForm.lsfId == lsfId)
+    print('#### ADJUSTED FORMS: ', adjustedForms)
+
+
+
+    
     laborDescription = {
         "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
         "expiration_date": form.studentExpirationDate,
