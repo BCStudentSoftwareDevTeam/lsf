@@ -51,7 +51,7 @@ uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=14
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 db = SQLAlchemy(app)
 
-("FLASK:",Tracy().getPositionFromCode("S01015"))
+print("FLASK:",Tracy().getPositionFromCode("S01015"))
 
 ###########################
 # Test Banner connection

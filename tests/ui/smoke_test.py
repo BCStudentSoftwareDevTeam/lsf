@@ -90,11 +90,11 @@ class Test_Routes:
             """Test a list of URLs"""
 
             if(self.verbose):
-                ()
+                print()
             for url,params in urls:
                 sleep(.05) # Without this sleep we end up with Remote Disconnect exceptions
                 if(self.verbose):
-                    ("  {}:".format(url), end=" ")
+                    print("  {}:".format(url), end=" ")
 
                 try:
                     req = urllib.request.Request('{}{}'.format(base_url, url))

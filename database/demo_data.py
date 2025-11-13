@@ -16,7 +16,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 
-("Inserting data for demo and testing purposes")
+print("Inserting data for demo and testing purposes")
 
 #############################
 # Students (TRACY)
@@ -165,7 +165,7 @@ for student in (localStudents + bothStudents):
 
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
-(" * students (TRACY) added")
+print(" * students (TRACY) added")
 
 #############################
 # Positions (TRACY)
@@ -364,7 +364,7 @@ for staff in non_supervisor_staffs:
     db.session.add(STUSTAFF(**staff))
     db.session.commit()
 
-(" * staff added")
+print(" * staff added")
 
 
 #############################
@@ -445,7 +445,7 @@ users = [
         }
         ]
 User.insert_many(users).on_conflict_replace().execute()
-(" * users added")
+print(" * users added")
 
 
 
@@ -492,7 +492,7 @@ departments = [
 
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
-(" * departments added")
+print(" * departments added")
 
 #############################
 # Term
@@ -523,7 +523,7 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-(" * terms added")
+print(" * terms added")
 
 #############################
 # Create a Pending Labor Status Form
@@ -603,4 +603,4 @@ notes = [
             },
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
-(" * laborOfficeNotes added")
+print(" * laborOfficeNotes added")

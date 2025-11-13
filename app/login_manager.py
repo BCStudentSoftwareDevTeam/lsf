@@ -20,7 +20,7 @@ def logout():
         Erases the session and returns the URL for redirection
     """
     if 'username' in session:
-        ("Logging out", session['username'])
+        print("Logging out", session['username'])
     session.clear()
 
     url ="/"
@@ -34,7 +34,7 @@ def require_login():
     try:
         user = auth_user(env, username)
     except InvalidUserException as e:
-        ("Invalid User:", e)
+        print("Invalid User:", e)
         return False
     
     # Update the user's name

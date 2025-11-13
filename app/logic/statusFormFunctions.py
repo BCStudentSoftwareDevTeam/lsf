@@ -276,11 +276,11 @@ def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  for
             overloadEmail.LaborOverLoadFormSubmitted(link)
 
         except Exception as e:
-            ("An error occured while attempting to send overload form emails: ", e)
+            print("An error occured while attempting to send overload form emails: ", e)
 
     # This will delete an overload form after the hours are changed
     elif previousTotalHours > 15 and newTotalHours <= 15:  # If we were overloading and now we aren't
-            (f"Trying to get formhistory with formID '{lsf.laborStatusFormID}' and history type: 'Labor Overload Form'")
+            print(f"Trying to get formhistory with formID '{lsf.laborStatusFormID}' and history type: 'Labor Overload Form'")
             deleteOverloadForm = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == "Labor Overload Form"))
             deleteOverloadForm = OverloadForm.get(OverloadForm.overloadFormID == deleteOverloadForm.overloadForm_id)
             deleteOverloadForm.delete_instance()  # This line also deletes the Form History since it's set to cascade up in the model file

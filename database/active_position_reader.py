@@ -17,10 +17,10 @@ def get_all_departments():
         except DoesNotExist as e:
             update_rows = Department.update(DEPT_NAME = dept.DEPT_NAME).where(Department.ACCOUNT == dept.ACCOUNT, Department.ORG == dept.ORG).execute()
             if update_rows:
-                (f"  Updated department from Tracy: {dept.DEPT_NAME}, {dept.ACCOUNT}, {dept.ORG}")
+                print(f"  Updated department from Tracy: {dept.DEPT_NAME}, {dept.ACCOUNT}, {dept.ORG}")
             else:
                 Department.create(DEPT_NAME = dept.DEPT_NAME, ACCOUNT = dept.ACCOUNT, ORG = dept.ORG)
-                (f"  Created new department from Tracy: {dept.DEPT_NAME}, {dept.ACCOUNT}, {dept.ORG}")
+                print(f"  Created new department from Tracy: {dept.DEPT_NAME}, {dept.ACCOUNT}, {dept.ORG}")
 
 
 def convert_dept_org_act_to_id(row_data):
@@ -45,7 +45,7 @@ def supervisor_to_user(bnumber):
     try:
         return User.get(supervisor_id=bnumber)
     except:
-        ("  Uhoh, no user for this supervisor. This will cause an error in creation.", bnumber)
+        print("  Uhoh, no user for this supervisor. This will cause an error in creation.", bnumber)
 
 def update_record(form, row):
     start_date, end_date, term_code = convert_dates_to_term_code(labor_data.loc[row, "Begin Date"], labor_data.loc[row, "End Date"])
@@ -96,7 +96,7 @@ def create_record(row):
     return lsf
         
 def print_banner_row(row):
-    (labor_data.loc[row,:])
+    print(labor_data.loc[row,:])
 
 
 
@@ -109,7 +109,7 @@ secondary_indexes = {} # store the secondary position indexes for each B#
 primary_indexes = {}  # store the primary position indexes for each B# 
 supervisor_cache = {}
 
-("Updating departments...")
+print("Updating departments...")
 get_all_departments()
 
 # initial pass, ensuring supervisors and students are in our database and collating student records
@@ -128,7 +128,7 @@ for row in range(len(labor_data)):
         # try to get from Tracy if we need to
         getOrCreateStudentRecord(bnumber = labor_data.loc[row, "B#"])
     except:
-        (f"Creating student record from scratch ({labor_data.loc[row, 'B#']})")
+        print(f"Creating student record from scratch ({labor_data.loc[row, 'B#']})")
         Student.create(ID = labor_data.loc[row, "B#"],
                         PIDM = None,
                         FIRST_NAME = labor_data.loc[row, "First Name"],
@@ -151,7 +151,7 @@ for row in range(len(labor_data)):
         primary_indexes.setdefault(labor_data.loc[row, 'B#'], []).append(row)
     else:
         # unknown value
-        (f"Unknown Contract Type!! {labor_data.loc[row, 'Contract Type']}")
+        print(f"Unknown Contract Type!! {labor_data.loc[row, 'Contract Type']}")
         quit()
 # End csv loop
 
@@ -164,12 +164,12 @@ updated_second_secondaries = 0
 ###########################################################################################
 ### Primaries ###
 ###########################################################################################
-()
-("Processing Primary Records")
-("--------------------------")
+print()
+print("Processing Primary Records")
+print("--------------------------")
 for student_id, banner_forms in primary_indexes.items():
-    ()
-    (f"Processing {student_id}")
+    print()
+    print(f"Processing {student_id}")
 
     lsf_forms = (LaborStatusForm.select().where(
                                 (LaborStatusForm.studentSupervisee_id == student_id) & 
@@ -181,7 +181,7 @@ for student_id, banner_forms in primary_indexes.items():
 
     # sanity check
     if banner_count > 1:
-        ("  I didn't think there were multiple banner primaries.", labor_data.loc[row, "B#"])
+        print("  I didn't think there were multiple banner primaries.", labor_data.loc[row, "B#"])
         quit()
 
     row = banner_forms[0] # only one record to deal with for primaries
@@ -190,18 +190,18 @@ for student_id, banner_forms in primary_indexes.items():
     if banner_count and not lsf_count:
         lsf = create_record(row)
         created_primaries += 1
-        (f"  Created Primary labor status form {lsf.laborStatusFormID} for {labor_data.loc[row, 'B#']}")
+        print(f"  Created Primary labor status form {lsf.laborStatusFormID} for {labor_data.loc[row, 'B#']}")
 
     # update
     else:
         if lsf_count > 1:
-            ("  This student had multiple primaries. Check to make sure the proper one was updated.")
+            print("  This student had multiple primaries. Check to make sure the proper one was updated.")
 
         # only update the most recent one, to handle one in banner and 2 in lsf
         most_recent_form = lsf_forms.get()
         update_record(most_recent_form, row)
 
-        (f"  Updated Primary labor status form {most_recent_form.laborStatusFormID} for {labor_data.loc[row, 'B#']}.")
+        print(f"  Updated Primary labor status form {most_recent_form.laborStatusFormID} for {labor_data.loc[row, 'B#']}.")
         updated_primaries += 1
         
 
@@ -231,9 +231,9 @@ manual_records = {}
 ###########################################################################################
 ### Secondaries ###
 ###########################################################################################
-()
-("Processing Secondary Records")
-("--------------------------")
+print()
+print("Processing Secondary Records")
+print("--------------------------")
 for student_id, banner_forms in secondary_indexes.items():
     ()
     (f"Processing {student_id}")
@@ -252,7 +252,7 @@ for student_id, banner_forms in secondary_indexes.items():
     if lsf_count == 1 and banner_count == 1:
         update_record(lsf_forms.get(), banner_forms[0])
         updated_secondaries += 1
-        ("  Updating Secondary Form")
+        print("  Updating Secondary Form")
         
     # we need to match up the secondaries to update the correct ones
     elif lsf_count == banner_count:
@@ -267,8 +267,8 @@ for student_id, banner_forms in secondary_indexes.items():
             update_record(list(lsf_forms)[1], banner_forms[0])
 
         else:
-            ("  XXX Even counts in LSF and Banner. Need to match them up manually, to be safe.")
-            (list(lsf_forms))
+            print("  XXX Even counts in LSF and Banner. Need to match them up manually, to be safe.")
+            print(list(lsf_forms))
             for row in banner_forms:
                 print_banner_row(row)
 
@@ -278,7 +278,7 @@ for student_id, banner_forms in secondary_indexes.items():
         for row in banner_forms:
             lsf = create_record(row)
             created_secondaries += 1
-            (f"  Created new Secondary form {lsf.laborStatusFormID}")
+            print(f"  Created new Secondary form {lsf.laborStatusFormID}")
 
     #an extra secondary in banner to create
     elif banner_count > lsf_count:
@@ -289,8 +289,8 @@ for student_id, banner_forms in secondary_indexes.items():
             create_record(banner_forms[1])
 
         else:
-            ("  XXX Extra Secondaries in Banner for Unknown Student. Resolve them manually, to be safe.")
-            (lsf_forms)
+            print("  XXX Extra Secondaries in Banner for Unknown Student. Resolve them manually, to be safe.")
+            print(lsf_forms)
             for row in banner_forms:
                 print_banner_row(row)
         
@@ -298,23 +298,23 @@ for student_id, banner_forms in secondary_indexes.items():
     #extra secondaries in lsf 
     else:
         # we can't just update the most recent. Doesn't work for B00773583, B00762761, at least
-        (f"  XXX Extra Secondaries in LSF. Saving resolution for later")
+        print(f"  XXX Extra Secondaries in LSF. Saving resolution for later")
         manual_records[student_id] = banner_forms
 
 
-()
-("Number of New Primaries:", created_primaries)
-("Number of Updated Primaries:", updated_primaries)
-("Number of New Secondaries:", created_secondaries)
-("Number of Updated Secondaries:", updated_secondaries)
-("Number of Updated Second Secondaries:", updated_second_secondaries)
+print()
+print("Number of New Primaries:", created_primaries)
+print("Number of Updated Primaries:", updated_primaries)
+print("Number of New Secondaries:", created_secondaries)
+print("Number of Updated Secondaries:", updated_secondaries)
+print("Number of Updated Second Secondaries:", updated_second_secondaries)
 
 for student_id, banner_forms in manual_records.items():
-    ()
-    ("-------------------------------------------------------------------")
-    (student_id)
-    ("-------------------------------------------------------------------")
+    print()
+    print("-------------------------------------------------------------------")
+    print(student_id)
+    print("-------------------------------------------------------------------")
     for row in banner_forms:
         print_banner_row(row)
-        ("-------------------------------------------------------------------")
+        print("-------------------------------------------------------------------")
 

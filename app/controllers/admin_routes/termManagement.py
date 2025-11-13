@@ -92,7 +92,7 @@ def ourDate():
             }
             return jsonify(flasherInfo)
     except Exception as e:
-        ("You have failed to update the date.", e)
+        print("You have failed to update the date.", e)
         return jsonify({"Success": False})
 
 
@@ -113,7 +113,7 @@ def termStatusCheck():
             flasherInfo = {'termChanged': term.termName}
             return jsonify(flasherInfo)
     except Exception as e:
-        (e)
+        print(e)
         return jsonify({"Success": False})
 
 @admin.route('/termManagement/manageEval', methods=['POST'])
@@ -132,5 +132,5 @@ def manageEval():
             flasherInfo = {'termChanged': term.termName}
             return jsonify(flasherInfo)
     except Exception as e:
-        (e)
+        print(e)
         return jsonify({}, 500)

@@ -139,8 +139,6 @@ def submitAlteredLSF(laborStatusKey):
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
-        print('###')
-        print(student)
         formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)
         formHistoryIDs = []
         lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)

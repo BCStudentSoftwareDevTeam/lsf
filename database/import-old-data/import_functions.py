@@ -12,7 +12,7 @@ DEBUG=False
 
 def debug(msg):
     if DEBUG:
-        (msg)
+        print(msg)
 
 
 def getReader(f, fields):
@@ -32,16 +32,16 @@ def validate_file(f, fields):
     # Check for places where we didn't escape text
     for row in reader:
         if 'extra' in row and row['extra'] is not None:
-            ("Line {}:".format(reader.line_num), "Extra comma in line. Need quotes")
+            print("Line {}:".format(reader.line_num), "Extra comma in line. Need quotes")
             success = False
 
         try:
             int(row['form_id'])
             if row['note'] == 'XXXX': # XXX breaks on the last line
-                ("Line {}:".format(reader.line_num), "Not enough columns")
+                print("Line {}:".format(reader.line_num), "Not enough columns")
                 success = False
         except:
-            ("Line {}:".format(reader.line_num), "Bad ID '{}'. Need quotes on previous line.".format(row['form_id']))
+            print("Line {}:".format(reader.line_num), "Bad ID '{}'. Need quotes on previous line.".format(row['form_id']))
             success = False
 
     f.seek(0)
@@ -190,7 +190,7 @@ def importRecord(record, terms):
         position = Tracy().getPositionFromCode(record['posn_code'])
     except InvalidQueryException:
         if 'department' not in record:
-            ("There is no position code {} in Tracy and we need it for department".format(record['posn_code']))
+            print("There is no position code {} in Tracy and we need it for department".format(record['posn_code']))
             return False
 
 
@@ -227,7 +227,7 @@ def importRecord(record, terms):
     try:
         term = getTerm(record['term'], record['start'].split('-')[0], terms)
     except DoesNotExist:
-        ("XXX Can't find a matching term for '{}'".format(record['term']))
+        print("XXX Can't find a matching term for '{}'".format(record['term']))
         return False
 
     # estimate the proper hours and length of the contract

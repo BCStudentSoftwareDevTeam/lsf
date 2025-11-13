@@ -65,7 +65,7 @@ def laborReleaseForm(laborStatusKey):
             return redirect(url_for("main.supervisorPortal"))
 
         except Exception as e:
-            ("Error: ", e)
+            print("Error: ", e)
             message = "An error has occurred. Your Labor Release Form for {0} {1} was not submitted.".format(laborStatusForiegnKey.studentSupervisee.FIRST_NAME, laborStatusForiegnKey.studentSupervisee.LAST_NAME)
             flash(message, "danger")
             return redirect(url_for("main.supervisorPortal"))

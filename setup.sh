@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Check for correct python version
-VERSION=`python3 --version | awk '{ $2}'`
+VERSION=`python3 --version | awk '{print $2}'`
 if [ "${VERSION:0:1}" -ne "3" ] || [ "${VERSION:2:2}" -lt "10" ] || [ "${VERSION:2:2}" -gt "12" ]; then
 	echo "You must use Python > 3.10. You are using $VERSION"
 	echo "When upgrading, remember to install python3.X-dev and python3.X-venv"

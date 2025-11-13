@@ -42,7 +42,7 @@ def manage_departments():
                                 allSupervisors = allSupervisors
                                 )
     except Exception as e:
-        ("Error Loading all Departments", e)
+        print("Error Loading all Departments", e)
         return render_template('errors/500.html'), 500
 
 @admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
@@ -82,7 +82,7 @@ def removeSupervisorFromDepartment():
             return "False"
     
     except Exception as e:
-        (f'Could not remove user from department: {e}')
+        print(f'Could not remove user from department: {e}')
         return "", 500
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
@@ -98,5 +98,5 @@ def complianceStatusCheck():
             department.save()
             return jsonify({"Success": True})
     except Exception as e:
-        (e)
+        print(e)
         return jsonify({"Success": False})

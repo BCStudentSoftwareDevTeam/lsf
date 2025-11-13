@@ -96,7 +96,7 @@ def laborhistory(id):
 
 
     except Exception as e:
-        ("Error Loading Student Labor History", e)
+        print("Error Loading Student Labor History", e)
         return render_template('errors/500.html'), 500
 
 @main_bp.route("/laborHistory/download" , methods=['POST'])
@@ -107,7 +107,7 @@ def downloadFormHistory():
     """
     formSearchResults = retrieveFormSearchResult(request.form.get('downloadId'))
     if not formSearchResults:
-        (f"[ERROR] Missing or invalid download ID for student labor history.")
+        print(f"[ERROR] Missing or invalid download ID for student labor history.")
         return "", 500
 
     formSearchResultIds = json.loads(formSearchResults.formHistoryIds)
@@ -189,7 +189,7 @@ def populateModal(statusKey):
                                             ))
         return (resp)
     except Exception as e:
-        ("Error on button state: ", e)
+        print("Error on button state: ", e)
         message = "An error occured. Contact support using the link at the bottom of the website."
         flash(message, "danger")
         return (jsonify({"Success": False}))
@@ -244,7 +244,7 @@ def withdraw_form():
 
             return jsonify({"Success":True, "url":"/"})
     except Exception as e:
-        (e)
+        print(e)
         message = "An error occured. Your selected form for {0} {1} was not withdrawn.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
         flash(message, "danger")
         return jsonify({"Success": False, "url":"/"})

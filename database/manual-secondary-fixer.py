@@ -46,7 +46,7 @@ def update_record(form, row):
     form.save()
 
 def print_banner_row(row):
-    (labor_data.loc[row,:])
+    print(labor_data.loc[row,:])
 
 
 
@@ -99,15 +99,15 @@ rows_to_process = {
         1543: 34188
 }
 
-()
-("Processing Secondary Records")
-("--------------------------")
+print()
+print("Processing Secondary Records")
+print("--------------------------")
 for row, lsf_id in rows_to_process.items():
-    ()
+    print()
     form = LaborStatusForm.get_by_id(lsf_id);
-    (f"Processing {form.studentSupervisee_id}")
+    print(f"Processing {form.studentSupervisee_id}")
     if form.studentSupervisee_id != labor_data.loc[row,'B#']:
-        ("Mismatched Record!", form.studentSupervisee_id, labor_data.loc[row,'B#'])
+        print("Mismatched Record!", form.studentSupervisee_id, labor_data.loc[row,'B#'])
         quit()
 
     update_record(form, row)

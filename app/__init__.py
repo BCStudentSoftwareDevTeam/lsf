@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_bootstrap import Bootstrap
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
-('#############')
+
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 api = Api(app)
@@ -19,7 +19,6 @@ if 'use_banner' not in app.config.keys():
     app.config['use_banner'] = (app.config['ENV'] in ('production','staging'))
 
 
-
 # Record and output queries if requested
 from flask import session
 from peewee import BaseQuery
@@ -31,7 +30,9 @@ if app.config.get('show_queries'):
                 session['querycount'] = 0
 
             session['querycount'] += 1
-            if app.config.get('show_queries'): # in case we selectively disable
+            if app.config.get('show_queries'):
+                print("**Running query {}**".format(session['querycount']))
+                print(args[0])# in case we selectively disable
                 (args[0])
         return old_execute(*args, **kwargs)
     BaseQuery.execute = new_execute
