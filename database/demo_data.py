@@ -63,7 +63,7 @@ bothStudents = [
                 "MAJOR":"Computer Science",
                 "PROBATION":"0",
                 "ADVISOR":"Jan Pearce",
-                "STU_EMAIL":"u0125324935@gmail.com",
+                "STU_EMAIL":"cruzg@berea.edu",
                 "STU_CPO":"300",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
@@ -258,7 +258,7 @@ for position in positions:
     db.session.add(STUPOSN(**position))
     db.session.commit()
 
-(" * positions (TRACY) added")
+print(" * positions (TRACY) added")
 
 #############################
 # TRACY Staff
@@ -523,7 +523,7 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(" * terms added")
+
 
 #############################
 # Create a Pending Labor Status Form

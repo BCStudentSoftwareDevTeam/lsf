@@ -70,8 +70,6 @@ current_fields = [
 
 def import_file(filepath, fields):
     with open(filepath,'r',encoding="cp1252",newline='') as reader:
-        print("Importing {}...".format(filepath))
-        print("  * Validating...")
         if importf.validate_file(reader, fields):
             data = importf.getList(reader, fields)
             saved = 0
@@ -82,11 +80,11 @@ def import_file(filepath, fields):
                     saved += 1
                     print(".", end="", flush=True)
                     if saved % 100 == 0:
-                        (str(saved).rjust(8))
+                        print(str(saved).rjust(8))
                 else:
                     print("X", end="", flush=True)
 
-            ("\nCreated {} forms\n".format(saved))
+            print("\nCreated {} forms\n".format(saved))
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(terms)
 

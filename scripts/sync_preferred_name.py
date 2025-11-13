@@ -9,7 +9,6 @@ def connect_to_server(user,password):
     server = Server ('berea.edu', port=389, use_ssl=False, get_info='ALL')
     conn   = Connection (server, user=user, password=password)
     if not conn.bind():
-        (conn.result)
         raise Exception("BindError")
 
     return conn
@@ -29,7 +28,7 @@ def update_records(table, people):
 
         count = table.update(preferred_name=preferred).where(table.ID == bnumber).execute()
         if count:
-            ("Updating",bnumber,"name to",preferred)
+            print("Updating",bnumber,"name to",preferred)
 
 def alphaRange(start,end):
     return [chr(i) for i in range(ord(start), ord(end)+1)]
