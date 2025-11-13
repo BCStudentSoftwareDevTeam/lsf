@@ -61,6 +61,17 @@ Delete any lsf/TRACY migrations files or folders. Note: ** Do NOT delete .JSON O
 1. If you can't clone the repository, make sure your SSH public key is added to your bitbucket profile.
 2. Make sure that you are running `source setup.sh` and `./reset\_database.sh`, in that order, without errors. Errors there should be resolved first.
 
+## Development Tools
+
+### PR Description Generator
+Automatically generate pull request descriptions based on your git changes:
+
+```bash
+python3 scripts/generate_pr_description.py [base_branch]
+```
+
+See [scripts/README_PR_DESCRIPTION.md](scripts/README_PR_DESCRIPTION.md) for detailed usage instructions.
+
 ## Email Configuration
 There are a couple of options to test email handling. By default, all emails will be logged to the slack channel #labor-emails in the bereacs workspace.
 
