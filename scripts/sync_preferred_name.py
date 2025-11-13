@@ -42,7 +42,7 @@ def fetch_descriptions(conn, descriptions):
         conn.search('dc=berea,dc=edu', f"(&{letterQuery}{descriptionQuery})",
           attributes = ['samaccountname', 'givenname', 'sn', 'employeeid']
           )
-        (f"Found {len(conn.entries)} {descriptions} {letters[0]}-{letters[-1]} in AD");
+        print(f"Found {len(conn.entries)} {descriptions} {letters[0]}-{letters[-1]} in AD")
         people += conn.entries
 
     return people

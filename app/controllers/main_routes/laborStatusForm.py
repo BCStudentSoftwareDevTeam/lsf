@@ -90,7 +90,7 @@ def userInsert():
             try:
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
             except Exception as e:
-                ("Error when sending emails during break: " + str(e))
+                print("Error when sending emails during break: " + str(e))
 
             all_forms.append(True)
         except Exception as e:

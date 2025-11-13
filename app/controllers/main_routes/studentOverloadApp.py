@@ -85,17 +85,17 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
-    adjusted_change = AdjustmentForm.adjustedForm
+    adjustedChange = AdjustmentForm.adjustedForm
 
-    field_name = adjusted_change.fieldAdjusted
-    old_value  = adjusted_change.oldValue
-    new_value  = adjusted_change.newValue
+    fieldName = adjustedChange.fieldAdjusted
+    oldValue  = adjustedChange.oldValue
+    newValue  = adjustedChange.newValue
 
-    if field_name == "department":
-        old_dept = Department.get(Department.ORG == old_value)
-        new_dept = Department.get(Department.ORG == new_value)
-        old_value = old_dept.DEPT_NAME
-        new_value = new_dept.DEPT_NAME
+    if fieldName == "department":
+        oldDept = Department.get(Department.ORG == oldValue)
+        newDept = Department.get(Department.ORG == newValue)
+        oldValue = oldDept.DEPT_NAME
+        newValue = newDept.DEPT_NAME
 
 
     return render_template( 'main/studentOverloadApp.html',
