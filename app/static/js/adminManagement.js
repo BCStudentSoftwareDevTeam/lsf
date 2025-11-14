@@ -43,56 +43,45 @@ function liveSearch(selectPickerID, e) {
         }
       });
     }
+    else{$("#"+ selectPickerID).selectpicker("refresh");} // clear search list if <3 chars
 };
 
+let formToSubmit = null; // store form clicked
 
 function modal(button) {
-  if(button == "add" && $("#addlaborAdmin").val() != "") {
-    $("h2").html("Labor Administrators");
-    $("p").html("Are you sure you want to add " + $("#addlaborAdmin option:selected").text() + " as a Labor Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "add");
-    document.getElementById("submitModal").setAttribute("value", "add");
-    $("#modal").modal("show");
+  // map button IDs to {selectID, formID, header, actionText, key}
+  const formButtons = {
+    add:   { select: "#addlaborAdmin",       form: "#laborAdminForm",   header: "Labor Administrators",         action: "add",    noun: "Labor Administrator",         key: "addLaborAdmin" },
+    add1:  { select: "#addFinAidAdmin",      form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "add",    noun: "Financial Aid Administrator", key: "addFinAidAdmin" },
+    add2:  { select: "#addSaasAdmin",        form: "#SAASAdminForm",    header: "SAAS Administrators",          action: "add",    noun: "SAAS Administrator",          key: "addSaasAdmin" },
+    remove:{ select: "#removelaborAdmin",    form: "#laborAdminForm",   header: "Labor Administrators",         action: "remove", noun: "Labor Administrator",         key: "removeLaborAdmin" },
+    remove1:{ select: "#removeFinAidAdmin",  form: "#finAidAdminForm",  header: "Financial Aid Administrators", action: "remove", noun: "Financial Aid Administrator", key: "removeFinAidAdmin" },
+    remove2:{ select: "#removeSaasAdmin",    form: "#SAASAdminForm",    header: "SAAS Administrators",          action: "remove", noun: "SAAS Administrator",          key: "removeSaasAdmin" }
+  };
+
+  const adminForm = formButtons[button];
+  const select = $(adminForm.select);
+  
+  if (!select.val()) {
+    // no user selected
+    msgFlash("Please select a user", "warning");
+    return;
   }
-  else if (button == "add1" && $("#addFinAidAdmin").val() != "") {
-    $("h2").html("Financial Aid Administrators");
-    $("p").html("Are you sure you want to add " + $("#addFinAidAdmin option:selected").text() + " as a Financial Aid Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "addAid");
-    document.getElementById("submitModal").setAttribute("value", "addAid");
-    $("#modal").modal("show");
+
+  $(adminForm.form).find("#formActionField").val(adminForm.key);   // set hidden field value
+  formToSubmit = $(adminForm.form);
+
+  const selectedText = select.find("option:selected").text();
+  const message = `Are you sure you want to ${adminForm.action} ${selectedText} as a ${adminForm.noun}?`;
+
+  // populate modal
+  $("#adminModalHeader").html(adminForm.header);
+  $("#adminModalText").html(message);
+  $("#modal").modal("show");
+}
+
+$("#submitModal").on("click", function () {
+  if (formToSubmit) {
+    formToSubmit.submit();
   }
-  else if (button == "add2" && $("#addSaasAdmin").val() != "") {
-    $("h2").html("SAAS Administrators");
-    $("p").html("Are you sure you want to add " + $("#addSaasAdmin option:selected").text() + " as a SAAS Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "addSaas");
-    document.getElementById("submitModal").setAttribute("value", "addSaas");
-    $("#modal").modal("show");
-  }
-  else if (button == "remove" && $("#removelaborAdmin").val() != "") {
-    $("h2").html("Labor Administrators");
-    $("p").html("Are you sure you want to remove " + $("#removelaborAdmin option:selected").text() + " as a Labor Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "remove");
-    document.getElementById("submitModal").setAttribute("value", "remove");
-    $("#modal").modal("show");
-  }
-  else if (button == "remove1" && $("#removeFinAidAdmin").val() != "") {
-    $("h2").html("Financial Aid Administrators");
-    $("p").html("Are you sure you want to remove " + $("#removeFinAidAdmin option:selected").text() + " as a Financial Aid Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "removeAid");
-    document.getElementById("submitModal").setAttribute("value", "removeAid");
-    $("#modal").modal("show");
-  }
-  else if (button == "remove2" && $("#removeSaasAdmin").val() != "") {
-    $("h2").html("SAAS Administrators");
-    $("p").html("Are you sure you want to remove " + $("#removeSaasAdmin option:selected").text() + " as a SAAS Administrator?");
-    document.getElementById("submitModal").setAttribute("name", "removeSaas");
-    document.getElementById("submitModal").setAttribute("value", "removeSaas");
-    $("#modal").modal("show");
-  }
-  else {
-    category = "danger"
-    msg = "Please select a user.";
-    $("#flash_container").html('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>')
-    $("#flasher").delay(3000).fadeOut()
-  }
-};
+});
