@@ -25,7 +25,7 @@ emailTemplates = {
         "subject": "Labor Status Form Expired",
         "body": (
             "<p>Dear <strong>@@Supervisor@@</strong>,</p>"
-            "<p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>"
+            "<p>This email is to notify that the Labor Status Form submitted by <strong>@@   @@</strong> for <strong>@@Student@@</strong> has expired.</p>"
             "<p>&nbsp;</p>"
             "<p>You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>.</p>"
             "<p>Sincerely,</p>"
