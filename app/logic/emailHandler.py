@@ -32,7 +32,7 @@ class emailHandler():
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
-
+        self.adminName = ""
         self.positions = LaborStatusForm.select().where(LaborStatusForm.termCode == self.term, LaborStatusForm.studentSupervisee == self.student)
         self.supervisors = []
         for position in self.positions:
@@ -102,7 +102,6 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            # print("Debugging emailHandler.py: ", app.config)
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':
@@ -137,6 +136,43 @@ class emailHandler():
         else:
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
+
+    def statusResendEmail(self):
+        """
+        Sends email to labor supervisor and student when LSF is expired.
+        """
+
+        lsfID = self.laborStatusForm.laborStatusFormID
+        expired = self.laborStatusForm.isExpired
+        if not expired:
+            return
+        supervisorTemplate = EmailTemplate.get_or_none(
+            EmailTemplate.purpose == "Email when Labor Status Form is expired to Supervisor"
+        )
+        studentTemplate = EmailTemplate.get_or_none(
+            EmailTemplate.purpose == "Email when Labor Status Form is expired to Student"
+        )
+        if not supervisorTemplate or not studentTemplate:
+            return
+        try:
+            Presentday = date.today()  
+            already_sent = (EmailTracker
+                            .select()
+                            .where(
+                                (EmailTracker.formID == lsfID) &
+                                ((EmailTracker.subject == supervisorTemplate.subject) | (EmailTracker.subject == studentTemplate.subject)) &
+                                (EmailTracker.date == Presentday)  
+                            )
+                            .exists())
+            if already_sent:
+                return
+        except Exception as e:
+            print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
+        self.checkRecipient(
+            studentEmailPurpose=studentTemplate.purpose,
+            emailPurpose=supervisorTemplate.purpose,
+            secondaryEmailPurpose=None
+        )
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':

@@ -35,6 +35,34 @@ emailTemplates = {
         ),
         "audience": "Supervisor",
     },
+    "supervisorTemplate":{
+        "purpose":'Email when Labor Status Form is expired to Supervisor', 
+        "formType":"Labor Status Form", 
+        "action":"Expired", 
+        "subject":'Labor Status Form Expired', 
+        "body":(
+            '<p>Dear <strong>@@Supervisor@@</strong>,</p>'   
+            '<p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong> has expired.</p>'   
+            '<p>&nbsp;</p>'
+            '<p>You can resubmit the Labor Status Form for <strong>@@Student@@</strong>.</p>'
+            '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+        ), 
+        "audience":"Supervisor",
+    },
+    "studentTemplate":{
+        "purpose":'Email when Labor Status Form is expired to Student', 
+        "formType":"Labor Status Form", 
+        "action":"Expired", 
+        "subject":'Labor Status Form Expired', 
+        "body":(
+            '<p>Dear <strong>@@Student@@</strong>,</p>'
+            '<p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for you has expired.</p>'
+            '<p>&nbsp;</p>'
+            '<p>Please notify your supervisor <strong>@@Supervisor@@</strong> to resubmit the form.</p>'
+            '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+        ), 
+        "audience":"Student",
+    }
 }
 
 def addingTemplates():
