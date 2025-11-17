@@ -151,17 +151,16 @@ def populateModal(statusKey):
                 # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
-                if form.adjustedForm.fieldAdjusted == "weeklyhours": 
-                        newWeeklyHours = newValue
-                        oldWeeklyHours = oldValue 
-        
+            # if form.adjustedForm.fieldAdjusted == "weeklyhours": 
+            #             newWeeklyHours = newValue
+            #             oldWeeklyHours = oldValue 
             
             # Pending release or adjustment forms need the historyType known
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
 
         approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
-
+   
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
@@ -170,8 +169,6 @@ def populateModal(statusKey):
                                             pendingformType = pendingformType,
                                             buttonState = buttonState,
                                             approveLink = approveLink,
-                                            newWeeklyHours = newWeeklyHours if 'newWeeklyHours' in locals() else None,
-                                            oldWeeklyHours = oldWeeklyHours if 'oldWeeklyHours' in locals() else None
                                             ))
         return (resp)
     except Exception as e:

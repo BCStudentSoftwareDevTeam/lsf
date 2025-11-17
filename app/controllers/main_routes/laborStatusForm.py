@@ -201,4 +201,3 @@ def releaseAndRehire():
     except Exception as e:
         print("Error on release and rehire: ", e)
         return jsonify({"Success": False})
-

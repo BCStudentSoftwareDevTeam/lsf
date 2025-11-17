@@ -22,10 +22,7 @@ def confirm():
         form = forms.get()
     except DoesNotExist as e:
         flash("This contract is invalid or has expired.", "danger")
-        abort(404)
-
-    print('###Form: ', form)
-    
+        abort(404)    
     if form.studentConfirmation is not None: # 3 possible values, True, False, None
         verb = "accepted" if form.studentConfirmation else "denied"
         flash("This contract has already been " + verb + ".", "danger")
@@ -34,11 +31,7 @@ def confirm():
       # query adjustedform to get old/new values
     lsfId = form.laborStatusFormID
     adjustedForms = AdjustedForm.select().where(AdjustedForm.lsfId == lsfId)
-    print('#### ADJUSTED FORMS: ', adjustedForms)
 
-
-
-    
     laborDescription = {
         "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
         "expiration_date": form.studentExpirationDate,
