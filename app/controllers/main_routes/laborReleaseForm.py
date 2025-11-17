@@ -24,7 +24,6 @@ def laborReleaseForm(laborStatusKey):
     if not currentUser.isLaborAdmin:       # Not an admin
         if currentUser.student and not currentUser.supervisor:
             return redirect('/laborHistory/' + currentUser.student.ID)
-
     forms = LaborStatusForm.select().distinct().where(LaborStatusForm.laborStatusFormID == laborStatusKey)
     laborAdmins = (User.select(User, Supervisor).join(Supervisor)
                        .where(User.isLaborAdmin == True)
@@ -56,6 +55,7 @@ def laborReleaseForm(laborStatusKey):
             createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
             email = emailHandler(formHistoryID.formHistoryID)
             email.laborReleaseFormSubmitted(releaseContactUsername, releaseContactFullName)
+
 
 
             # Once all the forms are created, the user gets redirected to the

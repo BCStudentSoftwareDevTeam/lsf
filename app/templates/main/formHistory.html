@@ -27,7 +27,7 @@
           {% if currentUser.isLaborAdmin or form.formID.POSN_CODE != "S12345" or student %}
           <td id="{{form.formID.laborStatusFormID}}" class="modalLink" value="true">
             <a href="#" tabindex="0"><span class="h4">{{form.formID.termCode.termName}} - {{form.formID.department.DEPT_NAME}} Dept.</span></a>
-            <span class="pushRight h5">{{form.status}}</span>
+            <span class="pushRight h5">{{form.displayStatus}}</span>
             <p class="h6" id="second-line">{{form.formID.jobType}} - {{form.formID.POSN_TITLE}} ({{form.formID.POSN_CODE}})</p>
           </td>
           {% endif %}

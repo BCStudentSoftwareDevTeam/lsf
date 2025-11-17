@@ -8,7 +8,7 @@ from app.models.supervisor import Supervisor
 from app.models.student import Student
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
-from app.logic.adminManagement import searchForAdmin,  getUser, addAdmin, removeAdmin
+from app.logic.adminManagement import searchForAdmin, getUser
 from app.logic.utils import adminFlashMessage
 
 
@@ -25,7 +25,9 @@ def admin_Management():
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
-    users = User.select()
+    users = (User.select(User,Supervisor,Student)
+                .join(Supervisor,join_type=JOIN.LEFT_OUTER).switch()
+                .join(Student,join_type=JOIN.LEFT_OUTER))
     return render_template( 'admin/adminManagement.html',
                             title=('Admin Management'),
                             users = users
@@ -47,35 +49,43 @@ def adminSearch():
 
 @admin.route("/adminManagement/userInsert", methods=['POST'])
 def manageLaborAdmin():
-    if request.form.get("addAdmin"):
-        newAdmin = getUser('addAdmin')
-        addAdmin(newAdmin, 'labor')
-        adminFlashMessage(newAdmin, 'added', 'Labor')
+    actionMap = {
+    "addLaborAdmin":     {"selectPickerID": "addAdmin",                "type": "Labor",        "action": "add",    "pretty": "Labor"},
+    "removeLaborAdmin":  {"selectPickerID": "removeAdmin",             "type": "Labor",        "action": "remove", "pretty": "Labor"},
+    "addFinAidAdmin":    {"selectPickerID": "addFinancialAidAdmin",    "type": "FinancialAid", "action": "add",    "pretty": "Financial Aid"},
+    "removeFinAidAdmin": {"selectPickerID": "removeFinancialAidAdmin", "type": "FinancialAid", "action": "remove", "pretty": "Financial Aid"},
+    "addSaasAdmin":      {"selectPickerID": "addSAASAdmin",            "type": "Saas",         "action": "add",    "pretty": "SAAS"},
+    "removeSaasAdmin":   {"selectPickerID": "removeSAASAdmin",         "type": "Saas",         "action": "remove", "pretty": "SAAS"},
+    }    
 
-    elif request.form.get("removeAdmin"):
-        oldAdmin = getUser('removeAdmin')
-        removeAdmin(oldAdmin, 'labor')
-        adminFlashMessage(oldAdmin, 'removed', 'Labor')
+    key = request.form.get('action')
+    meta = actionMap[key]
+    user = getUser(actionMap[key]['selectPickerID'])
 
-    elif request.form.get("addFinancialAidAdmin"):
-        newAdmin = getUser('addFinancialAidAdmin')
-        addAdmin(newAdmin, 'finAid')
-        adminFlashMessage(newAdmin, 'added', 'Financial Aid')
-
-    elif request.form.get("removeFinancialAidAdmin"):
-        oldAdmin = getUser('removeFinancialAidAdmin')
-        removeAdmin(oldAdmin, 'finAid')
-        adminFlashMessage(oldAdmin, 'removed', 'Financial Aid')
-
-    elif request.form.get("addSAASAdmin"):
-        newAdmin = getUser('addSAASAdmin')
-        addAdmin(newAdmin, 'saas')
-        adminFlashMessage(newAdmin, 'added', 'SAAS')
-
-    elif request.form.get("removeSAASAdmin"):
-        oldAdmin = getUser('removeSAASAdmin')
-        removeAdmin(oldAdmin, 'saas')
-        adminFlashMessage(oldAdmin, 'removed', 'SAAS')
-
+    # pick addAdmin or removeAdmin dynamically
+    if meta['action'] == 'add':
+        addAdmin(user, meta['type'])
+    else:
+        removeAdmin(user, meta['type'])
+    
+    flashMessage(user, 
+                    'added' if meta["action"] == "add" else 'removed', 
+                    meta["pretty"])
+             
     return redirect(url_for('admin.admin_Management'))
 
+def addAdmin(user, adminType):
+    setattr(user, f"is{adminType}Admin", True)
+    user.save()
+
+def removeAdmin(user, adminType):
+    setattr(user, f"is{adminType}Admin", False)
+    user.save()
+
+def flashMessage(user, action, adminType):
+    message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
+
+    if action == 'added':
+        flash(message, "success")
+    elif action == 'removed':
+        flash(message, "danger")

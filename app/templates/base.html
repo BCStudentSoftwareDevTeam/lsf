@@ -46,6 +46,16 @@
                 {% endif %}
             {% endwith %}
         </div>
+        
+        <script>
+        window.setTimeout(function() {
+            $("#flash_container .alert").fadeTo(500, 0).slideUp(500, function() {
+            $(this).remove();
+            });
+        }, 4000);
+        </script>
+
+
         {% block app_content %}
             {# application content needs to be provided in the app_content block #}
         {% endblock %}
