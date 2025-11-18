@@ -1,11 +1,5 @@
 $(document).ready(function () {
-  var termOption = $('#termSelect option[data-preloaded="current"]');
   var supervisorOption = $('#supervisorSelect option[data-preloaded="current"]');
-  
-  g_currentTermOption = {
-    value: termOption.val(),
-    text: termOption.text()
-  };
   
   g_currentUserOption = {
     value: supervisorOption.val(),
@@ -13,7 +7,6 @@ $(document).ready(function () {
     'data-content': supervisorOption.attr('data-content')
   };
   
-  termOption.remove();
   supervisorOption.remove();
 
   $('#formSearchButton').on('click', function () {
@@ -84,10 +77,6 @@ $(document).ready(function () {
   $('#superviseesPendingForms').on('click', function () {
     $("input:checkbox").removeAttr("checked");
     runFormSearchQuery("pendingForms");
-  });
-
-  $('#currentTerm').on('click', function () {
-    runFormSearchQuery("currentTerm");
   });
 
   $('#columnPicker').on('change', function () {
@@ -224,7 +213,7 @@ let order = $('#orderPicker').val()
 
 switch (button) {
 case "mySupervisees":
-  termCode = "currentTerm"
+  termCode = "activeTerms"
   departmentID = ""
   supervisorID = "currentUser"
   studentID = ""
@@ -235,22 +224,11 @@ case "mySupervisees":
       break;
 
     case "pendingForms":
-      termCode = "currentTerm"
+      termCode = "activeTerms"
       departmentID = ""
       supervisorID = "currentUser"
       studentID = ""
       formStatusList = ["Pending", "Pre-Student Approval"]
-      break;
-
-    case "currentTerm":
-      termCode = "currentTerm"
-      departmentID = ""
-      supervisorID = ""
-      studentID = ""
-      formStatusList = []
-      if (currentView == "simple") { // avoid duplicates in the table
-        formTypeList = ["Labor Status Form"]
-      }
       break;
 
     default:
@@ -430,7 +408,7 @@ function loadSavedSearchOptions(cookies) {
     'departmentOption': 'departmentSelect'
   };
   
-  const skipValues = ['', 'currentUser', 'currentTerm', 'activeTerms'];
+  const skipValues = ['', 'currentUser', 'activeTerms'];
   
   Object.keys(selectMap).forEach(optionKey => {
     const selectId = selectMap[optionKey];
@@ -450,8 +428,8 @@ function loadSavedSearchOptions(cookies) {
 
 function setFormSearchValues(searchDict) {
 
-  if (searchDict.termCode == "currentTerm") {
-    $("#termSelect").selectpicker("val", g_currentTerm);
+  if (searchDict.termCode == "activeTerms") {
+    $("#termSelect").selectpicker("val", "activeTerms");
   } else {
     $("#termSelect").selectpicker("val", searchDict.termCode);
   }
@@ -523,13 +501,6 @@ function resetSelect(selectPickerID) {
   $select.selectpicker("refresh");
 }
 
-function injectCurrentTermOption() {
-  $('#termSelect option[value="' + g_currentTermOption.value + '"]').remove();
-  $('#termSelect').append($('<option>', g_currentTermOption));
-  $('#termSelect').selectpicker('val', g_currentTermOption.value);
-  $('#termSelect').selectpicker('refresh');
-}
-
 function injectCurrentUserOption() {
   $('#supervisorSelect option[value="' + g_currentUserOption.value + '"]').remove();
   $('#supervisorSelect').append($('<option>', g_currentUserOption));
@@ -539,14 +510,12 @@ function injectCurrentUserOption() {
 
 $('#mySupervisees').on('click', function () {
   $("input:checkbox").removeAttr("checked");
-  injectCurrentTermOption();
   injectCurrentUserOption();
   runFormSearchQuery("mySupervisees");
 });
 
 $('#superviseesPendingForms').on('click', function () {
   $("input:checkbox").removeAttr("checked");
-  injectCurrentTermOption();
   injectCurrentUserOption();
   runFormSearchQuery("pendingForms");
 });

@@ -32,7 +32,6 @@
   src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
-  var g_currentTerm = {{ g.openTerm }};
   var g_currentUser = "{{g.currentUser.supervisor}}";
 </script>
 
@@ -77,7 +76,6 @@
                 <select class="selectpicker" name='term' data-live-search-placeholder="Type term to search" id='termSelect' data-live-search='true' title="All terms">
                   <option value="">All terms</option>
                   <option value="activeTerms">All Active Terms</option>
-                  <option value="{{g.openTerm}}" data-preloaded="current" style="display:none;">{{currentTermName}}</option>
                 </select>
               </div>
             </div>
@@ -302,9 +300,7 @@
   </div>
 </div>
 <script>
-  var g_currentTerm = {{ g.openTerm }};
   var g_currentUser = "{{g.currentUser.supervisor}}";
-  var g_currentTermOption = null;
   var g_currentUserOption = null;
 </script>
 {% include "snips/pendingNotesModal.html" %}
