@@ -1,5 +1,5 @@
 import operator
-from datetime import datetime, date
+from datetime import date
 from functools import reduce
 
 from flask import json, jsonify, g, make_response
@@ -40,7 +40,7 @@ def getDatatableData(request):
     if termCode == "currentTerm":
         termCode = g.openTerm
     elif termCode == "activeTerms":
-        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= datetime.now()))
+        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= date.today()))
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
     if supervisorId == "currentUser":
