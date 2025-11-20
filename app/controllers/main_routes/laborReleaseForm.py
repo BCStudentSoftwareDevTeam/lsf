@@ -44,7 +44,6 @@ def laborReleaseForm(laborStatusKey):
             # will be able to submit a labor release form. This section will create the new
             # labor release form, and a new form in the form history table.
             laborStatusForiegnKey = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
-            formHistoryID = FormHistory.get(FormHistory.formID == laborStatusKey) #need formHistoryID for emailHandler
             datepickerDate = request.form.get("date")
             releaseDate = datetime.strptime(datepickerDate, "%m/%d/%Y").strftime("%Y-%m-%d")
             releaseReason = request.form.get("notes")
@@ -52,12 +51,9 @@ def laborReleaseForm(laborStatusKey):
             releaseContactUsername = request.form.get("contactPerson")
             releaseContactPerson = User.get(User.username == releaseContactUsername)
             releaseContactFullName = releaseContactPerson.fullName
-            createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
-            email = emailHandler(formHistoryID.formHistoryID)
+            newFormHistory = createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
+            email = emailHandler(newFormHistory.formHistoryID)
             email.laborReleaseFormSubmitted(releaseContactUsername, releaseContactFullName)
-
-
-
             # Once all the forms are created, the user gets redirected to the
             # home page and gets a flash message telling them the forms were
             # submiteds
@@ -98,4 +94,5 @@ def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, rele
                                 status = status.statusName,
                                 rejectReason = None
                                 )
+    return newFormHistory
 
