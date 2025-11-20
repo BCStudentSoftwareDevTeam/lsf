@@ -386,43 +386,75 @@ class emailHandler():
 
         self.send(message)
 
-    # This method is responsible for replacing the keyword form the templates in the database with the data in the laborStatusForm
-    def replaceText(self, form):
+    def replaceText(self, template_body):
+        # Refresh formHistory to ensure we see latest DB state (defensive)
+        try:
+            from app.models import FormHistory
+            self.formHistory = FormHistory.get(FormHistory.formHistoryID == self.formHistory.formHistoryID)
+        except Exception:
+            pass
+
+        # Debug - show what email handler currently sees
+        try:
+            print("DEBUG: formHistory ID:", getattr(self.formHistory, "formHistoryID", None))
+            print("DEBUG: releaseForm_id:", getattr(self.formHistory, "releaseForm_id", None))
+            if getattr(self.formHistory, "releaseForm", None):
+                print("DEBUG: releaseReason (db):", repr(self.formHistory.releaseForm.reasonForRelease))
+                print("DEBUG: releaseDate (db):", getattr(self.formHistory.releaseForm.releaseDate, "strftime", lambda fmt: self.formHistory.releaseForm.releaseDate)("%m/%d/%Y"))
+            else:
+                print("DEBUG: No releaseForm attached")
+        except Exception as e:
+            print("DEBUG: exception while introspecting formHistory:", e)
+
+        form = template_body
         form = form.replace("@@Creator@@", self.formHistory.createdBy.fullName)
-        # 'Supervisor' is the supervisor on the current laborStatusForm that correspond to the formID we passed in when creating the class
         form = form.replace("@@Supervisor@@", self.laborStatusForm.supervisor.FIRST_NAME + " " + self.laborStatusForm.supervisor.LAST_NAME)
         form = form.replace("@@Student@@", self.laborStatusForm.studentSupervisee.FIRST_NAME + " " + self.laborStatusForm.studentSupervisee.LAST_NAME)
         form = form.replace("@@StudB@@", self.laborStatusForm.studentSupervisee.ID)
-        form = form.replace("@@Position@@", self.laborStatusForm.POSN_CODE+ ", " + self.laborStatusForm.POSN_TITLE)
+        form = form.replace("@@Position@@", self.laborStatusForm.POSN_CODE + ", " + self.laborStatusForm.POSN_TITLE)
         form = form.replace("@@Department@@", self.laborStatusForm.department.DEPT_NAME)
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
 
+        # Safely substitute release fields from the DB if present
+        if getattr(self.formHistory, "releaseForm", None):
+            rf = self.formHistory.releaseForm
+            # protect against None or bad values
+            rr = rf.reasonForRelease if getattr(rf, "reasonForRelease", None) else ""
+            rd = rf.releaseDate.strftime("%m/%d/%Y") if getattr(rf, "releaseDate", None) else ""
+            form = form.replace("@@ReleaseReason@@", rr)
+            form = form.replace("@@ReleaseDate@@", rd)
+        else:
+            form = form.replace("@@ReleaseReason@@", "")
+            form = form.replace("@@ReleaseDate@@", "")
+
+        # rest of replacements
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
-        if self.laborStatusForm.weeklyHours != None:
+        if self.laborStatusForm.weeklyHours is not None:
             form = form.replace("@@Hours@@", self.weeklyHours)
         else:
             form = form.replace("@@Hours@@", self.contractHours)
+
         if self.term.isBreak:
-            previousSupervisorNames = ""
-            for supervisor in self.supervisors[:-1]:
-                previousSupervisorNames += supervisor.FIRST_NAME + " " + supervisor.LAST_NAME + ", "
-            previousSupervisorNames = previousSupervisorNames[:-2]
+            previousSupervisorNames = ", ".join([s.FIRST_NAME + " " + s.LAST_NAME for s in self.supervisors[:-1]]) if len(self.supervisors) > 1 else ""
             form = form.replace("@@PreviousSupervisor(s)@@", previousSupervisorNames)
         elif self.primaryForm:
-            # 'Primary Supervisor' is the primary supervisor of the student who's laborStatusForm is passed in the initializer
             form = form.replace("@@PrimarySupervisor@@", self.primaryForm.formID.supervisor.FIRST_NAME + " " + self.primaryForm.formID.supervisor.LAST_NAME)
+
         if self.formHistory.adjustedForm:
             form = form.replace("@@NewAdjustmentField@@", self.newAdjustmentField)
             form = form.replace("@@CurrentAdjustmentField@@", self.oldAdjustmentField)
+
         form = form.replace("@@SupervisorEmail@@", self.supervisorEmail)
         form = form.replace("@@Date@@", self.date)
-        form = form.replace("@@ReleaseReason@@", self.releaseReason)
-        form = form.replace("@@ReleaseDate@@", self.releaseDate)
         form = form.replace("@@link@@", self.link)
         form = form.replace("@@StudentConfirmationLink@@", self.confirmationLink)
-        if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
+
+        if getattr(self.laborStatusForm, "studentExpirationDate", None):
             form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
-        return(form)
+
+        # Print final rendered email for debugging
+        print("DEBUG: rendered email body preview:", form[:1000])  # print first 1000 chars
+        return form
