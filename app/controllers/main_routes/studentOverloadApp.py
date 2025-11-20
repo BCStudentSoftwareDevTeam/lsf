@@ -18,7 +18,6 @@ from app.models.overloadForm import *
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
     overloadForm = FormHistory.get_by_id(formHistoryId)
-    AdjustmentForm = FormHistory.get_by_id(formHistoryId)
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
@@ -85,17 +84,22 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
-    adjustedChange = AdjustmentForm.adjustedForm
+    fieldName = None 
+    oldValue = None
+    newValue = None
+    # this condition is here so that we do not error out on a new overload form. however, if we are coming from an adjustment, we want to show the changes.
+    if overloadForm.adjustedForm is not None:    
+        adjustedChange = overloadForm.adjustedForm
 
-    fieldName = adjustedChange.fieldAdjusted
-    oldValue  = adjustedChange.oldValue
-    newValue  = adjustedChange.newValue
+        fieldName = adjustedChange.fieldAdjusted
+        oldValue  = adjustedChange.oldValue
+        newValue  = adjustedChange.newValue
 
-    if fieldName == "department":
-        oldDept = Department.get(Department.ORG == oldValue)
-        newDept = Department.get(Department.ORG == newValue)
-        oldValue = oldDept.DEPT_NAME
-        newValue = newDept.DEPT_NAME
+        if fieldName == "department":
+            oldDept = Department.get(Department.ORG == oldValue)
+            newDept = Department.get(Department.ORG == newValue)
+            oldValue = oldDept.DEPT_NAME
+            newValue = newDept.DEPT_NAME
 
 
     return render_template( 'main/studentOverloadApp.html',
@@ -193,14 +197,14 @@ def updateDatabase(overloadFormHistoryID):
             overloadForm = overloadFormHistory.overloadForm
             
             
-            
+            # this line is here for an adjustment form that does not create an overload form yet. We do this so we can tie both of them together. 
             if overloadForm is None: 
                 overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
                 overloadForm.studentOverloadReason = overloadReason   
                 overloadFormHistory.overloadForm = overloadForm 
                 overloadFormHistory.save() 
                 
-            else: 
+            else:
                 overloadForm.studentOverloadReason = overloadReason 
                 overloadForm.save()
 
