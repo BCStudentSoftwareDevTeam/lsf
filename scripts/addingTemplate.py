@@ -5,7 +5,7 @@ emailTemplates = {
         "purpose": "Labor Release Form Admin Notification",
         "formType": "Labor Status Form",
         "action": "Submitted",
-        "subject": "Student has been proposed to be released by their supervisor",
+        "subject": "Labor Release Form Submitted",
         "body": (
             "<p>Dear <strong>@@Admin@@</strong>,</p>"
             "<p>A Labor Release Form has been submitted by "
