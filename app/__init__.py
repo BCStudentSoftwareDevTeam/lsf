@@ -30,10 +30,9 @@ if app.config.get('show_queries'):
                 session['querycount'] = 0
 
             session['querycount'] += 1
-            if app.config.get('show_queries'):
+            if app.config.get('show_queries'):# in case we selectively disable
                 print("**Running query {}**".format(session['querycount']))
-                print(args[0])# in case we selectively disable
-                (args[0])
+                print(args[0])
         return old_execute(*args, **kwargs)
     BaseQuery.execute = new_execute
 
