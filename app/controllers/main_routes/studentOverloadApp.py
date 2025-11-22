@@ -128,7 +128,7 @@ def studentOverloadApp(formHistoryId):
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
     if formHistory.historyType_id != "Labor Overload Form":
-        ("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
+        print("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
         abort(500)
 
     # send a withdrawal notification to student and supervisor
@@ -197,7 +197,7 @@ def updateDatabase(overloadFormHistoryID):
             overloadForm = overloadFormHistory.overloadForm
             
             
-            # this line is here for an adjustment form that does not create an overload form yet. We do this so we can tie both of them together. 
+            # this line here for an adjustment form that has not created an overload form yet so we tie both of them together
             if overloadForm is None: 
                 overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
                 overloadForm.studentOverloadReason = overloadReason   

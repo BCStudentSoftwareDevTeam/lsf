@@ -9,6 +9,7 @@ def connect_to_server(user,password):
     server = Server ('berea.edu', port=389, use_ssl=False, get_info='ALL')
     conn   = Connection (server, user=user, password=password)
     if not conn.bind():
+        print(conn.result)
         raise Exception("BindError")
 
     return conn

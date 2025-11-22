@@ -120,7 +120,7 @@ class Test_Routes:
                     pytest.fail("Remote Disconnected!")
                 else:
                     if(self.verbose):
-                        (colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
+                        print(colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
                     pass
 
         def check_verbose_level(self, request):

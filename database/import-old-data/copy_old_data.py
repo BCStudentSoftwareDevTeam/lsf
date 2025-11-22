@@ -70,11 +70,14 @@ current_fields = [
 
 def import_file(filepath, fields):
     with open(filepath,'r',encoding="cp1252",newline='') as reader:
+        print("Importing {}...".format(filepath))
+        print("  * Validating...")
         if importf.validate_file(reader, fields):
+            print("  * Getting records...")
             data = importf.getList(reader, fields)
             saved = 0
             terms = {}
-            ("  * Creating forms...")
+            print("  * Creating forms...")
             for record in data:
                 if importf.importRecord(record, terms):
                     saved += 1

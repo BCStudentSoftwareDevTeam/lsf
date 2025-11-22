@@ -11,6 +11,7 @@ with open('activepositions.csv','r',encoding="cp1252",newline='') as f:
     reader = csv.DictReader(f, delimiter=',', restkey='extra', restval='XXXX')
     reader.__next__() # skip headers
     for row in reader:
+        #print(row)
         bnumber = row['ID']
         position = row['Position']
 

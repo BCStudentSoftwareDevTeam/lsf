@@ -108,9 +108,12 @@ labor_data = pd.read_csv("active_jobs.csv")
 secondary_indexes = {} # store the secondary position indexes for each B# 
 primary_indexes = {}  # store the primary position indexes for each B# 
 supervisor_cache = {}
-
+print("Updating departments...")
 
 get_all_departments()
+
+# initial pass, ensuring supervisors and students are in our database and collating student records
+print("Initial pass through the data...")
 
 
 for row in range(len(labor_data)):
@@ -230,7 +233,10 @@ manual_records = {}
 ###########################################################################################
 ### Secondaries ###
 ###########################################################################################
-
+###########################################################################################
+print()
+print("Processing Secondary Records")
+print("--------------------------")
 for student_id, banner_forms in secondary_indexes.items():
 
 

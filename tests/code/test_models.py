@@ -13,7 +13,7 @@ from app.models.formHistory import Status
 from app.models.laborReleaseForm import LaborReleaseForm
 
 for dept in Department.select().where(Department.isActive == True):
-    (dept.departmentID, dept.DEPT_NAME)
+    print(dept.departmentID, dept.DEPT_NAME)
 
 @pytest.mark.integration
 def test_user_model():

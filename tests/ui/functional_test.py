@@ -36,4 +36,4 @@ class Test_Routes(MultipleBrowserTest):
                     print("  {}:".format(url), end=" ")
                     browser.get(base_url + url)
                     #assert 200 == urllib.request.urlopen('{}/{}'.format(base_url, url)).getcode()
-                    (colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
+                    print(colorama.Fore.GREEN + "✓" + colorama.Style.RESET_ALL)
