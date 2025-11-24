@@ -179,13 +179,16 @@ def populateModal(statusKey):
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
 
+        approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
+
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
                                             statusForm = statusForm,
                                             currentDate = currentDate,
                                             pendingformType = pendingformType,
-                                            buttonState = buttonState
+                                            buttonState = buttonState,
+                                            approveLink = approveLink,
                                             ))
         return (resp)
     except Exception as e:
