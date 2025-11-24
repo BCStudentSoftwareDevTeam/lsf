@@ -32,7 +32,6 @@
   src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
-  var g_currentTerm = {{ g.openTerm }};
   var g_currentUser = "{{g.currentUser.supervisor}}";
 </script>
 
@@ -70,28 +69,21 @@
         <form id="supervisorPortalForm">
           <div class="col-md-2"></div> <!-- empty div used for positioning -->
           <div class="col-md-5">
-            <div class="form-group">
+            <div class="form-group" id="termSelectParent">
               <br>
               <label for="termSelect">Term</label>
               <div>
-                <select class="selectpicker" name='term' id='termSelect' data-live-search='true' title="All terms">
+                <select class="selectpicker" name='term' data-live-search-placeholder="Type term to search" id='termSelect' data-live-search='true' title="All terms">
                   <option value="">All terms</option>
                   <option value="activeTerms">All Active Terms</option>
-                  {% for term in terms %}
-                  <option value="{{term.termCode}}">
-                    {{term.termCode.termName}}
-                  </option>
-                  {% endfor %}
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="departmentSelectParent">
               <label for="departmentSelect">Department</label>
               <div>
-                <select class="selectpicker" id="departmentSelect" data-live-search='true' title="Department">
-                  {% if departments|count != 1 %}
+                <select class="selectpicker" id="departmentSelect" data-live-search-placeholder="Type department to search" data-live-search='true' title="Department">
                   <option value="" selected>All departments</option>
-                  {% endif %}
                   {% for department in departments %}
                   <!-- We want to either select the first option, or the option that matches the department -->
                   {% if department.isActive %}
@@ -105,38 +97,26 @@
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="supervisorSelectParent">
               <label for="supervisorSelect">Supervisor</label>
               <div class="dropdown">
-                <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search='true'
+                <select class="selectpicker" name='supervisor' id='supervisorSelect' data-live-search-placeholder="Type name or B# to search" data-live-search='true'
                   title="All supervisors">
                   <option value="">All supervisors</option>
-                  {% for supervisor in supervisors %}
-                  {% if supervisor.isActive %}
-                  <option value="{{supervisor.ID}}"
-                    data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}} <small class='text-muted'>  ({{supervisor.ID}})</small>">
-                    {% else %}
-                  <option value="{{supervisor.ID}}"
-                    data-content="<div class='text-muted'>{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}} <small>({{supervisor.ID}}) --INACTIVE-- </small></div>">
-                    {% endif %}
-                    {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
-                  </option>
-                  {% endfor %}
+                  <option value="{{g.currentUser.supervisor}}" data-preloaded="current" style="display:none;" 
+                        data-content="{{g.currentUser.supervisor.preferred_name or g.currentUser.supervisor.legal_name}} 
+                        {{g.currentUser.supervisor.LAST_NAME}} <small class='text-muted'> ({{g.currentUser.supervisor.ID}})</small>">
+                  {{g.currentUser.supervisor.preferred_name or g.currentUser.supervisor.legal_name}} {{g.currentUser.supervisor.LAST_NAME}} ({{g.currentUser.supervisor.ID}})
+                </option>
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="studentSelectParent">
               <label for="studentSelect">Student</label>
               <div>
-                <select class="selectpicker" name='student' id='studentSelect' data-live-search='true'
+                <select class="selectpicker" name='student' id='studentSelect' data-live-search-placeholder="Type name or B# to search" data-live-search='true'
                   title="All students">
                   <option value="">All students</option>
-                  {% for student in students %}
-                  <option value="{{student.ID}}"
-                    data-content="{{student.FIRST_NAME}} {{student.LAST_NAME}}<small class='text-muted'> ({{student.ID}})</small>">
-                    {{student.FIRST_NAME}} {{student.LAST_NAME}} ({{student.ID}})
-                  </option>
-                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -319,6 +299,10 @@
     </div>
   </div>
 </div>
+<script>
+  var g_currentUser = "{{g.currentUser.supervisor}}";
+  var g_currentUserOption = null;
+</script>
 {% include "snips/pendingNotesModal.html" %}
 {% include "snips/FormsDeny.html" %}
 {% include "snips/pendingApprovalModal.html" %}
