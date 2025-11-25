@@ -155,13 +155,12 @@ class emailHandler():
         if not supervisorTemplate or not studentTemplate:
             return
         try:
-            Presentday = date.today()  
             already_sent = (EmailTracker
                             .select()
                             .where(
                                 (EmailTracker.formID == lsfID) &
                                 ((EmailTracker.subject == supervisorTemplate.subject) | (EmailTracker.subject == studentTemplate.subject)) &
-                                (EmailTracker.date == Presentday)  
+                                (EmailTracker.date == date.today())  
                             )
                             .exists())
             if already_sent:
