@@ -17,19 +17,19 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
-    overloadForm = FormHistory.get_by_id(formHistoryId)
+    overloadHistory = FormHistory.get_by_id(formHistoryId)
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
         if not currentUser.student:
             return render_template('errors/403.html'), 403
-        if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
+        if currentUser.student.ID != overloadHistory.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()
                     .join(Department)
-                    .where(LaborStatusForm.laborStatusFormID == overloadForm.formID)).get()
+                    .where(LaborStatusForm.laborStatusFormID == overloadHistory.formID)).get()
     prefillStudentName = lsfForm.studentSupervisee.FIRST_NAME + " "+ lsfForm.studentSupervisee.LAST_NAME
     prefillStudentBnum = lsfForm.studentSupervisee.ID
     prefillStudentCPO = lsfForm.studentSupervisee.STU_CPO
@@ -39,7 +39,6 @@ def studentOverloadApp(formHistoryId):
     prefillPosition = lsfForm.POSN_TITLE
     prefillHoursOverload = lsfForm.weeklyHours
 
-    listOfTerms = []
     today = date.today()
     termYear = today.year * 100
     termsInYear = Term.select(Term).where(Term.termCode.between(termYear-1, termYear + 15))
@@ -84,29 +83,27 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
-    fieldName = None 
-    oldValue = None
-    newValue = None
-    # this condition is here so that we do not error out on a new overload form. however, if we are coming from an adjustment, we want to show the changes.
-    if overloadForm.adjustedForm is not None:    
-        adjustedChange = overloadForm.adjustedForm
+    # an overload can be created from a form adjustment. if it does, 
+    # it means the overload form history links to an adjustment form that contains the adjusted data we want for the overload
+    
+    adjustedField, oldValue, newValue = (None, None, None)
 
-        fieldName = adjustedChange.fieldAdjusted
-        oldValue  = adjustedChange.oldValue
-        newValue  = adjustedChange.newValue
-        # this field is here to make the department names show up instead of org codes
-        if fieldName == "department":
-            oldDept = Department.get(Department.ORG == oldValue)
-            newDept = Department.get(Department.ORG == newValue)
-            oldValue = oldDept.DEPT_NAME
-            newValue = newDept.DEPT_NAME
+    if overloadHistory.adjustedForm:    
+        adjustmentForm = overloadHistory.adjustedForm
 
+        adjustedField = adjustmentForm.fieldAdjusted
+        oldValue  = adjustmentForm.oldValue
+        newValue  = adjustmentForm.newValue
+
+        if adjustedField == "department":
+            oldValue = Department.get(Department.ORG == oldValue).DEPT_NAME
+            newValue = Department.get(Department.ORG == newValue).DEPT_NAME
 
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
                             username = currentUser,
-                            overloadForm = overloadForm,
-                            fieldName = fieldName,
+                            overloadHistory = overloadHistory,
+                            adjustedField = adjustedField,
                             oldValue = oldValue,
                             newValue = newValue,
                             prefillStudentName = prefillStudentName,

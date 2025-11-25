@@ -1,15 +1,18 @@
-from flask import render_template, request, json, redirect, url_for, send_file, g, flash
-from peewee import fn
+from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
+from peewee import JOIN
+from functools import reduce
+import operator
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
+from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor
+from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
@@ -31,47 +34,16 @@ def supervisorPortal():
 
         return render_template('errors/403.html'), 403
     
-    terms = LaborStatusForm.select(LaborStatusForm.termCode).distinct().order_by(LaborStatusForm.termCode.desc())
-    allSupervisors = Supervisor.select()
-    supervisorFirstName = fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name)
-    studentFirstName = fn.COALESCE(Student.preferred_name, Student.legal_name)
-    department = None
-    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
-        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
-        students = (Student.select(Student, studentFirstName)
-                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME))
-
-    else:
-        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-        deptNames = [department.DEPT_NAME for department in departments]
-
-        supervisorPrimaryDepartment = Department.select().join(SupervisorDepartment) # count up all forms for a supervisor in department and get the max
-
-        supervisors = (Supervisor.select(Supervisor, supervisorFirstName)
-                                 .join_from(Supervisor, LaborStatusForm)
-                                 .join_from(LaborStatusForm, Department)
-                                 .where(Department.DEPT_NAME.in_(deptNames))
-                                 .distinct()
-                                 .order_by(Supervisor.isActive.desc(), supervisorFirstName.contains("Unknown"), supervisorFirstName, Supervisor.LAST_NAME))
-        
-        students = (Student.select(Student, studentFirstName)
-                           .join_from(Student, LaborStatusForm)
-                           .join_from(LaborStatusForm, Department)
-                           .where(Department.DEPT_NAME.in_(deptNames))
-                           .order_by(studentFirstName.contains("Unknown"), studentFirstName, Student.LAST_NAME)
-                           .distinct())
     if request.method == 'POST':
         return getDatatableData(request)
+    
+    if currentUser.isLaborAdmin or currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin:
+        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    else:
+        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     return render_template('main/supervisorPortal.html',
-                            terms = terms,
-                            supervisors = supervisors,
-                            allSupervisors = allSupervisors,
-                            students = students,
                             departments = departments,
-                            department = department,
                             currentUser = currentUser
                             )
 
@@ -112,7 +84,21 @@ def downloadSupervisorPortalResults():
     )
     return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
-@main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET'])
+@main_bp.route('/supervisorPortal/liveSearch', methods=['GET'])
+def SupervisorPortalSearch():
+    """
+    Returns a list of users that match a given string
+    """
+    searchType = request.args.get("searchType")
+    userInput = request.args.get("userInput")
+
+    if not searchType or not userInput:
+        return jsonify({}), 400
+    currentUser = require_login()
+    userList = searchSupervisorPortal(currentUser, searchType, userInput)
+    return jsonify(userList)
+
+@main_bp.route('/lsf/<formHistoryId>/submitToBanner', methods=['GET']) 
 def submitToBanner(formHistoryId):
     if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403      

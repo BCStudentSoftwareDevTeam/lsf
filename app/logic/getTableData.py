@@ -1,9 +1,9 @@
 import operator
-from datetime import datetime, date
+from datetime import date
 from functools import reduce
 
 from flask import json, jsonify, g, make_response
-from peewee import fn, Case
+from peewee import fn, SQL
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.logic.search import getDepartmentsForSupervisor
@@ -40,7 +40,7 @@ def getDatatableData(request):
     if termCode == "currentTerm":
         termCode = g.openTerm
     elif termCode == "activeTerms":
-        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= datetime.now()))
+        termCode = list(Term.select(Term.termCode).where(Term.termEnd >= date.today()))
     departmentId = queryFilterDict.get('departmentID', "")
     supervisorId = queryFilterDict.get('supervisorID', "")
     if supervisorId == "currentUser":
@@ -82,10 +82,9 @@ def getDatatableData(request):
     if clauses:
         formSearchResults = formSearchResults.where(reduce(operator.and_, clauses))
     if not g.currentUser.isLaborAdmin:
-        supervisorDepartments = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
+        supervisorDepartments = getDepartmentsForSupervisor(g.currentUser)
         formSearchResults = formSearchResults.where(FormHistory.formID.department.in_(supervisorDepartments)) 
-    recordsTotal = len(formSearchResults)
-
+    recordsTotal = formSearchResults.count()
     # this checks and finds the first value that is not null of preferred_name, legal_name and last_name.
     # including last_name is necessary because there are like 4 cases where someone has no first name or last name, instead their full name is
     # stored in last_name
