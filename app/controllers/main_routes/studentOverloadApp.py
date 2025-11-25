@@ -94,7 +94,7 @@ def studentOverloadApp(formHistoryId):
         fieldName = adjustedChange.fieldAdjusted
         oldValue  = adjustedChange.oldValue
         newValue  = adjustedChange.newValue
-
+        # this field is here to make the department names show up instead of org codes
         if fieldName == "department":
             oldDept = Department.get(Department.ORG == oldValue)
             newDept = Department.get(Department.ORG == newValue)
