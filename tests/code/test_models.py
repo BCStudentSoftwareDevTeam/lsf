@@ -381,7 +381,8 @@ def test_user_model():
             POSN_CODE="S61407",
             releaseDate=date.today(),
             conditionAtRelease="released",
-            reasonForRelease="End of Term" 
+            reasonForRelease="End of Term",
+            contactPerson_id=None
         )
 
         release_form11 = LaborReleaseForm.create(
@@ -395,7 +396,8 @@ def test_user_model():
             POSN_CODE="S61407",
             releaseDate=date.today(),
             conditionAtRelease="released",
-            reasonForRelease="End of Term" 
+            reasonForRelease="End of Term",
+            contactPerson_id=sup_user
         )
 
         # Create APPROVED release form history for student10 (should exclude them)
@@ -446,7 +448,7 @@ def test_term_model():
         """
         createLSFandFormHistoryObj.callCounter += 1
         Term.get_or_create(termCode=termCode, termName=f"dummyTerm{createLSFandFormHistoryObj.callCounter}")
-
+        assert 1 == 1
         #                                        Alex Bryant              Brian Ramsay              CS      
         irrelevantLsfObjData = {'studentSupervisee': 'B00841417', 'supervisor': 'B00763721', 'department': 1, 'jobType': 'Primary', 'WLS': 1, 'POSN_TITLE': '', 'POSN_CODE': ''}
         lsf = LaborStatusForm.create(termCode = termCode, **irrelevantLsfObjData)
@@ -464,7 +466,7 @@ def test_term_model():
         # Create the forms out of order
         outOfOrderSeasonCodes = ['13', '02', '04', '00', '11', '12', '03', '99', '01', '05']
         for seasonCode in outOfOrderSeasonCodes:
-            createLSFandFormHistoryObj(termCode=int(f'2025{seasonCode}'))
+            createLSFandFormHistoryObj(termCode=int(f'9999{seasonCode}'))   # using an arbitrarily far year to avoid clash
 
         newForms = FormHistory.select(FormHistory, LaborStatusForm.termCode).join(LaborStatusForm, JOIN.LEFT_OUTER).where(FormHistory.rejectReason == "testing")
         sortedForms = Term.order_by_term(newForms.objects())

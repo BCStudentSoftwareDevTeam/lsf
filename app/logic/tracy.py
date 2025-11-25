@@ -4,7 +4,14 @@ from app.models.Tracy import db
 from app.models.Tracy.stuposn import STUPOSN
 from app.models.Tracy.studata import STUDATA
 from app.models.Tracy.stustaff import STUSTAFF
+from app.models.supervisor import Supervisor
+from app.models.student import Student
 from app import app
+
+
+
+class InvalidUserException(Exception):
+    pass
 
 class InvalidQueryException(Exception):
     pass
@@ -148,3 +155,4 @@ class Tracy():
             student = self.getStudentFromEmail(email)
             if student:
                 return "Student"
+
