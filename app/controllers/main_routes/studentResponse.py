@@ -28,9 +28,33 @@ def confirm():
         flash("This contract has already been " + verb + ".", "danger")
         abort(403)
 
-      # query adjustedform to get old/new values
+    # query adjustedform to get old/new values
     lsfId = form.laborStatusFormID
     adjustedForms = AdjustedForm.select().where(AdjustedForm.lsfId == lsfId)
+    adjustedPositionCode = None
+    if adjustedForms:
+        for adjustedForm in adjustedForms:
+            if adjustedForm.fieldAdjusted == "position":
+                adjustedPositionCode = adjustedForm.newValue
+
+
+    adjustedPositionTitle = None
+    adjustWLS = None
+    if adjustedForms and adjustedPositionCode:
+        adjustedPosition = LaborStatusForm.get(LaborStatusForm.POSN_CODE == adjustedPositionCode)
+        adjustedPositionTitle = adjustedPosition.POSN_TITLE
+        adjustWLS = adjustedPosition.WLS
+
+    # adjustedWls = None
+    # if adjustedForms and adjustedPositionCode:
+    #     for adjustedForm in adjustedForms:
+    #         if adjustedForm.fieldAdjusted == "wls":
+    #             adjustedWls = adjustedForm.newValue
+    
+        # print("###adjustedWls: ", adjustedWls.get())
+    # if adjustedPositionTitle:
+    #     adjustef_row = adjustedPositionTitle.get_or_none(LaborStatusForm.POSN_CODE == adjustedPositionCode)
+    #     adjustedPositionTitle = adjustef_row.POSN_TITLE if adjustef_row else None
 
     laborDescription = {
         "student_name": form.studentSupervisee.FIRST_NAME + " " + form.studentSupervisee.LAST_NAME,
@@ -47,7 +71,7 @@ def confirm():
         "end_date": form.endDate.strftime('%m/%d/%Y'),
     }
 
-    return render_template('main/studentEmailConfirmation.html', form=form, laborDescription=laborDescription)
+    return render_template('main/studentEmailConfirmation.html', form=form, laborDescription=laborDescription, adjustedForms=adjustedForms, adjustedPositionTitle=adjustedPositionTitle, adjustWLS=adjustWLS)
 
 @main_bp.route('/studentResponse/submit', methods=['POST'])
 def confirmSubmit():
