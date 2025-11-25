@@ -27,18 +27,19 @@ def expireStudentConfirmations():
         )
     )
     for form in expired_forms:
-            latest_history = (
-                FormHistory
-                .select()
-                .where(FormHistory.formID == form)
-                .order_by(FormHistory.formHistoryID.desc())
-                .first()
-            )
-            if not latest_history:
-                continue
-            lsfHistory = latest_history.formHistoryID
-            emailer = emailHandler(lsfHistory)
-            emailer.statusResendEmail()
+        latest_history = (
+            FormHistory
+            .select()
+            .where(FormHistory.formID == form)
+            .order_by(FormHistory.formHistoryID.desc())
+            .first()
+        )
+        if not latest_history:
+            continue
+
+        lsfHistory = latest_history.formHistoryID
+        emailer = emailHandler(lsfHistory)
+        emailer.laborStatusFormExpired()
 
 
 def main():

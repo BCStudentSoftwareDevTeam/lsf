@@ -137,7 +137,7 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
 
-    def statusResendEmail(self):
+    def laborStatusFormExpired(self):
         """
         Sends email to labor supervisor and student when LSF is expired.
         """
@@ -168,6 +168,7 @@ class emailHandler():
                 return
         except Exception as e:
             print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
+        
         self.checkRecipient(
             studentEmailPurpose=studentTemplate.purpose,
             emailPurpose=supervisorTemplate.purpose,
