@@ -19,6 +19,10 @@ class ButtonStatus:
         self.withdraw = False
         self.adjust = False
         self.correction = False
+        self.evaluate = False
+        self.evaluation_exists = False
+        self.approve = False
+        self.studentApprove = False 
         self.resubmit = False
         self.num_buttons = 0
 
@@ -45,6 +49,8 @@ class ButtonStatus:
             self.withdraw = False
             self.adjust = False
             self.correction = False
+            self.evaluate = False
+            self.studentApprove = True
             self.resubmit = False
             self.num_buttons = 1
 

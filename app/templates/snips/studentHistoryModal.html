@@ -224,6 +224,9 @@
     {% else %}
       <div class = "col-sm-{{12/buttonState.num_buttons}}">
 
+      {% if buttonState.studentApprove %}
+      <a href="{{ approveLink }}" class="btn btn-primary" id="" target="_blank">Accept or Deny This Position</a>
+      {% endif%}
       <a href="#" class="btn btn-primary" id="emailLabor">Email Labor</a>
 
       {% if buttonState.rehire %}
