@@ -41,11 +41,11 @@
     <dt class="col-sm-3">End Date</dt>
     <dd class="col-sm-9" id="laborEndDate">{{statusForm.endDate.strftime('%m-%d-%Y')}}</dd>
 
-    {% if overload_history %}
-    <dt class="col-sm-3"><small>Overload Reason</small></dt>
-    <dd class="col-sm-9">{{ overload_history.overloadForm.studentOverloadReason }}</dd>
-    {% endif %}
-  </dl>
+    <dt class="col-sm-3">Overload Reason</dt>
+    <dd class="col-sm-9">
+    {{ overload_history.overloadForm.studentOverloadReason or "None" }}
+    </dd>
+    </dl>
 
   <hr>
   {% for form in forms %}
