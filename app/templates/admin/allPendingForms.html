@@ -215,7 +215,8 @@
                             <a role="menuitem" href="/admin/{{formurl}}/{{allForms.formHistoryID}}">Manage</a>
                         {% else %}
                             <a role="menuitem" href="#" >
-                                <span id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span>
+                              <!--  The CSS Style tag is temporary until a bootstrap replacement is founded (w-100 d-inline-block did not work) -->
+                                <span style="width: 100%; height:100%; display: inline-block;" id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span>
                             </a>
                         {% endif %}
                         </li>

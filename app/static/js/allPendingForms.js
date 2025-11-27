@@ -354,20 +354,21 @@ function clearTextArea() { //makes sure that it empties text areas and p tags wh
 
 
 function loadOverloadModal(formHistoryID, laborStatusFormID) {
+  // Error is potentially here if multiple modals are opened at once
+  
   /*
   This method sends an AJAX call to recieve data used to populate
   the overload modal.
   */
-  $("#overloadModal").modal("show");
-  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID);
+
+  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID, function() {
+    $("#overloadModal").modal("show");
+  });
 }
 
 
 function loadReleaseModal(formHistoryID, laborStatusFormID) {
   $("#modalRelease").modal("show");
-  $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
-
-
 }
 
 
