@@ -353,16 +353,18 @@ function clearTextArea() { //makes sure that it empties text areas and p tags wh
 
 
 
-function loadOverloadModal(formHistoryID, laborStatusFormID) {
-  // Error is potentially here if multiple modals are opened at once
-  
+function loadOverloadModal(formHistoryID, laborStatusFormID) { 
   /*
   This method sends an AJAX call to recieve data used to populate
   the overload modal.
   */
-
+  actionsButton = $("#menu" + formHistoryID);
+  actionsButton.prop('disabled', true);
+  actionsButton.html("Loading...");
   $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID, function() {
     $("#overloadModal").modal("show");
+    actionsButton.prop('disabled', false);
+    actionsButton.html("Actions <span class='caret'></span>");
   });
 }
 
