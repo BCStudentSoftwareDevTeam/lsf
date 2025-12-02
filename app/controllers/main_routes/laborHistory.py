@@ -15,7 +15,7 @@ from app.models.department import *
 from app.models.student import Student 
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
-from app.controllers.main_routes.download import CSVMaker
+from app.logic.download import CSVMaker
 from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
@@ -57,11 +57,34 @@ def laborhistory(id):
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
         
-        
         authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
+        # modify status display for overload and release forms
+        formIds = [form.formID for form in authorizedForms]
+
+        relatedForms = (FormHistory.select().where(
+                     (FormHistory.formID.in_(formIds)) &
+                     ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)) | (FormHistory.adjustedForm.is_null(False)))
+                 ))
+
+        formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
+
+        # initialize displayStatus with each form's base status
+        for form in authorizedForms:
+            form.displayStatus = str(form.status)
+        # iterate once over relatedForms and update each form displayStatus
+        for related in relatedForms:
+            form = formMap.get(related.formID.laborStatusFormID)
+
+            if related.overloadForm:
+                form.displayStatus = "Overload " + str(related.status)
+            if related.adjustedForm:
+                form.displayStatus = "Adjustment " + str(related.status)
+            if related.releaseForm:
+                form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
+
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
                                 student = student,
@@ -134,7 +157,7 @@ def populateModal(statusKey):
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
                     newPosition = Tracy().getPositionFromCode(newValue)
                     try:
-                        oldPosition = form.formID.Tracy().getPositionFromCode(oldValue)
+                        oldPosition = Tracy().getPositionFromCode(oldValue)
                     except:
                         oldPosition = types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?")
 
@@ -148,12 +171,15 @@ def populateModal(statusKey):
                     oldDepartment = Department.get(Department.ORG == oldValue)
                     form.adjustedForm.newValue = newDepartment.DEPT_NAME
                     form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
-                # Converts the field adjusted value out of camelcase into a more readable format to be displayed on the front end
+
+                # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
             # Pending release or adjustment forms need the historyType known
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
+
+        approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
 
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
@@ -161,7 +187,8 @@ def populateModal(statusKey):
                                             statusForm = statusForm,
                                             currentDate = currentDate,
                                             pendingformType = pendingformType,
-                                            buttonState = buttonState
+                                            buttonState = buttonState,
+                                            approveLink = approveLink,
                                             ))
         return (resp)
     except Exception as e:

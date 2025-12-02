@@ -6,7 +6,7 @@ class LaborReleaseForm (baseModel):
     conditionAtRelease          = CharField(null=False)          # Performance (satisfactory or unsatisfactory)
     releaseDate                 = DateField(null=False)          # Can be tomorrow's date or future date, never past date
     reasonForRelease            = CharField(null=False)
-    contactPerson               = ForeignKeyField(User)                    
+    contactPerson               = ForeignKeyField(User, null=True)                    
 
 
 

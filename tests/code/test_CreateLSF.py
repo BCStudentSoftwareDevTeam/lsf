@@ -1,6 +1,9 @@
 import pytest
 from datetime import date, datetime
-from app.logic.userInsertFunctions import *
+from app.models.user import User
+from app.models.student import Student
+from app.models.laborStatusForm import LaborStatusForm
+from app.logic.statusFormFunctions import createLaborStatusForm
 
 @pytest.mark.integration
 def testCreateLaborStatusForm():
@@ -18,9 +21,8 @@ def testCreateLaborStatusForm():
     'stuEndDate': "09/01/2020"
     }
 
-    createLaborStatusForm(Student.get_by_id("B00730361"), "B12365892", 1, 202000, lsfDict )
-    currentUser = User.get(User.userID == 1)
-    lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == 3)
+    newlsf = createLaborStatusForm(Student.get_by_id("B00730361"), "B12365892", 1, 202000, lsfDict )
+    lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == newlsf.laborStatusFormID)
     assert lsf.termCode_id == 202000
     assert lsf.studentSupervisee_id == "B00730361"
     assert lsf.supervisor_id == "B12365892"

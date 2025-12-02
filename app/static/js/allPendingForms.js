@@ -146,16 +146,8 @@ function finalApproval() { //this method changes the status of the lsf from pend
           $("#approveModalButton").text("Approve");
           $("#approvalModal").data("bs.modal").options.backdrop = true;
           $("#approvalModal").data("bs.modal").options.keyboard = true;
-
-
-          // Try and catch is used here to prevent General Search page from reloading the entire the page.
-          try {
-            runformSearchQuery();
-            $('#approvalModal').modal('hide');
-          }
-          catch(e){
-            location.reload(true);
-          }
+          
+          location.reload(true);
       }
     }
   });
@@ -462,9 +454,6 @@ function submitOverload(formHistoryID, isLaborAdmin) {
     } else {
       if ($('#approve').is(':checked')) {
         status = 'Approved';
-      }
-      if ($('#approveRel').is(':checked')) {
-        status = 'Approved Reluctantly'
       }
       if ($('#overloadNotes').val() != '') {
         var adminNotes = $('#overloadNotes').val()

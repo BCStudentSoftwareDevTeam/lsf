@@ -32,7 +32,7 @@ def getEmailArray():
                         "audience": template.audience,
                         "formType": template.formType,
                         "action": template.action
-            } for template in EmailTemplate.select()])
+            } for template in templates])
 
 @admin.route('/admin/emailTemplates/getPurpose/<fieldsDictSTR>', methods=['GET'])
 
