@@ -62,7 +62,7 @@ def laborhistory(id):
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         # modify status display for overload and release forms
-        formIds = [form.formID for form in authorizedForms]
+        formIds = [form.formID.laborStatusFormID for form in authorizedForms]
 
         relatedForms = (FormHistory.select().where(
                      (FormHistory.formID.in_(formIds)) &
