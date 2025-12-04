@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from app.models import overloadForm
 from playhouse.shortcuts import model_to_dict
 from flask import json, jsonify, request, redirect, url_for, abort, flash, g
 
@@ -17,7 +18,26 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
-    overloadHistory = FormHistory.get_by_id(formHistoryId)
+    #  always load the clicked history entry
+    currentHistory = FormHistory.get_by_id(formHistoryId)
+
+    # STEP 2 — find the real FormHistory row that holds the overloadForm (reason)
+    reasonHistory = (
+        FormHistory
+        .select()
+        .where(
+            (FormHistory.formID == currentHistory.formID) &
+            (FormHistory.overloadForm.is_null(False))
+        )
+        .order_by(FormHistory.createdDate.desc())
+        .first()
+    )
+
+    # STEP 3 — use whichever record has the overloadForm, fallback to clicked one
+    if reasonHistory:
+        overloadHistory = reasonHistory
+    else:
+        overloadHistory = currentHistory
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
@@ -83,9 +103,6 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
-    # an overload can be created from a form adjustment. if it does, 
-    # it means the overload form history links to an adjustment form that contains the adjusted data we want for the overload
-    
     adjustedField, oldValue, newValue = (None, None, None)
 
     if overloadHistory.adjustedForm:    
@@ -98,7 +115,6 @@ def studentOverloadApp(formHistoryId):
         if adjustedField == "department":
             oldValue = Department.get(Department.ORG == oldValue).DEPT_NAME
             newValue = Department.get(Department.ORG == newValue).DEPT_NAME
-
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
                             username = currentUser,
@@ -150,12 +166,10 @@ def updateDatabase(overloadFormHistoryID):
         if not overloadReason:
             abort(500)
 
-
         # if status is pending that means we have an adjustment 
         # if status is "pre-student then it means we have an overload"
         oldStatus = Status.get((Status.statusName == "Pre-Student Approval"))
         
-
 
         newStatus = Status.get(Status.statusName == "Pending")
 
@@ -163,8 +177,7 @@ def updateDatabase(overloadFormHistoryID):
         overloadFormHistory = FormHistory.get(FormHistory.formHistoryID == overloadFormHistoryID)
 
     
-      
-        
+    
         originalFormHistory = (FormHistory.select()
                                            .where(FormHistory.formID == overloadFormHistory.formID)
                                            .where(FormHistory.status == oldStatus)
@@ -176,7 +189,6 @@ def updateDatabase(overloadFormHistoryID):
                                            ).get()
         
     
-       
        
         with mainDB.atomic() as transaction:
             # Update statuses
@@ -193,21 +205,10 @@ def updateDatabase(overloadFormHistoryID):
 
             overloadForm = overloadFormHistory.overloadForm
             
+            overloadForm.studentOverloadReason = overloadReason
+            overloadForm.save()
             
-            # this line here for an adjustment form that has not created an overload form yet so we tie both of them together
-            if overloadForm is None: 
-                overloadForm = OverloadForm.create(studentOverloadReason=overloadReason)
-                overloadForm.studentOverloadReason = overloadReason   
-                overloadFormHistory.overloadForm = overloadForm 
-                overloadFormHistory.save() 
-                
-            else:
-                overloadForm.studentOverloadReason = overloadReason 
-                overloadForm.save()
-
         
-      
-
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
