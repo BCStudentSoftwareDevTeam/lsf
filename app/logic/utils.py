@@ -27,6 +27,6 @@ def adminFlashMessage(user, action, adminType):
     elif action == 'removed':
         flash(message, "danger") 
 
-
+# This function calculates the expiration date for a student confirmation and the total date based on the number of days set in the secret config from now at 11:59:59 PM
 def calculateExpirationDate():
     return datetime.combine(datetime.now() + timedelta(app.config["student_confirmation_days"]),time(23, 59, 59))

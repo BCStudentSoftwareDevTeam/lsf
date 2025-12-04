@@ -17,6 +17,7 @@ from app import app
 import os
 from datetime import datetime, date
 
+
 class emailHandler():
     def __init__(self, formHistoryKey):
         self.mail = Mail(app)
@@ -31,7 +32,7 @@ class emailHandler():
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
-
+        self.adminName = ""
         self.positions = LaborStatusForm.select().where(LaborStatusForm.termCode == self.term, LaborStatusForm.studentSupervisee == self.student)
         self.supervisors = []
         for position in self.positions:
@@ -101,7 +102,6 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            # print("Debugging emailHandler.py: ", app.config)
             self.mail.send(message)
 
         elif app.config['ENV'] == 'testing':
@@ -137,7 +137,45 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Submitted For Student",
                           "Primary Position Labor Status Form Submitted")
 
-            
+    def laborStatusFormExpired(self):
+        """
+        Sends email to labor supervisor and student when LSF is expired.
+        """
+
+        lsfID = self.laborStatusForm.laborStatusFormID
+        expired = self.laborStatusForm.isExpired
+        if not expired:
+            return
+
+        supervisorTemplate = EmailTemplate.get_or_none(
+            EmailTemplate.purpose == "Email when Labor Status Form is expired to Supervisor"
+        )
+        studentTemplate = EmailTemplate.get_or_none(
+            EmailTemplate.purpose == "Email when Labor Status Form is expired to Student"
+        )
+        if not supervisorTemplate or not studentTemplate:
+            return
+
+        try:
+            alreadySent = (EmailTracker
+                            .select()
+                            .where(
+                                (EmailTracker.formID == lsfID) &
+                                ((EmailTracker.subject == supervisorTemplate.subject) | (EmailTracker.subject == studentTemplate.subject)) &
+                                (EmailTracker.date == date.today())  
+                            )
+                            .exists())
+            if alreadySent:
+                return
+
+        except Exception as e:
+            print(f"Check failed for LSF{lsfID}: {e}. Proceeding to send.")
+        
+        self.checkRecipient(
+            studentEmailPurpose=studentTemplate.purpose,
+            emailPurpose=supervisorTemplate.purpose,
+            secondaryEmailPurpose=None
+        )
 
     def laborStatusFormApproved(self):
         if self.laborStatusForm.jobType == 'Secondary':
@@ -171,9 +209,13 @@ class emailHandler():
             self.checkRecipient(False,
                           "Labor Status Form Adjusted For Supervisor")
 
-    def laborReleaseFormSubmitted(self):
+    def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
+        self.adminName = adminName
+        self.adminEmail = adminUserName + "@berea.edu"
+        emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification") 
         self.checkRecipient("Labor Release Form Submitted For Student",
                       "Labor Release Form Submitted For Supervisor")
+        self.sendEmail(emailTemplate, "admin")
 
     def laborReleaseFormApproved(self):
         self.checkRecipient("Labor Release Form Approved For Student",
@@ -332,6 +374,10 @@ class emailHandler():
             message = Message(template.subject,
                 recipients=[self.supervisorEmail])
             recipient = 'Primary Supervisor'
+        elif sendTo == "admin":
+            message = Message(template.subject,
+                recipients=[self.adminEmail])
+            recipient = 'Admin'
         message.html = formTemplate
 
         newEmailTracker = EmailTracker.create(
@@ -354,6 +400,7 @@ class emailHandler():
         form = form.replace("@@Department@@", self.laborStatusForm.department.DEPT_NAME)
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
+        form = form.replace("@@Admin@@", self.adminName)
 
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
@@ -370,6 +417,7 @@ class emailHandler():
         elif self.primaryForm:
             # 'Primary Supervisor' is the primary supervisor of the student who's laborStatusForm is passed in the initializer
             form = form.replace("@@PrimarySupervisor@@", self.primaryForm.formID.supervisor.FIRST_NAME + " " + self.primaryForm.formID.supervisor.LAST_NAME)
+
         if self.formHistory.adjustedForm:
             form = form.replace("@@NewAdjustmentField@@", self.newAdjustmentField)
             form = form.replace("@@CurrentAdjustmentField@@", self.oldAdjustmentField)

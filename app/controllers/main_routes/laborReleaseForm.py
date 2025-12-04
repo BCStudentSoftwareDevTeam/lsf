@@ -24,7 +24,6 @@ def laborReleaseForm(laborStatusKey):
     if not currentUser.isLaborAdmin:       # Not an admin
         if currentUser.student and not currentUser.supervisor:
             return redirect('/laborHistory/' + currentUser.student.ID)
-
     forms = LaborStatusForm.select().distinct().where(LaborStatusForm.laborStatusFormID == laborStatusKey)
     laborAdmins = (User.select(User, Supervisor).join(Supervisor)
                        .where(User.isLaborAdmin == True)
@@ -45,18 +44,16 @@ def laborReleaseForm(laborStatusKey):
             # will be able to submit a labor release form. This section will create the new
             # labor release form, and a new form in the form history table.
             laborStatusForiegnKey = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
-            formHistoryID = FormHistory.get(FormHistory.formID == laborStatusKey) #need formHistoryID for emailHandler
             datepickerDate = request.form.get("date")
             releaseDate = datetime.strptime(datepickerDate, "%m/%d/%Y").strftime("%Y-%m-%d")
             releaseReason = request.form.get("notes")
             releaseCondition = request.form.get("condition")
             releaseContactUsername = request.form.get("contactPerson")
             releaseContactPerson = User.get(User.username == releaseContactUsername)
-
-            createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
-
-            email = emailHandler(formHistoryID.formHistoryID)
-            email.laborReleaseFormSubmitted()
+            releaseContactFullName = releaseContactPerson.fullName
+            newFormHistory = createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
+            email = emailHandler(newFormHistory.formHistoryID)
+            email.laborReleaseFormSubmitted(releaseContactUsername, releaseContactFullName)
             # Once all the forms are created, the user gets redirected to the
             # home page and gets a flash message telling them the forms were
             # submiteds
@@ -97,3 +94,5 @@ def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, rele
                                 status = status.statusName,
                                 rejectReason = None
                                 )
+    return newFormHistory
+
