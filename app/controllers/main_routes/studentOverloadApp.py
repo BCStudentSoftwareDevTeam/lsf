@@ -2,7 +2,6 @@ from datetime import date, datetime
 from app.models import overloadForm
 from playhouse.shortcuts import model_to_dict
 from flask import json, jsonify, request, redirect, url_for, abort, flash, g
-
 from app.controllers.main_routes import *
 from app.logic.emailHandler import*
 from app.logic.utils import makeThirdPartyLink
