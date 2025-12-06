@@ -140,7 +140,7 @@ def populateModal(statusKey):
         for f in forms:
             if f.overloadForm is not None:
                 overload_history = f
-            break
+                break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
         currentDate = datetime.date.today()
@@ -197,7 +197,7 @@ def populateModal(statusKey):
         except Exception:
             status = None
  
-    
+       
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
