@@ -1,4 +1,8 @@
-import datetime
+# Source - https://stackoverflow.com/a
+# Posted by Joe
+# Retrieved 2025-12-04, License - CC BY-SA 3.0
+
+from datetime import date
 import re
 import types
 from fpdf import FPDF
@@ -135,7 +139,7 @@ def populateModal(statusKey):
                             .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = date.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
@@ -193,6 +197,7 @@ def populateModal(statusKey):
                                             pendingformType = pendingformType,
                                             buttonState = buttonState,
                                             approveLink = approveLink,
+                                            student = student
                                             ))
         return (resp)
     except Exception as e:
