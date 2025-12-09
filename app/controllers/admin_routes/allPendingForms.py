@@ -49,7 +49,8 @@ def allPendingForms(formType):
         adjustedFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Adjustment Form')).count()
         releaseFormCounter = FormHistory.select().where((FormHistory.status == 'Pending') & (FormHistory.historyType == 'Labor Release Form')).count()
         preStudentApprovalCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval',FormHistory.historyType == 'Labor Status Form',FormHistory.overloadForm.is_null()).count()
-
+        preStudentApprovalAdjustmentCounter = FormHistory.select().where(FormHistory.status == 'Pre-Student Approval', FormHistory.historyType == 'Labor Adjustment Form',FormHistory.overloadForm.is_null()).count()
+  
         if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
             overloadFormCounter = FormHistory.select().where(FormHistory.status.in_(('Pending','Pre-Student Approval')) & (FormHistory.historyType == 'Labor Overload Form')).count()
         elif currentUser.isFinancialAidAdmin:
@@ -98,6 +99,11 @@ def allPendingForms(formType):
             historyType = "Labor Status Form"
             approvalTarget = ""
             pageTitle = "Pre-Student Approval"
+
+        elif formType == "preStudentAdjustmentApproval": 
+            historyType = "Labor Adjustment Form"
+            approvalTarget = ""
+            pageTitle = "Pre-Student Adjustment Approval"
             
 
 
@@ -139,6 +145,8 @@ def allPendingForms(formType):
             if formType == "pendingOverload":
                 baseQuery = baseQuery.where(FormHistory.status.in_(('Pending','Pre-Student Approval')),FormHistory.historyType == "Labor Overload Form")
             elif formType == "preStudentApproval":
+                baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm.is_null())
+            elif formType == "preStudentAdjustmentApproval":
                 baseQuery = baseQuery.where(FormHistory.status == "Pre-Student Approval", FormHistory.historyType == historyType, FormHistory.overloadForm.is_null())
             elif formType in ("pendingLabor","pendingAdjustment","pendingRelease"):
                 baseQuery = baseQuery.where(FormHistory.status == "Pending", FormHistory.historyType == historyType)
@@ -186,7 +194,6 @@ def allPendingForms(formType):
     except Exception as e:
         print("Error Loading all Pending Forms:", e)
         return render_template('errors/500.html'), 500
-
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():

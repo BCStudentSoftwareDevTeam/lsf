@@ -69,7 +69,8 @@ def adjustLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         adjustedforms = AdjustedForm.create(fieldAdjusted = fieldName,
                                             oldValue      = fieldsChanged[fieldName]["oldValue"],
                                             newValue      = fieldsChanged[fieldName]["newValue"],
-                                            effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"))
+                                            effectiveDate = datetime.strptime(fieldsChanged[fieldName]["date"], "%m/%d/%Y").strftime("%Y-%m-%d"),
+                                            lsfId         = lsf.laborStatusFormID)
         historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Adjustment Form")
         status = Status.get(Status.statusName == "Pending")
         adjustedFormHistory = FormHistory.create(formID       = lsf.laborStatusFormID,

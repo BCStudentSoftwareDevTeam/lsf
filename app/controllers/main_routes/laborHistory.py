@@ -1,4 +1,8 @@
-import datetime
+# Source - https://stackoverflow.com/a
+# Posted by Joe
+# Retrieved 2025-12-04, License - CC BY-SA 3.0
+
+from datetime import date
 import re
 import types
 from fpdf import FPDF
@@ -62,7 +66,7 @@ def laborhistory(id):
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
         # modify status display for overload and release forms
-        formIds = [form.formID for form in authorizedForms]
+        formIds = [form.formID.laborStatusFormID for form in authorizedForms]
 
         relatedForms = (FormHistory.select().where(
                      (FormHistory.formID.in_(formIds)) &
@@ -135,7 +139,7 @@ def populateModal(statusKey):
                             .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = date.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
@@ -175,12 +179,16 @@ def populateModal(statusKey):
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
 
+            # if form.adjustedForm.fieldAdjusted == "weeklyhours": 
+            #             newWeeklyHours = newValue
+            #             oldWeeklyHours = oldValue 
+            
             # Pending release or adjustment forms need the historyType known
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
 
         approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
-
+   
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
@@ -189,6 +197,7 @@ def populateModal(statusKey):
                                             pendingformType = pendingformType,
                                             buttonState = buttonState,
                                             approveLink = approveLink,
+                                            student = student
                                             ))
         return (resp)
     except Exception as e:

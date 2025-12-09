@@ -30,6 +30,7 @@
     <dt class="col-sm-3">Job Type (Hours)</dt>
     <dd class="col-sm-9" id="laborJobType">{{statusForm.jobType}}
       ({% if statusForm.weeklyHours == None %}{{statusForm.contractHours}}{% else %}{{statusForm.weeklyHours}}{% endif %})
+      | New Weekly Hours: {{newWeeklyHours}}
     </dd>
 
     <dt class="col-sm-3">Position (WLS)</dt>

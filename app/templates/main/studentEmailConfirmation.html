@@ -18,6 +18,7 @@
 {% block app_content %}
 
 <h2>Confirm Your Work Contract</h2>
+
 <div style="width:50%; min-width:400px; padding-left: 10px;">
     <p class="alert alert-danger">
         <b>ACTION REQUIRED</b>
@@ -27,6 +28,133 @@
 
     <p> Please take a moment to read carefully and review the information before submitting your decision.</p>
     <h3>Labor Contract Details: </h3>
+
+{% if adjustedForms %}
+    {% set adjustments = {} %}
+    {% for a in adjustedForms %}
+        {% set _ = adjustments.update({ a.fieldAdjusted: (a.oldValue, a.newValue) }) %}
+    {% endfor %}
+
+    <table class="table table-bordered" style="width: 60%; font-size: 1.1em;">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Old Contract Details</th>
+                <th>New Contract Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Student Name</td>
+                <td>{{ laborDescription.student_name }} ({{ laborDescription.student_id }})</td>
+                <td>
+                    {% if adjustments.get('studentName') %}
+                        <b>{{ adjustments.get('studentName')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.student_name }} ({{ laborDescription.student_id }})
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Supervisor</td>
+                <td>{{ laborDescription.supervisor }}</td>
+                <td>
+                    {% if adjustments.get('supervisor') %}
+                        <b>{{ adjustments.get('supervisor')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.supervisor }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Position Code/Title</td>
+                <td>{{ laborDescription.position_code_title }}</td>
+                <td>
+                    {% if adjustments.get('position') %}
+                        <b>{{ adjustments.get('position')[1] }}</b>, <b>{{ adjustedPositionTitle }}</b>
+                    {% else %}
+                        {{ laborDescription.position_code_title }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>WLS Level</td>
+                <td>{{ laborDescription.wls }}</td>
+                <td>
+                    <b>{{ adjustWLS }}</b>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Department Name</td>
+                <td>{{ laborDescription.department }}</td>
+                <td>
+                    {% if adjustments.get('department') %}
+                        <b>{{ adjustments.get('department')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.department }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Position Type</td>
+                <td>{{ laborDescription.jobType }}</td>
+                <td>
+                    {% if adjustments.get('jobType') %}
+                        <b>{{ adjustments.get('jobType')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.jobType }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>{{ "Total Contracted Hours" if laborDescription.term.isBreak else "Hours per Week" }}</td>
+                <td>{{ laborDescription.hours_per_week }}</td>
+                <td>
+                    {% if adjustments.get('weeklyHours') %}
+                        <b>{{ adjustments.get('weeklyHours')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.hours_per_week }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Start Date</td>
+                <td>{{ laborDescription.start_date }}</td>
+                <td>
+                    {% if adjustments.get('startDate') %}
+                        <b>{{ adjustments.get('startDate')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.start_date }}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>End Date</td>
+                <td>{{ laborDescription.end_date }}</td>
+                <td>
+                    {% if adjustments.get('endDate') %}
+                        <b>{{ adjustments.get('endDate')[1] }}</b>
+                    {% else %}
+                        {{ laborDescription.end_date }}
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+
+{% else %}
+    {# --- Your current view stays EXACTLY the same here --- #}
     <div style="margin:10px;font-size:1.2em">
         <div class="labor-status-info">
             <p><strong>Student Name:</strong> {{ laborDescription.student_name }} ({{ laborDescription.student_id }})</p>
@@ -36,11 +164,13 @@
             <p><strong>Department Name:</strong> {{ laborDescription.department }}</p>
             <p><strong>Position Type:</strong> {{ laborDescription.jobType }}</p>
             {% set hoursDescription = "Total Contracted Hours" if laborDescription.term.isBreak else "Hours per Week" %}
-            <p><strong>{{ hoursDescription}}:</strong> {{ laborDescription.hours_per_week }}</p>
+            <p><strong>{{ hoursDescription }}:</strong> {{ laborDescription.hours_per_week }}</p>
             <p><strong>Start Date:</strong> {{ laborDescription.start_date }}</p>
             <p><strong>End Date:</strong> {{ laborDescription.end_date }}</p>
         </div>
     </div>
+{% endif %}
+
 
     <div class="form-group">
       {% if laborDescription.jobType == "Primary" %}
