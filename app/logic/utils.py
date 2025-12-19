@@ -14,7 +14,6 @@ def makeThirdPartyLink(recipient, host, formHistoryId):
         route = "studentOverloadApp"
     if recipient == "studentAdjustment":    
         route = "studentOverloadApp"
-
     return f"http://{host}/{route}/{formHistoryId}"
 
 def setReferrerPath():

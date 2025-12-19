@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import re
 import types
 from fpdf import FPDF
@@ -143,7 +143,7 @@ def populateModal(statusKey):
                 break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = date.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
