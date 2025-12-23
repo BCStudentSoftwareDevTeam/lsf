@@ -21,7 +21,7 @@ def studentOverloadApp(formHistoryId):
     currentHistory = FormHistory.get_by_id(formHistoryId)
 
     # STEP 2 — find the real FormHistory row that holds the overloadForm (reason)
-    reasonHistory = (
+    overloadReasonHistory = (
         FormHistory
         .select()
         .where(
@@ -33,8 +33,8 @@ def studentOverloadApp(formHistoryId):
     )
 
     # STEP 3 — use whichever record has the overloadForm, fallback to clicked one
-    if reasonHistory:
-        overloadHistory = reasonHistory
+    if overloadReasonHistory:
+        overloadHistory = overloadReasonHistory
     else:
         overloadHistory = currentHistory
     if not currentUser.isLaborAdmin:
