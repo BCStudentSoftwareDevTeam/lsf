@@ -140,7 +140,6 @@ def studentOverloadApp(formHistoryId):
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
     if formHistory.historyType_id != "Labor Overload Form":
-        print("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
         abort(500)
 
     # send a withdrawal notification to student and supervisor
@@ -160,61 +159,60 @@ def withdrawRequest(formHistoryId):
 def updateDatabase(overloadFormHistoryID):
     try:
         overloadReason = request.form.get('overloadReason')
-      
-
         if not overloadReason:
             abort(500)
 
         # if status is pending that means we have an adjustment 
-        # if status is "pre-student then it means we have an overload"
-        oldStatus = Status.get((Status.statusName == "Pre-Student Approval"))
-        
-
+        # if status is "pre-student then it means we have an overload"     
         newStatus = Status.get(Status.statusName == "Pending")
-
-      
         overloadFormHistory = FormHistory.get(FormHistory.formHistoryID == overloadFormHistoryID)
-
-    
-    
-        originalFormHistory = (FormHistory.select()
-                                           .where(FormHistory.formID == overloadFormHistory.formID)
-                                           .where(FormHistory.status == oldStatus)
-                                           .where(FormHistory.historyType_id.in_([
-                                               "Labor Status Form",
-                                               "Labor Overload Form",
-                                               "Labor Adjustment Form",
-                                           ]))
-                                           ).get()
-        
-    
-       
+        originalFormHistory = (
+            FormHistory
+            .select()
+            .where(FormHistory.formID == overloadFormHistory.formID.laborStatusFormID)
+            .where((FormHistory.status == "Pre-Student Approval") | (FormHistory.status == "Approved"))
+            .where(FormHistory.historyType_id.in_([
+                     "Labor Status Form",
+                     "Labor Overload Form",
+                     "Labor Adjustment Form",
+                 ]))
+            .first())
+        overloadHistoryType, _ = HistoryType.get_or_create(
+            historyTypeName="Labor Overload Form"
+        )
         with mainDB.atomic() as transaction:
-            # Update statuses
+            overloadForm = OverloadForm.create(studentOverloadReason=request.form.get("studentOverloadReason"))
+            if overloadFormHistory:
+                overloadFormHistory.overloadForm = overloadForm
+                overloadFormHistory.save()
+            else:
+                overloadFormHistory = FormHistory.create(
+                    formID=originalFormHistory.formID,
+                    historyType=overloadHistoryType,
+                    overloadForm=overloadForm,
+                    createdBy=g.currentUser,
+                    createdDate=datetime.now().date(),
+                    status=newStatus,
+                )
             overloadFormHistory.status = newStatus
             overloadFormHistory.save()
             originalFormHistory.status = newStatus
             originalFormHistory.save()
 
-            # Update base student confirmation
             originalFormHistory.formID.studentResponseDate = datetime.now()
             originalFormHistory.formID.studentConfirmation = True
             originalFormHistory.formID.save()
-
-
-            overloadForm = overloadFormHistory.overloadForm
-            
+            overloadForm = overloadFormHistory.overloadForm  # should now be non-None
             overloadForm.studentOverloadReason = overloadReason
-            overloadForm.save()
-            
-        
+            overloadForm.save()  # only needed if modified after create
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
 
         flash("Overload Request Submitted", "success")
-        return g.currentUser.student.ID
-
+        if g.currentUser.student:
+            return jsonify({"bnumber": g.currentUser.student.ID}), 200
+        return jsonify({"bnumber": None}), 200
     except Exception as e:
         print("ERROR: " + str(e))
         abort(500)
