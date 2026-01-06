@@ -25,7 +25,6 @@ def studentOverloadApp(formHistoryId):
             return render_template('errors/403.html'), 403
         if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
-
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()

@@ -26,7 +26,10 @@ def laborReleaseForm(laborStatusKey):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     forms = LaborStatusForm.select().distinct().where(LaborStatusForm.laborStatusFormID == laborStatusKey)
-
+    laborAdmins = (User.select(User, Supervisor).join(Supervisor)
+                       .where(User.isLaborAdmin == True)
+                       .order_by(+fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name), +Supervisor.LAST_NAME)
+                    )
     if(request.method == 'POST'):
         try:
             historyForms = FormHistory.select().where((FormHistory.formID == laborStatusKey) & (FormHistory.releaseForm != None))
@@ -47,8 +50,10 @@ def laborReleaseForm(laborStatusKey):
             releaseDate = datetime.strptime(datepickerDate, "%m/%d/%Y").strftime("%Y-%m-%d")
             releaseReason = request.form.get("notes")
             releaseCondition = request.form.get("condition")
+            releaseContactUsername = request.form.get("contactPerson")
+            releaseContactPerson = User.get(User.username == releaseContactUsername)
 
-            createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason)
+            createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, releaseContactPerson)
 
             email = emailHandler(formHistoryID.formHistoryID)
             email.laborReleaseFormSubmitted()
@@ -66,14 +71,16 @@ def laborReleaseForm(laborStatusKey):
             return redirect(url_for("main.supervisorPortal"))
     return render_template('main/laborReleaseForm.html',
 				            title=('Labor Release Form'),
-                            forms = forms
+                            forms = forms,
+                            laborAdmins=laborAdmins
                           )
 
-def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition, releaseReason, status="Pending", reviewedDate=None, reviewedBy=None):
+def createLaborReleaseForm(currentUser, laborStatusForiegnKey, releaseDate, releaseCondition,  releaseReason, releaseContactPerson, status="Pending", reviewedDate=None, reviewedBy=None):
     newLaborReleaseForm = LaborReleaseForm.create(
                                 conditionAtRelease = releaseCondition,
                                 releaseDate = releaseDate,
-                                reasonForRelease = releaseReason
+                                reasonForRelease = releaseReason,
+                                contactPerson= releaseContactPerson
                                 )
     historytype = HistoryType.get(HistoryType.historyTypeName == "Labor Release Form")
     status = Status.get(Status.statusName == status)
