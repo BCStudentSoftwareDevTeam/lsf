@@ -201,21 +201,18 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, link, newSupervisor=False):
+    def laborStatusFormAdjusted(self, link: str | None = None, newSupervisor: str | None = None):
         self.link = link
-        self.checkRecipient("Labor Status Form Adjusted For Student",
-                      "Labor Status Form Adjusted For Supervisor")
         if newSupervisor:
             self.supervisorEmail = (Supervisor.get(Supervisor.ID == newSupervisor).EMAIL)
-            self.checkRecipient(False,
-                          "Labor Status Form Adjusted For Supervisor")
+        self.checkRecipient("Labor Status Form Adjusted For Student",
+                      "Labor Status Form Adjusted For Supervisor")
 
     def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
         self.adminName = adminName
         self.adminEmail = adminUserName + "@berea.edu"
         emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification") 
-        self.checkRecipient("Labor Release Form Submitted For Student",
-                      "Labor Release Form Submitted For Supervisor")
+        self.checkRecipient(False, "Labor Release Form Submitted For Supervisor")
         self.sendEmail(emailTemplate, "admin")
 
     def laborReleaseFormApproved(self):
@@ -402,7 +399,6 @@ class emailHandler():
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
-
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
         if self.laborStatusForm.weeklyHours != None:

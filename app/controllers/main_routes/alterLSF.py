@@ -155,7 +155,7 @@ def submitAlteredLSF(laborStatusKey):
                     email = emailHandler(formHistory)
                     link = makeThirdPartyLink("studentAdjustment", request.host, formHistory)
                     if "supervisor" in fieldsChanged:
-                        email.laborStatusFormAdjusted(fieldsChanged["supervisor"]["newValue"])
+                        email.laborStatusFormAdjusted(link, newSupervisor=fieldsChanged["supervisor"]["newValue"])
                     else:
                         email.laborStatusFormAdjusted(link)
                 except Exception as e:
