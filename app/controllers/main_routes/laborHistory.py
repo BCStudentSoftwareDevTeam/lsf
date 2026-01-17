@@ -1,9 +1,10 @@
-import datetime
+from datetime import date
 import re
 import types
 from fpdf import FPDF
 from urllib.parse import urlparse
 
+from app.models import status
 from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
@@ -131,11 +132,18 @@ def populateModal(statusKey):
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
+
         forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
                             .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
+        # Find the FormHistory entry that has an overloadForm (same as overload modal behavior)
+        overload_history = None
+        for f in forms:
+            if f.overloadForm is not None:
+                overload_history = f
+                break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = date.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
@@ -178,9 +186,18 @@ def populateModal(statusKey):
             # Pending release or adjustment forms need the historyType known
             if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
                 pendingformType = form.historyType.historyTypeName
+           
+        try:
+            currentPendingForm = FormHistory.select().where(
+                (FormHistory.formID == statusForm) & 
+                ((FormHistory.status == "Pending") | (FormHistory.status == "Pre-Student Approval"))
+                ).get()
 
-        approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
-
+            status = currentPendingForm.status.statusName
+        except Exception:
+            status = None
+ 
+       
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
@@ -188,7 +205,8 @@ def populateModal(statusKey):
                                             currentDate = currentDate,
                                             pendingformType = pendingformType,
                                             buttonState = buttonState,
-                                            approveLink = approveLink,
+                                            status = status,
+                                            overload_history = overload_history,
                                             ))
         return (resp)
     except Exception as e:

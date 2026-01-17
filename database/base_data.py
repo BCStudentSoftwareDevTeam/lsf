@@ -256,6 +256,16 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                    <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>An adjustment has been made to your Labor Status Form by @@Creator@@.</p>
+                    <p>Please follow the attached link to verify information needed for the approval of an adjusted form: <a href="@@link@@">@@link@@</a></p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>Sincerely,</p>
+                    <p>Labor Program Office</p>
+                    <p>labor_program@berea.edu</p>
+                    <p>859-985-3611</p>
                             ''',
                 "audience":"Student"
                 },
@@ -265,6 +275,15 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                    <p>Dear <strong>@@Supervisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>This is to infrom you that an adjustment has been made to your labor supervisee by @@Creator@@.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>Sincerely,</p>
+                    <p>Labor Program Office</p>
+                    <p>labor_program@berea.edu</p>
+                    <p>859-985-3611</p>
                             ''',
                 "audience":"Supervisor"
                 },
@@ -591,3 +610,4 @@ emailtemps= [
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
 print(" * emailtemplates added")
+

@@ -1,7 +1,7 @@
 from datetime import date, datetime
+from app.models import overloadForm
 from playhouse.shortcuts import model_to_dict
 from flask import json, jsonify, request, redirect, url_for, abort, flash, g
-
 from app.controllers.main_routes import *
 from app.logic.emailHandler import*
 from app.logic.utils import makeThirdPartyLink
@@ -17,19 +17,38 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
-    overloadForm = FormHistory.get_by_id(formHistoryId)
+    #  always load the clicked history entry
+    currentHistory = FormHistory.get_by_id(formHistoryId)
+
+    # STEP 2 — find the real FormHistory row that holds the overloadForm (reason)
+    overloadReasonHistory = (
+        FormHistory
+        .select()
+        .where(
+            (FormHistory.formID == currentHistory.formID) &
+            (FormHistory.overloadForm.is_null(False))
+        )
+        .order_by(FormHistory.createdDate.desc())
+        .first()
+    )
+
+    # STEP 3 — use whichever record has the overloadForm, fallback to clicked one
+    if overloadReasonHistory:
+        overloadHistory = overloadReasonHistory
+    else:
+        overloadHistory = currentHistory
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
         if not currentUser.student:
             return render_template('errors/403.html'), 403
-        if currentUser.student.ID != overloadForm.formID.studentSupervisee.ID:
+        if currentUser.student.ID != overloadHistory.formID.studentSupervisee.ID:
             return render_template('errors/403.html'), 403
     lsfForm = (LaborStatusForm.select(LaborStatusForm, Student, Term, Department)
                     .join(Student, attr="studentSupervisee").switch()
                     .join(Term).switch()
                     .join(Department)
-                    .where(LaborStatusForm.laborStatusFormID == overloadForm.formID)).get()
+                    .where(LaborStatusForm.laborStatusFormID == overloadHistory.formID)).get()
     prefillStudentName = lsfForm.studentSupervisee.FIRST_NAME + " "+ lsfForm.studentSupervisee.LAST_NAME
     prefillStudentBnum = lsfForm.studentSupervisee.ID
     prefillStudentCPO = lsfForm.studentSupervisee.STU_CPO
@@ -39,7 +58,6 @@ def studentOverloadApp(formHistoryId):
     prefillPosition = lsfForm.POSN_TITLE
     prefillHoursOverload = lsfForm.weeklyHours
 
-    listOfTerms = []
     today = date.today()
     termYear = today.year * 100
     termsInYear = Term.select(Term).where(Term.termCode.between(termYear-1, termYear + 15))
@@ -84,10 +102,25 @@ def studentOverloadApp(formHistoryId):
                 totalCurrentHours += j.formID.weeklyHours
     totalFormHours = totalCurrentHours + prefillHoursOverload
 
+    adjustedField, oldValue, newValue = (None, None, None)
+
+    if overloadHistory.adjustedForm:    
+        adjustmentForm = overloadHistory.adjustedForm
+
+        adjustedField = adjustmentForm.fieldAdjusted
+        oldValue  = adjustmentForm.oldValue
+        newValue  = adjustmentForm.newValue
+
+        if adjustedField == "department":
+            oldValue = Department.get(Department.ORG == oldValue).DEPT_NAME
+            newValue = Department.get(Department.ORG == newValue).DEPT_NAME
     return render_template( 'main/studentOverloadApp.html',
 				            title=('student Overload Application'),
                             username = currentUser,
-                            overloadForm = overloadForm,
+                            overloadHistory = overloadHistory,
+                            adjustedField = adjustedField,
+                            oldValue = oldValue,
+                            newValue = newValue,
                             prefillStudentName = prefillStudentName,
                             prefillStudentBnum = prefillStudentBnum,
                             prefillStudentCPO = prefillStudentCPO,
@@ -99,26 +132,22 @@ def studentOverloadApp(formHistoryId):
                             currentPrimary = formIDPrimary,
                             currentSecondary = formIDSecondary,
                             totalCurrentHours = totalCurrentHours,
-                            totalFormHours = totalFormHours
+                            totalFormHours = totalFormHours,
                           )
 
+        
 @main_bp.route('/studentOverloadApp/withdraw/<formHistoryId>', methods=['POST'])
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
-    if formHistory.historyType_id != "Labor Overload Form":
-        print("Somehow we reached a non-overload form history entry ({formHistoryId}) from studentOverloadApp.")
+    if formHistory.historyType_id != "Labor Adjustment Form":
         abort(500)
-
     # send a withdrawal notification to student and supervisor
     email = emailHandler(formHistory.formHistoryID)
     email.LaborOverloadFormWithdrawn()
-
     # TODO should we email financial aid?
-
-    formHistory.overloadForm.delete_instance()
+    formHistory.adjustedForm.delete_instance()
     formHistory.formID.delete_instance()
     #formHistory.delete_instance()
-
     flash("Overload Request Withdrawn", "success")
     return redirect("/")
 
@@ -129,39 +158,57 @@ def updateDatabase(overloadFormHistoryID):
         if not overloadReason:
             abort(500)
 
-        oldStatus = Status.get(Status.statusName == "Pre-Student Approval")
+        # if status is pending that means we have an adjustment 
+        # if status is "pre-student then it means we have an overload"     
         newStatus = Status.get(Status.statusName == "Pending")
-
         overloadFormHistory = FormHistory.get(FormHistory.formHistoryID == overloadFormHistoryID)
-        originalFormHistory = (FormHistory.select()
-                                           .where(FormHistory.formID == overloadFormHistory.formID)
-                                           .where(FormHistory.status == oldStatus)
-                                           .where(FormHistory.historyType_id == "Labor Status Form")).get()
-
+        originalFormHistory = (
+            FormHistory
+            .select()
+            .where(FormHistory.formID == overloadFormHistory.formID.laborStatusFormID)
+            .where((FormHistory.status == "Pre-Student Approval") | (FormHistory.status == "Approved"))
+            .where(FormHistory.historyType_id.in_([
+                     "Labor Status Form",
+                     "Labor Overload Form",
+                     "Labor Adjustment Form",
+                 ]))
+            .first())
+        overloadHistoryType, _ = HistoryType.get_or_create(
+            historyTypeName="Labor Overload Form"
+        )
         with mainDB.atomic() as transaction:
-            # Update statuses
+            overloadForm = OverloadForm.create(studentOverloadReason=request.form.get("studentOverloadReason"))
+            if overloadFormHistory:
+                overloadFormHistory.overloadForm = overloadForm
+                overloadFormHistory.save()
+            else:
+                overloadFormHistory = FormHistory.create(
+                    formID=originalFormHistory.formID,
+                    historyType=overloadHistoryType,
+                    overloadForm=overloadForm,
+                    createdBy=g.currentUser,
+                    createdDate=datetime.now().date(),
+                    status=newStatus,
+                )
             overloadFormHistory.status = newStatus
             overloadFormHistory.save()
             originalFormHistory.status = newStatus
             originalFormHistory.save()
 
-            # Update base student confirmation
             originalFormHistory.formID.studentResponseDate = datetime.now()
             originalFormHistory.formID.studentConfirmation = True
             originalFormHistory.formID.save()
-
-            # Update overload form
-            overloadForm = overloadFormHistory.overloadForm
+            overloadForm = overloadFormHistory.overloadForm  # should now be non-None
             overloadForm.studentOverloadReason = overloadReason
-            overloadForm.save()
-
+            overloadForm.save()  # only needed if modified after create
             email = emailHandler(overloadFormHistory.formHistoryID)
             link = makeThirdPartyLink("Financial Aid", request.host, overloadFormHistory.formHistoryID)
             email.overloadVerification("Financial Aid", link)
 
         flash("Overload Request Submitted", "success")
-        return g.currentUser.student.ID
-
+        if g.currentUser.student:
+            return jsonify({"bnumber": g.currentUser.student.ID}), 200
+        return jsonify({"bnumber": None}), 200
     except Exception as e:
         print("ERROR: " + str(e))
         abort(500)

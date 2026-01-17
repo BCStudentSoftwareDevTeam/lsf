@@ -14,7 +14,7 @@ from app.models.notes import Notes
 from app.models.supervisor import Supervisor
 from app.login_manager import require_login
 from app.logic.alterLSF import modifyLSF, adjustLSF
-
+from app.logic.utils import makeThirdPartyLink
 
 @main_bp.route("/alterLSF/<laborStatusKey>", methods=["GET"])
 def alterLSF(laborStatusKey):
@@ -153,10 +153,11 @@ def submitAlteredLSF(laborStatusKey):
             for formHistory in formHistoryIDs:
                 try:
                     email = emailHandler(formHistory)
+                    link = makeThirdPartyLink("studentAdjustment", request.host, formHistory)
                     if "supervisor" in fieldsChanged:
-                        email.laborStatusFormAdjusted(fieldsChanged["supervisor"]["newValue"])
+                        email.laborStatusFormAdjusted(link, newSupervisor=fieldsChanged["supervisor"]["newValue"])
                     else:
-                        email.laborStatusFormAdjusted()
+                        email.laborStatusFormAdjusted(link)
                 except Exception as e:
                     print("An error occured while attempting to send adjustment form emails: ", e)
                 message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)

@@ -48,6 +48,33 @@ emailTemplates = {
             '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
         ), 
         "audience":"Student",
+    },
+    "studentWithdrawnNotification":{
+        "purpose":'Labor Overload Form Withdrawn For Student', 
+        "formType":"Labor Adjustment Form", 
+        "action":"Withdrew", 
+        "subject":'Labor Adjustment Form Withdrawn',
+        "body":(
+            '<p>Dear <strong>@@Student@@</strong>,</p>'
+            '<p>This email is to notify that the Labor Adjustment Form submitted by <strong>@@Creator@@</strong> for you has been withdrawn.</p>'
+            '<p>&nbsp;</p>'
+            '<p>Please notify your supervisor <strong>@@Supervisor@@</strong> if you want to resubmit the form.</p>'
+            '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+        ), 
+        "audience":"Student",
+    },
+    "supervisorWithdrawnNotification":{
+        "purpose":'Labor Overload Form Withdrawn For Supervisor', 
+        "formType":"Labor Adjustment Form", 
+        "action":"Withdrew", 
+        "subject":'Labor Adjustment Form Withdrawn', 
+        "body":(
+            '<p>Dear <strong>@@Supervisor@@</strong>,</p>'
+            '<p>This email is to notify that the Labor Adjustment Form submitted by <strong>@@Creator@@</strong> for @@Student@@ has been withdrawn.</p>'
+            '<p>&nbsp;</p>'
+            '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+        ), 
+        "audience":"Supervisor",
     }
 }
 

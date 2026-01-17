@@ -13,9 +13,15 @@
 </head>
 <a class="skipContent" href="#checkbox1" tabindex="1" style="top:1%">Click to Skip</a>
 {% include "snips/freshmanWarning.html" %}
+
+
+   
   <div class="col-md-7 col-md-offset-3" >
-    <h1>Labor Overload Application</h1>
+    <h1>Labor Overload Application </h1>
   </div>
+
+
+
   <div class="col-md-2">
 
   </div>
@@ -27,46 +33,52 @@
     }
 </style>
 <div class="container col-md-11" id="checkboxes" >
-    <p>A labor overload is defined as more than 15 hours of labor per week during the regular academic year and may not be approved retroactively. All approvals are subject to periodic review.
+
+  <p>A labor overload is defined as more than 15 hours of labor per week during the regular academic year and may not be approved retroactively. All approvals are subject to periodic review.
        Approval may be revoked if primary labor hours, labor performance, or academic performance become less than satisfactory.
     </p>
+     
     <div>
         <p class="required-mark">* Marked fields are required</p>
     </div>
     <ul>
+   
       <h4><span class="tooltip-right" data-tooltip="Required">Guidelines for Approval:</span></h4>
-      <input type="checkbox" name="checkbox" id="checkbox1" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <input type="checkbox" name="checkbox" id="checkbox1" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
       <label for="checkbox1">Sophomore, junior, or senior classification</label>
       <span class="required-mark"> *</span><br>
 
-      <input type="checkbox" name="checkbox" id="checkbox2" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <input type="checkbox" name="checkbox" id="checkbox2" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
       <label for="checkbox2">Not on any form of probation</label>
       <span class="required-mark"> *</span><br>
 
-      <input type="checkbox" name="checkbox" id="checkbox3" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <input type="checkbox" name="checkbox" id="checkbox3" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
       <label for="checkbox3">Enrolled in less than 5 course credits with less than 8 preparations</label>
       <span class="required-mark"> *</span> <br>
 
-      <input type="checkbox" name="checkbox" id="checkbox4" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <input type="checkbox" name="checkbox" id="checkbox4" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
       <label for="checkbox4">Have a 2.50 GPA, both cumulative and for the previous full term</label>
       <span class="required-mark"> *</span> <br>
 
-      <input type="checkbox" name="checkbox" id="checkbox5" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+      <input type="checkbox" name="checkbox" id="checkbox5" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
       <label for="checkbox5">The required 2.50 cumulative GPA may be waived if a 3.00 GPA is earned during the previous full term</label>
       <span class="required-mark"> *</span>
     </ul>
+    
+  
   {% if totalFormHours > 20 %}
   <ul>
     <h6><strong><span class="tooltip-right" data-tooltip="Required">Requests for over 20 hours* are subject to the following additional guidelines:</span></strong></h6>
-    <input type="checkbox" name="checkbox" id="checkbox6" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+    <input type="checkbox" name="checkbox" id="checkbox6" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
     <label for="checkbox6">Junior or senior classification. 3.00 GPA in the major, overall, and for the previous term</label>
     <span class="required-mark"> *</span> <br>
 
-    <input type="checkbox" name="checkbox" id="checkbox7" onclick="checkBoxCheck(this,{{totalFormHours}})" />
+    <input type="checkbox" name="checkbox" id="checkbox7" onclick="checkBoxCheck(this, '{{totalFormHours}}')" />
     <label for="checkbox7">Approval of the Dean of Labor, the Student Admissions and Academic Standing Committee, and the Office of Financial Aid</label>
     <span class="required-mark"> *</span>
   </ul>
 {% endif %}
+
 </div>
 
 <div class="container col-md-11">
@@ -95,6 +107,7 @@
       </font>
       <div class="form-group">
         <h3 for="Primary">Requested Positions</h3>
+
         <font size="2">
         <table class="table table-striped table-bordered"  align="center">
           <tr>
@@ -109,10 +122,30 @@
               {% for primary in listPrimary %}
               <tr id="Primary" value="{{primary.formHistoryID}}">
                 <td>{{primary.formID.termCode.termName}}</td>
-                <td>{{primary.formID.department.DEPT_NAME}}</td>
+                <td>
+                {% if  adjustedField == "department" %}
+                <del>{{ oldValue }}</del> <br>
+                 <span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{primary.formID.department.DEPT_NAME}}
+                {% endif %}
+                </td>
                 <td>{{primary.formID.jobType}}</td>
-                <td>{{primary.formID.POSN_TITLE}}</td>
-                <td>{{primary.formID.weeklyHours}}</td>
+                <td>
+                {% if  adjustedField == "POSN_TITLE" %}
+                 <del>{{ oldValue }}</del> <br>
+                 <span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{primary.formID.POSN_TITLE}}
+                {% endif %}
+                </td>
+                <td>
+                {% if  adjustedField == "weeklyHours" %}
+                <del>{{ oldValue }}</del>  <span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{primary.formID.weeklyHours}}
+                {% endif %}
+                </td>
                 <td>{{primary.status}}</td>
               </tr>
               {% endfor %}
@@ -121,24 +154,51 @@
               {% for secondary in listSecondary %}
               <tr id="Secondary" value="{{secondary.formHistoryID}}">
                 <td>{{secondary.formID.termCode.termName}}</td>
-                <td>{{secondary.formID.department.DEPT_NAME}}</td>
+                <td>
+                {% if  adjustedField == "department" %}
+                <del>{{ oldValue }}</del> <br>
+                 <span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{secondary.formID.department.DEPT_NAME}}
+                {% endif %}
+                </td>
                 <td>{{secondary.formID.jobType}}</td>
-                <td>{{secondary.formID.POSN_TITLE}}</td>
-                <td>{{secondary.formID.weeklyHours}}</td>
+                <td>
+                {% if  adjustedField == "POSN_TITLE" %}
+                 <del>{{ oldValue }} <br>
+                </del><span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{secondary.formID.POSN_TITLE}}
+                {% endif %}
+                </td>
+                <td>
+                {% if  adjustedField == "weeklyHours" %}
+                <del>{{ oldValue }}</del>  <span class="text-success">{{ newValue }}</span>
+                {% else %}
+                  {{secondary.formID.weeklyHours}}
+                {% endif %}
+                </td>
                 <td>{{secondary.status}}</td>
               </tr>
               {% endfor %}
           {% endfor %}
           <tr>
             <td><strong>Total Approved Primary and Secondary Hours:</strong></td>
-            <td>{{totalCurrentHours}}</td>
+            <td>
+               {% if  adjustedField == "weeklyHours" %}
+                <del>{{ oldValue }}</del>  <span class="text-success">{{ newValue }}</span>
+              {% else %}
+              {{totalCurrentHours}}
+              {% endif %}
+            </td>
           </tr>
         </table>
         </font>
       </div>
     </div>
       <div align="center">
-        <label for="Reason"><span class="tooltip-right" data-tooltip="Required">Reason For Overload Request:<span class="required-mark">*</span></span></label>
+        <label for="Reason"><span class="tooltip-right" >Reason For Overload Request:<span class="required-mark">*</span></span></label>
+    
         <div>
           <textarea id="notes" name="notes" rows="8" cols="80"  style="resize:none;"required></textarea>
         </div>
@@ -150,12 +210,15 @@
 </div>
 <div class="container col-md-11">
   <div align="center" >
-    <button id="submit" type="submit" class="btn btn-success" onclick ="checkForEmptyFields()">Submit Overload Request</button>
+    <button id="submit" type="button" class="btn btn-success" onclick ="checkForEmptyFields()">Submit Overload Request</button>
+
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#withdrawModal">Withdraw Request</button>
-    {% with overloadForm=overloadForm %}
+
+     {% with overloadHistory=overloadHistory%}
       {% include "snips/studentOverloadSubmit.html" %}
       {% include "snips/studentOverloadWithdraw.html" %}
-    {% endwith %}
+     {% endwith %}
+
   </div>
 </div>
 <div class="col-md-1">

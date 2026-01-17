@@ -18,7 +18,6 @@ $('#positionTable tbody tr td').on('click',function(){
 function loadFormHistoryModal(formHistory) {
   $("#modal").modal("show");
   $(".loader").show();
-  
   // This function is called when the modal content is loaded
   $("#modal").find('.modal-content').load('/laborHistory/modal/' + formHistory, function() {
     $(".loader").fadeOut("slow"); // Hide the loader after content is loaded
