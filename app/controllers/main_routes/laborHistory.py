@@ -134,8 +134,7 @@ def populateModal(statusKey):
         forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
                             .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
-        student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = datetime.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
