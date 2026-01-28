@@ -98,7 +98,7 @@
         {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
           <div class="row">
-            <p class="col-sm-4 pTag">Overload Reason:</p>
+            <p class="col-sm-4 pTag">Reject Reason:</p>
           <div class="col-sm-7">
             <textarea class="overloadReasonTextArea" rows="2" cols="45" readonly>{{form.studentOverloadReason}}</textarea>
           </div>
@@ -118,6 +118,7 @@
                 <p>
                 {% if form.overloadForm.laborApprover_id %}
                     {{form.overloadForm.laborApprover.supervisor.FIRST_NAME}} {{form.overloadForm.laborApprover.supervisor.LAST_NAME}}
+                    Something for testing purposes
                 {% else %}
                     None
                 {% endif %}
@@ -125,7 +126,13 @@
             </div>
           </div>
           <div class="row">
-            <p class="col-sm-4 bottomRows pTag">Reason for release:</p>
+            <p class="col-sm-4 releaseTopRows pTag" align="left">Labor Review Date:</p>
+          <div class="col-sm-7" align="left">
+            <p>{{form.overloadForm.laborReviewDate.strftime('%m-%d-%Y')}}</p>
+          </div>
+          </div> 
+          <div class="row">
+            <p class="col-sm-4 bottomRows pTag">Reason for overload:</p>
           <div class="col-sm-7" align="left">
             <textarea class="overloadReasonTextArea" rows="2" cols="45" readonly>{{form.overloadForm.studentOverloadReason}}</textarea>
           </div>
