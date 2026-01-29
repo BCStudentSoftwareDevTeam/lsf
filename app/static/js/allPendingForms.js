@@ -358,8 +358,10 @@ function loadOverloadModal(formHistoryID, laborStatusFormID) {
   This method sends an AJAX call to recieve data used to populate
   the overload modal.
   */
+
+  $("#overloadModal").find(".modal-content").html('<div class="modal-body">Loading...</div>');
+  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID) ;
   $("#overloadModal").modal("show");
-  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID);
 }
 
 
