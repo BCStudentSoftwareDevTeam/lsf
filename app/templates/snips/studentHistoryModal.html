@@ -81,7 +81,6 @@
         </div>
       {% endif %}
 
-      <!--OVERLOAD****************************************************************************************-->
     {% elif form.overloadForm != None %}
       {% if form.reviewedDate == None %}
         <div class="h4 nopadding">
@@ -116,9 +115,8 @@
             <p class="col-sm-4 releaseTopRows pTag">Labor Office Contact:</p>
             <div class="col-sm-7" align="left">
                 <p>
-                {% if form.overloadForm.laborApprover_id %}
+                {% if form.overloadForm.laborApprover_id and (form.overloadForm.laborApprover.supervisor.FIRST_NAME or form.overloadForm.laborApprover.supervisor.LAST_NAME) %}
                     {{form.overloadForm.laborApprover.supervisor.FIRST_NAME}} {{form.overloadForm.laborApprover.supervisor.LAST_NAME}}
-                    Something for testing purposes
                 {% else %}
                     None
                 {% endif %}
@@ -138,9 +136,6 @@
           </div>
           </div>
         </div>
-
-<!--OVERLOAD****************************************************************************************-->
-
 
     {% elif form.releaseForm != None %}
       {% if form.reviewedDate == None %}
