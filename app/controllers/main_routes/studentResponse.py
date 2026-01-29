@@ -20,7 +20,6 @@ def confirm():
     try:
         form = forms.get()
     except DoesNotExist as e:
-        print("Error occured: ", e)
         flash("This contract is invalid or has expired.", "danger")
         abort(404)
 
@@ -63,7 +62,7 @@ def confirmSubmit():
         abort(404)
 
     form.studentConfirmation = (response == "Accepted")
-    form.studentResponseDate = datetime.today()
+    form.studentResponseDate = datetime.date.today()
     form.save()
 
     formHistory = FormHistory.get_or_none(FormHistory.formID == form.laborStatusFormID)
