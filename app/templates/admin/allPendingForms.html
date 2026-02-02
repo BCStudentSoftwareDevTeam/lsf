@@ -206,7 +206,7 @@
                     <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1" style="min-width: 100%;">
                     {% if allForms.historyType.historyTypeName == 'Labor Overload Form' %}
-                        <li role="presentation">
+                        <li role="presentation" id ="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">
                         {% if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
                             {% set formurl = "financialAidOverloadApproval" %}
                             {% if currentUser.isSaasAdmin %}
