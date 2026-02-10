@@ -366,10 +366,9 @@ function loadOverloadModal(formHistoryID, laborStatusFormID) {
 
 
 function loadReleaseModal(formHistoryID, laborStatusFormID) {
-  $("#modalRelease").modal("show");
+  $("#modalRelease").find('.modal-content').html('<div class="modal-body">Loading...</div>');
   $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
-
-
+  $("#modalRelease").modal("show");
 }
 
 

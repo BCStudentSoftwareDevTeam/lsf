@@ -220,13 +220,23 @@
                         {% endif %}
                         </li>
                     {% elif allForms.historyType.historyTypeName == 'Labor Release Form' %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadReleaseModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadReleaseModal('{{allForms.formHistoryID}}', '{{allForms.formID.laborStatusFormID}}');">
+                          Manage
+                          </a></li>
                     {% elif allForms.formHistoryID in pendingOverloadFormPairs %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadOverloadModal('{{allForms.formHistoryID}}', '{{allForms.formID.laborStatusFormID}}');">
+                          Manage
+                          </a></li>
                     {% else %}
                         <li role="presentation"><a role="menuitem" href="#">
                           <span onclick="insertDenial({{allForms.formHistoryID}})"
