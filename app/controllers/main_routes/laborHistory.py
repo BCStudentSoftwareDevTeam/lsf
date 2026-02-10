@@ -171,10 +171,11 @@ def populateModal(statusKey):
                     form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
 
                 if form.adjustedForm.fieldAdjusted == "department":
-                    newDepartment = Department.get(Department.ORG == newValue)
-                    oldDepartment = Department.get(Department.ORG == oldValue)
-                    form.adjustedForm.newValue = newDepartment.DEPT_NAME
-                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
+                    newDepartment = Department.get_or_none(Department.ORG == newValue)
+                    oldDepartment = Department.get_or_none(Department.ORG == oldValue)
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME if newDepartment else "Unknown ", newValue
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME if oldDepartment else "Unknown ", oldValue
+
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
