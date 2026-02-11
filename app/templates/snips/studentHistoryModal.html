@@ -227,7 +227,7 @@
         <div class="row">
           <p class="col-sm-4 releaseTopRows pTag" align="left">Labor Review Date:</p>
           <div class="col-sm-7" align="left">
-            <p>{{form.overloadForm.laborReviewDate.strftime('%m-%d-%Y')}}</p>
+            <p>{{form.overloadForm.laborReviewDate.strftime('%m-%d-%Y') if form.overloadForm.laborReviewDate else "Not yet reviewed"}}</p>
           </div>
         </div> 
         <div class="row">
