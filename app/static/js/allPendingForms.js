@@ -605,7 +605,7 @@ function notesCounter(laborStatusFormID, formHistoryID){
     success: function(response) {
       var viewNotesID = '#notes_' + String(formHistoryID)
       var modalViewNotesID = '#modalNote_' + String(formHistoryID)
-      $(viewNotesID).html('View Notes (' + response['noteTotal'] + ')')
+      $(viewNotesID).html('Notes (' + response['noteTotal'] + ')')
       $(modalViewNotesID).html('View Notes (' + response['noteTotal'] + ')')
     },
     error: function(request,status,error){
