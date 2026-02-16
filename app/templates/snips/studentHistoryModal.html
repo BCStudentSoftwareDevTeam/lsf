@@ -80,8 +80,9 @@
           <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% endif %}
+    {% endif %}
 
-    {% elif form.releaseForm != None %}
+    {% if form.releaseForm != None %}
       {% if form.reviewedDate == None %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
@@ -142,7 +143,9 @@
           </div>
           </div>
         </div>
-    {% elif form.adjustedForm != None %}
+    {% endif %}
+
+    {% if form.adjustedForm != None %}
       {% if form.reviewedDate == None %}
           <div class="h4 nopadding">
             <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
@@ -174,8 +177,9 @@
       <div class="row">
         <p class="col-sm-11 smallDataMargin pTag">{{form.adjustedForm.fieldAdjusted}} changed from {{form.adjustedForm.oldValue}} to {{form.adjustedForm.newValue}}</p>
       </div>
-
-    {% elif form.overloadForm != None %}
+    {% endif %}
+    
+    {% if form.overloadForm != None %}
       {% if form.reviewedDate == None %}
         <div class="h4 overloadBottom">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
@@ -237,7 +241,6 @@
           </div>
         </div>
       </div>
-
     {% endif %}
 
   {% endfor %}

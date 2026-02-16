@@ -173,8 +173,8 @@ def populateModal(statusKey):
                 if form.adjustedForm.fieldAdjusted == "department":
                     newDepartment = Department.get_or_none(Department.ORG == newValue)
                     oldDepartment = Department.get_or_none(Department.ORG == oldValue)
-                    form.adjustedForm.newValue = newDepartment.DEPT_NAME if newDepartment else "Unknown ", newValue
-                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME if oldDepartment else "Unknown ", oldValue
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME if newDepartment else "Unknown " + newValue
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME if oldDepartment else "Unknown " + oldValue
 
 
                 # Convert the field adjusted value out of camelcase into a more readable format

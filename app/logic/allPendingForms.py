@@ -288,5 +288,5 @@ def checkAdjustment(allForms):
                 allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
                 allForms.adjustedForm.oldValue = newDepartment.ORG + "-" + newDepartment.ACCOUNT
             else:
-                allForms.adjustedForm.newValue = "Department not found" + " - " + allForms.adjustedForm.newValue
-                allForms.adjustedForm.oldValue = "Department not found"
+                allForms.adjustedForm.newValue = "Unknown" + " - " + allForms.adjustedForm.newValue
+                allForms.adjustedForm.oldValue = "Unknown" + " - " + allForms.adjustedForm.oldValue
