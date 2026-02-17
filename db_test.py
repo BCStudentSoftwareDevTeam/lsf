@@ -7,10 +7,6 @@ details = {
     "db": "UTE"
 }
 
-from app.config.loadConfig import load_config
-cfg = load_config('app/config/secret_config.yaml')
-details["password"] = cfg["tracy"]["mssql_password"]
-
 ###########################
 # Test pyodbc connection
 ###########################
@@ -46,8 +42,7 @@ for row in engine.execute('select * from STUPOSN'):
 ###########################
 
 from flask_sqlalchemy import SQLAlchemy
-from app import app
-from app.config.loadConfig import load_config
+from app import load_config, app
 from app.logic.tracy import Tracy
 
 cfg = load_config('app/config/secret_config.yaml')
@@ -64,11 +59,11 @@ print("FLASK:",Tracy().getPositionFromCode("S01015"))
 # Test Banner connection
 ###########################
 
-# from app.logic.banner import Banner
-# from app.models.formHistory import FormHistory
-# b = Banner()
-# cursor = b.conn.cursor()
-# print(cursor)
+from app.logic.banner import Banner
+from app.models.formHistory import FormHistory
+b = Banner()
+cursor = b.conn.cursor()
+print(cursor)
 
 # NOT FOR PROD
 # b.insert(FormHistory.get_by_id(39061))
