@@ -18,7 +18,6 @@ from flask import Flask, redirect, url_for, flash
 from app.logic.emailHandler import*
 from app.logic.userInsertFunctions import*
 from app.models.supervisor import Supervisor
-from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
@@ -37,10 +36,10 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
-    students = Tracy().getStudents()
+    students = Student.select()
     terms = Term.select().where(Term.termState == "open") # changed to term state, open, closed, inactive
-    staffs = Tracy().getSupervisors()
-    departments = Tracy().getDepartments()
+    staffs = Supervisor.select()
+    departments = Department.select()   
 
     # Only prepopulate form if current user is the supervisor or creator of the form.
     if laborStatusKey != None:
@@ -77,7 +76,7 @@ def userInsert():
         # Get a student record for the given bnumber
         try:
             student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
-            supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
+            supervisor = Supervisor.get(Supervisor.ID ==rspFunctional[i]['stuSupervisorID'])
         except InvalidUserException as e:
             print(e)
             return "", 500
@@ -119,11 +118,24 @@ def getDates(termcode):
 def getPositions(departmentOrg, departmentAcct):
     """ Get all of the positions that are in the selected department """
     currentUser = require_login()
-    positions = Tracy().getPositionsFromDepartment(departmentOrg,departmentAcct)
+    print("ikikik", departmentAcct, "fefefe", departmentOrg, "lili")
+    positions = (
+        FormHistory
+        .select(FormHistory, LaborStatusForm, Department)
+        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+        .where(
+            (Department.ACCOUNT == departmentAcct) &
+            (Department.ORG == departmentOrg)
+        )
+    )
+    positions = set(positions)
     positionDict = {}
     for position in positions:
-        if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
-            positionDict[position.POSN_CODE] = {"position": position.POSN_TITLE, "WLS":position.WLS, "positionCode":position.POSN_CODE}
+        print(position.formID.POSN_CODE, "positionsssssss")
+        if position.formID.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
+            positionDict[position.formID.POSN_CODE] = {"position": position.formID.POSN_TITLE, "WLS":position.formID.WLS, "positionCode":position.formID.POSN_CODE}
+    print(positionDict, "seeeeeee")
     return json.dumps(positionDict)
 
 @main_bp.route("/laborstatusform/getstudents/<termCode>/<student>", methods=["POST"])
@@ -158,6 +170,7 @@ def checkTotalHours(termCode, student, hours):
                                   ((FormHistory.status == "Approved") | (FormHistory.status == "Pending"))
                                   )
     term = Term.get(Term.termCode == termCode)
+    print("yeet", positions)
     totalHours = 0
     for item in positions:
         formID = item.formID
@@ -187,8 +200,9 @@ def releaseAndRehire():
         createLaborReleaseForm(currentUser, previousPrimaryPosition.formID, tomorrowDate, "Satisfactory", "Released by labor admin.", "Approved", todayDate, currentUser)
 
         # Create new labor status form
-        student = getOrCreateStudentRecord(bnumber=studentDict['stuBNumber'])
-        supervisor = createSupervisorFromTracy(bnumber=studentDict['stuSupervisorID'])
+        student = Student.get(Student.ID == studentDict['stuBNumber'])
+        print("## app/controllers/mainroutes/releaseandrehire##")
+        supervisor = Supervisor.get(Supervisor.ID == studentDict['stuSupervisorID'])
         department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
         term, created = Term.get_or_create(termCode = studentDict['stuTermCode'])
 

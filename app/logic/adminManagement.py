@@ -10,7 +10,9 @@ def searchForAdmin(rsp):
     adminType = rsp[0]
     userList = []
     if adminType == "addlaborAdmin":
+        print("##need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
         tracyStudents = Tracy().getStudentsFromUserInput(userInput)
+        print("frrrrrrr", tracyStudents)
         students = []
         for student in tracyStudents:
             try:
@@ -28,7 +30,9 @@ def searchForAdmin(rsp):
                             'lastName': student.LAST_NAME,
                             'type': 'Student'
                             })
+    print("#chapapa#need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
     tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
+    print("feee", tracySupervisors)
     supervisors = []
     for supervisor in tracySupervisors:
         try:
@@ -51,14 +55,18 @@ def searchForAdmin(rsp):
 
 def getUser(selectpickerID):
     username = request.form.get(selectpickerID)
+    print("jaja", username)
     try:
         user = User.get(User.username == username)
     except DoesNotExist as e:
+        print("#chapapa#app/logic/adminManagement/getUser##")
         usertype = Tracy().checkStudentOrSupervisor(username)
         supervisor = student = None
         if usertype == "Student":
+            print("#chapapa#app/logic/adminManagement/getUser##")
             student = createStudentFromTracy(username)
         else:
+            print("#chapapa#app/logic/adminManagement/getUser##")
             supervisor = createSupervisorFromTracy(username)
         user = createUser(username, student=student, supervisor=supervisor)
     return user

@@ -6,7 +6,6 @@ from app.controllers.main_routes.laborHistory import *
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from app.models.supervisor import Supervisor
-from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.logic.emailHandler import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
@@ -62,9 +61,19 @@ def alterLSF(laborStatusKey):
         prefillhours = form.contractHours
 
     #These are the data fields to populate our dropdowns(Supervisor. Position)
-    supervisors = Tracy().getSupervisors()
-    positions = Tracy().getPositionsFromDepartment(form.department.ORG, form.department.ACCOUNT)
-    departments = Tracy().getDepartments()
+    supervisors = Supervisor.select() #.where(Supervisor.isActive) if we want supervisors to be active one
+    positions = (
+        FormHistory
+        .select(FormHistory, LaborStatusForm, Department)
+        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+        .where(
+            (Department.ACCOUNT == form.department.ACCOUNT) &
+            (Department.ORG == form.department.ORG)
+        )
+    )
+    positions = set(positions)
+    departments = Department.select()
 
     # supervisors from the old system WILL have a Supervisor record, but might not have a Tracy record
     oldSupervisor = Supervisor.get_or_none(ID = form.supervisor.ID)
@@ -119,7 +128,16 @@ def getDate(termcode):
 @main_bp.route("/alterLSF/fetchPositions/<departmentOrg>/<departmentAccount>", methods=['GET'])
 def fetchPositions(departmentOrg, departmentAccount):
     currentUser = require_login()
-    positions = Tracy().getPositionsFromDepartment(departmentOrg, departmentAccount)
+    positions = (
+            FormHistory
+            .select(FormHistory, LaborStatusForm, Department)
+            .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+            .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+            .where(
+                (Department.ACCOUNT == departmentAccount) &
+                (Department.ORG == departmentOrg)
+            )
+        )    
     positionDict = {}
     for position in positions:
         if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:

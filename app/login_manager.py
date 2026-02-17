@@ -30,15 +30,19 @@ def logout():
 
 def require_login():
     env = request.environ
+    print(env, "shishi")
     username = getUsernameFromEnv(env)
+    print(username, "shishi2")
     try:
+        print("herely")
         user = auth_user(env, username)
+        print(user, "herely2")
     except InvalidUserException as e:
         print("Invalid User:", e)
         return False
     
     # Update the user's name
-    user = updateUserFromTracy(user)
+    user = User.get(User.userID == user.userID)
 
     if 'username' not in session:
         print("Logging in as", user.username)
@@ -65,10 +69,10 @@ def auth_user(env, username):
         if description == 'student':
             print("Adding {} to student table".format(username))
             student = createStudentFromTracy(username)
+            newStud = User.get(User.username == username)
         else:
             print("Adding {} to supervisor table".format(username))
             supervisor = createSupervisorFromTracy(username)
-
         print("Creating record for {} in user table".format(username))
         return createUser(username, student=student, supervisor=supervisor)
 

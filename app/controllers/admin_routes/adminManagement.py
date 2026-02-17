@@ -39,6 +39,7 @@ def adminSearch():
     This function takes in the data from the 'Add Labor Admin' select picker, then uses the data to query from the User table and return a list of possible options
     to populate the select picker.
     """
+    print("here ia m")
     try:
         rsp = eval(request.data.decode("utf-8"))
         userList = searchForAdmin(rsp)

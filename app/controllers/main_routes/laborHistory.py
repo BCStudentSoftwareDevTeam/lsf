@@ -127,6 +127,7 @@ def populateModal(statusKey):
     to create the modal, and append all of the data gathered here form the database to the modal.  It also sets a button state which decides which buttons
     to put on the modal depending on what form is in the history.
     """
+    print("Status Key: ", statusKey)
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -155,6 +156,18 @@ def populateModal(statusKey):
 
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
                     newPosition = Tracy().getPositionFromCode(newValue)
+                    print("cicici", newValue)
+                    # newnewposition = (
+                    #     FormHistory
+                    #     .select(FormHistory, LaborStatusForm, Department)
+                    #     .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+                    #     .join(Department, on=(LaborStatusForm.department == Department.departmentID))
+                    #     .where(
+                    #         (Department.ACCOUNT == departmentAcct) &
+                    #         (Department.ORG == departmentOrg)
+                    #     )
+                    # )
+                    print("wewewe", oldValue, "lolo")
                     try:
                         oldPosition = Tracy().getPositionFromCode(oldValue)
                     except:
