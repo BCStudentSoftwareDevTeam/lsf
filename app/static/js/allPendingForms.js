@@ -353,10 +353,9 @@ function clearTextArea() { //makes sure that it empties text areas and p tags wh
 
 
 
-function loadOverloadModal(formHistoryID, laborStatusFormID) {
+function loadOverloadModal(formHistoryID) {
   /*
-  This method sends an AJAX call to recieve data used to populate
-  the overload modal.
+  This method shows the modal and renders is loading when it is loading
   */
 
   $("#overloadModal").find(".modal-content").html('<div class="modal-body">Loading...</div>');
@@ -365,7 +364,7 @@ function loadOverloadModal(formHistoryID, laborStatusFormID) {
 }
 
 
-function loadReleaseModal(formHistoryID, laborStatusFormID) {
+function loadReleaseModal(formHistoryID) {
   $("#modalRelease").find('.modal-content').html('<div class="modal-body">Loading...</div>');
   $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
   $("#modalRelease").modal("show");
