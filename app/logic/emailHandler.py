@@ -70,12 +70,22 @@ class emailHandler():
         if self.formHistory.adjustedForm:
             if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
                 from app.logic.userInsertFunctions import createSupervisorFromTracy
-                newSupervisor = createSupervisorFromTracy(bnumber=self.formHistory.adjustedForm.newValue)
+                newSupervisor = Supervisor.select().where(Supervisor.ID == self.formHistory.adjustedForm.newValue)
                 self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
                 self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
             elif self.formHistory.adjustedForm.fieldAdjusted == "position":
-                currentPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.oldValue)
-                newPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.newValue)
+                currentPosition = (
+                    LaborStatusForm
+                    .select(LaborStatusForm.POSN_CODE, LaborStatusForm.POSN_TITLE, LaborStatusForm.WLS)
+                    .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.oldValue)
+                    .first()
+                )
+                newPosition = (
+                    LaborStatusForm
+                    .select(LaborStatusForm.POSN_CODE, LaborStatusForm.POSN_TITLE, LaborStatusForm.WLS)
+                    .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.newValue)
+                    .first()
+                )
                 self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
                 self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
             else:

@@ -3,6 +3,8 @@ from app.models.user import User
 from app.logic.tracy import Tracy
 from flask import request, flash
 from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
+from app.models.supervisor import Supervisor
+from app.models.student import Student
 
 
 def searchForAdmin(rsp):
@@ -10,11 +12,11 @@ def searchForAdmin(rsp):
     adminType = rsp[0]
     userList = []
     if adminType == "addlaborAdmin":
+        print("starts1")
         print("##need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
-        tracyStudents = Tracy().getStudentsFromUserInput(userInput)
-        print("frrrrrrr", tracyStudents)
+        databaseStudents = Student.select().where(Student.legal_name.contains(userInput) | Student.preferred_name.contains(userInput)| Student.LAST_NAME.contains(userInput)) 
         students = []
-        for student in tracyStudents:
+        for student in databaseStudents:
             try:
                 existingUser = User.get(User.student == student.ID)
                 if existingUser.isLaborAdmin:
@@ -31,10 +33,9 @@ def searchForAdmin(rsp):
                             'type': 'Student'
                             })
     print("#chapapa#need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
-    tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
-    print("feee", tracySupervisors)
+    databaseSupervisors = Supervisor.select().where(Supervisor.legal_name.contains(userInput) | Supervisor.preferred_name.contains(userInput)| Supervisor.LAST_NAME.contains(userInput))
     supervisors = []
-    for supervisor in tracySupervisors:
+    for supervisor in databaseSupervisors:
         try:
             existingUser = User.get(User.supervisor == supervisor.ID)
             if ((existingUser.isLaborAdmin and adminType == "addlaborAdmin")
@@ -55,18 +56,15 @@ def searchForAdmin(rsp):
 
 def getUser(selectpickerID):
     username = request.form.get(selectpickerID)
-    print("jaja", username)
     try:
         user = User.get(User.username == username)
     except DoesNotExist as e:
-        print("#chapapa#app/logic/adminManagement/getUser##")
-        usertype = Tracy().checkStudentOrSupervisor(username)
+        usertype = User.select().where(User.username == username)
+        usertype = "Supervisor" if usertype.supervisor else "Student"
         supervisor = student = None
         if usertype == "Student":
-            print("#chapapa#app/logic/adminManagement/getUser##")
             student = createStudentFromTracy(username)
         else:
-            print("#chapapa#app/logic/adminManagement/getUser##")
             supervisor = createSupervisorFromTracy(username)
         user = createUser(username, student=student, supervisor=supervisor)
     return user

@@ -21,7 +21,7 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.supervisorNotes = noteEntry.notesContents
         lsf.save()
     if fieldName == "supervisor":
-        supervisor = createSupervisorFromTracy(bnumber=fieldsChanged[fieldName]["newValue"])
+        supervisor = Supervisor.get(Supervisor.ID == fieldsChanged[fieldName]["newValue"])
         lsf.supervisor = supervisor.ID
         lsf.save()
 
@@ -31,7 +31,12 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.save()
 
     if fieldName == "position":
-        position = Tracy().getPositionFromCode(fieldsChanged[fieldName]["newValue"])
+        position = (
+            LaborStatusForm
+            .select(LaborStatusForm.POSN_CODE)
+            .where(LaborStatusForm.POSN_CODE == fieldsChanged[fieldName]["newValue"])
+            .first()
+        )        
         lsf.POSN_CODE = position.POSN_CODE
         lsf.POSN_TITLE = position.POSN_TITLE
         lsf.WLS = position.WLS
