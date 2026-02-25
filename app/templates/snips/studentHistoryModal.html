@@ -67,7 +67,7 @@
         {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
            <div class="row">
-             <p class="control-label col-sm-5 pTag" align="right">Reject Reason: </p>
+             <p class="control-label col-sm-5 pTag extraInfoRows" align="right">Reject Reason: </p>
            <div class="col-sm-5">
              <textarea class="rejectReasonTextArea" rows="3" cols="25" readonly>{{form.rejectReason}}</textarea>
            </div>
@@ -98,7 +98,7 @@
         {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
           <div class="row">
-            <p class="col-sm-4 pTag">Reject Reason:</p>
+            <p class="col-sm-4 pTag extraInfoRows">Reject Reason:</p>
           <div class="col-sm-7">
             <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
           </div>
@@ -113,13 +113,13 @@
       {% endif %}
         <div class="smallDataMargin">
           <div class="row" style="padding-top:5px">
-            <p class="col-sm-4 releaseTopRows pTag">Condition at Release:</p>
+            <p class="col-sm-4 releaseTopRows pTag extraInfoRows">Condition at Release:</p>
             <div class="col-sm-7" align="left">
               <p>{{form.releaseForm.conditionAtRelease}}</p>
             </div>
           </div>
           <div class="row" style="padding-top:5px">
-            <p class="col-sm-4 releaseTopRows pTag">Labor Office Contact:</p>
+            <p class="col-sm-4 releaseTopRows pTag extraInfoRows">Labor Office Contact:</p>
             <div class="col-sm-7" align="left">
                 <p>
                 {% if form.releaseForm.contactPerson_id %}
@@ -131,13 +131,13 @@
             </div>
           </div>
           <div class="row">
-            <p class="col-sm-4 releaseTopRows pTag" align="left">Release Date:</p>
+            <p class="col-sm-4 releaseTopRows pTag extraInfoRows" align="left">Release Date:</p>
           <div class="col-sm-7" align="left">
             <p>{{form.releaseForm.releaseDate.strftime('%m-%d-%Y')}}</p>
           </div>
           </div>
           <div class="row">
-            <p class="col-sm-4 bottomRows pTag">Reason for release:</p>
+            <p class="col-sm-4 bottomRows pTag extraInfoRows">Reason for release:</p>
           <div class="col-sm-7" align="left">
             <textarea class="releaseReasonTextArea" rows="2" cols="45" readonly>{{form.releaseForm.reasonForRelease}}</textarea>
           </div>
@@ -161,7 +161,7 @@
           {% if "Denied" in form.status.statusName %}
             <div class="leftMargin">
               <div class="row">
-                <p class="col-sm-4 pTag">Reject Reason:</p>
+                <p class="col-sm-4 pTag extraInfoRows">Reject Reason:</p>
                 <div class="col-sm-7">
                   <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
                 </div>
@@ -201,7 +201,7 @@
         {% if "Denied" in form.status.statusName %}
         <div class="leftMargin">
           <div class="row">
-            <p class="col-sm-4 nopadding pTag">Reject Reason:</p>
+            <p class="col-sm-4 nopadding pTag extraInfoRows">Reject Reason:</p>
           <div class="col-sm-7">
             <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
           </div>
@@ -217,11 +217,12 @@
 
         <div class="smallDataMargin">
         <div class="row" style="padding-top:5px">
-          <p class="col-sm-4 releaseTopRows pTag">Labor Office Contact:</p>
+          <p class="col-sm-4 extraInfoRows pTag">Labor Office Contact:</p>
           <div class="col-sm-7" align="left">
             <p>
-              {% if form.overloadForm.laborApprover_id and (form.overloadForm.laborApprover.supervisor.FIRST_NAME or form.overloadForm.laborApprover.supervisor.LAST_NAME) %}
-                  {{form.overloadForm.laborApprover.supervisor.FIRST_NAME}} {{form.overloadForm.laborApprover.supervisor.LAST_NAME}}
+              {% set laborApprover = form.overloadForm.laborApprover.supervisor %}
+              {% if form.overloadForm.laborApprover_id and (laborApprover.FIRST_NAME or laborApprover.LAST_NAME) %}
+                  {{laborApprover.FIRST_NAME}} {{laborApprover.LAST_NAME}}
               {% else %}
                   None
               {% endif %}
@@ -229,13 +230,13 @@
           </div>
         </div>
         <div class="row">
-          <p class="col-sm-4 releaseTopRows pTag" align="left">Labor Review Date:</p>
+          <p class="col-sm-4 extraInfoRows pTag" align="left">Labor Review Date:</p>
           <div class="col-sm-7" align="left">
             <p>{{form.overloadForm.laborReviewDate.strftime('%m-%d-%Y') if form.overloadForm.laborReviewDate else "Not yet reviewed"}}</p>
           </div>
         </div> 
         <div class="row">
-          <p class="col-sm-4 bottomRows pTag">Reason for overload:</p>
+          <p class="col-sm-4 extraInfoRows pTag">Reason for overload:</p>
           <div class="col-sm-7" align="left">
             <textarea class="overloadReasonTextArea" rows="2" cols="45" readonly>{{form.overloadForm.studentOverloadReason}}</textarea>
           </div>
