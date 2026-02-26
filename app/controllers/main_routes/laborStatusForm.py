@@ -3,6 +3,7 @@ from flask_mail import Mail, Message
 from app.controllers.main_routes import *
 from app.login_manager import require_login
 from app.models.user import *
+from app.models import db
 from app.models.status import *
 from app.models.laborStatusForm import *
 from app.models.overloadForm import *
@@ -73,31 +74,23 @@ def userInsert():
     rspFunctional = json.loads(rsp)
     all_forms = []
     for i in range(len(rspFunctional)):
-
-        # Get a student record for the given bnumber
         try:
-            student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
-            supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
-        except InvalidUserException as e:
-            print(e)
-            return "", 500
-
-        department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
-        term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
-        try:
-            lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
-            createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
-            try:
+            with db.atomic():
+                # Get a student record for the given bnumber
+                student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
+                supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
+                department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
+                term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
+        
+                lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
+                createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
                 emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
-            except Exception as e:
-                print("Error when sending emails during break: " + str(e))
-
-            all_forms.append(True)
+            
+                all_forms.append(True)
         except Exception as e:
+            print("ERROR on creating Labor Status Form/Overload Form" + str(e)) 
             all_forms.append(False)
-            print("ERROR on creating Labor Status Form/Overload Form" + str(e))
 
-    flash("Form(s) submitted successfully! They will be eligible for approval in one business day.", "success")
     return jsonify(all_forms)
 
 @main_bp.route("/laborstatusform/getDate/<termcode>", methods=['GET'])
