@@ -3,7 +3,7 @@ from app import app
 from app.controllers.errors_routes.handlers import *
 from app.models.user import User, DoesNotExist
 from app.models.term import Term
-from app.logic.userInsertFunctions import  createSupervisorFromTracy, createStudentFromTracy, updateUserFromTracy, createUser
+from app.logic.userInsertFunctions import  createSupervisorFromTracy, createStudentFromTracy, createUser
 from app.logic.tracy import InvalidUserException
 
 def getUsernameFromEnv(env):
@@ -30,13 +30,9 @@ def logout():
 
 def require_login():
     env = request.environ
-    print(env, "shishi")
     username = getUsernameFromEnv(env)
-    print(username, "shishi2")
     try:
-        print("herely")
         user = auth_user(env, username)
-        print(user, "herely2")
     except InvalidUserException as e:
         print("Invalid User:", e)
         return False
@@ -67,13 +63,9 @@ def auth_user(env, username):
         description = env['description'].lower()
         supervisor = student = None
         if description == 'student':
-            print("Adding {} to student table".format(username))
             student = createStudentFromTracy(username)
-            newStud = User.get(User.username == username)
         else:
-            print("Adding {} to supervisor table".format(username))
             supervisor = createSupervisorFromTracy(username)
-        print("Creating record for {} in user table".format(username))
         return createUser(username, student=student, supervisor=supervisor)
 
 def getOpenTerm():

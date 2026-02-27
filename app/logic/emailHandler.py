@@ -11,7 +11,6 @@ from app.models.status import*
 from app.models.student import*
 from datetime import datetime
 from app.models.emailTracker import *
-from app.logic.tracy import Tracy
 import string
 from app import app
 import os
@@ -69,7 +68,6 @@ class emailHandler():
 
         if self.formHistory.adjustedForm:
             if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
-                from app.logic.userInsertFunctions import createSupervisorFromTracy
                 newSupervisor = Supervisor.select().where(Supervisor.ID == self.formHistory.adjustedForm.newValue)
                 self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
                 self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)

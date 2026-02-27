@@ -1,6 +1,5 @@
 from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
-from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm

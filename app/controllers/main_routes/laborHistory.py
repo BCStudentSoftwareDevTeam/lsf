@@ -155,21 +155,17 @@ def populateModal(statusKey):
                     form.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
 
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                    newPosition = Tracy().getPositionFromCode(newValue)
-                    print("cicici", newValue)
-                    # newnewposition = (
-                    #     FormHistory
-                    #     .select(FormHistory, LaborStatusForm, Department)
-                    #     .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                    #     .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                    #     .where(
-                    #         (Department.ACCOUNT == departmentAcct) &
-                    #         (Department.ORG == departmentOrg)
-                    #     )
-                    # )
+                    newPosition = (
+                        LaborStatusForm
+                        .select()
+                        .where(LaborStatusForm.POSN_CODE == newValue)
+                        .first()
+                    ) 
                     print("wewewe", oldValue, "lolo")
                     try:
-                        oldPosition = Tracy().getPositionFromCode(oldValue)
+                        oldPosition = LaborStatusForm.get_or_none(
+                            LaborStatusForm.POSN_CODE == oldValue
+                        )                    
                     except:
                         oldPosition = types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?")
 

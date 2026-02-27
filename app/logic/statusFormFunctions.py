@@ -5,7 +5,6 @@ from app.logic.userInsertFunctions import InvalidUserException
 from app.models.formHistory import*
 from app.logic.emailHandler import emailHandler
 from app.logic.utils import makeThirdPartyLink, calculateExpirationDate
-from app.logic.tracy import Tracy, InvalidQueryException
 from flask import request, json, jsonify
 from functools import reduce
 import operator

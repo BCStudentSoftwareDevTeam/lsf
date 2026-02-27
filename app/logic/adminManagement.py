@@ -1,11 +1,10 @@
 from peewee import DoesNotExist
 from app.models.user import User
-from app.logic.tracy import Tracy
 from flask import request, flash
 from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
 from app.models.supervisor import Supervisor
 from app.models.student import Student
-
+from app.logic.tracy import Tracy
 
 def searchForAdmin(rsp):
     userInput = rsp[1]
@@ -59,8 +58,7 @@ def getUser(selectpickerID):
     try:
         user = User.get(User.username == username)
     except DoesNotExist as e:
-        usertype = User.select().where(User.username == username)
-        usertype = "Supervisor" if usertype.supervisor else "Student"
+        usertype = Tracy().checkStudentOrSupervisor(username)
         supervisor = student = None
         if usertype == "Student":
             student = createStudentFromTracy(username)
