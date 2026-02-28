@@ -1,6 +1,6 @@
 import pytest
 from app import app
-from app.controllers.main_routes.alterLSF import modifyLSF, adjustLSF
+from app.controllers.main_routes.alterLSF import modifyLSF, adjustLSF, fetchPositions
 from app.logic.statusFormFunctions import createOverloadForm
 from app.models.user import User
 from app.models.laborStatusForm import LaborStatusForm
@@ -16,6 +16,8 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 from app.models.student import Student
 from app.models.historyType import HistoryType
+from app.models.status import Status
+from flask import json
 @pytest.fixture
 def setup():
     delete_forms()
@@ -58,6 +60,7 @@ def resetLSF():
 
 
 currentUser = User.get(User.userID == 1) # Scott Heggen's entry in User table
+print("lets see", currentUser)
 lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == 2)
 fieldsChanged = {'supervisor':{'oldValue':'B12361006', 'newValue':'B12365892','date':'07/21/2020'},
        'weeklyHours':{'oldValue': '10', 'newValue': '12', 'date': '07/21/2020'},
@@ -172,8 +175,8 @@ def test_adjustLSF(setup):
 
 @pytest.mark.integration
 def test_modifyLSF(setup):
-    with mainDB.atomic() as transaction:
-        print("we ar ehere")
+    with mainDB.transaction() as transaction:
+
         term = Term.create(
             termCode=22332,
             termName="Test Term",
@@ -181,7 +184,6 @@ def test_modifyLSF(setup):
             termEnd=date(2020, 12, 31),
             termState=True
         )
-        print("we ar ehere")
         student = Student.create(
             ID="B12332123",
             preferred_name="Nyan",
@@ -189,20 +191,17 @@ def test_modifyLSF(setup):
             LAST_NAME="Zaw",
             STU_EMAIL="imran@berea.edu"
         )
-        print("we ar ehere")
         dept = Department.create(
             DEPT_NAME="SSDT",
             ACCOUNT="SSDTACC",
             ORG="SSDTORG"
         )
-        print("we ar ehere")
         oldSupervisor = Supervisor.get_or_none(Supervisor.ID == "B12361006")
         if oldSupervisor is None:
             oldSupervisor = Supervisor.create(ID="B12361006")
         newSupervisor = Supervisor.get_or_none(Supervisor.ID == "B12365892")
         if newSupervisor is None:
             newSupervisor = Supervisor.create(ID="B12365892")
-        print("we ar ehere")
         lsf = LaborStatusForm.create(
             laborStatusFormID=98765,
             termCode=term,
@@ -217,7 +216,6 @@ def test_modifyLSF(setup):
             weeklyHours=10,
             supervisorNotes="old notes."
         )
-        print("we ar ehere")
         LaborStatusForm.create(
             laborStatusFormID=98766,
             termCode=term,
@@ -240,57 +238,32 @@ def test_modifyLSF(setup):
             POSN_TITLE="New Position Title",
             POSN_CODE="S61407"
         )
-        print("we ar ehere")
+
         with app.test_request_context():
-            print("we ar ehere")
             fieldName = 'supervisorNotes'
             modifyLSF(fieldsChanged, fieldName, lsf, currentUser)
             assert lsf.supervisorNotes == 'new notes.'
-            print("here1")
+
             fieldName = 'supervisor'
             modifyLSF(fieldsChanged, fieldName, lsf, currentUser)
             assert lsf.supervisor.ID == 'B12365892'
-            print("here2")
+
             fieldName = 'position'
             modifyLSF(fieldsChanged, fieldName, lsf, currentUser)
-            print("chichcc", lsf.POSN_CODE)
             assert lsf.POSN_CODE == 'S61407'
-            print("here3")
+
             fieldName = 'weeklyHours'
             modifyLSF(fieldsChanged, fieldName, lsf, currentUser)
             assert lsf.weeklyHours == 12
-            print("here4")
-            # Modified verload
+
             modifyLSF(fieldsChangedOverload, fieldName, lsf, currentUser)
             assert lsf.weeklyHours == 20
-            print("FH rows for this formID:",
-                list(FormHistory
-                    .select(FormHistory.formHistoryID, FormHistory.formID)
-                    .where(FormHistory.formID == lsf.laborStatusFormID)
-                    .dicts()))
 
-            print("FH last 10 rows (id, formID):",
-                list(FormHistory
-                    .select(FormHistory.formHistoryID, FormHistory.formID)
-                    .order_by(FormHistory.formHistoryID.desc())
-                    .limit(10)
-                    .dicts()))
-            print("here4.5")
-            print("fiofi", lsf.laborStatusFormID)
-            formHistory = ( FormHistory.select().join(HistoryType)
-                           .where((FormHistory.formID == lsf.laborStatusFormID) 
-                                  & (HistoryType.historyTypeName == 'Labor Overload Form'))
-                .get_or_none()
-            )
-            print(formHistory,"fiofi", lsf.laborStatusFormID)
-            assert formHistory.historyType.historyTypeName == 'Labor Overload Form'
-            print("here5")
             fieldName = 'contractHours'
             modifyLSF(fieldsChangedContractHours, fieldName, lsf, currentUser)
             assert lsf.contractHours == 60
-            print("here6")
         resetLSF()
-    transaction.rollback()
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_createOverloadForm(setup):
@@ -321,3 +294,91 @@ def test_createOverloadForm(setup):
         assert adjustedForm.newValue == '20'
         formHistory = FormHistory.get((FormHistory.formID == lsf.laborStatusFormID) & (FormHistory.historyType == 'Labor Overload Form'))
         assert formHistory.historyType.historyTypeName == 'Labor Overload Form'
+
+@pytest.mark.integration
+def test_fetchPositions(setup):
+    with mainDB.transaction() as transaction:
+        dept_ok = Department.create(DEPT_NAME="SSDT", ACCOUNT="SSDTACC", ORG="SSDTORG")
+        dept_other = Department.create(DEPT_NAME="OTHER", ACCOUNT="OTHERACC", ORG="OTHERORG")
+        term = Term.create(termCode=22332, termName="T", termStart="2020-07-01", termEnd="2020-12-31", termState=True)
+        student = Student.create(ID="B1", preferred_name="N", legal_name="N", LAST_NAME="Z", STU_EMAIL="x@x.com")
+        supervisor = Supervisor.create(ID="S1")
+        lsf_good = LaborStatusForm.create(
+            laborStatusFormID=98765,
+            termCode=term,
+            studentSupervisee=student,
+            supervisor=supervisor,
+            department=dept_ok,
+            jobType="Primary",
+            WLS="W1",
+            POSN_TITLE="Good Position",
+            POSN_CODE="S61407",
+            contractHours=40,
+            weeklyHours=10,
+            supervisorNotes="old notes."
+        )
+        lsf_dummy = LaborStatusForm.create(
+            laborStatusFormID=98766,
+            termCode=term,
+            studentSupervisee=student,
+            supervisor=supervisor,
+            department=dept_ok,
+            jobType="Primary",
+            WLS="WD",
+            POSN_TITLE="Dummy Position",
+            POSN_CODE="S12345",
+            contractHours=40,
+            weeklyHours=10,
+            supervisorNotes="old notes."
+        )
+        lsf_other = LaborStatusForm.create(
+            laborStatusFormID=98767,
+            termCode=term,
+            studentSupervisee=student,
+            supervisor=supervisor,
+            department=dept_other,
+            jobType="Primary",
+            WLS="Wo",
+            POSN_TITLE="Other Dept Position",
+            POSN_CODE="S99999",
+            contractHours=40,
+            weeklyHours=10,
+            supervisorNotes="old notes."
+        )
+        status_obj, _ = Status.get_or_create(statusName="Approved")  # adjust field name if different
+        history_type_obj, _ = HistoryType.get_or_create(historyTypeName="Labor Status Form")  # adjust field name if different
+        currentUser = User.get(User.userID == 3)
+        FormHistory.create(
+            formID=lsf_good,
+            historyType=history_type_obj,
+            createdBy=currentUser,
+            createdDate=date.today(),
+            status=status_obj
+        )
+        FormHistory.create(
+            formID=lsf_dummy,
+            historyType=history_type_obj,
+            createdBy=currentUser,
+            createdDate=date.today(),
+            status=status_obj
+        )
+        FormHistory.create(
+            formID=lsf_other,
+            historyType=history_type_obj,
+            createdBy=currentUser,
+            createdDate=date.today(),
+            status=status_obj
+        )
+
+        with app.test_request_context():
+            positions = json.loads(fetchPositions("SSDTORG", "SSDTACC"))
+
+            assert "S61407" in positions
+            assert positions["S61407"]["POSN_TITLE"] == "Good Position"
+            assert positions["S61407"]["WLS"] == "W1"
+            assert positions["S61407"]["POSN_CODE"] == "S61407"
+            assert "S12347" not in positions
+            assert "S99999" not in positions
+
+        resetLSF()
+        transaction.rollback()
