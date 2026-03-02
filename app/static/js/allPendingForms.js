@@ -356,10 +356,10 @@ function clearTextArea() { //makes sure that it empties text areas and p tags wh
 function loadOverloadModal(formHistoryID) {
  /*
   This method resets the modal content to a loading state to prevent 
-  displaying stale data, then fetches and renders the new form data.
-  */
+  displaying stale data, then fetches and renders the new form data.*/
 
-  $("#overloadModal").find(".modal-content").html('<div class="modal-body">Loading...</div>');
+  $("#overloadModal").find(".modal-content").html(`<div class="modal-body"><div class="spinner" role="status">
+  <span class="visually-hidden"></span></div></div>`);
   $("#overloadModal").modal("show");
   $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID) ;
   
@@ -371,7 +371,8 @@ function loadReleaseModal(formHistoryID) {
   This method resets the modal content to a loading state to prevent 
   displaying stale data, then fetches and renders the new form data.
   */
-  $("#modalRelease").find('.modal-content').html('<div class="modal-body">Loading...</div>');
+  $("#modalRelease").find(".modal-content").html(`<div class="modal-body"><div class="spinner" role="status">
+  <span class="visually-hidden"></span></div></div>`)
   $("#modalRelease").modal("show");  
   $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
  
