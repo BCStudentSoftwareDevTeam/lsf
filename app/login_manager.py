@@ -41,7 +41,6 @@ def require_login():
     user = User.get(User.userID == user.userID)
 
     if 'username' not in session:
-        print("Logging in as", user.username)
         session['username'] = user.username
 
     return user

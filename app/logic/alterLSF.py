@@ -21,11 +21,8 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.supervisorNotes = noteEntry.notesContents
         lsf.save()
     if fieldName == "supervisor":
-        print("I told you so",fieldsChanged[fieldName]["newValue"], fieldName, lsf, "chihci", currentUser )
         supervisor = Supervisor.get(Supervisor.ID == fieldsChanged[fieldName]["newValue"])
-        print("supervisor: ", supervisor)
         lsf.supervisor = supervisor.ID
-        print("jajaja")
         lsf.save()
 
     if fieldName == "department":
@@ -34,17 +31,13 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.save()
 
     if fieldName == "position":
-        print("error is here")
         position = LaborStatusForm.get_or_none(
             LaborStatusForm.POSN_CODE == fieldsChanged[fieldName]["newValue"]
         )
-        print("we are over")        
         lsf.POSN_CODE = position.POSN_CODE
         lsf.POSN_TITLE = position.POSN_TITLE
         lsf.WLS = position.WLS
-        print("we see we don't judge")        
         lsf.save()
-        print("we see we don't judge2")        
 
     if fieldName == "weeklyHours":
         newWeeklyHours = int(fieldsChanged[fieldName]['newValue'])
