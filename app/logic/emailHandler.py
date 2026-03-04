@@ -74,13 +74,13 @@ class emailHandler():
             elif self.formHistory.adjustedForm.fieldAdjusted == "position":
                 currentPosition = (
                     LaborStatusForm
-                    .select(LaborStatusForm.POSN_CODE, LaborStatusForm.POSN_TITLE, LaborStatusForm.WLS)
+                    .select()
                     .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.oldValue)
                     .first()
                 )
                 newPosition = (
                     LaborStatusForm
-                    .select(LaborStatusForm.POSN_CODE, LaborStatusForm.POSN_TITLE, LaborStatusForm.WLS)
+                    .select()
                     .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.newValue)
                     .first()
                 )

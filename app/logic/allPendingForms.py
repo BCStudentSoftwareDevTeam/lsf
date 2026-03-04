@@ -90,7 +90,6 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
 
     The only fields that will ever be changed in an adjustment form are: supervisor, department, position, and hours.
     """
-    print(form.adjustedForm.newValue, "heheee")
     currentUser = require_login()
     if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
@@ -107,14 +106,9 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
 
     if form.adjustedForm.fieldAdjusted == "position":
         LSF.POSN_CODE = form.adjustedForm.newValue
-        position = (
-                FormHistory
-                .select(FormHistory, LaborStatusForm, Department)
-                .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-                .where(LaborStatusForm.POSN_CODE == form.adjustedForm.newValue)   
-                .get_or_none()
-            )        
+        position = LaborStatusForm.get_or_none(
+            LaborStatusForm.POSN_CODE == fieldsChanged[fieldName]["newValue"]
+        )     
         LSF.POSN_TITLE = position.POSN_TITLE
         LSF.WLS = position.WLS
         LSF.save()
@@ -292,10 +286,10 @@ def checkAdjustment(allForms):
             newPositionCode = allForms.adjustedForm.newValue
             newPosition = (
                 LaborStatusForm
-                .select(LaborStatusForm.POSN_CODE, LaborStatusForm.WLS, LaborStatusForm.POSN_TITLE)
+                .select()
                 .where(LaborStatusForm.POSN_CODE == newPositionCode)
                 .first()
-            )           
+            )
             # temporarily storing the position code and wls in new value, and position name in old value
             # because we want to show these information in the hmtl template.
             allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"

@@ -118,24 +118,21 @@ def getDates(termcode):
 def getPositions(departmentOrg, departmentAcct):
     """ Get all of the positions that are in the selected department """
     currentUser = require_login()
-    print("ikikik", departmentAcct, "fefefe", departmentOrg, "lili")
-    positions = (
-        FormHistory
+    positions = set(
+        LaborStatusForm
         .select(FormHistory, LaborStatusForm, Department)
-        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .switch(LaborStatusForm)
         .join(Department, on=(LaborStatusForm.department == Department.departmentID))
         .where(
             (Department.ACCOUNT == departmentAcct) &
             (Department.ORG == departmentOrg)
         )
     )
-    positions = set(positions)
     positionDict = {}
     for position in positions:
-        print(position.formID.POSN_CODE, "positionsssssss")
-        if position.formID.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
-            positionDict[position.formID.POSN_CODE] = {"position": position.formID.POSN_TITLE, "WLS":position.formID.WLS, "positionCode":position.formID.POSN_CODE}
-    print(positionDict, "seeeeeee")
+        if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
+            positionDict[position.POSN_CODE] = {"position": position.POSN_TITLE, "WLS":position.WLS, "positionCode":position.POSN_CODE}
     return json.dumps(positionDict)
 
 @main_bp.route("/laborstatusform/getstudents/<termCode>/<student>", methods=["POST"])
@@ -170,7 +167,6 @@ def checkTotalHours(termCode, student, hours):
                                   ((FormHistory.status == "Approved") | (FormHistory.status == "Pending"))
                                   )
     term = Term.get(Term.termCode == termCode)
-    print("yeet", positions)
     totalHours = 0
     for item in positions:
         formID = item.formID
@@ -201,7 +197,6 @@ def releaseAndRehire():
 
         # Create new labor status form
         student = Student.get(Student.ID == studentDict['stuBNumber'])
-        print("## app/controllers/mainroutes/releaseandrehire##")
         supervisor = Supervisor.get(Supervisor.ID == studentDict['stuSupervisorID'])
         department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
         term, created = Term.get_or_create(termCode = studentDict['stuTermCode'])

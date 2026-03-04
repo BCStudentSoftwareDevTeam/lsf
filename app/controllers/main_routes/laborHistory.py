@@ -127,7 +127,6 @@ def populateModal(statusKey):
     to create the modal, and append all of the data gathered here form the database to the modal.  It also sets a button state which decides which buttons
     to put on the modal depending on what form is in the history.
     """
-    print("Status Key: ", statusKey)
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -161,7 +160,6 @@ def populateModal(statusKey):
                         .where(LaborStatusForm.POSN_CODE == newValue)
                         .first()
                     ) 
-                    print("wewewe", oldValue, "lolo")
                     try:
                         oldPosition = LaborStatusForm.get_or_none(
                             LaborStatusForm.POSN_CODE == oldValue

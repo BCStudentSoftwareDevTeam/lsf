@@ -26,7 +26,6 @@ def alterLSF(laborStatusKey):
     if not currentUser.isLaborAdmin:       # Not an admin
         if currentUser.student and not currentUser.supervisor: # If a student is logged in and trying to get to this URL then send them back to their own page.
             return redirect("/laborHistory/" + currentUser.student.ID)
-
     currentDate = date.today()
     #If logged in....
     #Step 1: get form attached to the student (via labor history modal)
@@ -71,8 +70,7 @@ def alterLSF(laborStatusKey):
             (Department.ORG == form.department.ORG)
         )
     )
-    positions = [position for position in positions]
-    positions = set(positions)
+    positions = {position for position in positions}
     departments = Department.select()
     # supervisors from the old system WILL have a Supervisor record, but might not have a Tracy record
     oldSupervisor = Supervisor.get_or_none(ID = form.supervisor.ID)

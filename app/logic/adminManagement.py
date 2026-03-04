@@ -11,8 +11,6 @@ def searchForAdmin(rsp):
     adminType = rsp[0]
     userList = []
     if adminType == "addlaborAdmin":
-        print("starts1")
-        print("##need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
         databaseStudents = Student.select().where(Student.legal_name.contains(userInput) | Student.preferred_name.contains(userInput)| Student.LAST_NAME.contains(userInput)) 
         students = []
         for student in databaseStudents:
@@ -31,7 +29,6 @@ def searchForAdmin(rsp):
                             'lastName': student.LAST_NAME,
                             'type': 'Student'
                             })
-    print("#chapapa#need to work on this there is a chance we need to strip the string app/logic/adminManagement/searchForAdmin##")
     databaseSupervisors = Supervisor.select().where(Supervisor.legal_name.contains(userInput) | Supervisor.preferred_name.contains(userInput)| Supervisor.LAST_NAME.contains(userInput))
     supervisors = []
     for supervisor in databaseSupervisors:
