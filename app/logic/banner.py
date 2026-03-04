@@ -12,7 +12,7 @@ class Banner():
         if app.config['use_banner']:
             self.database_exists = True
             try:
-                self.conn = python-oracledb.connect(
+                self.conn = oracledb.connect(
                         app.config["banner"]["user"],
                         app.config["banner"]["password"],
                         "{url}:{port}/{sid}".format(**app.config["banner"]))
