@@ -4,6 +4,16 @@
 
 }
 
+#sidebar-toggle svg {
+    fill: #fff;
+}
+
+
+@media (min-width: 992px) {
+    .footer {
+        padding-left: 0 !important;
+    }
+}
 #sidebar-toggle {
     display: none;
 }
@@ -40,10 +50,9 @@
         border-radius: 0 4px 4px 0;
         padding: 10px 10px 5px 10px;
         cursor: pointer;
-        transition: left 0.3s ease; /* mirrors sidebar slide */
+        transition: left 0.3s ease; 
     }
 
-    /* When sidebar is open, tab moves to sidebar's right edge (280px) */
     body.sidebar-is-open #sidebar-toggle {
         left: 280px;
     }
@@ -67,4 +76,4 @@
     .footer {
         padding-left: 0 !important;
     }
-}
+} 
