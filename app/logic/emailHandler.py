@@ -16,7 +16,7 @@ import string
 from app import app
 import os
 from datetime import datetime, date
-
+from app.logic.utils import makeThirdPartyLink
 
 class emailHandler():
     def __init__(self, formHistoryKey):

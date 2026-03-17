@@ -79,8 +79,8 @@ def userInsert():
                 # Get a student record for the given bnumber
                 student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
                 supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
-                department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
-                term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
+                department = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
+                term = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
         
                 lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
                 createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
