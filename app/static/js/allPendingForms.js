@@ -254,36 +254,40 @@ function resendApprovalLink(formId) {
 
 function getNotes(formId) {
   $.ajax({
-    type: "GET",
-    url: "/admin/getNotes/" + formId,
-    datatype: "json",
-    success: function(response) {
-      if ("Success" in response && response.Success == "false") {
-        //Clears supervisor notes p tag and the labor notes textarea
-        $(".notesText").empty();
-        $("#laborNotesText").empty();
-      } else {
-        $("#laborNotesText").data('formId', formId); //attaches the formid data to the textarea
+  type: "GET",
+  url: "/admin/getNotes/" + formId,
+  dataType: "json",
+  success: function(response) {
 
+    // Attach formId
+    $("#laborNotesText").data('formId', formId);
 
-        //Populates notes value from the database
-        if ("supervisorNotes" in response) {
-          $(".supeNotesLabel").show()
-          $(".notesText").show()
-          $(".notesText").html(response.supervisorNotes);
-        }
-        if (!("supervisorNotes" in response)) {
-          $(".supeNotesLabel").hide()
-          $(".notesText").hide()
-        }
-        if ("laborDepartmentNotes" in response) {
-          $(".notesLogArea").html(response.laborDepartmentNotes);
-        } else if (!("laborDepartmentNotes" in response)) {
-          $(".notesLogArea").html("No notes to show")
-        }
-      }
+    // Handle failure
+    if (response.Success === false || response.Success === "false") {
+      $(".notesText").empty().hide();
+      $("#laborNotesText").val("");
+      $(".supeNotesLabel").hide();
+      $(".notesLogArea").html("No notes to show");
+      return;
     }
-  });
+
+    // Supervisor Notes
+    if (response.supervisorNotes) {
+      $(".supeNotesLabel").show();
+      $(".notesText").show().html(response.supervisorNotes);
+    } else {
+      $(".supeNotesLabel").hide();
+      $(".notesText").hide().empty();
+    }
+
+    // Labor Notes
+    if (response.laborDepartmentNotes) {
+      $(".notesLogArea").html(response.laborDepartmentNotes);
+    } else {
+      $(".notesLogArea").html("No notes to show");
+    }
+  }
+});
 }
 
 
