@@ -17,10 +17,6 @@
     display: none;
  }
  
- #sidebar-toggle svg {
-    fill: #fff;
- }
- 
  #sidebar-overlay {
     display: none;
     position: fixed;
