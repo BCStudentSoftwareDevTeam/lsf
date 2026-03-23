@@ -252,44 +252,71 @@ function resendApprovalLink(formId) {
   });
 }
 
-function getNotes(formId) {
-  $.ajax({
-  type: "GET",
-  url: "/admin/getNotes/" + formId,
-  dataType: "json",
-  success: function(response) {
+function getNotes(formId, formHistoryID) {
+  var $logArea = $('#logNotesDiv_' + formHistoryID + ' .notesLogArea');
+  var $notesText = $('#logNotesDiv_' + formHistoryID + ' .notesText');
+  var $supeLabel = $('#logNotesDiv_' + formHistoryID + ' .supeNotesLabel');
 
-    // Attach formId
-    $("#laborNotesText").data('formId', formId);
+  $notesText.empty().hide();
+  $supeLabel.hide();
+  $logArea.html('Loading...');
 
-    // Handle failure
-    if (response.Success === false || response.Success === "false") {
-      $(".notesText").empty().hide();
-      $("#laborNotesText").val("");
-      $(".supeNotesLabel").hide();
-      $(".notesLogArea").html("No notes to show");
-      return;
-    }
+  console.log("1. getNotes called - formId:", formId, "historyId:", formHistoryID);
 
-    // Supervisor Notes
-    if (response.supervisorNotes) {
-      $(".supeNotesLabel").show();
-      $(".notesText").show().html(response.supervisorNotes);
-    } else {
-      $(".supeNotesLabel").hide();
-      $(".notesText").hide().empty();
-    }
-
-    // Labor Notes
-    if (response.laborDepartmentNotes) {
-      $(".notesLogArea").html(response.laborDepartmentNotes);
-    } else {
-      $(".notesLogArea").html("No notes to show");
-    }
+  if (getNotes._pendingRequest) {
+    console.log("2. Aborting previous request");
+    getNotes._pendingRequest.abort();
+    getNotes._pendingRequest = null;
   }
-});
-}
 
+  getNotes._pendingRequest = $.ajax({
+    type: "GET",
+    url: "/admin/getNotes/" + formId,
+    dataType: "json",
+    timeout: 8000,
+
+    beforeSend: function() {
+      console.log("3. AJAX firing for formId:", formId);
+    },
+
+    success: function(response) {
+      console.log("4. SUCCESS:", response);
+      getNotes._pendingRequest = null;
+      $("#laborNotesText").data("formId", formId);
+
+      if (response.Success === false || response.Success === "false") {
+        $notesText.empty().hide();
+        $supeLabel.hide();
+        $logArea.html("No notes to show");
+        return;
+      }
+
+      if (response.supervisorNotes) {
+        $supeLabel.show();
+        $notesText.show().html(response.supervisorNotes);
+      } else {
+        $supeLabel.hide();
+        $notesText.hide().empty();
+      }
+
+      $logArea.html(response.laborDepartmentNotes || "No notes to show");
+    },
+
+    error: function(xhr, status, error) {
+      getNotes._pendingRequest = null;
+      if (status === "abort") {
+        console.log("Aborted - ignoring");
+        return;
+      }
+      console.error("getNotes error:", status, error);
+      $logArea.html("Failed to load notes. Please try again.");
+    },
+
+    complete: function(xhr, status) {
+      console.log("5. COMPLETE:", status);
+    }
+  });
+}
 
 function notesInsert(textareaID, buttonID) {
   var formId = $("#" + textareaID).data('formId');
@@ -585,18 +612,17 @@ function submitRelease(formHistoryID) {
 
 
 function toggleNotesLog(laborStatusFormID, formHistoryID) {
-  /*
-  This method toggles the 'Notes' log at the bottom of the
-  'Overload' and 'Release' modal to show/hide it
-  */
-  if ($('.logNotesDiv').css('display') == 'none') {
-    var modalViewNotesID = '#modalNote_' + String(formHistoryID)
-    $(modalViewNotesID).html('Hide Notes')
-    getNotes(laborStatusFormID)
-    $('.logNotesDiv').css('display', 'block')
+  var $logDiv = $('#logNotesDiv_' + formHistoryID); 
+  var $btn = $('#modalNote_' + formHistoryID);
+
+  if ($logDiv.css('display') === 'none') {
+    $btn.html('Hide Notes');
+    $logDiv.css('display', 'block');
+    getNotes(laborStatusFormID, formHistoryID); 
   } else {
-    notesCounter(laborStatusFormID, formHistoryID)
-    $('.logNotesDiv').css('display', 'none')
+    $btn.html('Notes');
+    $logDiv.css('display', 'none');
+    notesCounter(laborStatusFormID, formHistoryID);
   }
 }
 
@@ -622,7 +648,7 @@ function notesCounter(laborStatusFormID, formHistoryID){
     error: function(request,status,error){
       console.log(request.responseText);
     }
-  });
+  }); 
 }
 
 
