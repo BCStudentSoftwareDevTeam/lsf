@@ -579,20 +579,20 @@ function submitRelease(formHistoryID) {
 
 
 function toggleNotesLog(laborStatusFormID, formHistoryID) {
-  var $logDiv = $('#logNotesDiv_' + formHistoryID); 
-  var $btn = $('#modalNote_' + formHistoryID);
-
-  if ($logDiv.css('display') === 'none') {
-    $btn.html('Hide Notes');
-    $logDiv.css('display', 'block');
-    getNotes(laborStatusFormID, formHistoryID); 
+  /*
+  This method toggles the 'Notes' log at the bottom of the
+  'Overload' and 'Release' modal to show/hide it
+  */
+  if ($('.logNotesDiv').css('display') == 'none') {
+    var modalViewNotesID = '#modalNote_' + String(formHistoryID)
+    $(modalViewNotesID).html('Hide Notes')
+    getNotes(laborStatusFormID)
+    $('.logNotesDiv').css('display', 'block')
   } else {
-    $btn.html('Notes');
-    $logDiv.css('display', 'none');
-    notesCounter(laborStatusFormID, formHistoryID);
+    notesCounter(laborStatusFormID, formHistoryID)
+    $('.logNotesDiv').css('display', 'none')
   }
 }
-
 
 function notesCounter(laborStatusFormID, formHistoryID){
   /*
