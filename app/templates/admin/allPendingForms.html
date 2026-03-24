@@ -238,7 +238,7 @@
                           Manage
                           </a></li>
                     {% else %}
-                        <li role="presentation"><a role="menuitem" href="#">
+                        <li role="presentation"><a role="menuitem" href="#"class=".bottom-clickability">
                           <span onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
                                 data-target="#denyModal">Deny</span></a></li>
@@ -247,7 +247,8 @@
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
                             <span >Modify</span></a></li>
                     {% endif %}
-                        <li role="presentation"><a role="menuitem" href="#">
+                        <li role="presentation">
+                          <a role="menuitem" href="#"class=".bottom-clickability">
                           <span id="notes_{{allForms.formHistoryID}}"
                                 onclick="getNotes({{allForms.formID.laborStatusFormID}})"
                                 data-toggle="modal"

@@ -20,6 +20,13 @@ html, body {
     background-color: #275881;
     overflow-x: hidden;
 }
+.bottom-clickability {
+    padding: 1.5rem 1.5rem !important;
+    width: 100% !important;
+    display: inline !important;
+    margin: 10 !important;
+    box-sizing: border-box !important;
+}
 
 .panel-default, .panel-heading {
     border: none;
