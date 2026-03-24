@@ -253,67 +253,35 @@ function resendApprovalLink(formId) {
 }
 
 function getNotes(formId, formHistoryID) {
-  var $logArea = $('#logNotesDiv_' + formHistoryID + ' .notesLogArea');
-  var $notesText = $('#logNotesDiv_' + formHistoryID + ' .notesText');
-  var $supeLabel = $('#logNotesDiv_' + formHistoryID + ' .supeNotesLabel');
-
-  $notesText.empty().hide();
-  $supeLabel.hide();
-  $logArea.html('Loading...');
-
-  console.log("1. getNotes called - formId:", formId, "historyId:", formHistoryID);
-
-  if (getNotes._pendingRequest) {
-    console.log("2. Aborting previous request");
-    getNotes._pendingRequest.abort();
-    getNotes._pendingRequest = null;
-  }
-
-  getNotes._pendingRequest = $.ajax({
+    $.ajax({
     type: "GET",
     url: "/admin/getNotes/" + formId,
-    dataType: "json",
-    timeout: 8000,
-
-    beforeSend: function() {
-      console.log("3. AJAX firing for formId:", formId);
-    },
-
+    datatype: "json",
     success: function(response) {
-      console.log("4. SUCCESS:", response);
-      getNotes._pendingRequest = null;
-      $("#laborNotesText").data("formId", formId);
-
-      if (response.Success === false || response.Success === "false") {
-        $notesText.empty().hide();
-        $supeLabel.hide();
-        $logArea.html("No notes to show");
-        return;
-      }
-
-      if (response.supervisorNotes) {
-        $supeLabel.show();
-        $notesText.show().html(response.supervisorNotes);
+      if ("Success" in response && response.Success == "false") {
+        //Clears supervisor notes p tag and the labor notes textarea
+        $(".notesText").empty();
+        $("#laborNotesText").empty();
       } else {
-        $supeLabel.hide();
-        $notesText.hide().empty();
+        $("#laborNotesText").data('formId', formId); //attaches the formid data to the textarea
+
+
+        //Populates notes value from the database
+        if ("supervisorNotes" in response) {
+          $(".supeNotesLabel").show()
+          $(".notesText").show()
+          $(".notesText").html(response.supervisorNotes);
+        }
+        if (!("supervisorNotes" in response)) {
+          $(".supeNotesLabel").hide()
+          $(".notesText").hide()
+        }
+        if ("laborDepartmentNotes" in response) {
+          $(".notesLogArea").html(response.laborDepartmentNotes);
+        } else if (!("laborDepartmentNotes" in response)) {
+          $(".notesLogArea").html("No notes to show")
+        }
       }
-
-      $logArea.html(response.laborDepartmentNotes || "No notes to show");
-    },
-
-    error: function(xhr, status, error) {
-      getNotes._pendingRequest = null;
-      if (status === "abort") {
-        console.log("Aborted - ignoring");
-        return;
-      }
-      console.error("getNotes error:", status, error);
-      $logArea.html("Failed to load notes. Please try again.");
-    },
-
-    complete: function(xhr, status) {
-      console.log("5. COMPLETE:", status);
     }
   });
 }
@@ -333,7 +301,6 @@ function notesInsert(textareaID, buttonID) {
   $("#" + buttonID).on('submit', function(e) {
     e.preventDefault();
   });
-
 
   $.ajax({
     method: "POST",
