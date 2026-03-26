@@ -35,7 +35,7 @@ def laborhistory(id):
         if not currentUser:
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType, LaborStatusForm.startDate)
                                    .join_from(FormHistory, LaborStatusForm)
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
@@ -56,42 +56,28 @@ def laborhistory(id):
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        
-        ###########################################
+
         authorizedForms = list(authorizedForms.objects())
+        authorizedForms.sort(key=lambda f: f.startDate or datetime.date.min, reverse=True)
+        downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
-
+        # modify status display for overload and release forms
         formIds = [form.formID for form in authorizedForms]
 
         relatedForms = (FormHistory.select().where(
-            (FormHistory.formID.in_(formIds)) &
-            ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)) | (FormHistory.adjustedForm.is_null(False)))
-        ))
+                     (FormHistory.formID.in_(formIds)) &
+                     ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)) | (FormHistory.adjustedForm.is_null(False)))
+                 ))
 
-        # Build latest related history per form
-        latestRelatedMap = {}
-        for related in relatedForms:
-            form_id = related.formID.laborStatusFormID
-            if form_id not in latestRelatedMap or related.startDate > latestRelatedMap[form_id].startDate:
-                latestRelatedMap[form_id] = related
+        formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
 
-        # Set sort date and initialize display status
+        # initialize displayStatus with each form's base status
         for form in authorizedForms:
             form.displayStatus = str(form.status)
-            latest_related = latestRelatedMap.get(form.formID.laborStatusFormID)
-            form.sortDate = latest_related.startDate if latest_related else form.startDate
-
-        # Sort by latest activity, not by term
-        authorizedForms.sort(key=lambda f: f.sortDate, reverse=True)
-
-        downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
-
-        # Update display status based on latest related history only
-        for form in authorizedForms:
-            related = latestRelatedMap.get(form.formID.laborStatusFormID)
-            if not related:
-                continue
+        # iterate once over relatedForms and update each form displayStatus
+        for related in relatedForms:
+            form = formMap.get(related.formID.laborStatusFormID)
 
             if related.overloadForm:
                 form.displayStatus = "Overload " + str(related.status)
@@ -99,34 +85,6 @@ def laborhistory(id):
                 form.displayStatus = "Adjustment " + str(related.status)
             if related.releaseForm:
                 form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
-
-        # authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
-        # downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
-
-        # laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
-        # # modify status display for overload and release forms
-        # formIds = [form.formID for form in authorizedForms]
-
-        # relatedForms = (FormHistory.select().where(
-        #              (FormHistory.formID.in_(formIds)) &
-        #              ((FormHistory.releaseForm.is_null(False)) | (FormHistory.overloadForm.is_null(False)) | (FormHistory.adjustedForm.is_null(False)))
-        #          ))
-
-        # formMap = {form.formID.laborStatusFormID: form for form in authorizedForms}
-
-        # # initialize displayStatus with each form's base status
-        # for form in authorizedForms:
-        #     form.displayStatus = str(form.status)
-        # # iterate once over relatedForms and update each form displayStatus
-        # for related in relatedForms:
-        #     form = formMap.get(related.formID.laborStatusFormID)
-
-        #     if related.overloadForm:
-        #         form.displayStatus = "Overload " + str(related.status)
-        #     if related.adjustedForm:
-        #         form.displayStatus = "Adjustment " + str(related.status)
-        #     if related.releaseForm:
-        #         form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
 
         return render_template('main/formHistory.html',
     				            title=('Labor History'),
