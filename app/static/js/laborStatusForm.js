@@ -769,8 +769,6 @@ function userInsert() {
     data: JSON.stringify(globalArrayOfStudents),
     contentType: "application/json",
     success: function (response) {
-      console.log("response from backend: ", response);
-
       var isBreak = $('#selectedTerm').find('option:selected').data('termbreak');
 
   
@@ -804,7 +802,7 @@ function userInsert() {
 
   
       let message = "";
-
+      console.log("hasFailure: ", hasFailure);
       if (!hasFailure) {
         message = "Labor Status Form(s) succeeded:<br><br>";
       } else if (hasFailure && hasSuccess) {
@@ -822,6 +820,7 @@ function userInsert() {
       );
 
       $("#SubmitModal").modal("show");
+      window.location.replace("/laborstatusform");
     }
   }); // ajax closing tag
 
