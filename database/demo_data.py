@@ -94,7 +94,7 @@ bothStudents = [
                 "PROBATION":"0",
                 "ADVISOR":"Jan Pearce",
                 "STU_EMAIL":"glek@berea.edu",
-                "STU_CPO":"889",
+                "STU_CPO":"200",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
                 },
