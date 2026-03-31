@@ -36,7 +36,7 @@ def test_getLaborInformation():
 
             responseData = response.get_json()
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
+            assert responseData['B00841417'][0]['termName'] == "AY 2025-2026"
         
         Term.create(termCode = 202100,
                     termName = "AY 2021-2022",
@@ -87,11 +87,11 @@ def test_getLaborInformation():
             responseData = response.get_json()
             assert len(responseData['B00841417']) == 2
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
-            assert responseData['B00841417'][0]['laborStart'] == "2020-04-01"
+            assert responseData['B00841417'][0]['termName'] == "AY 2021-2022"
+            assert responseData['B00841417'][0]['laborStart'] == "2021-08-01"
             assert responseData['B00841417'][1]['jobType'] == "Primary"
-            assert responseData['B00841417'][1]['termName'] == "AY 2021-2022"
-            assert responseData['B00841417'][1]['laborStart'] == "2021-08-01"
+            assert responseData['B00841417'][1]['termName'] == "AY 2025-2026"
+            assert responseData['B00841417'][1]['laborStart'] == "2025-04-01"
 
         LaborStatusForm.update(department_id = 4).where(LaborStatusForm.laborStatusFormID == testLaborForm.laborStatusFormID).execute()
 
@@ -102,8 +102,8 @@ def test_getLaborInformation():
 
             responseData = response.get_json()
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
-            assert responseData['B00841417'][0]['laborStart'] == "2020-04-01"
+            assert responseData['B00841417'][0]['termName'] == "AY 2025-2026"
+            assert responseData['B00841417'][0]['laborStart'] == "2025-04-01"
             assert len(responseData['B00841417']) == 1
 
         transaction.rollback()
