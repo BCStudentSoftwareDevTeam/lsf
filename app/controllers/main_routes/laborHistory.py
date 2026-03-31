@@ -132,10 +132,6 @@ def populateModal(statusKey):
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
         forms = (FormHistory.select()
-                            .join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
-                            .join(OverloadForm, JOIN.LEFT_OUTER, on=(FormHistory.overloadForm == OverloadForm.overloadFormID))
-                            .join(User, JOIN.LEFT_OUTER, on=(OverloadForm.laborApprover == User.userID))
-                            .join(Supervisor, JOIN.LEFT_OUTER, on=(User.supervisor == Supervisor.ID))
                             .where(FormHistory.formID == statusKey)
                             .order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
