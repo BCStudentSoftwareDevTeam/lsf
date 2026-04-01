@@ -35,7 +35,7 @@ def laborhistory(id):
         if not currentUser:
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType, LaborStatusForm.startDate)
                                    .join_from(FormHistory, LaborStatusForm)
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
@@ -56,8 +56,9 @@ def laborhistory(id):
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        
-        authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
+
+        authorizedForms = list(authorizedForms.objects())
+        authorizedForms.sort(key=lambda f: f.startDate or datetime.date.min, reverse=True)
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
