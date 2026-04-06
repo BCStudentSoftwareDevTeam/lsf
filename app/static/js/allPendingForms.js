@@ -622,7 +622,7 @@ function notesCounter(laborStatusFormID, formHistoryID) {
       setTimeout(function() {          
         $(viewNotesID).css('pointer-events', '')
         $(viewNotesID).css('opacity', '')
-      }, 200);
+      }, 900);
     }
   });
 }
