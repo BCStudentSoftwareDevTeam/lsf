@@ -594,35 +594,26 @@ function toggleNotesLog(laborStatusFormID, formHistoryID) {
   }
 }
 
-function notesCounter(laborStatusFormID, formHistoryID) {
+function notesCounter(laborStatusFormID, formHistoryID){
+  /*
+  This method displays the number of admin notes a Labor
+  Status Form has
+  */
   var data = {'laborStatusFormID': laborStatusFormID}
   data = JSON.stringify(data)
-
-  // lock the Notes span 
-  var viewNotesID = '#notes_' + String(formHistoryID)
-  $(viewNotesID).css('pointer-events', 'none')
-  $(viewNotesID).css('opacity', '0.5')
-
   $.ajax({
     method: "POST",
     url: '/admin/notesCounter',
     data: data,
     contentType: 'application/json',
     success: function(response) {
+      var viewNotesID = '#notes_' + String(formHistoryID)
       var modalViewNotesID = '#modalNote_' + String(formHistoryID)
-
-      // update buttons with the count
       $(viewNotesID).html('Notes (' + response['noteTotal'] + ')')
       $(modalViewNotesID).html('View Notes (' + response['noteTotal'] + ')')
     },
-    error: function(request, status, error) {
+    error: function(request,status,error){
       console.log(request.responseText);
-    },
-    complete: function() {
-      setTimeout(function() {          
-        $(viewNotesID).css('pointer-events', '')
-        $(viewNotesID).css('opacity', '')
-      }, 900);
     }
   });
 }

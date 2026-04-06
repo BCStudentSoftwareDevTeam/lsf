@@ -238,7 +238,7 @@
                           Manage
                           </a></li>
                     {% else %}
-                        <li role="presentation"><a role="menuitem" href="#"class=".bottom-clickability">
+                        <li role="presentation"><a role="menuitem" href="#" class="btn btn-secondary">
                           <span onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
                                 data-target="#denyModal">Deny</span></a></li>
@@ -247,12 +247,13 @@
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
                             <span >Modify</span></a></li>
                     {% endif %}
-                        <li role="presentation">
-                          <a role="menuitem" href="#"class=".bottom-clickability">
-                          <span id="notes_{{allForms.formHistoryID}}"
-                                onclick="getNotes({{allForms.formID.laborStatusFormID}})"
-                                data-toggle="modal"
-                                data-target="#NotesModal">Notes</span></a></li>
+                    <li role="presentation">
+                    <a role="menuitem" href="#" class="btn btn-secondary"
+                      id="notes_{{allForms.formHistoryID}}"
+                      onclick="getNotes({{allForms.formID.laborStatusFormID}})"
+                      data-toggle="modal"
+                      data-target="#NotesModal">Notes</a>
+                    </li>
                     {% if formType == 'preStudentApproval' %}
                         <li role="presentation"><a role="menuitem" href="#">
                           <span onclick="skipApproval({{allForms.formID.laborStatusFormID}})"
