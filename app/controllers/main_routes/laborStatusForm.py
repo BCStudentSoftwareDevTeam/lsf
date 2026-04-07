@@ -11,6 +11,7 @@ from app.models.historyType import *
 from app.models.term import *
 from app.models.student import Student
 from app.models.department import *
+from app.models.activePosition import ActivePosition
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date, timedelta
@@ -118,16 +119,9 @@ def getDates(termcode):
 def getPositions(departmentOrg, departmentAcct):
     """ Get all of the positions that are in the selected department """
     currentUser = require_login()
-    positions = set(
-        LaborStatusForm
-        .select(FormHistory, LaborStatusForm, Department)
-        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-        .switch(LaborStatusForm)
-        .join(Department, on=(LaborStatusForm.department == Department.departmentID))
-        .where(
-            (Department.ACCOUNT == departmentAcct) &
-            (Department.ORG == departmentOrg)
-        )
+    positions = (ActivePosition.select(ActivePosition, Department)
+        .join(Department, on=(ActivePosition.department == Department.departmentID))
+        .where((Department.ACCOUNT == departmentAcct) & (Department.ORG == departmentOrg))
     )
     positionDict = {}
     for position in positions:

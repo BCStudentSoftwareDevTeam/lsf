@@ -9,6 +9,7 @@ from app.models.supervisor import*
 from app.models.user import*
 from app.models.status import*
 from app.models.student import*
+from app.models.activePosition import ActivePosition
 from datetime import datetime
 from app.models.emailTracker import *
 import string
@@ -72,18 +73,8 @@ class emailHandler():
                 self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
                 self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
             elif self.formHistory.adjustedForm.fieldAdjusted == "position":
-                currentPosition = (
-                    LaborStatusForm
-                    .select()
-                    .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.oldValue)
-                    .first()
-                )
-                newPosition = (
-                    LaborStatusForm
-                    .select()
-                    .where(LaborStatusForm.POSN_CODE == self.formHistory.adjustedForm.newValue)
-                    .first()
-                )
+                currentPosition = (ActivePosition.select().where(ActivePosition.POSN_CODE == self.formHistory.adjustedForm.oldValue).first())
+                newPosition = (ActivePosition.select().where(ActivePosition.POSN_CODE == self.formHistory.adjustedForm.newValue).first())
                 self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
                 self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
             else:
