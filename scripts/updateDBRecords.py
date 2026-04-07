@@ -1,4 +1,5 @@
-from app.logic.userInsertFunctions import updatePersonRecords, updatePositionRecords
+from app.logic.userInsertFunctions import updatePersonRecords
+from app.logic.departmentPositions import updatePositionRecords
 
 
 studentsFound, studentsNotFound, studentsFailed, supervisorsFound, supervisorsNotFound, supervisorsFailed = updatePersonRecords()
