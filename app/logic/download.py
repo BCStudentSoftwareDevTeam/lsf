@@ -43,7 +43,7 @@ class CSVMaker:
     @staticmethod
     def _validateAdditionalSpreadsheetFields(additionalFields):
         for additionalField in additionalFields:
-            if additionalField not in {'overloads', 'finalEvaluations', 'midYearEvaluations', 'allEvaluations'}:
+            if additionalField not in {'overloads', 'allEvaluations'}:
                 raise ValueError(f'Invalid spreadsheet fields: {additionalField}')
         return additionalFields
 
@@ -184,19 +184,11 @@ class CSVMaker:
         Adds data for SLE
         '''
         multipleRows = []
-        if "finalEvaluations" in self.additionalSpreadsheetFields:
-            finalEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 0, StudentLaborEvaluation.is_submitted == True)
-            if finalEvaluation:
-                multipleRows.append(self.insertEvaluationData(finalEvaluation, "Final"))
-        elif "midYearEvaluations" in self.additionalSpreadsheetFields:
-            midyearEvaluation = StudentLaborEvaluation.get_or_none(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_midyear_evaluation == 1, StudentLaborEvaluation.is_submitted == True)
-            if midyearEvaluation:
-                multipleRows.append(self.insertEvaluationData(midyearEvaluation, "Midyear"))
-        elif self.includeEvals == True:
+        if self.includeEvals == True:
             anyEvaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_submitted == True)
             if anyEvaluation:
                 for evaluation in anyEvaluation:
-                    multipleRows.append(self.insertEvaluationData(evaluation, "Midyear" if evaluation.is_midyear_evaluation else "Final"))
+                    multipleRows.append(self.insertEvaluationData(evaluation, "Evaluation"))
         else:
             return []
 
