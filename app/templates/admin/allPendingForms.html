@@ -238,10 +238,10 @@
                           Manage
                           </a></li>
                     {% else %}
-                        <li role="presentation"><a role="menuitem" href="#" class="btn btn-secondary">
-                          <span onclick="insertDenial({{allForms.formHistoryID}})"
+                        <li role="presentation"><a role="menuitem" href="#" class="btn btn-secondary"
+                               onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
-                                data-target="#denyModal">Deny</span></a></li>
+                                data-target="#denyModal">Deny</a></li>
                     {% endif %}
                     {% if allForms.historyType.historyTypeName == 'Labor Status Form' %}
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
