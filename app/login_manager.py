@@ -36,9 +36,6 @@ def require_login():
     except InvalidUserException as e:
         print("Invalid User:", e)
         return False
-    
-    # Update the user's name
-    user = User.get(User.userID == user.userID)
 
     if 'username' not in session:
         session['username'] = user.username

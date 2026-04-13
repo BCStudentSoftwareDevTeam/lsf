@@ -197,12 +197,8 @@ def test_modifyLSF(setup):
             ACCOUNT="SSDTACC",
             ORG="SSDTORG"
         )
-        oldSupervisor = Supervisor.get_or_none(Supervisor.ID == "B12361006")
-        if oldSupervisor is None:
-            oldSupervisor = Supervisor.create(ID="B12361006")
-        newSupervisor = Supervisor.get_or_none(Supervisor.ID == "B12365892")
-        if newSupervisor is None:
-            newSupervisor = Supervisor.create(ID="B12365892")
+        oldSupervisor = Supervisor.create(ID="B12361006")
+        newSupervisor = Supervisor.create(ID="B12365892")
         lsf = LaborStatusForm.create(
             laborStatusFormID=98765,
             termCode=term,
@@ -403,12 +399,8 @@ def test_alterLSF(setup):
             LAST_NAME="Zaw",
             STU_EMAIL="imran@berea.edu"
         )
-        supervisor1 = Supervisor.get_or_none(Supervisor.ID == "B12361007")
-        if supervisor1 is None:
-            supervisor1 = Supervisor.create(ID="B12361007", PIDM = 14578, LAST_NAME = "Bledsoe", legal_name = "Finn", preferred_name = "Finn", EMAIL="bledsoef@berea.edu", CPO="5467", DEPT_Name="SSDT")
-        supervisor2 = Supervisor.get_or_none(Supervisor.ID == "B12365892")
-        if supervisor2 is None:
-            supervisor2 = Supervisor.create(ID="B12365892", PIDM = 14579, LAST_NAME = "Bledsoe", legal_name = "Jason", preferred_name = "Jason", EMAIL="bledsoej@berea.edu", CPO="5468", DEPT_Name="SSDT")
+        supervisor1 = Supervisor.create(ID="B12361007", PIDM = 14578, LAST_NAME = "Bledsoe", legal_name = "Finn", preferred_name = "Finn", EMAIL="bledsoef@berea.edu", CPO="5467", DEPT_Name="SSDT")
+        supervisor2 = Supervisor.create(ID="B12365892", PIDM = 14579, LAST_NAME = "Bledsoe", legal_name = "Jason", preferred_name = "Jason", EMAIL="bledsoej@berea.edu", CPO="5468", DEPT_Name="SSDT")
         currentUser = User.get(User.userID == 3)
         status, _ = Status.get_or_create(statusName="Approved")
         historyType, _ = HistoryType.get_or_create(historyTypeName="Labor Status Form")
