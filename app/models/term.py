@@ -13,6 +13,8 @@ class Term(baseModel):
     isBreak                 = BooleanField(default=False)
     isSummer                = BooleanField(default=False)
     isAcademicYear          = BooleanField(default=False)
+    isFinalEvaluationOpen   = BooleanField(default=False)
+    isMidyearEvaluationOpen = BooleanField(default=False)
 
 
     @staticmethod
