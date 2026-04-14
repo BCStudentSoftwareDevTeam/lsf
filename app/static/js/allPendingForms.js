@@ -253,7 +253,7 @@ function resendApprovalLink(formId) {
 }
 
 function getNotes(formId, formHistoryID) {
-    $.ajax({
+  $.ajax({
     type: "GET",
     url: "/admin/getNotes/" + formId,
     datatype: "json",
