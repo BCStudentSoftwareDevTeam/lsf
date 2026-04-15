@@ -821,7 +821,22 @@ function userInsert() {
 
       $("#SubmitModal").modal("show");
       window.location.replace("/laborstatusform");
-    }
+    },
+    
+  error: function() {
+    $('#error_modal').empty();
+    $('#error_modal').append(
+      '<p style="padding-left:16px;"><b>ERROR:</b> The request failed. Please try again or contact Systems Support if the issue continues <span style="color:darkred;" class="glyphicon glyphicon-exclamation-sign"></span></p>'
+    );
+    msgFlash("Unable to submit the form(s) due to a server or network error.", "fail");
+    $("#SubmitModal").modal("hide");
+    $("#submitmodalid").prop("disabled", false);
+    $("#closeBtn").prop("disabled", false);
+    $("#submitmodalid").text("Submit");
+  }
+
+
+
   }); // ajax closing tag
 
   document.getElementById("doneBtn").onclick = function () { // Calls this function after failed form(s)
