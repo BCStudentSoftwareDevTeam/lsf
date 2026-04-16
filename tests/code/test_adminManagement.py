@@ -5,7 +5,7 @@ from peewee import DoesNotExist
 
 @pytest.mark.integration
 def test_addAdmin():
-    newAdmin = "jonesj"
+    newAdmin = "pearcej"
     user = User.get(User.username == newAdmin)
     # Before adding user as admin
     assert not user.isLaborAdmin 
