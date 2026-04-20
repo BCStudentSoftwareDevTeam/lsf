@@ -2,6 +2,7 @@ from datetime import date, datetime
 from app.models.notes import Notes
 from app.models.department import Department
 from app.models.adjustedForm import AdjustedForm
+from app.models.activePosition import ActivePosition
 from app.controllers.main_routes.laborHistory import *
 from app.logic.emailHandler import *
 from app.logic.utils import makeThirdPartyLink
@@ -21,7 +22,7 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.supervisorNotes = noteEntry.notesContents
         lsf.save()
     if fieldName == "supervisor":
-        supervisor = createSupervisorFromTracy(bnumber=fieldsChanged[fieldName]["newValue"])
+        supervisor = Supervisor.get(Supervisor.ID == fieldsChanged[fieldName]["newValue"])
         lsf.supervisor = supervisor.ID
         lsf.save()
 
@@ -31,7 +32,7 @@ def modifyLSF(fieldsChanged, fieldName, lsf, currentUser, host=None):
         lsf.save()
 
     if fieldName == "position":
-        position = Tracy().getPositionFromCode(fieldsChanged[fieldName]["newValue"])
+        position = ActivePosition.get_or_none(ActivePosition.POSN_CODE == fieldsChanged[fieldName]["newValue"])
         lsf.POSN_CODE = position.POSN_CODE
         lsf.POSN_TITLE = position.POSN_TITLE
         lsf.WLS = position.WLS

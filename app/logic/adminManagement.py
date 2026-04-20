@@ -1,18 +1,19 @@
 from peewee import DoesNotExist
 from app.models.user import User
-from app.logic.tracy import Tracy
 from flask import request, flash
 from app.logic.userInsertFunctions import createStudentFromTracy, createSupervisorFromTracy, createUser
-
+from app.models.supervisor import Supervisor
+from app.models.student import Student
+from app.logic.tracy import Tracy
 
 def searchForAdmin(rsp):
     userInput = rsp[1]
     adminType = rsp[0]
     userList = []
     if adminType == "addlaborAdmin":
-        tracyStudents = Tracy().getStudentsFromUserInput(userInput)
+        databaseStudents = Student.select().where(Student.legal_name.contains(userInput) | Student.preferred_name.contains(userInput)| Student.LAST_NAME.contains(userInput)) 
         students = []
-        for student in tracyStudents:
+        for student in databaseStudents:
             try:
                 existingUser = User.get(User.student == student.ID)
                 if existingUser.isLaborAdmin:
@@ -28,9 +29,9 @@ def searchForAdmin(rsp):
                             'lastName': student.LAST_NAME,
                             'type': 'Student'
                             })
-    tracySupervisors = Tracy().getSupervisorsFromUserInput(userInput)
+    databaseSupervisors = Supervisor.select().where(Supervisor.legal_name.contains(userInput) | Supervisor.preferred_name.contains(userInput)| Supervisor.LAST_NAME.contains(userInput))
     supervisors = []
-    for supervisor in tracySupervisors:
+    for supervisor in databaseSupervisors:
         try:
             existingUser = User.get(User.supervisor == supervisor.ID)
             if ((existingUser.isLaborAdmin and adminType == "addlaborAdmin")

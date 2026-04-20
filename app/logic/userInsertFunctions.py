@@ -14,7 +14,6 @@ from app.models.supervisor import Supervisor
 from app.models.department import *
 from app.logic.tracy import Tracy, InvalidQueryException, InvalidUserException
 
-
 def updatePersonRecords():
     """
     This function will update all student and supervisor records according to
@@ -226,3 +225,4 @@ def createSupervisorFromTracy(username=None, bnumber=None):
     except Exception as e:
         print(e)
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))
+

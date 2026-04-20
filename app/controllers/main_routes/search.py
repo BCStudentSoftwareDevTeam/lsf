@@ -1,6 +1,5 @@
 from app.controllers.main_routes import main_bp
 from app.login_manager import require_login
-from app.logic.tracy import Tracy, InvalidQueryException
 from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
@@ -33,7 +32,8 @@ def search(query=None):
     # bnumber search
     if re.match('[Bb]\d+', query):
         our_students = list(map(studentDbToDict, Student.select().where(Student.ID % "{}%".format(query.upper()))))
-        current_students = list(map(studentDbToDict, Tracy().getStudentsFromBNumberSearch(query)))
+        current_students = list(map(studentDbToDict, Student.select().where(Student.ID.contains(query))))
+
 
     # name search
     else:
@@ -47,7 +47,7 @@ def search(query=None):
             results = Student.select().where((Student.preferred_name ** first_query | Student.legal_name ** first_query) & Student.LAST_NAME ** last_query)
 
         our_students = list(map(studentDbToDict, results))
-        current_students = list(map(studentDbToDict, Tracy().getStudentsFromUserInput(query)))
+        current_students = list(map(studentDbToDict, Student.select().where((Student.LAST_NAME.contains(query)) | (Student.preferred_name.contains(query)) | (Student.legal_name.contains(query)))))
 
     # combine lists, remove duplicates, and then sort
     students = list({v['bnumber']:v for v in (current_students + our_students)}.values())

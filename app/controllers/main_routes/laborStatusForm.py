@@ -11,6 +11,7 @@ from app.models.historyType import *
 from app.models.term import *
 from app.models.student import Student
 from app.models.department import *
+from app.models.activePosition import ActivePosition
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date, timedelta
@@ -18,7 +19,6 @@ from flask import Flask, redirect, url_for, flash
 from app.logic.emailHandler import*
 from app.logic.userInsertFunctions import*
 from app.models.supervisor import Supervisor
-from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
@@ -37,10 +37,10 @@ def laborStatusForm(laborStatusKey = None):
             return redirect('/laborHistory/' + currentUser.student.ID)
 
     # Logged in
-    students = Tracy().getStudents()
+    students = Student.select()
     terms = Term.select().where(Term.termState == "open") # changed to term state, open, closed, inactive
-    staffs = Tracy().getSupervisors()
-    departments = Tracy().getDepartments()
+    staffs = Supervisor.select()
+    departments = Department.select()   
 
     # Only prepopulate form if current user is the supervisor or creator of the form.
     if laborStatusKey != None:
@@ -77,7 +77,7 @@ def userInsert():
         # Get a student record for the given bnumber
         try:
             student = getOrCreateStudentRecord(bnumber=rspFunctional[i]['stuBNumber'])
-            supervisor = createSupervisorFromTracy(bnumber=rspFunctional[i]['stuSupervisorID'])
+            supervisor = Supervisor.get(Supervisor.ID ==rspFunctional[i]['stuSupervisorID'])
         except InvalidUserException as e:
             print(e)
             return "", 500
@@ -119,7 +119,10 @@ def getDates(termcode):
 def getPositions(departmentOrg, departmentAcct):
     """ Get all of the positions that are in the selected department """
     currentUser = require_login()
-    positions = Tracy().getPositionsFromDepartment(departmentOrg,departmentAcct)
+    positions = (ActivePosition.select(ActivePosition, Department)
+        .join(Department, on=(ActivePosition.department == Department.departmentID))
+        .where((Department.ACCOUNT == departmentAcct) & (Department.ORG == departmentOrg))
+    )
     positionDict = {}
     for position in positions:
         if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
@@ -187,8 +190,8 @@ def releaseAndRehire():
         createLaborReleaseForm(currentUser, previousPrimaryPosition.formID, tomorrowDate, "Satisfactory", "Released by labor admin.", "Approved", todayDate, currentUser)
 
         # Create new labor status form
-        student = getOrCreateStudentRecord(bnumber=studentDict['stuBNumber'])
-        supervisor = createSupervisorFromTracy(bnumber=studentDict['stuSupervisorID'])
+        student = Student.get(Student.ID == studentDict['stuBNumber'])
+        supervisor = Supervisor.get(Supervisor.ID == studentDict['stuSupervisorID'])
         department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
         term, created = Term.get_or_create(termCode = studentDict['stuTermCode'])
 

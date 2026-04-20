@@ -12,7 +12,6 @@ from app.models.department import *
 from flask import request, redirect
 from flask import jsonify
 from playhouse.shortcuts import model_to_dict
-from app.logic.tracy import Tracy
 
 @admin.route('/admin/manageDepartments', methods=['GET'])
 # @login_required

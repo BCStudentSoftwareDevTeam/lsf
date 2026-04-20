@@ -3,6 +3,7 @@ from datetime import date
 from flask import jsonify
 from app.models.formHistory import FormHistory
 from app.models.status import Status
+from app.models.activePosition import ActivePosition
 from app.logic.banner import Banner
 from app.logic.emailHandler import emailHandler
 from app.login_manager import require_login
@@ -72,6 +73,7 @@ def saveStatus(new_status, formHistoryIds, currentUser):
                     LSF = LaborStatusForm.get_by_id(formHistory.formID)
                     overrideOriginalStatusFormOnAdjustmentFormApproval(formHistory, LSF)
 
+
             else:
                 print("Unable to update form status for formHistoryID {}.".format(id))
                 return jsonify({"success": False}), 500
@@ -105,7 +107,7 @@ def overrideOriginalStatusFormOnAdjustmentFormApproval(form, LSF):
 
     if form.adjustedForm.fieldAdjusted == "position":
         LSF.POSN_CODE = form.adjustedForm.newValue
-        position = Tracy().getPositionFromCode(form.adjustedForm.newValue)
+        position = ActivePosition.get_or_none(ActivePosition.POSN_CODE == fieldsChanged[fieldName]["newValue"])  
         LSF.POSN_TITLE = position.POSN_TITLE
         LSF.WLS = position.WLS
         LSF.save()
@@ -213,7 +215,7 @@ def modal_approval_and_denial_data(formHistoryIdList):
         if formHistory.adjustedForm:
             match formHistory.adjustedForm.fieldAdjusted:
                 case "position":
-                    position = Tracy().getPositionFromCode(formHistory.adjustedForm.newValue)
+                    position = (ActivePosition.select().where(ActivePosition.POSN_CODE == formHistory.adjustedForm.newValue).first())
                     position = position.POSN_TITLE
                 case "supervisor":
                     supervisor = Supervisor.get(Supervisor.ID == formHistory.adjustedForm.newValue)
@@ -276,7 +278,7 @@ def checkAdjustment(allForms):
 
         if allForms.adjustedForm.fieldAdjusted == "position":
             newPositionCode = allForms.adjustedForm.newValue
-            newPosition = Tracy().getPositionFromCode(newPositionCode)
+            newPosition = (ActivePosition.select().where(ActivePosition.POSN_CODE == newPositionCode).first())
             # temporarily storing the position code and wls in new value, and position name in old value
             # because we want to show these information in the hmtl template.
             allForms.adjustedForm.newValue = newPosition.POSN_CODE +" (" + newPosition.WLS+")"

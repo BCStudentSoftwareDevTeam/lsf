@@ -13,6 +13,7 @@ from app.models.formHistory import *
 from app.models.overloadForm import *
 from app.models.department import *
 from app.models.student import Student 
+from app.models.activePosition import ActivePosition
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
 from app.logic.download import CSVMaker
@@ -155,11 +156,8 @@ def populateModal(statusKey):
                     form.adjustedForm.newValue = newSupervisor.FIRST_NAME +" "+ newSupervisor.LAST_NAME
 
                 if form.adjustedForm.fieldAdjusted == "position": # if position field has been changed in adjust form then retriev position name.
-                    newPosition = Tracy().getPositionFromCode(newValue)
-                    try:
-                        oldPosition = Tracy().getPositionFromCode(oldValue)
-                    except:
-                        oldPosition = types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?")
+                    newPosition = (ActivePosition.select().where(ActivePosition.POSN_CODE == newValue).first())
+                    oldPosition = ( LaborStatusForm.get_or_none(LaborStatusForm.POSN_CODE == oldValue) or types.SimpleNamespace(POSN_TITLE="Unknown - " + oldValue, WLS="?"))
 
                     # temporarily storing the new position name in new value, and old position name in old value
                     # because we want to show these information in the hmtl template.

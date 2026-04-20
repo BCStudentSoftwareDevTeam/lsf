@@ -18,8 +18,6 @@ from app.logic.utils import makeThirdPartyLink, calculateExpirationDate
 from app.models.formHistory import FormHistory
 from app.models.term import Term
 from app.logic.banner import Banner
-from app.logic.tracy import Tracy
-from app.models.Tracy.stuposn import STUPOSN
 from app.models.supervisor import Supervisor
 from app.models.student import Student
 from app.models.historyType import HistoryType

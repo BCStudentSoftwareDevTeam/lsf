@@ -6,7 +6,7 @@ from app.controllers.main_routes.laborHistory import *
 from app.models.formHistory import FormHistory
 from app.models.user import User
 from app.models.supervisor import Supervisor
-from app.logic.userInsertFunctions import createSupervisorFromTracy
+from app.models.activePosition import ActivePosition
 from app.logic.emailHandler import *
 from app.login_manager import require_login
 from app.logic.tracy import Tracy, InvalidQueryException
@@ -14,7 +14,6 @@ from app.models.notes import Notes
 from app.models.supervisor import Supervisor
 from app.login_manager import require_login
 from app.logic.alterLSF import modifyLSF, adjustLSF
-
 
 @main_bp.route("/alterLSF/<laborStatusKey>", methods=["GET"])
 def alterLSF(laborStatusKey):
@@ -27,7 +26,6 @@ def alterLSF(laborStatusKey):
     if not currentUser.isLaborAdmin:       # Not an admin
         if currentUser.student and not currentUser.supervisor: # If a student is logged in and trying to get to this URL then send them back to their own page.
             return redirect("/laborHistory/" + currentUser.student.ID)
-
     currentDate = date.today()
     #If logged in....
     #Step 1: get form attached to the student (via labor history modal)
@@ -37,7 +35,6 @@ def alterLSF(laborStatusKey):
 
     # Query the status of the form to determine if correction or adjust LSF
     formStatus = (FormHistory.get(FormHistory.formID == laborStatusKey).status_id)
-
     if currentDate > form.termCode.adjustmentCutOff and formStatus == "Approved" and not currentUser.isLaborAdmin:
         return render_template("errors/403.html")
     #Step 2: get prefill data from said form, then the data that populates dropdowns for supervisors and position
@@ -60,12 +57,15 @@ def alterLSF(laborStatusKey):
                 totalHours += i.weeklyHours
     else:
         prefillhours = form.contractHours
-
     #These are the data fields to populate our dropdowns(Supervisor. Position)
-    supervisors = Tracy().getSupervisors()
-    positions = Tracy().getPositionsFromDepartment(form.department.ORG, form.department.ACCOUNT)
-    departments = Tracy().getDepartments()
-
+    supervisors = Supervisor.select() #.where(Supervisor.isActive) if we want supervisors to be active one
+    positions = (
+        ActivePosition
+        .select(ActivePosition, Department)
+        .join(Department, on=(ActivePosition.department == Department.departmentID))
+        .where((Department.ACCOUNT == form.department.ACCOUNT) & (Department.ORG == form.department.ORG))
+    )
+    departments = Department.select()
     # supervisors from the old system WILL have a Supervisor record, but might not have a Tracy record
     oldSupervisor = Supervisor.get_or_none(ID = form.supervisor.ID)
     if not oldSupervisor:
@@ -119,8 +119,12 @@ def getDate(termcode):
 @main_bp.route("/alterLSF/fetchPositions/<departmentOrg>/<departmentAccount>", methods=['GET'])
 def fetchPositions(departmentOrg, departmentAccount):
     currentUser = require_login()
-    positions = Tracy().getPositionsFromDepartment(departmentOrg, departmentAccount)
-    positionDict = {}
+    positions = (
+        ActivePosition
+        .select(ActivePosition, Department)
+        .join(Department, on=(ActivePosition.department == Department.departmentID))
+        .where((Department.ACCOUNT == departmentAccount) & (Department.ORG == departmentOrg))
+    )
     for position in positions:
         if position.POSN_CODE != "S12345" or currentUser.isLaborAdmin:
             positionDict[position.POSN_CODE] = {"POSN_TITLE": position.POSN_TITLE, "WLS": position.WLS, "POSN_CODE": position.POSN_CODE}
