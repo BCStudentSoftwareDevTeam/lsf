@@ -114,7 +114,7 @@
                     {% endwith %}
                     <a role="menuitem" href="#"
                       <span id="{{pendingOverloadFormPairs[allForms.formHistoryID]}}"
-                        onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});"
+                        onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}});"
                        aria-label="Pending Overload Form" title="Manage Overload Form" class="glyphicon glyphicon-exclamation-sign fa-lg"
                        style="color:red; top: 10px"></span></a>
                   </td>
@@ -206,7 +206,7 @@
                     <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1" style="min-width: 100%;">
                     {% if allForms.historyType.historyTypeName == 'Labor Overload Form' %}
-                        <li role="presentation">
+                        <li role="presentation" id ="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}});">
                         {% if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
                             {% set formurl = "financialAidOverloadApproval" %}
                             {% if currentUser.isSaasAdmin %}
@@ -215,33 +215,45 @@
                             <a role="menuitem" href="/admin/{{formurl}}/{{allForms.formHistoryID}}">Manage</a>
                         {% else %}
                             <a role="menuitem" href="#" >
-                                <span id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span>
+                                <span id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}});">Manage</span>
                             </a>
                         {% endif %}
                         </li>
                     {% elif allForms.historyType.historyTypeName == 'Labor Release Form' %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadReleaseModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadReleaseModal('{{allForms.formHistoryID}}');">
+                          Manage
+                          </a></li>
                     {% elif allForms.formHistoryID in pendingOverloadFormPairs %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadOverloadModal('{{allForms.formHistoryID}}');">
+                          Manage
+                          </a></li>
                     {% else %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span onclick="insertDenial({{allForms.formHistoryID}})"
+                        <li role="presentation"><a role="menuitem" href="#" class="btn-secondary"
+                               onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
-                                data-target="#denyModal">Deny</span></a></li>
+                                data-target="#denyModal">Deny</a></li>
                     {% endif %}
                     {% if allForms.historyType.historyTypeName == 'Labor Status Form' %}
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
                             <span >Modify</span></a></li>
                     {% endif %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="notes_{{allForms.formHistoryID}}"
-                                onclick="getNotes({{allForms.formID.laborStatusFormID}})"
-                                data-toggle="modal"
-                                data-target="#NotesModal">View Notes</span></a></li>
+                    <li role="presentation">
+                    <a role="menuitem" href="#" class="btn btn-secondary"
+                      id="notes_{{allForms.formHistoryID}}"
+                      onclick="getNotes({{allForms.formID.laborStatusFormID}})"
+                      data-toggle="modal"
+                      data-target="#NotesModal">Notes</a>
+                    </li>
                     {% if formType == 'preStudentApproval' %}
                         <li role="presentation"><a role="menuitem" href="#">
                           <span onclick="skipApproval({{allForms.formID.laborStatusFormID}})"
