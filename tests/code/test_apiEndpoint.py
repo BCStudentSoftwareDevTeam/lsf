@@ -47,9 +47,7 @@ def test_getLaborInformation():
                     termState = 1,
                     isBreak = 0,
                     isSummer = 0,
-                    isAcademicyear = 0, 
-                    isFinalEvaluationOpen = 0,
-                    isMidyearEvaluationOpen = 0)
+                    isAcademicYear = 0)
 
         testLaborForm = LaborStatusForm.create(termCode_id = 202100,
                                                studentSupervisee_id = "B00841417",
