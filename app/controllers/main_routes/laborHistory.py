@@ -132,8 +132,9 @@ def populateModal(statusKey):
         currentUser = require_login()
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
-        forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
-                            .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
+        forms = (FormHistory.select()
+                            .where(FormHistory.formID == statusKey)
+                            .order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
         currentDate = datetime.today()
         pendingformType = None
@@ -167,10 +168,11 @@ def populateModal(statusKey):
                     form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
 
                 if form.adjustedForm.fieldAdjusted == "department":
-                    newDepartment = Department.get(Department.ORG == newValue)
-                    oldDepartment = Department.get(Department.ORG == oldValue)
-                    form.adjustedForm.newValue = newDepartment.DEPT_NAME
-                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
+                    newDepartment = Department.get_or_none(Department.ORG == newValue)
+                    oldDepartment = Department.get_or_none(Department.ORG == oldValue)
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME if newDepartment else "Unknown " + newValue
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME if oldDepartment else "Unknown " + oldValue
+
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
