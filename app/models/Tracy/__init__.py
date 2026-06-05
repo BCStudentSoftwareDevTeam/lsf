@@ -16,7 +16,7 @@ uri = "mysql+pymysql://{}:{}@{}/{}".format(app.config['tracy']['username'], app.
 
 # MSSQL database connection
 if app.config['use_tracy']:
-    uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(app.config['tracy']['mssql_host'],  app.config['tracy']['db_name'], app.config['tracy']['mssql_user'], app.config['tracy']['mssql_password']))
+    uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=7.4;'.format(app.config['tracy']['mssql_host'],  app.config['tracy']['db_name'], app.config['tracy']['mssql_user'], app.config['tracy']['mssql_password']))
 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
