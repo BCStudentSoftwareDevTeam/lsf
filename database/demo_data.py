@@ -3,6 +3,8 @@ Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
 from datetime import *
+from app import app
+
 from app.models.Tracy import db
 from app.models.Tracy.studata import STUDATA
 from app.models.Tracy.stuposn import STUPOSN
@@ -165,9 +167,10 @@ tracyStudents = [
 ]
 
 # Add students to Tracy db
-for student in (tracyStudents + bothStudents):
-    db.session.add(STUDATA(**student))
-    db.session.commit()
+with app.app_context():
+    for student in (tracyStudents + bothStudents):
+        db.session.add(STUDATA(**student))
+        db.session.commit()
 
 # Add the Student records
 students = []
@@ -269,9 +272,10 @@ positions = [
 
 ]
 # Add to Tracy db
-for position in positions:
-    db.session.add(STUPOSN(**position))
-    db.session.commit()
+with app.app_context():
+    for position in positions:
+        db.session.add(STUPOSN(**position))
+        db.session.commit()
 
 print(" * positions (TRACY) added")
 
@@ -366,18 +370,19 @@ non_supervisor_staffs = [
                         ]
 
 # Add to Tracy db
-for staff in staffs:
-    db.session.add(STUSTAFF(**staff))
-    db.session.commit()
+with app.app_context():
+    for staff in staffs:
+        db.session.add(STUSTAFF(**staff))
+        db.session.commit()
 
-    staff['legal_name'] = staff['FIRST_NAME'].strip()
-    del staff['FIRST_NAME']
-    Supervisor.get_or_create(**staff)
+        staff['legal_name'] = staff['FIRST_NAME'].strip()
+        del staff['FIRST_NAME']
+        Supervisor.get_or_create(**staff)
 
-# Add non Supervisor staffs to Tracy db
-for staff in non_supervisor_staffs:
-    db.session.add(STUSTAFF(**staff))
-    db.session.commit()
+    # Add non Supervisor staffs to Tracy db
+    for staff in non_supervisor_staffs:
+        db.session.add(STUSTAFF(**staff))
+        db.session.commit()
 
 print(" * staff added")
 
