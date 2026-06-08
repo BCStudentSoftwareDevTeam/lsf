@@ -17,6 +17,7 @@ from app import app
 import os
 from datetime import datetime, date
 
+
 class emailHandler():
     def __init__(self, formHistoryKey):
         self.mail = Mail(app)
