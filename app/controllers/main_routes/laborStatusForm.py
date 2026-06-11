@@ -94,9 +94,11 @@ def userInsert():
                     print("ERROR on sending email" + str(e))
             all_forms.append(True)
         except Exception as e:
+            flash("Form(s) submission failed! Contact support for assistance.", "danger")
             print("ERROR on creating Labor Status Form/Overload Form" + str(e)) 
             all_forms.append(False)
-
+    
+    flash("Form(s) submitted successfully! They will be eligible for approval in one business day.", "success")
     return jsonify(all_forms)
 
 @main_bp.route("/laborstatusform/getDate/<termcode>", methods=['GET'])
