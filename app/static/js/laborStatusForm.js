@@ -791,7 +791,6 @@ function userInsert(){
               modalList.push(bigString);
             }
             let message = "";
-            console.log("hasFailure: ", hasFailure);
             if (!hasFailure) {
               message = "Labor Status Form(s) succeeded:<br><br>";
             } else if (hasFailure && hasSuccess) {
