@@ -81,24 +81,27 @@ def userInsert():
         except InvalidUserException as e:
             print(e)
             return "", 500
-
         department, created = Department.get_or_create(DEPT_NAME = rspFunctional[i]['stuDepartment'])
         term, created = Term.get_or_create(termCode = rspFunctional[i]['stuTermCode'])
+        errorMessage = None
         try:
             with mainDB.atomic():
                 lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
-                createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
                 try:
+                    createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
                     emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
                 except Exception as e:
-                    print("ERROR on sending email" + str(e))
+                    errorMessage = "Email(s) delivery failed! Contact support for assistance."
+                    print("ERROR on sending email " + str(e))
+                    raise
             all_forms.append(True)
         except Exception as e:
-            flash("Form(s) submission failed! Contact support for assistance.", "danger")
-            print("ERROR on creating Labor Status Form/Overload Form" + str(e)) 
             all_forms.append(False)
-    
-    flash("Form(s) submitted successfully! They will be eligible for approval in one business day.", "success")
+            flash(errorMessage, "danger") if errorMessage else None
+            flash("Form(s) submission failed! Contact support for assistance.", "danger")
+            print("ERROR on creating Labor Status Form/Overload Form " + str(e)) 
+        if all(all_forms):
+            flash("Form(s) submitted successfully! They will be eligible for approval in one business day.", "success")
     return jsonify(all_forms)
 
 @main_bp.route("/laborstatusform/getDate/<termcode>", methods=['GET'])
