@@ -16,6 +16,7 @@ class Term(baseModel):
     isFinalEvaluationOpen   = BooleanField(default=False)
     isMidyearEvaluationOpen = BooleanField(default=False)
 
+
     @staticmethod
     def order_by_term(queryResult, *, reverse=False):
         """
