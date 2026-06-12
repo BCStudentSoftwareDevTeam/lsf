@@ -32,12 +32,11 @@ class CSVMaker:
     '''
     Create the CSV for the download bottons
     '''
-    def __init__(self, downloadName, requestedLSFs: ModelSelect, includeEvals = False, additionalSpreadsheetFields: list[str] = []):
+    def __init__(self, downloadName, requestedLSFs: ModelSelect, additionalSpreadsheetFields: list[str] = []):
         self.relativePath = f'static/files/{downloadName}.csv'
         self.completePath = 'app/' + self.relativePath
         self.additionalSpreadsheetFields = (self._validateAdditionalSpreadsheetFields(additionalSpreadsheetFields))
         self.formHistories = requestedLSFs 
-        self.includeEvals = includeEvals
         self.makeCSV()
         
     @staticmethod
@@ -74,24 +73,6 @@ class CSVMaker:
                             'Supervisor Email',
                             'Supervisor Notes'
                             ])
-            if self.includeEvals:
-                headers.extend(['SLE Type',
-                                'SLE Attendance',
-                                'SLE Attendance Comments',
-                                'SLE Accountability',
-                                'SLE Accountability Comments',
-                                'SLE Teamwork',
-                                'SLE Teamwork Comments',
-                                'SLE Initiative',
-                                'SLE Initiative Comments',
-                                'SLE Respect',
-                                'SLE Respect Comments',
-                                'SLE Learning',
-                                'SLE Learning Comments',
-                                'SLE Job Specific',
-                                'SLE Job Specific Comments',
-                                'SLE Overall Score'
-                                ])
             
             if 'overloads' in self.additionalSpreadsheetFields:
                 headers.extend(['Student Overload Reason',
@@ -109,22 +90,7 @@ class CSVMaker:
 
             for form in self.formHistories:
                 row = self.addPrimaryData(form)
-                if self.includeEvals:
-                    evalRows = self.addEvaluationData(form.formHistoryID)
-                    if len(evalRows) == 0:
-                        self.filewriter.writerow(row)
-                    elif len(evalRows) == 1:
-                        row.extend(evalRows[0])
-                        self.filewriter.writerow(row)
-                    else:
-                        row.extend(evalRows[0])
-                        self.filewriter.writerow(row)
-                        for evaluation in evalRows[1:]:
-                            row = [""] * 17
-                            row.extend(evaluation)
-                            self.filewriter.writerow(row)
-
-                elif 'overloads' in self.additionalSpreadsheetFields:
+                if 'overloads' in self.additionalSpreadsheetFields:
                     row = self.addOverloadData(form, row)
                     self.filewriter.writerow(row)
                 else:
@@ -178,49 +144,4 @@ class CSVMaker:
 
         return rowData
 
-
-    def addEvaluationData(self, formID):
-        '''
-        Adds data for SLE
-        '''
-        multipleRows = []
-        if self.includeEvals == True:
-            anyEvaluation = StudentLaborEvaluation.select().where(StudentLaborEvaluation.formHistoryID == formID, StudentLaborEvaluation.is_submitted == True)
-            if anyEvaluation:
-                for evaluation in anyEvaluation:
-                    multipleRows.append(self.insertEvaluationData(evaluation, "Evaluation"))
-        else:
-            return []
-
-        return multipleRows
-
-    def insertEvaluationData(self, evaluation, evalType):
-        '''
-        Helper function for self.addEvaluationData(); Adds individual row's SLE data
-        '''
-        tableRow = []
-        tableRow.extend([   evalType,
-                            evaluation.attendance_score,
-                            evaluation.attendance_comment,
-                            evaluation.accountability_score,
-                            evaluation.accountability_comment,
-                            evaluation.teamwork_score,
-                            evaluation.teamwork_comment,
-                            evaluation.initiative_score,
-                            evaluation.initiative_comment,
-                            evaluation.respect_score,
-                            evaluation.respect_comment,
-                            evaluation.learning_score,
-                            evaluation.learning_comment,
-                            evaluation.jobSpecific_score,
-                            evaluation.jobSpecific_comment
-                        ])
-        tableRow.append(evaluation.attendance_score +
-                        evaluation.accountability_score +
-                        evaluation.teamwork_score +
-                        evaluation.initiative_score +
-                        evaluation.respect_score +
-                        evaluation.learning_score +
-                        evaluation.jobSpecific_score
-                       )
-        return tableRow
+    

@@ -117,7 +117,6 @@ def downloadFormHistory():
         formSearchResults.searchType,
         requestedLSFs=formHistories, 
         additionalSpreadsheetFields=[],
-        includeEvals=False
     )
     return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
 
