@@ -11,10 +11,11 @@ details = {
 # Test pyodbc connection
 ###########################
 
-pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],details['db'],details['user'],details['password'])
+pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=7.4;'.format(details['server'],details['db'],details['user'],details['password'])
 pyconn = pyodbc.connect(pyodbc_uri)
 c = pyconn.cursor()
-for row in c.execute('select * from STUPOSN'):
+#for row in c.execute("select * from STUDATA where ID like '%B00815333%'"):
+for row in c.execute("select * from STUPOSN"):
     print("PYODBC:",row)
     break
 
@@ -29,31 +30,27 @@ import sqlalchemy
 #uri = "mssql+pyodbc://{}:{}@{}/{}".format(details['user'], details['password'], details['server'], details['db'])
 
 # No driver name specified
-#uri = "mssql+pyodbc://{}:{}@{}/{}?DRIVER=FreeTDS".format(details['user'], details['password'], details['server'], details['db'])
-uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],  details['db'], details['user'], details['password']))
+uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=7.4;'.format(details['server'],  details['db'], details['user'], details['password']))
 
 engine = sqlalchemy.create_engine(uri)
-for row in engine.execute('select * from STUPOSN'):
-    print("SQLALCHEMY:",row)
-    break
+with engine.connect() as connection:
+    for row in connection.execute(sqlalchemy.text('select * from STUPOSN')):
+        print("SQLALCHEMY:",row)
+        break
 
 ###########################
 # Test SQL Alchemy with app configuration
 ###########################
 
-from flask_sqlalchemy import SQLAlchemy
-from app import load_config, app
+from app import app
 from app.logic.tracy import Tracy
 
-cfg = load_config('app/config/secret_config.yaml')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+with app.test_request_context("/") as ctx:
+    if app.config['use_tracy']:
+        print("FLASK:",Tracy().getPositionFromCode("S01015"))
+    else:
+        print("FLASK: Config says not to use Tracy. Check your environment")
 
-uri = "mssql+pyodbc:///?odbc_connect=" + quote('DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],  details['db'], details['user'], details['password']))
-
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
-db = SQLAlchemy(app)
-
-print("FLASK:",Tracy().getPositionFromCode("S01015"))
 
 ###########################
 # Test Banner connection
@@ -62,9 +59,16 @@ print("FLASK:",Tracy().getPositionFromCode("S01015"))
 from app.logic.banner import Banner
 from app.models.formHistory import FormHistory
 b = Banner()
-cursor = b.conn.cursor()
-print(cursor)
+
+if app.config['use_banner']:
+    if b.database_exists:
+        cursor = b.conn.cursor()
+        print("BANNER",cursor)
+    else:
+        print("BANNER: Error with database connection")
+else:
+    print("BANNER: Config says not to use banner. Check your secret_config")
 
 # NOT FOR PROD
-# b.insert(FormHistory.get_by_id(39061))
+#b.insert(FormHistory.get_by_id(39061))
 

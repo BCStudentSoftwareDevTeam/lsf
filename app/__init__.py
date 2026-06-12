@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 from flask_bootstrap import Bootstrap
@@ -8,8 +10,11 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 api = Api(app)
 
+app.env = os.environ.get('APP_ENV', 'production')
 from app.config.loadConfig import get_secret_cfg
 app.config.update(get_secret_cfg())
+print (" * Environment:", app.env)
+app.config['ENV'] = app.env
 
 app.secret_key = app.config["secret_key"]
 
