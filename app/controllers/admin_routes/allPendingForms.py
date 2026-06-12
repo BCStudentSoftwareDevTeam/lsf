@@ -210,7 +210,7 @@ def downloadAllPendingForms():
         additionalSpreadsheetFields=additionalSpreadsheetFields
     )
 
-    return send_file(excel.relativePath, as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+    return send_file(excel.relativePath, as_attachment=True, download_name=excel.relativePath.split('/').pop())
 
 @admin.route('/admin/checkedForms', methods=['POST'])
 def approved_and_denied_Forms():
