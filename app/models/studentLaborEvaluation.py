@@ -20,6 +20,7 @@ class StudentLaborEvaluation(baseModel):
     jobSpecific_score       = IntegerField(null=False)
     jobSpecific_comment     = TextField(null=False)
     transcript_comment      = TextField(null=True)
+    is_midyear_evaluation   = BooleanField(default=False)
     is_submitted            = BooleanField(default=False)
     submitted_by            = CharField(null=False)
     date_submitted          = DateField(null=False)
