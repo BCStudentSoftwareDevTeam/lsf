@@ -93,7 +93,7 @@ function removeSupervisorFromDepartment () {
     data: data,
     success: function(response) {
         if (response == "True") {
-          msgFlash("Supervisor has been removed from department.", 'success')
+          msgFlash("Supervisor has been removed from department.", 'fail')
           showSupervisorsInDepartment(departmentID)
         } else {
           msgFlash("Supervisor is not a member of this department.", "warning")

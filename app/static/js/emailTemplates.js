@@ -152,7 +152,7 @@ function discard() {
     $("#subject").val('').selectpicker("refresh")
     CKEDITOR.instances["editor1"].setData('')
     msg = "The email template changes have been discarded.";
-    category = "info";
+    category = "danger";
   }
   $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>');
   $("#flasher").delay(3000).fadeOut();
