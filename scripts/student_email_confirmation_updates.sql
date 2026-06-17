@@ -36,10 +36,10 @@ SET
 
             <p>Your approval or denial is required to process this contract. After @@StudentConfirmationExpiration@@ the contract will be considered denied and your supervisor will need to submit a new contract, if the position is still available.
             
-            <p>If you have any further questions or concerns, contact our Berea\'s Work College Program Office at labor_program@berea.edu or call us at ext. 3611.</p>
+            <p>If you have any further questions or concerns, contact our Labor Program Office at labor_program@berea.edu or call us at ext. 3611.</p>
             
             <p>Sincerely,</p>
-            <p>Berea\'s Work College Program Office</p>
+            <p>Labor Program Office</p>
             <p>labor_program@berea.edu</p>
             <p>859-985-3611</p>'
 WHERE purpose = 'Labor Status Form Submitted For Student';
@@ -53,12 +53,12 @@ SET
 
 <p>ATTN:</p>
 
-<p>This email is confirmation that Berea\'s Work College Program Office has received a Labor Status Form by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information below.</p>
+<p>This email is confirmation that the Labor Program Office has received a Labor Status Form by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information below.</p>
 
 <p>The student has until <strong>@@StudentConfirmationExpiration@@</strong> to accept or deny this position. After that time the contract will be denied and a new labor status form will need to be submitted if you still wish to work with the student.</p>
 
-<p>NOTICE: This does not mean the position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea\'s Work College Program Office immediately.</p>
-<p>If you have any further questions or concerns, contact Berea\'s Work College Program Office at ext. 3611.</p>
+<p>NOTICE: This does not mean the position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+<p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
 
 <h3>Labor Status Form Information:</h3>
 <p>Student Name and B-number: <strong>@@Student@@, @@StudB@@</strong></p>
@@ -70,7 +70,7 @@ SET
 <p>Begin Date: <strong>@@Date@@</strong></p>
 <br>
 <p>Sincerely,</p>
-<p>Berea\'s Work College Program Office</p>
+<p>Labor Program Office</p>
 <p>labor_program@berea.edu</p>
 <p>859-985-3611</p>'
 WHERE purpose = 'Primary Position Labor Status Form Submitted';
@@ -99,10 +99,10 @@ SET
 
             <p>Your approval or denial is required to process this contract. After @@StudentConfirmationExpiration@@ the contract will be considered denied and your supervisor will need to submit a new contract, if the position is still available.
             
-            <p>If you have any further questions or concerns, contact our Berea\'s Work College Program Office at labor_program@berea.edu or call us at ext. 3611.</p>
+            <p>If you have any further questions or concerns, contact our Labor Program Office at labor_program@berea.edu or call us at ext. 3611.</p>
             
             <p>Sincerely,</p>
-            <p>Berea\'s Work College Program Office</p>
+            <p>Labor Program Office</p>
             <p>labor_program@berea.edu</p>
             <p>859-985-3611</p>'
 WHERE purpose = 'Break Labor Status Form Submitted For Student';
@@ -116,12 +116,12 @@ SET
 
 <p>ATTN:</p>
 
-<p>This email is confirmation that Berea\'s Work College Program Office has received a Break Labor Status Form by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information below.</p>
+<p>This email is confirmation that the Labor Program Office has received a Break Labor Status Form by <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information below.</p>
 
 <p>The student has until <strong>@@StudentConfirmationExpiration@@</strong> to accept or deny this position. After that time the contract will be denied and a new labor status form will need to be submitted if you still wish to work with the student.</p>
 
-<p>NOTICE: This does not mean the position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea\'s Work College Program Office immediately.</p>
-<p>If you have any further questions or concerns, contact Berea\'s Work College Program Office at ext. 3611.</p>
+<p>NOTICE: This does not mean the position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+<p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
 
 <h3>Labor Status Form Information:</h3>
 <p>Student Name and B-number: <strong>@@Student@@, @@StudB@@</strong></p>
@@ -133,7 +133,7 @@ SET
 <p>Begin Date: <strong>@@Date@@</strong></p>
 <br>
 <p>Sincerely,</p>
-<p>Berea\'s Work College Program Office</p>
+<p>Labor Program Office</p>
 <p>labor_program@berea.edu</p>
 <p>859-985-3611</p>'
 WHERE purpose = 'Break Labor Status Form Submitted For Supervisor';
