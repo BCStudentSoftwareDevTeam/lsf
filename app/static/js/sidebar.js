@@ -39,8 +39,8 @@ function closeSidebar() {
   $('#sidebar-toggle').attr('aria-expanded', false);
 }
 function toggleAdminPanelOpen() {
-  $('#admin-toggle h4').html('Administration ⯅');
+  $('#admin-toggle h4').html('Administration <i class="bi bi-chevron-up"></i>');
 }
 function toggleAdminPanelClose() {
-  $('#admin-toggle h4').html('Administration ⯆');
+  $('#admin-toggle h4').html('Administration <i class="bi bi-chevron-down"></i>');
 }
