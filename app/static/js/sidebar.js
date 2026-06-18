@@ -41,9 +41,9 @@ function closeSidebar() {
 }
 // Change the text of the admin-toggle pannel when the user clicks on it to the open unicode character.
 function toggleAdminPanelOpen() {
-  $('#admin-toggle h4').html('Administration 🢑');
+  $('#admin-toggle h4').html('Administration ⯅');
 }
 // Change the text of the admin-toggle pannel when the user clicks on it to the close unicode character.
 function toggleAdminPanelClose() {
-  $('#admin-toggle h4').html('Administration 🢓');
+  $('#admin-toggle h4').html('Administration ⯆');
 }
