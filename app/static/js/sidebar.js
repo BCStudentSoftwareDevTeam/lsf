@@ -17,9 +17,8 @@ $(document).ready(function() {
   $('#sidebar-overlay').on('click', function() {
     closeSidebar();
   });
-  // Change the text of the admin-toggle pannel when the user clicks on it to the change unicode character.
   $('#admin-toggle').on('click', function() {
-    if ($('#admin').hasClass('in')) { //Check if its class in or colapse in
+    if ($('#admin').hasClass('in')) { 
       toggleAdminPanelClose();
     } else {
       toggleAdminPanelOpen();
