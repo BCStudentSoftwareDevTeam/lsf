@@ -7,3 +7,6 @@ class EmailTracker(baseModel):
     date               = DateField()
     recipient          = CharField()
     subject            = CharField()
+    body               = TextField()
+    # template           = TextField()
+    
