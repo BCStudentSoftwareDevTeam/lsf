@@ -383,8 +383,9 @@ class emailHandler():
                         date = datetime.today().strftime('%Y-%m-%d'),
                         recipient = recipient,
                         subject = template.subject,
+                        templateID = template.emailTemplateID,
+                        recipientEmails = ",".join(message.recipients),
                         body = formTemplate,
-                        recipientEmails = ",".join(message.recipients) 
                         )
         self.send(message)
 
