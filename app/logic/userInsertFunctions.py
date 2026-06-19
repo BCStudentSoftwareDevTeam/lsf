@@ -33,6 +33,8 @@ def updatePersonRecords():
             updateStudentRecord(student)
             studentsFound = studentsFound + 1
         except InvalidQueryException as e:
+            student.isActive=False
+            student.save()
             studentsNotFound = studentsNotFound + 1
         except Exception as e:
             studentsFailed += 1
@@ -62,7 +64,7 @@ def updateUserFromTracy(user):
             baseObj = user.student
         if user.supervisor:
             tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
-            baseObj = user.supervisor
+            baseObj = user.supervisors
 
         baseObj.legal_name = tracyUser.FIRST_NAME
         baseObj.LAST_NAME = tracyUser.LAST_NAME
@@ -88,6 +90,7 @@ def updateStudentRecord(student):
     student.STU_CPO = tracyUser.STU_CPO
     student.LAST_POSN = tracyUser.LAST_POSN
     student.LAST_SUP_PIDM = tracyUser.LAST_SUP_PIDM
+    student.isActive=True
     student.save()
 
 def updateSupervisorRecord(supervisor):
@@ -188,7 +191,8 @@ def createStudentFromTracy(username=None, bnumber=None):
                             STU_EMAIL = tracyStudent.STU_EMAIL,
                             STU_CPO = tracyStudent.STU_CPO,
                             LAST_POSN = tracyStudent.LAST_POSN,
-                            LAST_SUP_PIDM = tracyStudent.LAST_SUP_PIDM)
+                            LAST_SUP_PIDM = tracyStudent.LAST_SUP_PIDM,
+                            isActive=True)
     else:
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyStudent.FIRST_NAME, tracyStudent.LAST_NAME))
 

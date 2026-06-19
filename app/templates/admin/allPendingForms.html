@@ -144,17 +144,16 @@
               </td>
               <td> {# SUPERVISOR #}
                 {% if allForms.adjustedForm.fieldAdjusted == "supervisor" %}
-                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"><s aria-hidden="true">{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</s></a> <a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
-                  <br/>
+                 <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"><span class="{% if not allForms.formID.supervisor.isActive %}text-danger{% endif %}" {% if not allForms.formID.supervisor.isActive %}style="color: red !important; font-weight: bold;"{% endif %}>{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</span></a><a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
                   <a aria-label="{{allForms.adjustedForm.oldValue['ID']}}" class="hover_indicator">{{allForms.adjustedForm.newValue}} </a><a href="mailto:{{allForms.adjustedForm.oldValue['email']}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
                 {% else %}
-                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator">{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}} </a><a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+                    <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"><span class="{% if not allForms.formID.supervisor.isActive %}text-danger{% endif %}" {% if not allForms.formID.supervisor.isActive %}style="color: red !important; font-weight: bold;"{% endif %}>{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</span></a><a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
                 {% endif %}
               </td>
               <td> {# STUDENT #}
-                <a aria-label="{{allForms.formID.studentSupervisee.ID}}" class="hover_indicator">{{allForms.formID.studentSupervisee.FIRST_NAME}}  {{allForms.formID.studentSupervisee.LAST_NAME}} </a><a href="mailto:{{allForms.formID.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+              <a aria-label="{{allForms.formID.studentSupervisee.ID}}" class="hover_indicator"><span class="{% if not allForms.formID.studentSupervisee.isActive %}text-danger{% endif %}" {% if not allForms.formID.studentSupervisee.isActive %}style="color: red !important; font-weight: bold;"{% endif %}>{{allForms.formID.studentSupervisee.FIRST_NAME}} {{allForms.formID.studentSupervisee.LAST_NAME}}</span></a><a href="mailto:{{allForms.formID.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
               </td>
-              <td data-order="{{allForms.formID.jobType}}"> {# POSITON AND WLS #}
+              <td data-order="{{allForms.formID.jobType}}"> {# POSITON AND WLS #} 
                 {% if allForms.adjustedForm.fieldAdjusted == "position"%}
                   <s aria-hidden="true"><a href="#" aria-label="{{allForms.formID.POSN_TITLE}}" class="hover_indicator">{{allForms.formID.POSN_CODE}} ({{allForms.formID.WLS}})</a></s><br/>
                   <a href="#" aria-label="{{allForms.adjustedForm.oldValue}}" class="hover_indicator"> {{allForms.adjustedForm.newValue}}</a><br>
