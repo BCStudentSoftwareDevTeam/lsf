@@ -223,7 +223,7 @@ function finalDenial() { // this mehod is AJAX call for the finalDenial method i
         if (response.success) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runformSearchQuery();
+            // runformSearchQuery();
             $('.denialModal').modal('hide');
           }
           catch(e){
@@ -311,7 +311,7 @@ function notesInsert(textareaID, buttonID) {
       // Try and catch is used here to prevent General Search page from reloading the entire the page.
       try {
         clearTextArea();
-        runformSearchQuery();
+        // runformSearchQuery();
         $('#NotesModal').modal('hide');
       }
       catch(e){
@@ -494,7 +494,7 @@ function submitOverload(formHistoryID, isLaborAdmin) {
         success: function(response) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runformSearchQuery();
+            // runformSearchQuery();
             $('#overloadModal').modal('hide');
           }
           catch(e){
@@ -560,7 +560,7 @@ function submitRelease(formHistoryID) {
         success: function(response) {
           // Try and catch is used here to prevent General Search page from reloading the entire the page.
           try {
-            runformSearchQuery();
+            // runformSearchQuery();
             $('#modalRelease').modal('hide');
           }
           catch(e){
