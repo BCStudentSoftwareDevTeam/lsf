@@ -64,7 +64,7 @@ def updateUserFromTracy(user):
             baseObj = user.student
         if user.supervisor:
             tracyUser = Tracy().getSupervisorFromID(user.supervisor_id)
-            baseObj = user.supervisors
+            baseObj = user.supervisor
 
         baseObj.legal_name = tracyUser.FIRST_NAME
         baseObj.LAST_NAME = tracyUser.LAST_NAME
@@ -226,7 +226,8 @@ def createSupervisorFromTracy(username=None, bnumber=None):
                                  EMAIL = tracyUser.EMAIL,
                                  CPO = tracyUser.CPO,
                                  ORG = tracyUser.ORG,
-                                 DEPT_NAME = tracyUser.DEPT_NAME)
+                                 DEPT_NAME = tracyUser.DEPT_NAME,
+                                 isActive=True)
     except Exception as e:
         print(e)
         raise InvalidUserException("Error: Could not get or create {0} {1}".format(tracyUser.FIRST_NAME, tracyUser.LAST_NAME))
