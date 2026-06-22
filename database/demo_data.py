@@ -17,6 +17,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.emailTracker import EmailTracker
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +610,17 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+#############################
+# Creates an emailTracker
+#############################
+EmailTracker.insert([{
+            "emailTrackerID": 1,
+            "formID": 2,
+            "date": "2026-06-18",
+            "recipient": "test guy",
+            "templateID": 4,
+            "recipientEmails": "coolguy@email.com",
+            "body": "super secret text that you cant read"
+        }]).on_conflict_replace().execute()

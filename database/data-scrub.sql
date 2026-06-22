@@ -12,3 +12,7 @@ UPDATE laborstatusform set laborDepartmentNotes=CASE WHEN LENGTH(laborDepartment
 UPDATE notes set notesContents='Notes are not visible except in the production environment'
 
 UPDATE studentlaborevaluation SET attendance_comment=CASE WHEN LENGTH(attendance_comment)>0 THEN '<redacted>' ELSE '' END, accountability_comment=CASE WHEN LENGTH(accountability_comment)>0 THEN '<redacted>' ELSE '' END, teamwork_comment=CASE WHEN LENGTH(teamwork_comment)>0 THEN '<redacted>' ELSE '' END, initiative_comment=CASE WHEN LENGTH(initiative_comment)>0 THEN '<redacted>' ELSE '' END, respect_comment=CASE WHEN LENGTH(respect_comment)>0 THEN '<redacted>' ELSE '' END, learning_comment=CASE WHEN LENGTH(learning_comment)>0 THEN '<redacted>' ELSE '' END, jobSpecific_comment=CASE WHEN LENGTH(jobSpecific_comment)>0 THEN '<redacted>' ELSE '' END, transcript_comment=CASE WHEN LENGTH(transcript_comment)>0 THEN '<redacted>' ELSE '' END
+
+-- removes parts of the email tracker
+UPDATE emailtracker set recipientEmails=CASE WHEN LENGTH(recipientEmails)>0 THEN '<redacted>' ELSE '' END
+UPDATE emailtracker set body=CASE WHEN LENGTH(body)>0 THEN '<redacted>' ELSE '' END
