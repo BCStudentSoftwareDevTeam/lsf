@@ -144,14 +144,41 @@
               </td>
               <td> {# SUPERVISOR #}
                 {% if allForms.adjustedForm.fieldAdjusted == "supervisor" %}
-                 <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"></a><a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a> {% if not allForms.formID.supervisor.isActive %} <br> <span aria-label="Inactive supervisor record" class="hover_indicator" tabindex="0" style="position: relative; display: inline-block; margin-top: 3px; padding: 2px 6px; background: red; color: white !important; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; line-height: 1.2; cursor: default;"> INACTIVE </span>{% endif %}
-                  {% if allForms.formID.supervisor.isActive %} <a aria-label="{{allForms.adjustedForm.oldValue['ID']}}" class="hover_indicator">{{allForms.adjustedForm.newValue}} </a><a href="mailto:{{allForms.adjustedForm.oldValue['email']}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>{% endif %}
+                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"></a>
+                  <a href="mailto:{{allForms.formID.supervisor.EMAIL}}"> 
+                    <span class="glyphicon glyphicon-envelope mailtoIcon"></span> 
+                  </a>
+                  {% if not allForms.formID.supervisor.isActive %} <br> 
+                    <span aria-label="Inactive supervisor record" class=" inactive_badge hover_indicator" tabindex="0" > INACTIVE </span>
+                  {% endif %}
+                  {% if allForms.formID.supervisor.isActive %} 
+                    <a aria-label="{{allForms.adjustedForm.oldValue['ID']}}" class="hover_indicator">{{allForms.adjustedForm.newValue}} </a>
+                    <a href="mailto:{{allForms.adjustedForm.oldValue['email']}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+                  {% endif %}
                 {% else %}
-                    <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"><span >{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</span></a> {% if allForms.formID.supervisor.isActive %}<a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>{% endif %} {% if not allForms.formID.supervisor.isActive %}<br><span aria-label="Inactive supervisor record" class="hover_indicator" tabindex="0" style="position: relative; display: inline-block; margin-top: 3px; padding: 2px 6px; background: red; color: white !important; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; line-height: 1.2; cursor: default;">INACTIVE</span>{% endif %}
+                    <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator">
+                      <span >{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</span>
+                    </a> 
+                    {% if allForms.formID.supervisor.isActive %}
+                      <a href="mailto:{{allForms.formID.supervisor.EMAIL}}">
+                        <span class="glyphicon glyphicon-envelope mailtoIcon"></span>
+                      </a>
+                    {% endif %} 
+                    {% if not allForms.formID.supervisor.isActive %}<br>
+                      <span aria-label="Inactive supervisor record" class=" inactive_badge  hover_indicator" tabindex="0" >INACTIVE</span>
+                    {% endif %}
                 {% endif %}
               </td>
               <td> {# STUDENT #}
-              <a aria-label="{{ allForms.formID.studentSupervisee.ID }}" class="hover_indicator">{{ allForms.formID.studentSupervisee.FIRST_NAME }} {{ allForms.formID.studentSupervisee.LAST_NAME }} </a> {% if allForms.formID.studentSupervisee.isActive %} <a href="mailto:{{ allForms.formID.studentSupervisee.STU_EMAIL }}"> <span class="glyphicon glyphicon-envelope mailtoIcon"></span> </a>{% endif %}  {% if not allForms.formID.studentSupervisee.isActive %} <br> <span aria-label="Inactive student record" class="hover_indicator" tabindex="0" style="position: relative; display: inline-block; margin-top: 3px; padding: 2px 6px; background: red; color: white !important; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; line-height: 1.2; cursor: default;"> INACTIVE </span>{% endif %}
+              <a aria-label="{{ allForms.formID.studentSupervisee.ID }}" class="hover_indicator">{{ allForms.formID.studentSupervisee.FIRST_NAME }} {{ allForms.formID.studentSupervisee.LAST_NAME }} </a>
+               {% if allForms.formID.studentSupervisee.isActive %} 
+                <a href="mailto:{{ allForms.formID.studentSupervisee.STU_EMAIL }}">
+                   <span class="glyphicon glyphicon-envelope mailtoIcon"></span> 
+                </a>
+               {% endif %} 
+               {% if not allForms.formID.studentSupervisee.isActive %} <br> 
+                <span aria-label="Inactive student record" class=" inactive_badge hover_indicator" tabindex="0" > INACTIVE </span>
+               {% endif %}
               </td>
               <td data-order="{{allForms.formID.jobType}}"> {# POSITON AND WLS #} 
                 {% if allForms.adjustedForm.fieldAdjusted == "position"%}
