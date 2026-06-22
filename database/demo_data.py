@@ -17,7 +17,6 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.emailTracker import EmailTracker
 
 print("Inserting data for demo and testing purposes")
 
@@ -25,131 +24,131 @@ print("Inserting data for demo and testing purposes")
 # Students (TRACY)
 #############################
 bothStudents = [
-    {
-        "ID": "B12345773",
-        "PIDM": "57",
-                "FIRST_NAME": "Test",
-                "LAST_NAME": "Taker",
-                "CLASS_LEVEL": "Sophmore",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Jan Pearce",
-                "STU_EMAIL": "student@berea.edu",
-                "STU_CPO": "700",
-                "LAST_POSN": "Media Technician",
-                "LAST_SUP_PIDM": "7"
-    },
+     {
+                "ID":"B12345773",
+                "PIDM":"57",
+                "FIRST_NAME":"Test",
+                "LAST_NAME":"Taker",
+                "CLASS_LEVEL":"Sophmore",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"student@berea.edu",
+                "STU_CPO":"700",
+                "LAST_POSN":"Media Technician",
+                "LAST_SUP_PIDM":"7"
+                },
 
-    {
-        "ID": "B00730361",
-        "PIDM": "1",
-                "FIRST_NAME": "Elaheh",
-                "LAST_NAME": "Jamali",
-                "CLASS_LEVEL": "Junior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Jan Pearce",
-                "STU_EMAIL": "jamalie@berea.edu",
-                "STU_CPO": "718",
-                "LAST_POSN": "Media Technician",
-                "LAST_SUP_PIDM": "7"
-    },
-    {
-        "ID": "B00734292",
-        "PIDM": "3",
-                "FIRST_NAME": "Guillermo",
-                "LAST_NAME": "Adams",  # Guillermo's last name is wrong on purpose
-                "CLASS_LEVEL": "Junior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Jan Pearce",
-                "STU_EMAIL": "cruzg@berea.edu",
-                "STU_CPO": "300",
-                "LAST_POSN": "TA",
-                "LAST_SUP_PIDM": "7"
-    },
-    {
-        "ID": "B00791326",
-        "PIDM": "9",
-                "FIRST_NAME": "Oluwagbayi",
-                "LAST_NAME": "Makinde",
-                "CLASS_LEVEL": "Junior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Jan Pearce",
-                "STU_EMAIL": "makindeo@berea.edu",
-                "STU_CPO": "883",
-                "LAST_POSN": "TA",
-                "LAST_SUP_PIDM": "7"
-    },
-]
+                {
+                "ID":"B00730361",
+                "PIDM":"1",
+                "FIRST_NAME":"Elaheh",
+                "LAST_NAME":"Jamali",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"jamalie@berea.edu",
+                "STU_CPO":"718",
+                "LAST_POSN":"Media Technician",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00734292",
+                "PIDM":"3",
+                "FIRST_NAME":"Guillermo",
+                "LAST_NAME":"Adams", # Guillermo's last name is wrong on purpose
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"cruzg@berea.edu",
+                "STU_CPO":"300",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00791326",
+                "PIDM":"9",
+                "FIRST_NAME":"Oluwagbayi",
+                "LAST_NAME":"Makinde",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"makindeo@berea.edu",
+                "STU_CPO":"883",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
+                ]
 localStudents = [
-    {
-        "ID": "B00841417",
-        "PIDM": "2",
-                "FIRST_NAME": "Alex",
-                "LAST_NAME": "Bryant",
-                "CLASS_LEVEL": "Senior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Scott Heggen",
-                "STU_EMAIL": "bryantal@berea.edu",
-                "STU_CPO": "212",
-                "LAST_POSN": "Student Manager",
-                "LAST_SUP_PIDM": "7"
-    },
-]
+                {
+                "ID":"B00841417",
+                "PIDM":"2",
+                "FIRST_NAME":"Alex",
+                "LAST_NAME":"Bryant",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"bryantal@berea.edu",
+                "STU_CPO":"212",
+                "LAST_POSN":"Student Manager",
+                "LAST_SUP_PIDM":"7"
+                },
+        ]
 tracyStudents = [
-    {
-        "ID": "B00785329",
-        "PIDM": "4",
-                "FIRST_NAME": "Kat",
-                "LAST_NAME": "Adams",
-                "CLASS_LEVEL": "Senior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Scott Heggen",
-                "STU_EMAIL": "adamskg@berea.edu",
-                "STU_CPO": "420",
-                "LAST_POSN": "TA",
-                "LAST_SUP_PIDM": "7"
-    },
-    {
-        "ID": "B00888329",
-        "PIDM": "7",
-                "FIRST_NAME": "Jeremiah",
-                "LAST_NAME": "Bullfrog",
-                "CLASS_LEVEL": "Senior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Scott Heggen",
-                "STU_EMAIL": "bullfrogj@berea.edu",
-                "STU_CPO": "420",
-                "LAST_POSN": "TA",
-                "LAST_SUP_PIDM": "7"
-    },
-    {
-        "ID": "B00751360",
-        "PIDM": "90",
-                "FIRST_NAME": "Tyler",
-                "LAST_NAME": "Parton",
-                "CLASS_LEVEL": "Senior",
-                "ACADEMIC_FOCUS": "Computer Science",
-                "MAJOR": "Computer Science",
-                "PROBATION": "0",
-                "ADVISOR": "Scott Heggen",
-                "STU_EMAIL": "partont@berea.edu",
-                "STU_CPO": "420",
-                "LAST_POSN": "TA",
-                "LAST_SUP_PIDM": "7"
-    }
+                {
+                "ID":"B00785329",
+                "PIDM":"4",
+                "FIRST_NAME":"Kat",
+                "LAST_NAME":"Adams",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"adamskg@berea.edu",
+                "STU_CPO":"420",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00888329",
+                "PIDM":"7",
+                "FIRST_NAME":"Jeremiah",
+                "LAST_NAME":"Bullfrog",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"bullfrogj@berea.edu",
+                "STU_CPO":"420",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00751360",
+                "PIDM":"90",
+                "FIRST_NAME":"Tyler",
+                "LAST_NAME":"Parton",
+                "CLASS_LEVEL":"Senior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"partont@berea.edu",
+                "STU_CPO":"420",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                }
 ]
 
 # Add students to Tracy db
@@ -175,86 +174,86 @@ print(" * students (TRACY) added")
 # Positions (TRACY)
 #############################
 positions = [
-    {
-        "POSN_CODE": "S61407",
-        "POSN_TITLE": "Student Programmer",
-        "WLS": "1",
-        "ORG": "2114",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "POSN_CODE": "S61408",
-        "POSN_TITLE": "Research Associate",
-        "WLS": "5",
-        "ORG": "2114",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "POSN_CODE": "S61419",
-        "POSN_TITLE": "Teaching Associate",
-        "WLS": "3",
-        "ORG": "2114",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "POSN_CODE": "S61420",
-        "POSN_TITLE": "Teaching Associate",
-        "WLS": "5",
-        "ORG": "2147",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Technology and Applied Design"
-    },
-    {
-        "POSN_CODE": "S61421",
-        "POSN_TITLE": "TA",
-        "WLS": "6",
-        "ORG": "2114",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "POSN_CODE": "S61427",
-        "POSN_TITLE": "Teaching Associate",
-        "WLS": "2",
-        "ORG": "2150",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Mathematics"
-    },
-    {
-        "POSN_CODE": "S61430",
-        "POSN_TITLE": "Teaching Associate",
-        "WLS": "5",
-        "ORG": "2107",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Biology"
-    },
-    {
-        "POSN_CODE": "S61443",
-        "POSN_TITLE": "Lab Assistant",
-        "WLS": "6",
-        "ORG": "2107",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Biology"
-    },
-    {
-        "POSN_CODE": "S12345",
-        "POSN_TITLE": "DUMMY POSITION",
-        "WLS": "3",
-        "ORG": "2114",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "POSN_CODE": "S61409",
-        "POSN_TITLE": "Labor Workers",
-        "WLS": "1",
-        "ORG": "4022",
-        "ACCOUNT": "6740",
-        "DEPT_NAME": "Labor Department"
-    }
+            {
+            "POSN_CODE": "S61407",
+            "POSN_TITLE": "Student Programmer",
+            "WLS": "1",
+            "ORG" : "2114",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61408",
+            "POSN_TITLE": "Research Associate",
+            "WLS": "5",
+            "ORG" : "2114",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61419",
+            "POSN_TITLE": "Teaching Associate",
+            "WLS": "3",
+            "ORG" : "2114",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61420",
+            "POSN_TITLE": "Teaching Associate",
+            "WLS": "5",
+            "ORG" : "2147",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Technology and Applied Design"
+            },
+            {
+            "POSN_CODE": "S61421",
+            "POSN_TITLE": "TA",
+            "WLS": "6",
+            "ORG" : "2114",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61427",
+            "POSN_TITLE": "Teaching Associate",
+            "WLS": "2",
+            "ORG" : "2150",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Mathematics"
+            },
+            {
+            "POSN_CODE": "S61430",
+            "POSN_TITLE": "Teaching Associate",
+            "WLS": "5",
+            "ORG" : "2107",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Biology"
+            },
+            {
+            "POSN_CODE": "S61443",
+            "POSN_TITLE": "Lab Assistant",
+            "WLS": "6",
+            "ORG" : "2107",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Biology"
+            },
+            {
+            "POSN_CODE": "S12345",
+            "POSN_TITLE": "DUMMY POSITION",
+            "WLS": "3",
+            "ORG" : "2114",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Computer Science"
+            },
+            {
+            "POSN_CODE": "S61409",
+            "POSN_TITLE": "Labor Workers",
+            "WLS": "1",
+            "ORG" : "4022",
+            "ACCOUNT":"6740",
+            "DEPT_NAME":"Labor Department"
+            }
 
 ]
 # Add to Tracy db
@@ -270,90 +269,90 @@ print(" * positions (TRACY) added")
 #############################
 staffs = [
 
-    {
-        "ID": "B12361006",
-        "PIDM": 1,
-        "FIRST_NAME": "Scott",
-        "LAST_NAME": "Heggen",
-        "EMAIL": "heggens@berea.edu",
-        "CPO": "6300",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "ID": "B00769499",
-        "PIDM": 28,
-        "FIRST_NAME": "Madina",
-        "LAST_NAME": "Solijonova",
-        "EMAIL": "solijonovam@berea.edu",
-        "CPO": "6300",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "ID": "B12365892",
-        "PIDM": 2,
-        "FIRST_NAME": "Jan",
-        "LAST_NAME": "Pearce",
-        "EMAIL": "pearcej@berea.edu",
-        "CPO": "6301",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "ID": "B12365893",
-        "PIDM": 5,
-        "FIRST_NAME": "Jasmine",
-        "LAST_NAME": "Jones",
-        "EMAIL": "jonesj@berea.edu",
-        "CPO": "6301",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "ID": "B00763721",
-        "PIDM": 6,
-        "FIRST_NAME": "Brian",
-        "LAST_NAME": "Ramsay",
-        "EMAIL": "ramsayb2@berea.edu",
-        "CPO": "6305",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    },
-    {
-        "ID": "B00841417",
-        "PIDM": 7,
-        "FIRST_NAME": "Alex",
-        "LAST_NAME": "Bryant",
-        "EMAIL": "bryantal@berea.edu",
-        "CPO": "420",
-        "ORG": "2114",
-        "DEPT_NAME": "Computer Science"
-    }
-]
+            {
+            "ID": "B12361006",
+            "PIDM":1,
+            "FIRST_NAME":"Scott",
+            "LAST_NAME" : "Heggen",
+            "EMAIL"  :"heggens@berea.edu",
+            "CPO":"6300",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00769499",
+            "PIDM":28,
+            "FIRST_NAME":"Madina",
+            "LAST_NAME" : "Solijonova",
+            "EMAIL"  :"solijonovam@berea.edu",
+            "CPO":"6300",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B12365892",
+            "PIDM":2,
+            "FIRST_NAME":"Jan",
+            "LAST_NAME" : "Pearce",
+            "EMAIL"  :"pearcej@berea.edu",
+            "CPO":"6301",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B12365893",
+            "PIDM":5,
+            "FIRST_NAME":"Jasmine",
+            "LAST_NAME" : "Jones",
+            "EMAIL"  :"jonesj@berea.edu",
+            "CPO":"6301",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00763721",
+            "PIDM":6,
+            "FIRST_NAME":"Brian",
+            "LAST_NAME" : "Ramsay",
+            "EMAIL"  :"ramsayb2@berea.edu",
+            "CPO":"6305",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00841417",
+            "PIDM":7,
+            "FIRST_NAME":"Alex",
+            "LAST_NAME" : "Bryant",
+            "EMAIL"  :"bryantal@berea.edu",
+            "CPO":"420",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            }
+        ]
 
 non_supervisor_staffs = [
-    {
-        "ID": "B1236237",
-        "PIDM": 4,
-        "FIRST_NAME": "Megan",
-        "LAST_NAME": "Hoffman",
-        "EMAIL": "hoffmanm@berea.edu",
-        "CPO": "6303",
-        "ORG": "2107",
-        "DEPT_NAME": "Biology"
-    },
-    {
-        "ID": "B1236236",
-        "PIDM": 3,
-        "FIRST_NAME": "Mario",
-        "LAST_NAME": "Nakazawa",
-        "EMAIL": "nakazawam@berea.edu",
-        "CPO": "6302",
-        "ORG": "2150",
-        "DEPT_NAME": "Mathematics"
-    }
-]
+                        {
+                        "ID": "B1236237",
+                        "PIDM":4,
+                        "FIRST_NAME":"Megan",
+                        "LAST_NAME" : "Hoffman",
+                        "EMAIL"  :"hoffmanm@berea.edu",
+                        "CPO":"6303",
+                        "ORG":"2107",
+                        "DEPT_NAME": "Biology"
+                        },
+                        {
+                        "ID": "B1236236",
+                        "PIDM":3,
+                        "FIRST_NAME":"Mario",
+                        "LAST_NAME" : "Nakazawa",
+                        "EMAIL"  :"nakazawam@berea.edu",
+                        "CPO":"6302",
+                        "ORG":"2150",
+                        "DEPT_NAME": "Mathematics"
+                        }
+                        ]
 
 # Add to Tracy db
 with app.app_context():
@@ -377,125 +376,126 @@ print(" * staff added")
 # Users
 #############################
 users = [
-    {
+        {
         "student": None,
         "supervisor": "B12361006",
         "username": "heggens",
         "isLaborAdmin": 1,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": None,
         "supervisor": "B12365892",
         "username": "pearcej",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": None,
         "supervisor": "B12365893",
         "username": "jonesj",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": None,
         "supervisor": "B00763721",
         "username": "ramsayb2",
         "isLaborAdmin": 1,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": "B00730361",
         "supervisor": None,
         "username": "jamalie",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": "B00734292",
         "supervisor": None,
         "username": "cruzg",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": "B00791326",
         "supervisor": None,
         "username": "makindeo",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": "B00841417",
         "supervisor": "B00841417",
         "username": "bryantal",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    },
-    {
+        },
+        {
         "student": "B12345773",
         "supervisor": None,
         "username": "test1",
         "isLaborAdmin": None,
         "isFinancialAidAdmin": None,
         "isSaasAdmin": None
-    }
-]
+        }
+        ]
 User.insert_many(users).on_conflict_replace().execute()
 print(" * users added")
+
 
 
 #############################
 # Department
 #############################
 departments = [
-    {
-        "departmentID": 1,
-        "DEPT_NAME": "Computer Science",
-        "ACCOUNT": "6740",
-        "ORG": "2114",
-        "departmentCompliance": 1
-    },
-    {
-        "departmentID": 2,
-        "DEPT_NAME": "Technology and Applied Design",
-        "ACCOUNT": "6740",
-        "ORG": "2147",
-        "departmentCompliance": 1
-    },
-    {
-        "departmentID": 3,
-        "DEPT_NAME": "Mathematics",
-        "ACCOUNT": "6740",
-        "ORG": "2150",
-        "departmentCompliance": 1
-    },
-    {
-        "departmentID": 4,
-        "DEPT_NAME": "Biology",
-        "ACCOUNT": "6740",
-        "ORG": "2107",
-        "departmentCompliance": 1
-    },
-    {
-        "departmentID": 5,
-        "DEPT_NAME": "Labor Department",
-        "ACCOUNT": "6740",
-        "ORG": "4022",
-        "departmentCompliance": 1,
-        "isActive": 1
-    }
+            {
+              "departmentID":1,
+              "DEPT_NAME": "Computer Science",
+              "ACCOUNT": "6740",
+              "ORG": "2114",
+              "departmentCompliance": 1
+            },
+            {
+              "departmentID":2,
+              "DEPT_NAME": "Technology and Applied Design",
+              "ACCOUNT": "6740",
+              "ORG": "2147",
+              "departmentCompliance": 1
+            },
+            {
+              "departmentID":3,
+              "DEPT_NAME": "Mathematics",
+              "ACCOUNT": "6740",
+              "ORG": "2150",
+              "departmentCompliance": 1
+            },
+            {
+              "departmentID":4,
+              "DEPT_NAME": "Biology",
+              "ACCOUNT": "6740",
+              "ORG": "2107",
+              "departmentCompliance": 1
+            }, 
+            {
+              "departmentID":5,
+              "DEPT_NAME": "Labor Department",
+              "ACCOUNT": "6740",
+              "ORG": "4022",
+              "departmentCompliance": 1,
+              "isActive": 1
+            }
 
-]
+        ]
 Department.insert_many(departments).on_conflict_replace().execute()
 print(" * departments added")
 
@@ -536,89 +536,76 @@ print(f" * terms for {current_year}-{current_year+1} added")
 today = datetime.now()
 current_year = today.year - (today.month < 8)
 LaborStatusForm.insert([{
-    "laborStatusFormID": 2,
-    "termCode_id": f"{current_year}00",
-    "studentName": "Alex Bryant",
-    "studentSupervisee_id": "B00841417",
-    "supervisor_id": "B12361006",
-    "department_id": 1,
-    "jobType": "Primary",
-    "WLS": 1,
-    "POSN_TITLE": "Student Programmer",
-    "POSN_CODE": "S61407",
-    "weeklyHours": 10,
-    "startDate": f"{current_year}-04-01",
-    "endDate": f"{current_year}-09-01"
-}]).on_conflict_replace().execute()
+            "laborStatusFormID": 2,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Alex Bryant",
+            "studentSupervisee_id": "B00841417",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 10,
+            "startDate": f"{current_year}-04-01",
+            "endDate": f"{current_year}-09-01"
+        }]).on_conflict_replace().execute()
 FormHistory.insert([{
-    "formHistoryID": 2,
-    "formID_id": "2",
-    "historyType_id": "Labor Status Form",
-    "createdBy_id": 1,
-    "createdDate": f"{current_year}-04-14",
-    "status_id": "Pending"
-}]).on_conflict_replace().execute()
+            "formHistoryID": 2,
+            "formID_id": "2",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Pending"
+        }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
-    "laborStatusFormID": 3,
-    "termCode_id": f"{current_year}00",
-    "studentName": "Test Taker",
-    "studentSupervisee_id": "B12345773",
-    "supervisor_id": "B12361006",
-    "department_id": 5,
-    "jobType": "Primary",
-    "WLS": 1,
-    "POSN_TITLE": "Labor Workers",
-    "POSN_CODE": "S61409",
-    "weeklyHours": 10,
-    "startDate": f"{current_year}-04-01",
-    "endDate": "2025-09-01"
-}]).on_conflict_replace().execute()
+            "laborStatusFormID": 3,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Test Taker",
+            "studentSupervisee_id": "B12345773",
+            "supervisor_id": "B12361006",
+            "department_id": 5,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Labor Workers",
+            "POSN_CODE": "S61409",
+            "weeklyHours": 10,
+            "startDate": f"{current_year}-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
 
 FormHistory.insert([{
-    "formHistoryID": 3,
-    "formID_id": "3",
-    "historyType_id": "Labor Status Form",
-    "createdBy_id": 1,
-    "createdDate": f"{current_year}-04-14",
-    "status_id": "Approved"
-}]).on_conflict_replace().execute()
+            "formHistoryID": 3,
+            "formID_id": "3",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()    
+
 
 
 #############################
 # admin Notes
 #############################
 notes = [
-    {
-        "noteHistoryID": 1,
-        "formID_id": 2,
-        "date": "2020-01-01",
-                "createdBy": 1,
-                "notesContents": "This is the first note",
-                "noteType": "Supervisor Note"
-    },
-    {
-        "noteHistoryID": 2,
-        "formID_id": 2,
-        "date": "2020-02-01",
-                "createdBy": 1,
-                "notesContents": "This is the second note",
-                "noteType": "Labor Note"
-    },
-]
+            {
+            "noteHistoryID": 1,
+            "formID_id": 2,
+            "date":"2020-01-01",
+            "createdBy" : 1,
+            "notesContents": "This is the first note",
+            "noteType" : "Supervisor Note"
+            },
+            {
+            "noteHistoryID": 2,
+            "formID_id": 2,
+            "date":"2020-02-01",
+            "createdBy" : 1,
+            "notesContents": "This is the second note",
+            "noteType" : "Labor Note"
+            },
+       ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
-
-
-#############################
-# Creates an emailTracker
-#############################
-EmailTracker.insert([{
-    "emailTrackerID": 1,
-    "formID": 2,
-    "date": "2026-06-18",
-    "recipient": "test guy",
-    "templateID": 4,
-    "recipientEmails": "coolguy@email.com",
-    "body": "super secret text that you cant read"
-}]).on_conflict_replace().execute()
