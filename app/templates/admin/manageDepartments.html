@@ -118,7 +118,7 @@
           title='Supervisor'>
         {% for supervisor in allSupervisors  %}
           <option value="{{supervisor.ID}}"
-                  data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>">
+                  data-content="{{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}<small class='text-muted'> ({{supervisor.ID}})</small>" data-firstname="{{supervisor.FIRST_NAME}}"  data-lastname="{{supervisor.LAST_NAME}}">
             {{supervisor.FIRST_NAME}} {{supervisor.LAST_NAME}}
           </option>
         {% endfor %}

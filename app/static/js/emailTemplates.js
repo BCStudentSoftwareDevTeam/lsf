@@ -165,7 +165,7 @@ function saveChanges() {
   // will ask the user if they are sure they want to save their changes.
   if ( !$("#subject").val() ) {
     msg = "There are no changes to be saved.";
-    category = "danger";
+    category = "warning";
     $("#flash_container").prepend('<div class="alert alert-'+ category +'" role="alert" id="flasher">'+msg+'</div>');
     $("#flasher").delay(3000).fadeOut();
   } else {
