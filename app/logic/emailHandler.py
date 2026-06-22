@@ -29,6 +29,7 @@ class emailHandler():
         self.studentEmail = self.student.STU_EMAIL
         self.creatorEmail = self.formHistory.createdBy.email
         self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
+        self.advisorEmail = self.student.ADVISOR
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
@@ -256,7 +257,12 @@ class emailHandler():
     def LaborOverLoadFormApproved(self):
         self.checkRecipient("Labor Overload Form Approved For Student",
                       "Labor Overload Form Approved For Supervisor",
-                      "Labor Overload Form Approved For Financial Aid")
+                      "Labor Overload Form Approved For Financial Aid",
+                      "Labor Overload Form Submitted For Academic Advisor")
+    # Ignore and remove later.    
+    def LaborOverLoadFormApprovedAdvisorEmail(self):
+        """ This email is sent to the student's academic advisor when the overload form is approved by the labor office and is waiting for their approval. """
+        self.checkRecipient(False, False, "Labor Overload Form Approved and sent to Advisor")
 
     def LaborOverLoadFormRejected(self):
         self.checkRecipient("Labor Overload Form Rejected For Student",
@@ -321,7 +327,7 @@ class emailHandler():
     #
     #     self.send(message)
 
-    def checkRecipient(self, studentEmailPurpose=False, emailPurpose=False, secondaryEmailPurpose=False):
+    def checkRecipient(self, studentEmailPurpose=False, emailPurpose=False, secondaryEmailPurpose=False, advisorEmailPurpose=False):
         """
         This method will take in two to three inputs of email purposes. An email to the student is always sent.
         The method then checks whether to send the email to only the primary or both the primary and secondary supervisors.
@@ -344,7 +350,9 @@ class emailHandler():
                     self.sendEmail(primaryEmail, "Labor Office")
                 else:
                     self.sendEmail(primaryEmail, "supervisor")
-
+        if advisorEmailPurpose:
+            advisorEmail = EmailTemplate.get(EmailTemplate.purpose == advisorEmailPurpose)
+            self.sendEmail(advisorEmail, "Academic Advisor")
     # Depending on the parameter 'sendTo', this method will send the email either to the Primary, Secondary, or the Student
     def sendEmail(self, template, sendTo):
         formTemplate = template.body
@@ -378,6 +386,11 @@ class emailHandler():
             message = Message(template.subject,
                 recipients=[self.adminEmail])
             recipient = 'Admin'
+        # Ignore and remove later.
+        elif sendTo == "Academic Advisor":
+            message = Message(template.subject,
+                recipients=[self.advisorEmail]) # Change this to academic advisor email class once we have that set up.
+            recipient = 'Academic Advisor'
         message.html = formTemplate
 
         newEmailTracker = EmailTracker.create(
