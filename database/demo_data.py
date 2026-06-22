@@ -616,7 +616,7 @@ print(" * laborOfficeNotes added")
 # Creates an emailTracker
 #############################
 EmailTracker.insert([{
-            "emailTrackerID": 1,
+            "emailTrackerID": 1000000,
             "formID": 2,
             "date": "2026-06-18",
             "recipient": "test guy",
