@@ -388,7 +388,7 @@ class emailHandler():
             recipient = 'Admin'
         elif sendTo == "Academic Advisor":
             message = Message(template.subject,
-                recipients=[self.advisorEmail]) # Change this to academic advisor email class once we have that set up.
+                recipients=[self.advisorEmail])
             recipient = 'Academic Advisor'
         message.html = formTemplate
 
