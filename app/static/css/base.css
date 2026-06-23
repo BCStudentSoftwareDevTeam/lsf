@@ -94,9 +94,14 @@ html, body {
   box-sizing: border-box !important;
   width: 100%; /* Set the fixed width of the footer here */
   height: 80px;
+  margin-left: 100px;
   line-height: 80px; /* Vertically center the text there */
-  padding-left: 280px; /* Fixes sidebar spacing */
-}
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;s
+  line-height: 1.35; 
+} 
 
 .bottom-buffer {
     padding-bottom: 20px;
