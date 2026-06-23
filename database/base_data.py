@@ -368,10 +368,10 @@ emailtemps= [
                 "audience":"Supervisor"
                 },
                 {
-                "purpose":"Labor Overload Form Submitted For Academic Advisor",
+                "purpose":"Labor Overload Form Approved For Academic Advisor",
                 "formType":"Labor Overload Form",
                 "action":"Submitted",
-                "subject":"Labor Overload Form Submitted",
+                "subject":"Labor Overload Form Approved",
                 "body":'''
                             ''',
                 "audience":"Academic Advisor"
