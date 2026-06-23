@@ -46,6 +46,7 @@ def alterLSF(laborStatusKey):
     prefillsupervisorPIDM = form.supervisor.PIDM
     superviser_id = form.supervisor.ID
     prefilldepartment = form.department.ORG
+    prefilldepartmentaccount = form.department.ACCOUNT
     prefillposition = form
     prefilljobtype = form.jobType
     prefillterm = form.termCode
@@ -85,6 +86,7 @@ def alterLSF(laborStatusKey):
                             prefillsupervisor = prefillsupervisor,
                             prefillsupervisorPIDM = prefillsupervisorPIDM,
                             prefilldepartment = prefilldepartment,
+                            prefilldepartmentaccount = prefilldepartmentaccount,
                             prefillposition = prefillposition,
                             prefilljobtype = prefilljobtype,
                             prefillterm = prefillterm,
