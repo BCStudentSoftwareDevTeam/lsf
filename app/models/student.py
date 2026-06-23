@@ -18,6 +18,7 @@ class Student(baseModel):
 
     legal_name      = CharField(null=True)
     preferred_name  = CharField(null=True)
+    isActive        = BooleanField(default=False)
 
     def __str__(self):
         return str(self.__dict__)
