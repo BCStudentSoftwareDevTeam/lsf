@@ -17,6 +17,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.supervisorDepartment import SupervisorDepartment 
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +610,54 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+
+##############################
+# Departement Members 
+##############################
+
+department_members = [
+    {
+        "supervisor": "B12361006",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    }, 
+
+    {
+        "supervisor": "B12365892",
+        "department": 1,
+        "banStatus": True,
+        "isActive": True,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365893",
+        "department": 1,
+        "banStatus": False,
+        "isActive": False,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B00763721",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00841417",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    }
+]
+
+SupervisorDepartment.insert_many(department_members).on_conflict_replace().execute()
+print(" * Department members added")
