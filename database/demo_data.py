@@ -17,6 +17,9 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
+from app.models.supervisorDepartment import SupervisorDepartment
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +612,13 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+print(PositionHistory())
+
+PositionHistory.insert([{
+    "positioncode": "S61407",
+    "status": "Active",
+    "WLS": 1,
+    "revisiondate": f"{current_year}-04-01",
+    "Description": "Student Programmer",
+    "Department_id": 1
+}]).on_conflict_replace().execute() 
