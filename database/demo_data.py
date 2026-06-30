@@ -17,6 +17,8 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.allocation import Allocation
+
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +611,23 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+allocation =[
+                {
+                    "termCode":f"{current_year}00",
+                    "department": 3,
+                    "isApproved": True,
+                    "approvedOn": f"{current_year}-06-30",
+                    "approvedBy": "B12365892",
+                    "justification": "We just want it for fun", 
+                    "primary_10": 2,
+                    "primary_12": 3,
+                    "primary_15": 1, 
+                    "primary_20": 6, 
+                    "secondary_5": 2,
+                    "secondary_10": 0,
+                    "breakHours": 500
+                }
+            ]
+Allocation.insert_many(allocation).on_conflict_replace().execute()
+print(" * allocation added")
