@@ -17,6 +17,8 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.positionHistory import PositionHistory # type: ignore
+
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +611,29 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+
+#############################
+# Position History
+#############################
+
+positionHistory = [
+       {
+            "positioncode": 1,
+            "status": "Active",
+            "WLS":3,
+            "revisiondate" : "2020-01-01",
+            "Description": "This is a test data for position history code 1",
+            "Department" : "ACCT"
+            },
+         {
+            "positioncode": 2,
+            "status": "Inactive",
+            "WLS":2,
+            "revisiondate" : "2023-01-01",
+            "Description": "This is a test data for position history code 2",
+            "Department" : "Computer Science"
+            },
+]
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
