@@ -382,7 +382,7 @@ class emailHandler():
                         formID = self.laborStatusForm.laborStatusFormID,
                         date = datetime.today().strftime('%Y-%m-%d'),
                         recipient = recipient,
-                        templateID = template.emailTemplateID,
+                        template = template.emailTemplateID,
                         recipientEmails = ",".join(message.recipients),
                         body = formTemplate,
                         )
