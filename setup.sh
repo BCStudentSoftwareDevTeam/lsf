@@ -43,8 +43,9 @@ export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application
 # Fix symbolic link inside database directory
 if ! [ -L "database/app" ]; then
 	echo "Fixing symlink to app in database directory"
-	cd database
+	pushd database > /dev/null
 	rm app
 	ln -s ../app
+	popd > /dev/null
 fi
 
