@@ -633,7 +633,7 @@ positionhistory = [
         "positioncode": "S61408",
         "status": "Active",
         "WLS": 2,
-        "revisiondate": f"{current_year}-07-01",
+        "revisiondate": f"{current_year}-09-01",
         "Description": "",
         "Department_id": 1
     },
@@ -650,8 +650,8 @@ positionhistory = [
         "status": "Active",
         "WLS":3,
         "revisiondate" : f"{current_year}-01-01",
-        "Description": "This is a test data for position history code 1",
-        "Department_id" : 2
+        "Description": "",
+        "Department_id" : 1
 
         },
         {
@@ -659,7 +659,7 @@ positionhistory = [
         "status": "Inactive",
         "WLS":2,
         "revisiondate" : f"{current_year}-01-01",
-        "Description": "This is a test data for position history code 2",
+        "Description": "",
         "Department_id" : 1
         },
     

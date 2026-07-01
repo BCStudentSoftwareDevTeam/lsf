@@ -8,4 +8,6 @@ class PositionHistory(baseModel):
     revisiondate       = DateField()
     Description        = TextField(default=None)
     Department         = ForeignKeyField(Department)
-PositionHistory._meta.set_primary_key('positioncode_revisiondate_status', CompositeKey('positioncode', 'revisiondate', 'status'))          
+
+class Meta:
+    primary_key = CompositeKey('positioncode', 'revisiondate', 'status')
