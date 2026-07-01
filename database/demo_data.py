@@ -20,6 +20,7 @@ from app.models.notes import Notes
 from app.models.allocation import Allocation 
 from app.models.positionHistory import PositionHistory 
 from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.allocation import Allocation
 
 
 print("Inserting data for demo and testing purposes")
@@ -734,3 +735,37 @@ allocations = [
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print("Data insertion complete :)")
+allocation =[
+                {
+                    "termCode":f"{current_year}00",
+                    "department": 3,
+                    "isApproved": True,
+                    "approvedOn": f"{current_year}-06-30",
+                    "approvedBy": "B12365892",
+                    "justification": "We just want it for fun", 
+                    "primary_10": 2,
+                    "primary_12": 3,
+                    "primary_15": 1, 
+                    "primary_20": 6, 
+                    "secondary_5": 2,
+                    "secondary_10": 0,
+                    "breakHours": 500
+                },
+                {
+                    "termCode":f"{current_year}00",
+                    "department": 2,
+                    "isApproved": False,
+                    "approvedOn": f"{current_year}-06-20",
+                    "approvedBy": "B00763721",
+                    "justification": "We need it to lower the amount of allocations we have", 
+                    "primary_10": 1,
+                    "primary_12": 2,
+                    "primary_15": 5, 
+                    "primary_20": 2, 
+                    "secondary_5": 10,
+                    "secondary_10": 0,
+                    "breakHours": 1500
+                }
+            ]
+Allocation.insert_many(allocation).on_conflict_replace().execute()
+print(" * allocation added")
