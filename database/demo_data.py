@@ -614,7 +614,7 @@ Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
 print(PositionHistory())
 
-PositionHistory.insert = [
+positionhistory = [
     {
         "positioncode": "S61407",
         "status": "Active",
@@ -641,4 +641,4 @@ PositionHistory.insert = [
         "Department_id": 1
     }
 ]
-positionHistory = PositionHistory.insert_many(PositionHistory.insert).on_conflict_replace().execute()
+PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
