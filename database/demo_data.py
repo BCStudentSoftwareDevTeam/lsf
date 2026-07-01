@@ -17,7 +17,10 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.positionHistory import PositionHistory 
+from app.models.positionHistory import PositionHistory
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
+from app.models.supervisorDepartment import SupervisorDepartment
 
 print("Inserting data for demo and testing purposes")
 

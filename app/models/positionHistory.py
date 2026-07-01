@@ -7,5 +7,5 @@ class PositionHistory(baseModel):
     status             = CharField()
     WLS                = IntegerField()
     revisiondate       = DateField()
-    Description        = TextField(default="None")
+    Description        = TextField(default=None)
     Department         = ForeignKeyField(Department)               
