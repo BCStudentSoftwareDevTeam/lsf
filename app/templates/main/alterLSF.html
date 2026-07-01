@@ -52,7 +52,7 @@
                 id="department"
                 data-live-search="true">
                 {% for department in departments %}
-                  <option value="{{department.ORG}}" data-account="{{department.ACCOUNT}}" {% if department.ORG == prefilldepartment %} selected {% endif %}>{{department.DEPT_NAME}}</option>
+                  <option value="{{department.ORG}}" data-account="{{department.ACCOUNT}}" {% if department.ORG == prefilldepartment and department.ACCOUNT == prefilldepartmentaccount %} selected {% endif %}>{{department.DEPT_NAME}}</option>
                 {% endfor %}
            </select>
            <input hidden class="oldValue" id="prefilldepartment" value="{{prefilldepartment}}" />
