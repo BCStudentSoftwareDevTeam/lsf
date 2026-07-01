@@ -662,6 +662,6 @@ positionhistory = [
         "Description": "This is a test data for position history code 2",
         "Department_id" : 1
         },
-    }
+    
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
