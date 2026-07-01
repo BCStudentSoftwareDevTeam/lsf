@@ -619,8 +619,8 @@ EmailTracker.insert([{
             "emailTrackerID": 1000000,
             "formID": 2,
             "date": "2026-06-18",
-            "recipient": "test guy",
-            "templateID": 4,
-            "recipientEmails": "coolguy@email.com",
+            "recipient": "Julius Fritz",
+            "template": 4,
+            "recipientEmails": "fritzj2@berea.edu",
             "body": "super secret text that you cant read"
         }]).on_conflict_replace().execute()
