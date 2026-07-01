@@ -658,8 +658,8 @@ allocations = [
     "termCode":         202200,
     "department":       "Computer Science",
     "isApproved":       True,
-    "approvedOn":       None,
-    "approvedBy":       None,
+    "approvedOn":       2021-10-19,
+    "approvedBy":       "Dr heggen",
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
     "primary_10":       2,
     "primary_12":       2,
@@ -673,8 +673,8 @@ allocations = [
     "termCode":         202300,
     "department":       "ETAD",
     "isApproved":       True,
-    "approvedOn":       None,
-    "approvedBy":       None,
+    "approvedOn":       2022-11-12,
+    "approvedBy":       "Dr Jan",
     "justification":    "Increase in student enrollment due to exodous from CS department",
     "primary_10":       4,
     "primary_15":       7,
@@ -687,8 +687,8 @@ allocations = [
     "termCode":         202400,
     "department":       "Mathematics",
     "isApproved":       True,
-    "approvedOn":       None,
-    "approvedBy":       None,
+    "approvedOn":       2023-12-19,
+    "approvedBy":       "Dr Barnard",
     "justification":    "We are hiring more students to help with the increased workload in the department",
     "primary_10":       5,
     "primary_12":       6,
@@ -702,8 +702,8 @@ allocations = [
     "termCode":         202500,
     "department":       "Physics",
     "isApproved":       True,
-    "approvedOn":       None,
-    "approvedBy":       None,
+    "approvedOn":       2025-1-10,
+    "approvedBy":       "Dr Hodge",
     "justification":    "Downscaling the number of students in the department due to budget cuts",
     "primary_10":       4,
     "primary_12":       5,
@@ -717,8 +717,8 @@ allocations = [
     "termCode":         202600,
     "department":       "Engineering Physics",
     "isApproved":       False,
-    "approvedOn":       None,
-    "approvedBy":       None,
+    "approvedOn":       2025-10-19,
+    "approvedBy":       "Dr wu",
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
     "primary_10":       8,
     "primary_12":       10,
@@ -730,5 +730,6 @@ allocations = [
     },
                 
     ]
+Allocation.insert_many(allocations).on_conflict_replace().execute()
 
-print("Data insertion complete. Check phpmyadmin to see if your changes are reflected")
+print("Data insertion complete :)")
