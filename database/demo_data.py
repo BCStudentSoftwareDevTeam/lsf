@@ -17,7 +17,6 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.positionHistory import PositionHistory
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -663,5 +662,6 @@ positionhistory = [
         "Description": "This is a test data for position history code 2",
         "Department_id" : 1
         },
+    }
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
