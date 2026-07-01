@@ -2,9 +2,10 @@ from app.models import *
 from app.models.department import Department
 
 class PositionHistory(baseModel):
-    positioncode       = PrimaryKeyField()
+    positionID         = PrimaryKeyField()
+    positioncode       = CharField()
     status             = CharField()
     WLS                = IntegerField()
     revisiondate       = DateField()
-    Description        = TextField()
+    Description        = TextField(default=None)
     Department         = ForeignKeyField(Department)               
