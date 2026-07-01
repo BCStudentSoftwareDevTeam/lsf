@@ -37,7 +37,7 @@
 {% endblock %}
 
 <div class="body-container">
-    <div class="col-xs-10 sidebar-push">
+    <div class="col-xs-10 sidebar-push page-shell">
         <div id="flash_container">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -61,20 +61,20 @@
             {# application content needs to be provided in the app_content block #}
         {% endblock %}
  
-<div class="row bottom-buffer"></div>
-
 {% block footer %}
-<footer class="footer bg-light d-print-none text-center pt-1 pb-2">
-    <strong>Issues? Contact: </strong>
-    <a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">
-        Systems Support
-    </a>
-    <br>
-    <strong>Created &amp; Designed by the </strong>
-    <a href="/contributors" id="contribLink" class="footerlink">
-        Student Software Development Team
-    </a>
-</footer>
+<div class="row footer-row">
+    <footer class="footer col-xs-12 bg-light d-print-none text-center">
+        <strong>Issues? Contact: </strong>
+        <a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">
+            Systems Support
+        </a>
+        <br>
+        <strong>Created &amp; Designed by the </strong>
+        <a href="/contributors" id="contribLink" class="footerlink">
+            Student Software Development Team
+        </a>
+    </footer>
+</div>
 {% endblock %}
 </div>
 </div>

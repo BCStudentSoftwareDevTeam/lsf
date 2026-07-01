@@ -3,14 +3,9 @@
   color: #ffffff;
   padding: 7px 30px;
   margin-top: 100px;
-  margin-right: 250px;
 }
 .container {
     top: -75px;
-}
-.btn-holder {
-   position: relative;
-   right: 1050 px !important;
 }
 #wrapper {
   width: 100%;
