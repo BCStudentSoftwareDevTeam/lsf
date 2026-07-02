@@ -4,7 +4,6 @@
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
-
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
@@ -24,4 +23,23 @@
     </select>
 
   </div>
-{% endblock %}
+<div class="card-group" style="display:flex">
+     <div class="card mb-3">
+      <div class="card-body">
+        <h1>Positions</h1>
+        <p class="card-text">Student Programmer</p>
+        <a href="#" class="btn btn-primary">View Details</a>
+      </div>
+    </div>
+  <div class="card mb-3">
+    <h2>burrh</h2>
+  </div>
+       <div class="card mb-3" style="width:50rem">
+      <div class="card-body">
+        <h1>Positions</h1>
+        <p class="card-text">Student Programmer</p>
+        <a href="#" class="btn btn-primary">View Details</a>
+      </div>
+    </div>
+</div>
+{% endblock %}\
