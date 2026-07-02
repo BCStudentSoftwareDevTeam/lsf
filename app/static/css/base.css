@@ -264,3 +264,35 @@ a {
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px);
 }
+
+ 
+.members-card .media {
+  margin-bottom: 18px;
+}
+ 
+.members-card h4 {
+  margin-top: 18px;
+  margin-bottom: 4px;
+}
+ 
+.members-card-icon {
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #e8edf3;
+  color: #7c8ea1;
+  font-size: 18px;
+}
+ 
+.members-card-cta {
+  position: relative;
+  display: inline-block;
+}
+ 
+.members-card-btn {
+  border-radius: 20px;
+  padding: 8px 20px;
+}
