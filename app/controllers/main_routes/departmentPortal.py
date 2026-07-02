@@ -20,7 +20,7 @@ from app.logic.banner import Banner
 @main_bp.route('/department/manage_staff', methods=['GET'])
 @main_bp.route('/department/manage_staff/<org>', methods=['GET'])
 @main_bp.route('/department/manage_staff/<org>/<account>', methods=['GET'])
-def departmentPortal(org=None,account=None):
+def manageStaff(org=None,account=None):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
@@ -33,7 +33,9 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-    return render_template('main/departmentPortal.html', 
-                           departments = departments,
+    labor = [["Scott Heggen", 7, 11, 0], ["Brian Ramsey", 9, 10, 0], ["Bright Feitsop", 10, 20, 1], ["Artem Kurasov", 6, 7, 0]]
+
+    return render_template('main/manageStaff.html', 
+                           staff = labor,
                            department = dept)
 

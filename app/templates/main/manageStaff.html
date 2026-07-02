@@ -7,6 +7,31 @@
 
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+<h3 class="text-center">Manage Staff</h3>
+
+<br>
+<br>
+
+<button class="btn btn-primary" type="button">Show Inactive Supervisors</button>
+
+<div class="col-lg-12" align="center">
+    <table class="table table-striped dataTable">
+        <thead class="tableHeaders">
+            <tr>
+                <th>Name</th>
+                <th>Supervisees</th>
+                <th>Assign as Coordinator</th>
+            </tr>
+        </thead>
+        {% for i in staff %}
+        <tr>
+            <td>{{ i[0] }}</td>
+            <td> <b>Primary:</b> {{ i[1] }}<br> <b>Secondary</b> {{ i[2] }} </td>
+            <td>{{ i[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
 
 {% endblock %}
