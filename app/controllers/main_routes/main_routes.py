@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 from functools import reduce
 import operator
 from app.models.department import Department
@@ -46,6 +46,26 @@ def supervisorPortal():
                             departments = departments,
                             currentUser = currentUser
                             )
+
+@main_bp.route('/department', methods=['GET'])
+@main_bp.route('/department/<org>', methods=['GET'])
+@main_bp.route('/department/<org>/<account>', methods=['GET'])
+def departmentPortal(org=None,account=None):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        dept = None
+
+
+
+    if g.currentUser.isLaborAdmin:
+        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    else:
+        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+
+    return render_template('main/departmentPortal.html', 
+                           departments = departments,
+                           department = dept)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
