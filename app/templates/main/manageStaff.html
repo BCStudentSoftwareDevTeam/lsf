@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block app_content %}
+<h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
+
+{% endblock %}
