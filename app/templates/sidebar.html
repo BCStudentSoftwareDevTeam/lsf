@@ -57,7 +57,7 @@
           </div>
           <div class="panel panel-default">
             <a href="/department">
-                <div {% if request.path =="/department" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5.5">
+                <div {% if "/department" in request.path %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5.5">
                       <h4>Department Portal</h4>
                   </div>
               </a>
