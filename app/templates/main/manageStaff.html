@@ -2,25 +2,31 @@
 
 {% block scripts %}
 {{super()}}
+    <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/allPendingForms.css')}}?u={{lastStaticUpdate}}">
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
-<h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
-<h3 class="text-center">Manage Staff</h3>
+<h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Staff {% else %} Manage Staff {% endif %} </h2>
 
-<br>
-<br>
-
+<br></br>
 <button class="btn btn-primary" type="button">Show Inactive Supervisors</button>
 
-<div class="col-lg-12" align="center">
+<br></br>
+
+<div class="tab-pane activecol-lg-12" align="center">
     <table class="table table-striped dataTable">
         <thead class="tableHeaders">
             <tr>
                 <th>Name</th>
                 <th>Supervisees</th>
                 <th>Assign as Coordinator</th>
+
+                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                <th>Status</th>
+                <th>Remove Staff</th>
+                {% endif %}
             </tr>
         </thead>
 
@@ -29,10 +35,12 @@
             <tr>
                 <td>
                     {{ i[0] }}
-                    <a href="mailto:{{ i[4] }}">✉</a>
+                    <a href="mailto:{{ i[0] }}">✉</a>
 
-                    {% if i[5] %}
-                        <span class="badge">Banned</span>
+                    <br>
+
+                    {% if i[4] %}
+                        <span class="inactive_badge">Banned</span>
                     {% endif %}
                 </td>
 
@@ -41,7 +49,23 @@
                     <b>Secondary:</b> {{ i[2] }}
                 </td>
 
-                <td>{{ i[3] }}</td>
+                <td>
+                    <input class="approveCheckbox" type='checkbox' autocomplete="off" {% if i[3] %} checked {% endif %}/>
+                </td>
+
+                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                <td>
+                    {% if not i[4] %}
+                    <button class="btn btn-danger">Ban</button>
+                    {% else %}
+                    <button class="btn btn-success">Unban</button>
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn btn-danger"><span class="bi bi-trash"></span></button>
+                </td>
+                {% endif %}
+
             </tr>
             {% endfor %}
         </tbody>
