@@ -69,10 +69,18 @@ def departmentPortal(org=None,account=None):
     for i in pos:
         positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
+    staff = Tracy().getSupervisors()
+    supervisors = []
+
+    for i in staff:
+        if i.DEPT_NAME == Department.DEPT_NAME:
+            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                           positions = positions)
+                           positions = positions,
+                           supervisors = supervisors)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

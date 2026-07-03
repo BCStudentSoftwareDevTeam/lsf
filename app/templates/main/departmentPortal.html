@@ -45,7 +45,6 @@
   </div>
 
   <section class="card "style="width:50rem" aria-labelledby="members-title">
-
     <div class="card-body">
       <div class="media">
         <div class="media-left">
@@ -53,22 +52,23 @@
             <i class="fa fa-users"></i>
           </span>
         </div>
-
         <div class="media-body media-middle">
           <h3>
             Members
           </h3>
         </div>
       </div>
-
-      <h4>Labor Coordinator</h4>
+      <h4>Labor Coordinator(s)</h4>
       <p>Dr. Jones</p>
 
       <h4>Supervisors</h4>
-      <p>
-        Dr. Heggen<br>
-        Dr. Nakazawa
-      </p>
+      {% for s in supervisors %}
+      {% if 3 > loop.index0 %}
+        <p>{{ s }}</p>
+      {% elif 4 > loop.index0 %}
+        <p>and {{ supervisors | length}} more...</p>
+      {% endif %}
+      {% endfor %}
     </div>
 
     <div class="card-footer text-center">
@@ -77,6 +77,7 @@
       </a>
     </div>
   </section>
+
        <div class="card mb-3" style="width:50rem">
       <div class="card-body">
         <h1>Positions</h1>
