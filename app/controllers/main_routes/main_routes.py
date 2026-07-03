@@ -16,6 +16,7 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.tracy import Tracy
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -62,10 +63,16 @@ def departmentPortal(org=None,account=None):
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    
+    pos = Tracy().getPositionsFromDepartment(org, account)
+    positions = []
+    for i in pos:
+        positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                           department = dept,
+                           positions = positions)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
