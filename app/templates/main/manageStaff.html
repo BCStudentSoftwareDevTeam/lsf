@@ -23,15 +23,29 @@
                 <th>Assign as Coordinator</th>
             </tr>
         </thead>
-        {% for i in staff %}
-        <tr>
-            <td>{{ i[0] }}</td>
-            <td> <b>Primary:</b> {{ i[1] }}<br> <b>Secondary</b> {{ i[2] }} </td>
-            <td>{{ i[3] }}</td>
-        </tr>
-        {% endfor %}
+
+        <tbody>
+            {% for i in staff %}
+            <tr>
+                <td>
+                    {{ i[0] }}
+                    <a href="mailto:{{ i[4] }}">✉</a>
+
+                    {% if i[5] %}
+                        <span class="badge">Banned</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <b>Primary:</b> {{ i[1] }}<br>
+                    <b>Secondary:</b> {{ i[2] }}
+                </td>
+
+                <td>{{ i[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
-
 
 {% endblock %}
