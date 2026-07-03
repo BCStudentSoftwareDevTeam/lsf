@@ -68,7 +68,7 @@ def departmentPortal(org=None,account=None):
     positions = []
     for i in pos:
         positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
-    print(positions)
+
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
