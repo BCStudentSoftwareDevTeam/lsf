@@ -3,6 +3,8 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css"
+  href="{{url_for('static', filename ='css/departmentPortal.css')}}?u={{lastStaticUpdate}}">
 {% endblock %}
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
@@ -41,13 +43,40 @@
       <a href="#" class="btn btn-primary">Go somewhere</a>
     </div>
   </div>
-  <div class="card mb-3 style="style="width:50rem">
+
+  <section class="card "style="width:50rem" aria-labelledby="members-title">
+
     <div class="card-body">
-      <h2>burrh</h2>
-      <p class="card-text">crazy interesting stuff here</p>
-      <a href="#" class="btn btn-primary">View Details</a>
+      <div class="media">
+        <div class="media-left">
+          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h3>
+            Members
+          </h3>
+        </div>
+      </div>
+
+      <h4>Labor Coordinator</h4>
+      <p>Dr. Jones</p>
+
+      <h4>Supervisors</h4>
+      <p>
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
     </div>
-  </div>
+
+    <div class="card-footer text-center">
+      <a href="#" class="btn btn-default btn-sm">
+        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+  </section>
        <div class="card mb-3" style="width:50rem">
       <div class="card-body">
         <h1>Positions</h1>
@@ -63,4 +92,49 @@
 
 {% endif %}
 
+
+<!-- <div class="col-sm-4">
+  <section class="card members-card" aria-labelledby="members-title">
+    <div class="card-body">
+
+      <div class="media">
+        <div class="media-left">
+          <span class="members-card-icon" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h3 id="members-title" class="media-heading card-title">
+            <strong>Members</strong>
+          </h3>
+        </div>
+      </div>
+
+      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
+      <p class="card-text">Dr. Jones</p>
+
+      <h4 class="text-primary"><strong>Supervisors</strong></h4>
+      <p class="card-text">
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
+
+      <p class="text-center">
+        <span class="members-card-cta">
+          <a href="#" class="btn btn-primary btn-sm members-card-btn">
+            View Details <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+
+        </span>
+      </p>
+
+    </div>
+  </section>
+</div> -->
+
 {% endblock %}\
+
+
+
+
