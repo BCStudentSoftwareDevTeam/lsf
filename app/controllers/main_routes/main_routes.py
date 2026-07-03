@@ -52,9 +52,12 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
+    if org and account:
+        try:
+            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        except (NameError, DoesNotExist):
+            dept = None
+    else:
         dept = None
 
 
@@ -69,9 +72,23 @@ def departmentPortal(org=None,account=None):
     for i in pos:
         positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
-    return render_template('main/departmentPortal.html', 
+    return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
+                           positions = positions)
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
                            positions = positions)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])

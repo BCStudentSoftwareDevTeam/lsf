@@ -2,17 +2,120 @@
 
 {% block styles %}
 {{super()}}
-  <link href="/static/css/adminManagement.css?u={{lastStaticUpdate}}" rel="stylesheet" type="text/css">
+  <link href="/static/css/managePositions.css?u={{lastStaticUpdate}}" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
-    <script type="text/javascript" src="{{url_for('static', filename='js/adminManagement.js') }}?u={{lastStaticUpdate}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/managePositions.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
-<h2>{{ department_name }}</h2>
-<h1>Manage Positions</h1>
-<button class="btn btn-primary" id="addPositionButton">Add Position</button>
-<input type="text" id="searchInput" placeholder="Search positions...">
+<div class="department-banner">
+    <h4>{{ department_name }}</h4>
+</div>
+
+<div class="container-fluid position-management">
+
+    <div class="row page-header">
+        <div class="col-sm-4">
+            <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search Positions...">
+            </div>
+        </div>
+        <div class="col-sm-4 text-center">
+            <h1>Manage Positions</h1>
+        </div>
+        <div class="col-sm-4 text-right">
+            <button class="btn add-btn" id="addPositionButton">
+                Add Position
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table" id="positionTable">
+            <thead>
+                <tr>
+                    <th>Position (WSL)</th>
+                    <th>Position Code</th>
+                    <th>Status</th>
+                    <th>Last Revision Date</th>
+                    <th>View Position Description</th>
+                    <th>Edit Position Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample Row -->
+                <tr>
+                    <td>TA (3)</td>
+                    <td>S85405</td>
+                    <td>
+                        <span class="status active">
+                            Active
+                        </span>
+                    </td>
+                    <td>01/01/2024</td>
+                    <td>
+                        <button class="btn view-btn">
+                            View
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn request-btn">
+                            Request an Update
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Co-Lead TA (4)</td>
+
+                    <td>S89123</td>
+                    <td>
+                        <span class="status requested">
+                            Requested
+                        </span>
+                    </td>
+                    <td>01/01/2024</td>
+                    <td>
+                        <button class="btn view-btn">
+                            View
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn request-btn">
+                            Request an Update
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lead TA (4)</td>
+                    <td>S89123</td>
+                    <td>
+                        <span class="status inactive">
+                            Inactive
+                        </span>
+                    </td>
+
+                    <td>01/01/2024</td>
+                    <td>
+                        <button class="btn view-btn">
+                            View
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn request-btn">
+                            Request an Update
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h2 class="total">
+        Total Positions:
+        <span id="positionCount">3</span>
+    </h2>
+</div>
 {% endblock %}
