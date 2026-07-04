@@ -41,22 +41,19 @@
   </div>
   <br />
 
-  <div style="display: flex; justify-content: space-between">
-    <div class="row">
-      <div class align="right">
-        <button class="btn btn-success btn-xs" id="exampleButton1" disabled>In Compliance</button> 
-        <button class="btn btn-success btn-xs" id="exampleButton1" disabled>In Compliance</button> 
-      </div>
+ <div class = "row mb-4" style="display: flex; justify-content: space-between; align-items: center;">
 
-      <div class align="left">
-        <button class="btn btn-success btn-xs" id="exampleButton1" disabled>In Compliance</button> 
-        <button class="btn btn-success btn-xs" id="exampleButton1" disabled>In Compliance</button> 
-      </div>
-    </div>
+  <div>
+    <button class="btn btn-success me-2 " type="button">Upload Allocations</button>
+    <button class="btn btn-success me-2 " type="button">Download Allocation History</button>
   </div>
+  <div>
+    <button class="btn btn-success me-2 " type="button">Annual Allocation Message</button>
+    <button class="btn btn-primary" type="button">Annual Position Review</button>
+  </div>
+</div>
 
-
-
+  <div style="height: 10px;"></div>
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8">
@@ -67,8 +64,9 @@
         <li id="inactiveTab">
           <a> Inactive Departments </a>
         </li>
+        <button class="btn btn-default me-2 " type="button">View current year: 26-27</button>
       </ul>
-
+      
       <br>
       <div class="deptTable" id='activeTable'>
         <table class="table table-striped table-bordered" id="activeDepartmentsTable">
@@ -76,6 +74,10 @@
             <tr>
               <th>Department</th>
               <th>Status</th>
+              <th>Positions</th>
+              <th>Allocation approval status</th>
+              <th>Break Hours Used/Given</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -92,8 +94,37 @@
                   value="{{department.departmentID}}">{% if department.departmentCompliance == True %}In Compliance{%
                   else %}Not in Compliance{% endif %}</button>
               </td>
+              <td style="white-space: nowrap;">
+                <p> <strong>Prim: 6 </strong> of <strong> 16 </strong></p>
+                <p> <strong>Sec: 12 </strong> of <strong> 16 </strong></p>
+              </td>
+              <td> 
+                <button class="btn btn-success me-2 " type="button">Approved</button>
+              </td>
+              <td>
+                <p> <strong>271 hrs / </strong> 500 hrs</p>
+              </td>
+              <td style="white-space: nowrap;">
+              <div class="btn-group" style="display: inline-flex;">
+                <button type="button" class="btn btn-default">Action</button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="caret"></span>
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Allocation History</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#">Position Review</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#">Edit Dept Member</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#">Allocation Review</a></li>
+               </ul>
+              </td>
+</div>
             </tr>
             {% endfor %}
+
           </tbody>
         </table>
       </div>
