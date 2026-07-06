@@ -28,128 +28,133 @@
   </div>
 
 {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 1rem;" style="height: 1000px">
+<div class="card-group" style="display:flex" style="height: 1000px">
      
-  <div class="card" style="width:50rem; border-radius: 1rem;">
-    <div class="card-body">
-      <h5 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
-          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
-          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
-        </svg>
-        Current Allocation
-      </h5>
-      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
-    </div>
-  </div>
-
-  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
+  <section class="card "style="width:50rem" aria-labelledby="current_allocation-title">
     <div class="card-body">
       <div class="media">
-         <div class="media-left media-middle">
-          <span class="members-icon">
-            <i class="bi bi-people-fill"></i>
+        <div class="media-left">
+          <span>
+            <i class="bi bi-clock" style="border: 5px solild #555;"></i>
           </span>
         </div>
-
         <div class="media-body media-middle">
-          <h1>
-            Members
-          </h1>
+          <h3>
+            Current Allocation
+          </h3>
         </div>
       </div>
-      <h4> <b>{% if laborCoordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
-      {% if laborCoordinators %}
-        {% for coordinator in laborCoordinators %}
-          <p>
-            {{ coordinator.name }}
-
-            {% if coordinator.email %}
-                 <a href="mailto:{{ coordinator.email }}"
-                      data-toggle="tooltip"
-                      data-placement="bottom"
-                      title="{{ coordinator.email }}">
-                      <i class="bi bi-envelope-fill"></i>
-                  </a>
-            {% endif %}
-          </p>
-        {% endfor %}
-      {% else %}
-        <p>None assigned. <a href="#" >Add one?</a> </p> 
-        <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
-          
-      {% endif %}
-
-    
-      <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
-
-      {% if supervisors %}
-        {% for s in supervisors[:3] %}
-            <p>
-              {{ s.name }}
-
-              {% if s.email %}
-                  <a href="mailto:{{ s.email }}"
-                      data-toggle="tooltip"
-                      data-placement="bottom"
-                      title="{{ s.email }}">
-                      <i class="bi bi-envelope-fill"></i>
-                  </a>
-                
-              {% endif %}
-            </p>
-            {% endfor %}
-
-            {% if supervisors|length > 3 %}
-              <p>and {{ supervisors|length - 3 }} more...</p>
-            {% endif %}
-
-      {% elif not laborCoordinators and currentUser.isLaborAdmin %}
-        <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
-      {% else  %}
-        <p>No active supervisors assigned.</p>
-      {% endif %}
-
+      <h4>AY 26/27&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;15 / 20 Positions  </h4>
+      <h4>Break Hours&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;0 of 200 Hrs.  </h4>
     </div>
+    
 
     <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Members
-         <span class="glyphicon glyphicon-chevron-right"></span>
+      <a href="#" class="btn btn-primary btn-sm">
+        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+      <a href="#" class="btn btn-primary btn-sm">
+        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
   </section>
 
-  <div class="card" style="width:50rem; border-radius: 1rem;">
+  <section class="card "style="width:50rem" aria-labelledby="members-title">
     <div class="card-body">
-       <div class="media">
-        <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #424242; font-size: 32px;">
-            <i class="bi bi-suitcase-lg-fill"></i>
+      <div class="media">
+        <div class="media-left">
+          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
+            <i class="fa fa-users"></i>
           </span>
         </div>
         <div class="media-body media-middle">
-          <h1>Positions</h1>
+          <h3>
+            Members
+          </h3>
         </div>
+      </div>
+      <h4>Labor Coordinator(s)</h4>
+      <p>Dr. Jones</p>
 
-      </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-          <li class="card-text">{{ p }}</li>
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
+      <h4>Supervisors</h4>
+      {% for s in supervisors %}
+      {% if 3 > loop.index0 %}
+        <p>{{ s }}</p>
+      {% elif 4 > loop.index0 %}
+        <p>and {{ supervisors | length}} more...</p>
+      {% endif %}
       {% endfor %}
-      </ul>
-      
     </div>
-       <div class="card-footer text-center" >
-          <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
+    
+
+    <div class="card-footer text-center">
+      <a href="#" class="btn btn-default btn-sm">
+        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+      <a href="#" class="btn btn-primary btn-sm">
+        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+  </section>
+
+       <div class="card mb-3" style="width:50rem">
+      <div class="card-body">
+        <h1>Positions</h1>
+        {% for p in positions %}
+         {% if 10 > loop.index0 %}
+          <p class="card-text">{{ p }}</p>
+         {% endif %}
+        {% endfor %}
+        <a href="#" class="btn btn-primary">View Details</a>
       </div>
+    </div>
 </div>
 
 {% endif %}
 
-{% endblock %}
+
+<!-- <div class="col-sm-4">
+  <section class="card members-card" aria-labelledby="members-title">
+    <div class="card-body">
+
+      <div class="media">
+        <div class="media-left">
+          <span class="members-card-icon" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h3 id="members-title" class="media-heading card-title">
+            <strong>Members</strong>
+          </h3>
+        </div>
+      </div>
+
+      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
+      <p class="card-text">Dr. Jones</p>
+
+      <h4 class="text-primary"><strong>Supervisors</strong></h4>
+      <p class="card-text">
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
+
+      <p class="text-center">
+        <span class="members-card-cta">
+          <a href="#" class="btn btn-primary btn-sm members-card-btn">
+            View Details <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+
+        </span>
+      </p>
+
+    </div>
+  </section>
+</div> -->
+
+{% endblock %}\
+
+
+
+
