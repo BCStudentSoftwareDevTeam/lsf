@@ -64,10 +64,15 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
-    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+    pos = Tracy().getPositionsFromDepartment(org, account)
+    positions = []
+    if pos == []:
+        positions = ["No Positions for this Department"]
+    else:
+        for i in pos:
+            positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
-    laborCoordinators = []
+    staff = Tracy().getSupervisors()
     supervisors = []
 
     for i in staff:
