@@ -205,5 +205,16 @@ a {
   line-height: 1.4;
   box-sizing: border-box;
   z-index: 101;
+
 }
 
+.sidebar-push {
+  padding-bottom: 85px;
+}
+
+@media (max-width: 991px) {
+  .site-footer {
+    left: 0;
+    width: 100%;
+  }
+}
