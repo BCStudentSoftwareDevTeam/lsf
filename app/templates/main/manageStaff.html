@@ -1,22 +1,42 @@
 {% extends "base.html" %}
 
-{% block scripts %}
+{% block styles %}
 {{super()}}
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/allPendingForms.css')}}?u={{lastStaticUpdate}}">
-    <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/manageStaff.js') }}?u={{lastStaticUpdate}}"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
 {% endblock %}
 
 {% block app_content %}
 <h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Staff {% else %} Manage Staff {% endif %} </h2>
 
 <br></br>
-<button class="btn btn-primary" type="button">Show Inactive Supervisors</button>
 
-<br></br>
+<div style="display: flex; justify-content:space-between; gap:20px;">
+    <button class="btn btn-primary" type="button">Show Inactive Supervisors</button>
+
+
+    <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
+    <form id="titleBlock" action="" method="POST" style="height:20px;">
+        <div class="form-group" id='searchBoxContainer'>
+            <select id="search"
+                      class="form-control selectpicker"
+                      title="Add Staff by B# or Name"
+                    data-width="258px"
+                      data-show-subtext="true"
+                      data-live-search="true">
+            </select>
+        </div>
+    </form>
+</div>
 
 <div class="tab-pane activecol-lg-12" align="center">
-    <table class="table table-striped dataTable">
+    <table class="table table-striped dataTable" id="manageStaff">
         <thead class="tableHeaders">
             <tr>
                 <th>Name</th>

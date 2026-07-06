@@ -27,75 +27,78 @@
     </select>
   </div>
 
-{% if department %}
-<div class="row g-3">
-      <div class="col-12 col-lg-4 ">
-        <section class="card" aria-labelledby="allocationTitle">
-          <div class="card-body">
-            <div class="media">
-            <div class="media-left media-middle">
-              <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-                <i class="bi bi-clock"></i> 
-              </span>
-            </div>
-            <div class="media-body media-middle">
-              <h1>Allocations</h1>
-            </div>
-            <div class="header-container">
-              <h3>AY 2025-2026</h3> <h3>{{used_allocation}}/{{total_allocation or 0}} Positions</h3>
-            </div>
-            <div class="allocation-list">
-              <ul class="primary-chart">
-                <li>10 Hour - {{usedPositions.used_10}}/{{allocation.primary_10}}</li>
-                <li>12 Hour - {{usedPositions.used_12}}/{{allocation.primary_12}}</li>
-                <li>15 Hour - {{usedPositions.used_15}}/{{allocation.primary_15}}</li>
-                <li>20 Hour - {{usedPositions.used_20}}/{{allocation.primary_20}}</li>
-              </ul>
-              <ul class="secondary-chart">
-                <li>5 Hour - {{usedPositions.used_5_sec}}/{{allocation.secondary_5}}</li>
-                <li>10 Hour - {{usedPositions.used_10_sec}}/{{allocation.secondary_10}}</li>
-              </ul>
-            </div>
-            <div class="header-container">
-              <h3>Break Hours</h3> <h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
-            </div>
-          </div>
-          </div>
-          <div class="card-footer text-center">
-            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Alloations<span class="glyphicon glyphicon-chevron-right"></span></a>
-          </div>
-        </section>
-      </div>
-      <div class="col-12 col-lg-4">
-      <section class="card" aria-labelledby="members-title">
+    <div class="card-body">
+      <div class="media">
+        <div class="media-left">
+          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
 
-        <h1>Members</h1>
-        <div class="card-footer text-center">
-              <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Members<span class="glyphicon glyphicon-chevron-right"></span></a>
-            </div>
-        </section>
+        <div class="media-body media-middle">
+          <h3>
+            Members
+          </h3>
+        </div>
+      </div>
 
+      <h4>Labor Coordinator</h4>
+      <p>Dr. Jones</p>
+
+      <h4>Supervisors</h4>
+      <p>
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
+    </div>
+
+    <div class="card-footer text-center">
+      <a href="#" class="btn btn-default btn-sm">
+        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+
+  </section>
+</div> -->
+
+<div class="col-sm-4">
+  <section class="card members-card" aria-labelledby="members-title">
+    <div class="card-body">
+
+      <div class="media">
+        <div class="media-left">
+          <span class="members-card-icon" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h3 id="members-title" class="media-heading card-title">
+            <strong>Members</strong>
+          </h3>
+        </div>
       </div>
-      <div class=" col-12 col-lg-4">
-        <section class="card" aria-labelledby="positions-title">
-          <div class="card-body">
-            <div class="media">
-              <div class="media-left media-middle">
-                <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-                  <i class="bi bi-suitcase-lg-fill"></i>
-                </span>
-              </div>
-              <div class="media-body media-middle">
-                <h1>Positions</h1>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-          </div>
-        </section>
-      </div>
-      
+
+      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
+      <p class="card-text">Dr. Jones</p>
+
+      <h4 class="text-primary"><strong>Supervisors</strong></h4>
+      <p class="card-text">
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
+
+      <p class="text-center">
+        <span class="members-card-cta">
+          <a href="/department/manage_staff/{{organization}}/{{account}}" class="btn btn-primary btn-sm members-card-btn">
+            View Details <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+
+        </span>
+      </p>
+
+    </div>
+  </section>
 </div>
 
 {% endif %}
