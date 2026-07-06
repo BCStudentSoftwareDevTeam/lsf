@@ -35,3 +35,9 @@ h1 {
 #flasher{
 	z-index: 999999;
 }
+
+#activeDepartmentsTable th,
+#activeDepartmentsTable td {
+  vertical-align: middle;
+  text-align: center;
+}
