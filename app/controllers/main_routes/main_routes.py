@@ -59,9 +59,7 @@ def departmentPortal(org=None,account=None):
             dept = None
     else:
         dept = None
-
-
-
+    
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -72,10 +70,18 @@ def departmentPortal(org=None,account=None):
     for i in pos:
         positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
-    return render_template('main/departmentPortal.html',
+    staff = Tracy().getSupervisors()
+    supervisors = []
+
+    for i in staff:
+        if i.ORG == org:
+            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+
+    return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                           positions = positions)
+                           positions = positions,
+                           supervisors = supervisors)
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
