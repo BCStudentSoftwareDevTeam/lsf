@@ -35,7 +35,7 @@
       <div class="media">
         <div class="media-left">
           <span>
-            <i class="bi bi-clock" style="border: 5px solild #555;"></i>
+            <i class="bi bi-clock" style="border: 1px solid #555;"></i>
           </span>
         </div>
         <div class="media-body media-middle">
@@ -68,15 +68,15 @@
           </span>
         </div>
         <div class="media-body media-middle">
-          <h3>
+          <h1>
             Members
-          </h3>
+          </h1>
         </div>
       </div>
       <h4>Labor Coordinator(s)</h4>
       <p>Dr. Jones</p>
 
-      <h4>Supervisors</h4>
+      <h2>Supervisors</h2>
       {% for s in supervisors %}
       {% if 3 > loop.index0 %}
         <p>{{ s }}</p>
@@ -87,8 +87,8 @@
     </div>
 
     <div class="card-footer text-center">
-      <a href="#" class="btn btn-default btn-sm">
-        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      <a href="#" class="btn btn-primary">View Details
+         <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
   </section>
