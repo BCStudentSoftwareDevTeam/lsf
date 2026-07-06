@@ -18,12 +18,21 @@
 <div class="container-fluid position-management">
 
     <div class="row page-header">
-        <div class="col-xs-4">
-            <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                <input type="text" id="searchInput" class="form-control" placeholder="Search Positions...">
-            </div>
-        </div>
+        <div class="form-group col-xs-4 ">
+        <select class="selectpicker"
+                name='department'
+                id='selectedDepartment'
+                data-live-search='true'
+                title="Department"
+                >
+        <option value = "" disabled selected>Search a position</option>
+        {% for p in positions %}
+            <option data-account="{{p.POSN_TITLE}}" data-org="{{p.POSN_CODE}}" data-content=
+            "<span>{{p.DEPT_NAME}}</span><small class='text-muted'> {{p.POSN_TITLE}} </small>">{{p.POSN_TITLE}}</option>
+        {% endfor %}
+        </select>
+
+  </div>
             <h1 class="col-xs-4 text-center">Manage Positions</h1>
         <div class="col-xs-4 text-right">
             <button class="btn add-btn btn-primary" id="addPositionButton">
@@ -46,9 +55,11 @@
             </thead>
             <tbody>
                 <!-- Sample Row -->
+
+                {% for position in positions %}
                 <tr>
-                    <td>TA (3)</td>
-                    <td>S85405</td>
+                    <td>{{position.POSN_TITLE}} ({{position.WLS}})</td>
+                    <td>{{position.POSN_CODE}}</td>
                     <td>
                         <p class="bg-success p-5">
                             Active
@@ -66,54 +77,14 @@
                         </button>
                     </td>
                 </tr>
-                <tr>
-                    <td>Co-Lead TA (4)</td>
-
-                    <td>S89123</td>
-                    <td>
-                        <p class="status requested  bg-warning p-5">
-                            Requested
-                        </span>
-                    </td>
-                    <td>01/01/2024</td>
-                    <td>
-                        <button class="btn view-btn btn-success">
-                            View
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn request-btn btn-primary">
-                            Request an Update
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lead TA (4)</td>
-                    <td>S89123</td>
-                    <td>
-                        <p class="bg-danger p-5">
-                            Inactive
-                        </p>
-                    </td>
-
-                    <td>01/01/2024</td>
-                    <td>
-                        <button class="btn view-btn btn-success">
-                            View
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn request-btn btn-primary">
-                            Request an Update
-                        </button>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    <h2 class="total">
+    <h3 class="total">
         Total Positions:
-        <span id="positionCount">3</span>
+        <span id="positionCount">{{ positions|length }}</span>
     </h2>
 </div>
+
 {% endblock %}
