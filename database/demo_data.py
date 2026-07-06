@@ -531,21 +531,6 @@ Term.insert_many(terms).on_conflict_replace().execute()
 print(f" * terms for {current_year}-{current_year+1} added")
 
 #############################
-# Allocation
-#############################
-from app.models.allocation import Allocation
-
-allocations = [
-    {"department": 1, "term": f"{current_year}00", "totalPositions": 20, "totalBreakHours": 200},
-    {"department": 2, "term": f"{current_year}00", "totalPositions": 12, "totalBreakHours": 150},
-    {"department": 3, "term": f"{current_year}00", "totalPositions": 15, "totalBreakHours": 180},
-    {"department": 4, "term": f"{current_year}00", "totalPositions": 10, "totalBreakHours": 100},
-    {"department": 5, "term": f"{current_year}00", "totalPositions": 20, "totalBreakHours": 200},
-]
-Allocation.insert_many(allocations).on_conflict_replace().execute()
-print(" * allocations added")
-
-#############################
 # Create a Pending Labor Status Form
 #############################
 today = datetime.now()

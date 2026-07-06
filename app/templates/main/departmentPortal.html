@@ -29,43 +29,19 @@
 {% if department %}
 <div class="card-group" style="display:inline-flex; gap: 1rem;" style="height: 1000px">
      
-  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="current_allocation-title">
+  <div class="card" style="width:50rem; border-radius: 1rem;">
     <div class="card-body">
-      <div class="media">
-        <div class="media-left">
-          <span>
-          <h2>
-            <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i> Current Allocation
-          </h2>
-          </span>
-        </div>
-      </div>
-      <div>
-        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>AY 26/27</h3> <h3>15/20 Positions</h3>
-        </div>
-        <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 HR : 2</li>
-          <li>12 HR : 3</li>
-          <li>15 HR : 5</li>
-          <li>20 HR : 5</li>
-        </ul>
-      </div>
-      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3> <h3>0 of 200 Hrs.</h3>
-      </div>
+      <h5 class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+        </svg>
+        Current Allocation
+      </h5>
+      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
     </div>
-    
-
-    <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary btn-sm">
-        View Details <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-      <a href="#" class="btn btn-primary btn-sm">
-        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-  </section>
+  </div>
 
   <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">

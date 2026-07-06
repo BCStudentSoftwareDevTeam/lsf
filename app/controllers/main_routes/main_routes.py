@@ -1,9 +1,8 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn
+from peewee import JOIN, DoesNotExist
 from functools import reduce
 import operator
 from app.models.department import Department
-from app.models.allocation import Allocation
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
@@ -78,27 +77,11 @@ def departmentPortal(org=None,account=None):
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
-    allocation = None
-    positionsUsed = 0
-    breakHoursUsed = 0
-    if dept and g.openTerm:
-        allocation = Allocation.get_or_none(Allocation.department == dept, Allocation.term == g.openTerm)
-        usage = (LaborStatusForm
-                 .select(fn.COUNT(LaborStatusForm.laborStatusFormID).alias('positionCount'),
-                         fn.SUM(LaborStatusForm.contractHours).alias('hoursSum'))
-                 .where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm)
-                 .get())
-        positionsUsed = usage.positionCount or 0
-        breakHoursUsed = usage.hoursSum or 0
-
-    return render_template('main/departmentPortal.html',
+    return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
-                           supervisors = supervisors,
-                           allocation = allocation,
-                           positionsUsed = positionsUsed,
-                           breakHoursUsed = breakHoursUsed)
+                           supervisors = supervisors)
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
