@@ -67,8 +67,11 @@ def departmentPortal(org=None,account=None):
     
     pos = Tracy().getPositionsFromDepartment(org, account)
     positions = []
-    for i in pos:
-        positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
+    if pos == []:
+        positions = ["No Positions for this Department"]
+    else:
+        for i in pos:
+            positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
     staff = Tracy().getSupervisors()
     supervisors = []
