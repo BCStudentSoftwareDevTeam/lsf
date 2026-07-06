@@ -4,7 +4,6 @@
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
     <link rel="stylesheet" type="text/css"
-  href="{{url_for('static', filename ='css/departmentPortal.css')}}?u={{lastStaticUpdate}}">
 {% endblock %}
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
@@ -28,9 +27,9 @@
   </div>
 
 {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 2rem;" style="height: 1000px">
+<div class="card-group" style="display:inline-flex; gap: 1rem;" style="height: 1000px">
      
-  <div class="card" style="width:50rem; border-radius: 2rem;">
+  <div class="card" style="width:50rem; border-radius: 1rem;">
     <div class="card-body">
       <h5 class="card-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
@@ -44,7 +43,7 @@
     </div>
   </div>
 
-  <section class="card "style="width:50rem; border-radius: 2rem;" aria-labelledby="members-title">
+  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">
       <div class="media">
         <div class="media-left">
@@ -78,16 +77,16 @@
     </div>
   </section>
 
-  <div class="card mb-3" style="width:50rem; border-radius: 2rem;">
+  <div class="card" style="width:50rem; border-radius: 1rem;">
     <div class="card-body">
        <div class="media">
+        <div class="media-left media-middle">
+          <span aria-hidden="true" style="color: #424242; font-size: 32px;">
+            <i class="bi bi-suitcase-lg-fill"></i>
+          </span>
+        </div>
         <div class="media-body media-middle">
           <h1>Positions</h1>
-        </div>
-        <div class="media-right">
-          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
-            <i class="fa fa-suitcase"></i>
-          </span>
         </div>
 
       </div>
@@ -102,7 +101,7 @@
       </ul>
       
     </div>
-       <div class="card-footer text-center">
+       <div class="card-footer text-center" >
           <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
        </div>
       </div>
