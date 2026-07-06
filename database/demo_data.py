@@ -17,9 +17,9 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.allocation import Allocation
-from app.models.positionHistory import PositionHistory
-from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.supervisorDepartment import SupervisorDepartment 
+from app.models.allocation import Allocation 
+from app.models.positionHistory import PositionHistory 
 
 print("Inserting data for demo and testing purposes")
 
@@ -519,6 +519,42 @@ terms = [
         "adjustmentCutOff": f"{current_year}-09-01",
     },
     {
+        "termCode": f"{current_year-1}00",
+        "termName": f"AY {current_year-1}-{current_year}",
+        "termStart": f"{current_year-1}-08-01",
+        "termEnd": f"{current_year}-05-01",
+        "termState": 1,
+        "primaryCutOff": f"{current_year-1}-09-01",
+        "adjustmentCutOff": f"{current_year-1}-09-01",
+    },
+    {
+        "termCode": f"{current_year-2}00",
+        "termName": f"AY {current_year-2}-{current_year-1}",
+        "termStart": f"{current_year-2}-08-01",
+        "termEnd": f"{current_year-1}-05-01",
+        "termState": 1,
+        "primaryCutOff": f"{current_year-2}-09-01",
+        "adjustmentCutOff": f"{current_year-2}-09-01",
+    },
+    {
+        "termCode": f"{current_year-3}00",
+        "termName": f"AY {current_year-3}-{current_year-2}",
+        "termStart": f"{current_year-3}-08-01",
+        "termEnd": f"{current_year-2}-05-01",
+        "termState": 1,
+        "primaryCutOff": f"{current_year-3}-09-01",
+        "adjustmentCutOff": f"{current_year-3}-09-01",
+    },
+    {
+        "termCode": f"{current_year-4}00",
+        "termName": f"AY {current_year-4}-{current_year-3}",
+        "termStart": f"{current_year-4}-08-01",
+        "termEnd": f"{current_year-3}-05-01",
+        "termState": 1,
+        "primaryCutOff": f"{current_year-4}-09-01",
+        "adjustmentCutOff": f"{current_year-4}-09-01",
+    },
+    {
         "termCode": f"{current_year}01",
         "termName": f"Thanksgiving Break {current_year}",
         "termStart": f"{current_year}-08-01",
@@ -612,6 +648,175 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+##############################
+# Departement Members 
+##############################
+
+department_members = [
+    {
+        "supervisor": "B12361006",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    }, 
+
+    {
+        "supervisor": "B12365892",
+        "department": 1,
+        "banStatus": True,
+        "isActive": True,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365893",
+        "department": 1,
+        "banStatus": False,
+        "isActive": False,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B00763721",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00841417",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    }
+]
+
+SupervisorDepartment.insert_many(department_members).on_conflict_replace().execute()
+print(" * Department members added")
+
+############################
+# Allocation Dummy Data:
+###########################
+allocations = [ 
+    {
+    "termCode":         202200,
+    "department":       3,
+    "isApproved":       False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
+    "primary_10":       2,
+    "primary_12":       2,
+    "primary_15":       1,
+    "primary_20":       0,
+    "secondary_5":      1,
+    "secondary_10":     0,
+    "breakHours":       260,
+    },
+    {
+    "termCode":        202300,
+    "department":       2,
+    "isApproved":       False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Increase in student enrollment due to exodous from CS department",
+    "primary_10":       4,
+    "primary_12":       2,
+    "primary_15":       7,
+    "primary_20":       4,
+    "secondary_5":      2,
+    "secondary_10":     0,
+    "breakHours":       750,
+    },
+    {
+    "termCode":         202400,
+    "department":       1,
+    "isApproved":       False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "We are hiring more students to help with the increased workload in the department",
+    "primary_10":       5,
+    "primary_12":       6,
+    "primary_15":       4,
+    "primary_20":       1,
+    "secondary_5":      7,
+    "secondary_10":     0,
+    "breakHours":       550,
+    },
+    {
+    "termCode":         202500,
+    "department":       4,
+    "isApproved":       False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Downscaling the number of students in the department due to budget cuts",
+    "primary_10":       4,
+    "primary_12":       5,
+    "primary_15":       0,
+    "primary_20":       0,
+    "secondary_5":      1,
+    "secondary_10":     0,
+    "breakHours":       300,
+    },
+    {
+    "termCode":         202500,
+    "department":       5,
+    "isApproved":      False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
+    "primary_10":       8,
+    "primary_12":       10,
+    "primary_15":       7,
+    "primary_20":       4,
+    "secondary_5":      5,
+    "secondary_10":     1,
+    "breakHours":       900,
+    },
+                
+    ]
+Allocation.insert_many(allocations).on_conflict_replace().execute()
+
+print("Data insertion complete :)")
+allocation =[
+                {
+                    "termCode":f"{current_year}00",
+                    "department": 3,
+                    "isApproved": True,
+                    "approvedOn": f"{current_year}-06-30",
+                    "approvedBy": "B12365892",
+                    "justification": "We just want it for fun", 
+                    "primary_10": 2,
+                    "primary_12": 3,
+                    "primary_15": 1, 
+                    "primary_20": 6, 
+                    "secondary_5": 2,
+                    "secondary_10": 0,
+                    "breakHours": 500
+                },
+                {
+                    "termCode":f"{current_year}00",
+                    "department": 2,
+                    "isApproved": False,
+                    "approvedOn": f"{current_year}-06-20",
+                    "approvedBy": "B00763721",
+                    "justification": "We need it to lower the amount of allocations we have", 
+                    "primary_10": 1,
+                    "primary_12": 2,
+                    "primary_15": 5, 
+                    "primary_20": 2, 
+                    "secondary_5": 10,
+                    "secondary_10": 0,
+                    "breakHours": 1500
+                }
+            ]
+Allocation.insert_many(allocation).on_conflict_replace().execute()
+print(" * allocation added")
 print(PositionHistory())
 
 

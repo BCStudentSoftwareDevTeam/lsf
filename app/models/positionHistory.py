@@ -9,5 +9,5 @@ class PositionHistory(baseModel):
     Description        = TextField(default=None)
     Department         = ForeignKeyField(Department)
 
-class Meta:
-    primary_key = CompositeKey('positioncode', 'revisiondate', 'status')
+    class Meta:
+        primary_key = CompositeKey('positioncode', 'revisiondate', 'status')
