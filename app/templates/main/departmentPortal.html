@@ -39,8 +39,13 @@
         </svg>
         Current Allocation
       </h5>
-      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
+      {% if allocation %}
+      <p class="card-text"><br> {{allocation.term.termName}} {{positionsUsed}}/{{allocation.totalPositions}} POSITIONS
+        <br><br> Break Hours {{breakHoursUsed}} of {{allocation.totalBreakHours}} hrs</p>
+      {% else %}
+      <p class="card-text text-muted"><br> No allocation set for this term.</p>
+      {% endif %}
+      <a href="#" class="btn btn-primary">View Details</a>
     </div>
   </div>
 
