@@ -80,6 +80,20 @@ def departmentPortal(org=None,account=None):
                            positions = positions,
                            supervisors = supervisors)
 
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions)
+
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form

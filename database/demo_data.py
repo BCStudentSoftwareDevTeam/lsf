@@ -536,7 +536,7 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(f" * terms for 2025-2026 added")
+print(f" * terms for {current_year}-{current_year+1} added")
 
 #############################
 # Create a Pending Labor Status Form
