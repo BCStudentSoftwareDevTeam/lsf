@@ -36,7 +36,7 @@
 </div>
 
 <div class="tab-pane activecol-lg-12" align="center">
-    <table class="table table-striped dataTable" id="manageStaff">
+    <table class="table table-striped table-bordered dataTable" id="manageStaff">
         <thead class="tableHeaders">
             <tr>
                 <th>Name</th>
@@ -76,13 +76,13 @@
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
                 <td>
                     {% if not i[4] %}
-                    <button class="btn btn-danger" >&nbsp; Ban &nbsp;</button>
+                    <button class="btn btn-danger" align="center">&nbsp; Ban &nbsp;</button> 
                     {% else %}
-                    <button class="btn btn-success ">Unban</button>
+                    <button class="btn btn-success " align="center">Unban</button>
                     {% endif %}
                 </td>
                 <td>
-                    <button class="btn btn-danger"><span class="bi bi-trash"></span></button>
+                    <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
                 </td>
                 {% endif %}
 
