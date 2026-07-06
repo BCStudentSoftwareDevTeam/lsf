@@ -208,7 +208,9 @@ a {
   border: 1px solid black;
   border-radius: 0.25rem;
   margin-right: 20px;
-  border-radius: 20px
+  border-radius: 20px;
+  overflow: hidden;
+
 }
 
 .card-body {
@@ -250,8 +252,10 @@ a {
 
 .card-footer {
   padding: 0.5rem 1rem;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color:    rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .card-footer:last-child {
