@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css"
+  href="{{url_for('static', filename ='css/departmentPortal.css')}}?u={{lastStaticUpdate}}">
+{% endblock %}
+{% block app_content %}
+<h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
+
+  <!--selectpicker for department-->
+  <div class="form-group">
+    <select class="selectpicker"
+            name='department'
+            id='selectedDepartment'
+            data-live-search='true'
+            title="Department"
+            data-width="100%">
+      <option value = "" disabled selected>Select a Department</option>
+      {% for d in departments %}
+        <option data-account="{{d.ACCOUNT}}" data-org="{{d.ORG}}"{% if department and d == department %} selected {% endif %} data-content=
+        "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
+      {% endfor %}
+    </select>
+
+  </div>
+
+{% if department %}
+<div class="card-group" style="display:flex" style="height: 1000px">
+     
+  <section class="card "style="width:50rem" aria-labelledby="current_allocation-title">
+    <div class="card-body">
+      <div class="media">
+        <div class="media-left">
+          <span>
+          <h2>
+            <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i> Current Allocation
+          </h2>
+          </span>
+        </div>
+      </div>
+      <div>
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
+          <h3>AY 26/27</h3> <h3>15/20 Positions</h3>
+        </div>
+        <ul style="font-size: 1.2em; padding-left: 75px;">
+          <li>10 HR : 2</li>
+          <li>12 HR : 3</li>
+          <li>15 HR : 5</li>
+          <li>20 HR : 5</li>
+        </ul>
+      </div>
+      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
+        <h3>Break Hours</h3> <h3>0 of 200 Hrs.</h3>
+      </div>
+    </div>
+    
+
+    <div class="card-footer text-center">
+      <a href="#" class="btn btn-primary btn-sm">
+        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+      <a href="#" class="btn btn-primary btn-sm">
+        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="card "style="width:50rem" aria-labelledby="members-title">
+    <div class="card-body">
+      <div class="media">
+        <div class="media-left">
+          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+        <div class="media-body media-middle">
+          <h1>
+            Members
+          </h1>
+        </div>
+      </div>
+      <h4>Labor Coordinator(s)</h4>
+      <p>Dr. Jones</p>
+
+      <h2>Supervisors</h2>
+      {% for s in supervisors %}
+      {% if 3 > loop.index0 %}
+        <p>{{ s }}</p>
+      {% elif 4 > loop.index0 %}
+        <p>and {{ supervisors | length}} more...</p>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="card-footer text-center">
+      <a href="#" class="btn btn-primary">View Details
+         <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+  </section>
+
+       <div class="card mb-3" style="width:50rem">
+      <div class="card-body">
+        <h1>Positions</h1>
+        {% for p in positions %}
+         {% if 10 > loop.index0 %}
+          <p class="card-text">{{ p }}</p>
+         {% endif %}
+        {% endfor %}
+        <a href="#" class="btn btn-primary">View Details</a>
+      </div>
+    </div>
+</div>
+
+{% endif %}
+
+
+<!-- <div class="col-sm-4">
+  <section class="card members-card" aria-labelledby="members-title">
+    <div class="card-body">
+
+      <div class="media">
+        <div class="media-left">
+          <span class="members-card-icon" aria-hidden="true">
+            <i class="fa fa-users"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h3 id="members-title" class="media-heading card-title">
+            <strong>Members</strong>
+          </h3>
+        </div>
+      </div>
+
+      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
+      <p class="card-text">Dr. Jones</p>
+
+      <h4 class="text-primary"><strong>Supervisors</strong></h4>
+      <p class="card-text">
+        Dr. Heggen<br>
+        Dr. Nakazawa
+      </p>
+
+      <p class="text-center">
+        <span class="members-card-cta">
+          <a href="#" class="btn btn-primary btn-sm members-card-btn">
+            View Details <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+
+        </span>
+      </p>
+
+    </div>
+  </section>
+</div> -->
+
+{% endblock %}\
+
+
+
+
