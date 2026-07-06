@@ -52,9 +52,12 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
+    if org and account:
+        try:
+            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        except (NameError, DoesNotExist):
+            dept = None
+    else:
         dept = None
     
     if g.currentUser.isLaborAdmin:
@@ -71,7 +74,6 @@ def departmentPortal(org=None,account=None):
     supervisors = []
 
     for i in staff:
-        print(f"org= {org},----- account= {account}")
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
@@ -80,6 +82,20 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            positions = positions,
                            supervisors = supervisors)
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
