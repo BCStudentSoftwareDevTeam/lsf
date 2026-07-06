@@ -3,6 +3,7 @@ from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
 from app.models.department import Department
+from app.models.allocation import Allocation
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
@@ -70,44 +71,31 @@ def departmentPortal(org=None,account=None):
     laborCoordinators = []
     supervisors = []
 
-    for supervisorDepartment in supervisorDepartments:
-        supervisor = supervisorDepartment.supervisor
+    for i in staff:
+        if i.DEPT_NAME == Department.DEPT_NAME:
+            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
-        if supervisor is None:
-            continue
+    allocation = None
+    positionsUsed = 0
+    breakHoursUsed = 0
+    if dept and g.openTerm:
+        allocation = Allocation.get_or_none(Allocation.department == dept, Allocation.term == g.openTerm)
+        usage = (LaborStatusForm
+                 .select(fn.COUNT(LaborStatusForm.laborStatusFormID).alias('positionCount'),
+                         fn.SUM(LaborStatusForm.contractHours).alias('hoursSum'))
+                 .where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm)
+                 .get())
+        positionsUsed = usage.positionCount or 0
+        breakHoursUsed = usage.hoursSum or 0
 
-        firstName = supervisor.preferred_name or supervisor.legal_name or ""
-        lastName = supervisor.LAST_NAME or ""
-
-        supervisorName = f"{firstName} {lastName}".strip()
-
-        supervisorDisplay = {
-            "name": supervisorName,
-            "email": supervisor.EMAIL
-        }
-
-        if supervisorDepartment.isCoordinator:
-            laborCoordinators.append(supervisorDisplay)
-        else:
-            supervisors.append(supervisorDisplay)
-
-        
-    positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
-    positionsList = []
-    posUrl = []
-    if not positions:
-        positionsList = ["No active positions in this department"]
-    else:
-        for i in positions:
-            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
-            posUrl.append(str(i.positionCode))
-
-
-    return render_template('main/departmentPortal.html', 
+    return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
-                           positions = positionsList,
-                           posUrl = posUrl)
+                           positions = positions,
+                           supervisors = supervisors,
+                           allocation = allocation,
+                           positionsUsed = positionsUsed,
+                           breakHoursUsed = breakHoursUsed)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
