@@ -2,7 +2,7 @@
 
 {% block styles %}
 {{super()}}
-  <link href="/static/css/managePositions.css?u={{lastStaticUpdate}}" rel="stylesheet" type="text/css">
+  <link href="/static/css/managepositions.css?u={{lastStaticUpdate}}" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block scripts %}
@@ -11,39 +11,37 @@
 {% endblock %}
 
 {% block app_content %}
-<div class="department-banner">
-    <h4>{{ department_name }}</h4>
+<div class="text-white  department-header">
+    <h2>{{ department_name }}</h2>
 </div>
 
 <div class="container-fluid position-management">
 
     <div class="row page-header">
-        <div class="col-sm-4">
+        <div class="col-xs-4">
             <div class="input-group">
                 <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
                 <input type="text" id="searchInput" class="form-control" placeholder="Search Positions...">
             </div>
         </div>
-        <div class="col-sm-4 text-center">
-            <h1>Manage Positions</h1>
-        </div>
-        <div class="col-sm-4 text-right">
-            <button class="btn add-btn" id="addPositionButton">
+            <h1 class="col-xs-4 text-center">Manage Positions</h1>
+        <div class="col-xs-4 text-right">
+            <button class="btn add-btn btn-primary" id="addPositionButton">
                 Add Position
             </button>
         </div>
     </div>
 
     <div class="table-responsive">
-        <table class="table" id="positionTable">
+        <table class="table table-striped table-bordered text-center" id="positionTable">
             <thead>
                 <tr>
-                    <th>Position (WSL)</th>
-                    <th>Position Code</th>
-                    <th>Status</th>
-                    <th>Last Revision Date</th>
-                    <th>View Position Description</th>
-                    <th>Edit Position Description</th>
+                    <th class="text-center">Position (WSL)</th>
+                    <th class="text-center">Position Code</th>
+                    <th class="text-center">Status</th>
+                    <th class="width-12 text-center">Last Revision Date</th>
+                    <th class="width-12 text-center">View Position Description</th>
+                    <th class="text-center">Edit Position Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,18 +50,18 @@
                     <td>TA (3)</td>
                     <td>S85405</td>
                     <td>
-                        <span class="status active">
+                        <p class="bg-success p-5">
                             Active
-                        </span>
+                        </p>
                     </td>
                     <td>01/01/2024</td>
                     <td>
-                        <button class="btn view-btn">
+                        <button class="btn btn-success view-btn">
                             View
                         </button>
                     </td>
                     <td>
-                        <button class="btn request-btn">
+                        <button class="btn btn-primary request-btn">
                             Request an Update
                         </button>
                     </td>
@@ -73,18 +71,18 @@
 
                     <td>S89123</td>
                     <td>
-                        <span class="status requested">
+                        <p class="status requested  bg-warning p-5">
                             Requested
                         </span>
                     </td>
                     <td>01/01/2024</td>
                     <td>
-                        <button class="btn view-btn">
+                        <button class="btn view-btn btn-success">
                             View
                         </button>
                     </td>
                     <td>
-                        <button class="btn request-btn">
+                        <button class="btn request-btn btn-primary">
                             Request an Update
                         </button>
                     </td>
@@ -93,19 +91,19 @@
                     <td>Lead TA (4)</td>
                     <td>S89123</td>
                     <td>
-                        <span class="status inactive">
+                        <p class="bg-danger p-5">
                             Inactive
-                        </span>
+                        </p>
                     </td>
 
                     <td>01/01/2024</td>
                     <td>
-                        <button class="btn view-btn">
+                        <button class="btn view-btn btn-success">
                             View
                         </button>
                     </td>
                     <td>
-                        <button class="btn request-btn">
+                        <button class="btn request-btn btn-primary">
                             Request an Update
                         </button>
                     </td>
