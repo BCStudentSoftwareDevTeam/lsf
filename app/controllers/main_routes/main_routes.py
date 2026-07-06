@@ -56,9 +56,7 @@ def departmentPortal(org=None,account=None):
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         dept = None
-
-
-
+    
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -73,7 +71,8 @@ def departmentPortal(org=None,account=None):
     supervisors = []
 
     for i in staff:
-        if i.DEPT_NAME == Department.DEPT_NAME:
+        print(f"org= {org},----- account= {account}")
+        if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
     return render_template('main/departmentPortal.html', 
