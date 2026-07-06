@@ -71,7 +71,6 @@ def departmentPortal(org=None,account=None):
     supervisors = []
 
     for i in staff:
-        print(f"org= {org},----- account= {account}")
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
