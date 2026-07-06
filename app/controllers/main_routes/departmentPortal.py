@@ -37,5 +37,5 @@ def manageStaff(org=None,account=None):
 
     return render_template('main/manageStaff.html', 
                            staff = labor,
-                           department = "Computer Science")
+                           department = dept)
 

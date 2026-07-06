@@ -65,7 +65,9 @@ def departmentPortal(org=None,account=None):
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                           department = dept, 
+                           organization = org,
+                           account = account)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
