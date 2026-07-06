@@ -3,7 +3,7 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
+    <link rel="stylesheet" type="text/css"
 {% endblock %}
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
@@ -27,21 +27,24 @@
 
   </div>
 
-  {% if department %}
-    <div class="row g-3">
-      <div class="col-12 col-lg-4 ">
+{% if department %}
+<div class="card-group" style="display:inline-flex; gap: 1rem;" style="height: 1000px">
+     
+  <div class="card" style="width:50rem; border-radius: 1rem;">
+    <div class="card-body">
+      <h5 class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+        </svg>
+        Current Allocation
+      </h5>
+      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
 
-        <section class="card" aria-labelledby="current_allocation-title">
-          <p> Insert Allocations Card Here </p>
-            <div class="card-footer text-center">
-              <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Alloations<span class="glyphicon glyphicon-chevron-right"></span></a>
-            </div>
-        </section>
-        
-       </div>
-
-        <div class="col-12 col-lg-4">
-          <section class="card">
+  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">
       <div class="media">
          <div class="media-left media-middle">
@@ -117,45 +120,35 @@
     </div>
   </section>
 
+  <div class="card" style="width:50rem; border-radius: 1rem;">
+    <div class="card-body">
+       <div class="media">
+        <div class="media-left media-middle">
+          <span aria-hidden="true" style="color: #424242; font-size: 32px;">
+            <i class="bi bi-suitcase-lg-fill"></i>
+          </span>
+        </div>
+        <div class="media-body media-middle">
+          <h1>Positions</h1>
         </div>
 
-        <div class=" col-12 col-lg-4">
-        <section class="card" aria-labelledby="positions-title">
-          <div class="card-body">
-              <div class="media">
-              <div class="media-left media-middle">
-                <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-                  <i class="bi bi-suitcase-lg-fill"></i>
-                </span>
-              </div>
-              <div class="media-body media-middle">
-                <h1>Positions</h1>
-              </div>
-
-            </div>
-            <ul style="line-height:2;">
-            {% for p in positions[:7] %}
-                  {% if p == "No active positions in this department" %}
-                    <li class="card-text">
-                    <p> {{ p }} </p>
-                    </li>
-                  {% else %}
-                    <li class="card-text">
-                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
-                    </li>
-                  {% endif %}
-            {% endfor %}
-            {% if positions| length >7 %}
-                </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
-              {% endif %}
-            
-          </div>
-              <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-              </div>
-        </section>
       </div>
-  </div>
+      <ul style="line-height:2;">
+      {% for p in positions %}
+        {% if 7 > loop.index0 %}
+          <li class="card-text">{{ p }}</li>
+        {% elif 8 == loop.index0 %}
+          </ul><p class="card-text">and {{ positions | length}} more...</p>
+        {% endif %}
+      {% endfor %}
+      </ul>
+      
+    </div>
+       <div class="card-footer text-center" >
+          <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
+       </div>
+      </div>
+</div>
 
 {% endif %}
 
