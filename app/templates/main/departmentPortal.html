@@ -78,17 +78,19 @@
     </div>
   </section>
 
-       <div class="card mb-3" style="width:50rem">
-      <div class="card-body">
-        <h1>Positions</h1>
-        {% for p in positions %}
-         {% if 10 > loop.index0 %}
-          <p class="card-text">{{ p }}</p>
-         {% endif %}
-        {% endfor %}
-        <a href="#" class="btn btn-primary">View Details</a>
-      </div>
+  <div class="card mb-3" style="width:50rem">
+    <div class="card-body">
+      <h1>Positions</h1>
+      {% for p in positions %}
+        {% if 10 > loop.index0 %}
+        <p class="card-text">{{ p }}</p>
+        {% endif %}
+      {% endfor %}
     </div>
+       <div class="card-footer text-center">
+          <a href="#" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
+       </div>
+      </div>
 </div>
 
 {% endif %}
