@@ -17,15 +17,9 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-<<<<<<< HEAD
 from app.models.supervisorDepartment import SupervisorDepartment 
-=======
 from app.models.allocation import Allocation 
 from app.models.positionHistory import PositionHistory 
-from app.models.supervisorDepartment import SupervisorDepartment
-from app.models.allocation import Allocation
-
->>>>>>> PeeWeeAttribute
 
 print("Inserting data for demo and testing purposes")
 
@@ -823,3 +817,56 @@ allocation =[
             ]
 Allocation.insert_many(allocation).on_conflict_replace().execute()
 print(" * allocation added")
+print(PositionHistory())
+
+
+#############################
+# Position History
+#############################
+
+positionhistory = [
+    {
+        "positioncode": "S61407",
+        "status": "Active",
+        "WLS": 1,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+        
+        "positioncode": "S61408",
+        "status": "Active",
+        "WLS": 2,
+        "revisiondate": f"{current_year}-09-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+        "positioncode": "S61409",
+        "status": "Active",
+        "WLS": 3,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+        "positioncode": "S61411",
+        "status": "Active",
+        "WLS":3,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
+
+        },
+        {
+        "positioncode": "S61410",
+        "status": "Inactive",
+        "WLS":2,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
+        },
+    
+]
+PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
