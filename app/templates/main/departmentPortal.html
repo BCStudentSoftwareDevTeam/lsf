@@ -41,23 +41,27 @@
       </div>
       <div>
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>AY 26/27</h3> <h3>15/20 Positions</h3>
+          <h3>{{ currentTerm.termName if currentTerm else "No open term" }}</h3>
+          <h3>{{ totalPositionsUsed if allocation else "No allocation" }}{% if allocation %}/{{ totalPositionsAllocated }}{% endif %} Positions</h3>
         </div>
+        {% if allocation %}
         <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
         <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 Hour - 2/2</li>
-          <li>12 Hour - 3/3</li>
-          <li>15 Hour - 5/5</li>
-          <li>20 Hour - 5/5</li>
+          <li>10 Hour - {{ allocationBands.primary_10.used }}/{{ allocationBands.primary_10.allocated }}</li>
+          <li>12 Hour - {{ allocationBands.primary_12.used }}/{{ allocationBands.primary_12.allocated }}</li>
+          <li>15 Hour - {{ allocationBands.primary_15.used }}/{{ allocationBands.primary_15.allocated }}</li>
+          <li>20 Hour - {{ allocationBands.primary_20.used }}/{{ allocationBands.primary_20.allocated }}</li>
         </ul>
          <ul style="font-size: 1.2em; padding-right: 75px;">
-          <li>5 Hour - 2/2</li>
-          <li>10 Hour - 3/3</li>
+          <li>5 Hour - {{ allocationBands.secondary_5.used }}/{{ allocationBands.secondary_5.allocated }}</li>
+          <li>10 Hour - {{ allocationBands.secondary_10.used }}/{{ allocationBands.secondary_10.allocated }}</li>
         </ul>
         </div>
+        {% endif %}
       </div>
       <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3> <h3>0/200 Hours</h3>
+        <h3>Break Hours</h3>
+        <h3>{{ breakHoursUsed if allocation else "No allocation" }}{% if allocation %}/{{ allocation.breakHours }}{% endif %} Hours</h3>
       </div>
     </div>
         <div class="card-footer text-center">

@@ -17,6 +17,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.allocation import Allocation
 
 print("Inserting data for demo and testing purposes")
 
@@ -609,3 +610,86 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+#############################
+# Allocation
+#############################
+allocations = [
+    {
+        "termCode": f"{current_year}00",
+        "department": 1,
+        "isApproved": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Computer Science based on enrollment.",
+        "primary_10": 2,
+        "primary_12": 3,
+        "primary_15": 5,
+        "primary_20": 5,
+        "secondary_5": 2,
+        "secondary_10": 3,
+        "breakHours": 200,
+    },
+    {
+        "termCode": f"{current_year}00",
+        "department": 2,
+        "isApproved": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Technology and Applied Design.",
+        "primary_10": 1,
+        "primary_12": 2,
+        "primary_15": 2,
+        "primary_20": 1,
+        "secondary_5": 1,
+        "secondary_10": 1,
+        "breakHours": 100,
+    },
+    {
+        "termCode": f"{current_year}00",
+        "department": 3,
+        "isApproved": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Mathematics.",
+        "primary_10": 1,
+        "primary_12": 1,
+        "primary_15": 1,
+        "primary_20": 0,
+        "secondary_5": 1,
+        "secondary_10": 0,
+        "breakHours": 80,
+    },
+    {
+        "termCode": f"{current_year}00",
+        "department": 4,
+        "isApproved": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Biology.",
+        "primary_10": 2,
+        "primary_12": 1,
+        "primary_15": 1,
+        "primary_20": 1,
+        "secondary_5": 1,
+        "secondary_10": 1,
+        "breakHours": 120,
+    },
+    {
+        "termCode": f"{current_year}00",
+        "department": 5,
+        "isApproved": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for the Labor Department.",
+        "primary_10": 2,
+        "primary_12": 3,
+        "primary_15": 5,
+        "primary_20": 5,
+        "secondary_5": 2,
+        "secondary_10": 3,
+        "breakHours": 200,
+    },
+]
+Allocation.insert_many(allocations).on_conflict_replace().execute()
+print(" * allocations added")
