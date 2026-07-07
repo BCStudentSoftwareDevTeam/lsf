@@ -4,7 +4,8 @@
 {{super()}}
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/allPendingForms.css')}}?u={{lastStaticUpdate}}">
-{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/managemembers.css')}}?u={{lastStaticUpdate}}">
+    {% endblock %}
 
 {% block scripts %}
 {{super()}}
@@ -17,8 +18,8 @@
 
 <br></br>
 
-<div style="display: flex; justify-content:space-between; gap:20px;">
-    <button class="btn btn-primary" type="button">Show Inactive Supervisors</button>
+<div style="display: flex;
+     justify-content: flex-end; gap:0px;">
 
 
     <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
@@ -70,8 +71,14 @@
                 </td>
 
                 <td class="text-center" style="vertical-align: middle;">
-                    <input class="approveCheckbox" type='checkbox' autocomplete="off" {% if i['isCoordinator'] %} checked {% endif %}/>
-                </td>
+   <div class="form-group">
+  <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+  </label>
+  <span class="switch-label"></span>
+</div>
+
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
                 <td class="text-center" style="vertical-align: middle;">

@@ -1,0 +1,61 @@
+/* The switch container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 25px;
+  height: 13px;
+  vertical-align: middle;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider track */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc !important;
+  transition: .4s;
+}
+
+/* The slider knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 9px;
+  width: 9px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white !important;
+  transition: .4s;
+}
+
+/* Checked state track color */
+input:checked + .slider {
+  background-color: #337ab7 !important; /* Bootstrap 3 Primary Color */
+}
+
+/* Checked state knob movement */
+input:checked + .slider:before {
+  transform: translateX(12px) !important;
+}
+
+/* Rounded slider track and knob */
+.slider.round {
+  border-radius: 17px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Optional label spacing */
+.switch-label {
+  margin-left: 5px;
+  vertical-align: middle;
+  font-weight: bold;
+}
