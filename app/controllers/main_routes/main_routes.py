@@ -98,7 +98,8 @@ def departmentPortal(org=None,account=None):
                            departments = departments,
                            department = dept,
                            positions = positions,
-                           supervisors = supervisors
+                           supervisors = supervisors,
+                           pos_his = pos_his
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
