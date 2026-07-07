@@ -41,7 +41,7 @@
       </div>
       <div>
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>{{ currentTerm.termName if currentTerm else "No open term" }}</h3>
+          <h3>{{ currentTerm.termName.replace("AY", "Term") if currentTerm else "No open term" }}</h3>
           <h3>{{ totalPositionsUsed if allocation else "No allocation" }}{% if allocation %}/{{ totalPositionsAllocated }}{% endif %} Positions</h3>
         </div>
         {% if allocation %}
@@ -67,9 +67,6 @@
         <div class="card-footer text-center">
       <a href="#" class="btn btn-primary btn-m">
         Manage Allocations <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-      <a href="#" class="btn btn-primary btn-m">
-        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
     </section>
