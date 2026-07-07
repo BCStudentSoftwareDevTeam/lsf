@@ -3,7 +3,6 @@
 {% block styles %}
 {{super()}}
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/allPendingForms.css')}}?u={{lastStaticUpdate}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/managemembers.css')}}?u={{lastStaticUpdate}}">
     {% endblock %}
 
@@ -18,10 +17,7 @@
 
 <br></br>
 
-<div style="display: flex;
-     justify-content: flex-end; gap:0px;">
-
-
+<div id="add_member">
     <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
     <form id="titleBlock" action="" method="POST" style="height:20px;">
         <div class="form-group" id='searchBoxContainer'>
@@ -61,7 +57,7 @@
                     <br>
 
                     {% if i[4] %}
-                        <span class="inactive_badge">Banned</span>
+                        <span class="isbanned_badge">Banned</span>
                     {% endif %}
                 </td>
 
@@ -71,14 +67,14 @@
                 </td>
 
                 <td class="text-center" style="vertical-align: middle;">
-   <div class="form-group">
-  <label class="switch">
-    <input type="checkbox">
-    <span class="slider round"></span>
-  </label>
-  <span class="switch-label"></span>
-</div>
-
+                    <div class="form-group">
+                        <label class="switch" style="top: 10px;">
+                            <input type="checkbox" {% if i['isCoordinator'] %} checked {% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="switch-label"></span>
+                    </div>
+                </td>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
                 <td class="text-center" style="vertical-align: middle;">

@@ -1,9 +1,27 @@
+#add_member{
+  display: flex; 
+  justify-content: center; 
+  gap: 0px;
+  margin-bottom: 30px;
+}
+
+
+@media (min-width: 767px) {
+  #add_member{
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 0px;
+    /*margin-bottom: -20px;*/
+  }
+}
+
+
 /* The switch container */
 .switch {
   position: relative;
   display: inline-block;
-  width: 25px;
-  height: 13px;
+  width: 31.25px;
+  height: 16.25px;
   vertical-align: middle;
 }
 
@@ -27,10 +45,10 @@
 .slider:before {
   position: absolute;
   content: "";
-  height: 9px;
-  width: 9px;
-  left: 2px;
-  bottom: 2px;
+  height: 11.25px;
+  width: 11.25px;
+  left: 2.5px;
+  bottom: 2.5px;
   background-color: white !important;
   transition: .4s;
 }
@@ -42,12 +60,12 @@ input:checked + .slider {
 
 /* Checked state knob movement */
 input:checked + .slider:before {
-  transform: translateX(12px) !important;
+  transform: translateX(15px) !important;
 }
 
 /* Rounded slider track and knob */
 .slider.round {
-  border-radius: 17px;
+  border-radius: 21.25px;
 }
 .slider.round:before {
   border-radius: 50%;
@@ -55,7 +73,64 @@ input:checked + .slider:before {
 
 /* Optional label spacing */
 .switch-label {
-  margin-left: 5px;
+  margin-left: 6.25px;
   vertical-align: middle;
   font-weight: bold;
+}
+
+a.hover_indicator {
+  text-decoration: none !important;
+  position: relative;
+  border-bottom: 1px dotted #000;
+  color: #000000;
+}
+
+a.hover_indicator:visited,
+a.hover_indicator:link,
+a.hover_indicator:hover,
+a.hover_indicator:active {
+  color: #000000;
+}
+
+[class*="hover_indicator"]:after {
+  content: attr(aria-label);
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 10px;
+  z-index: 5000;
+  pointer-events: none;
+  padding: 8px 10px;
+  line-height: 15px;
+  white-space: nowrap;
+  text-decoration: none !important;
+  text-indent: 0;
+  overflow: visible;
+  font-size: .9em;
+  font-weight: normal;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+[class*="hover_indicator"]:hover:after, [class*="hover_indicator"]:focus:after {
+  display: block;
+  color: #000000;
+}
+
+.isbanned_badge {
+  position: relative;
+  display: inline-block;
+  margin-top: 3px;
+  padding: 2px 6px;
+  background: red;
+  color: white !important;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
 }
