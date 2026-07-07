@@ -54,8 +54,8 @@
             {% for i in staff %}
             <tr>
                 <td>
-                    <a aria-label="{{i[5]}}" class="hover_indicator">{{ i[0] }}</a>
-                    <a href="mailto:{{ i[0] }}">✉</a>
+                    <a aria-label="{{i['supervisor']}}" class="hover_indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
+                    <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
 
                     <br>
 
@@ -65,12 +65,12 @@
                 </td>
 
                 <td>
-                    <b>Primary:</b> {{ i[1] }}<br>
-                    <b>Secondary:</b> {{ i[2] }}
+                    <b>Primary:</b> 12<br>
+                    <b>Secondary:</b> 13
                 </td>
 
                 <td>
-                    <input class="approveCheckbox" type='checkbox' autocomplete="off" {% if i[3] %} checked {% endif %}/>
+                    <input class="approveCheckbox" type='checkbox' autocomplete="off" {% if i['isCoordinator'] %} checked {% endif %}/>
                 </td>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
