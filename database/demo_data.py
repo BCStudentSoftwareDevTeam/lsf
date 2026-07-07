@@ -867,6 +867,15 @@ positionhistory = [
         "Description": "",
         "Department_id" : 1
         },
+
+        {
+        "positioncode": "S12345",
+        "status": "Active",
+        "WLS":3,
+        "revisiondate" : f"{current_year}-01-23",
+        "Description": "",
+        "Department_id" : 1
+        }
     
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()

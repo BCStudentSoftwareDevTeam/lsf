@@ -17,6 +17,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
+from app.models.positionHistory import PositionHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -67,11 +68,24 @@ def departmentPortal(org=None,account=None):
     
     pos = Tracy().getPositionsFromDepartment(org, account)
     positions = []
+    pos_his = []
     if pos == []:
         positions = ["No Positions for this Department"]
     else:
         for i in pos:
             positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
+            try:
+                print("trying to get position objects")
+                pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
+                print("trying to add positions to list")
+                print(str(pos_his_obj.revisiondate) + str(pos_his_obj.positioncode))
+                pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
+            except:
+                pos_his.append("#")
+    print("TESTING THE POSITION HISTORY LIST")
+    print(pos_his)
+            
+            
 
     staff = Tracy().getSupervisors()
     supervisors = []
