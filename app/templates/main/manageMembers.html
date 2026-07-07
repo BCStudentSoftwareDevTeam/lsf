@@ -8,12 +8,12 @@
 
 {% block scripts %}
 {{super()}}
-    <script type="text/javascript" src="{{url_for('static', filename='js/manageStaff.js') }}?u={{lastStaticUpdate}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/manageMembers.js') }}?u={{lastStaticUpdate}}"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
 {% endblock %}
 
 {% block app_content %}
-<h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Staff {% else %} Manage Staff {% endif %} </h2>
+<h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Members {% else %} Manage Members {% endif %} </h2>
 
 <br></br>
 
@@ -36,22 +36,22 @@
 </div>
 
 <div class="tab-pane activecol-lg-12" align="center">
-    <table class="table table-striped table-bordered dataTable" id="manageStaff">
+    <table class="table table-striped table-bordered dataTable" id="manageMembers">
         <thead class="tableHeaders">
             <tr>
                 <th>Name</th>
                 <th>Supervisees</th>
-                <th>Assign as Coordinator</th>
+                <th style="text-align: center !important;">Assign Coordinator</th>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
-                <th>Status</th>
-                <th>Remove Staff</th>
+                <th style="text-align: center !important;">Change Status</th>
+                <th style="text-align: center !important;">Remove Member</th>
                 {% endif %}
             </tr>
         </thead>
 
         <tbody>
-            {% for i in staff %}
+            {% for i in members %}
             <tr>
                 <td>
                     <a aria-label="{{i['supervisor']}}" class="hover_indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
@@ -69,19 +69,19 @@
                     <b>Secondary:</b> 13
                 </td>
 
-                <td>
+                <td class="text-center" style="vertical-align: middle;">
                     <input class="approveCheckbox" type='checkbox' autocomplete="off" {% if i['isCoordinator'] %} checked {% endif %}/>
                 </td>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
-                <td>
+                <td class="text-center" style="vertical-align: middle;">
                     {% if not i[4] %}
                     <button class="btn btn-danger" align="center">&nbsp; Ban &nbsp;</button> 
                     {% else %}
                     <button class="btn btn-success " align="center">Unban</button>
                     {% endif %}
                 </td>
-                <td>
+                <td class="text-center" style="vertical-align: middle;">
                     <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
                 </td>
                 {% endif %}
