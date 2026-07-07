@@ -110,6 +110,7 @@
           </thead>
           <tbody>
             {% for department in activeDepartments %}
+            
             <tr>
               <td scope="row">
                 <a
@@ -146,9 +147,17 @@
                   Approved
                 </button>
               </td>
-              <td>
-                <p><strong>271 hrs / </strong> 500 hrs</p>
-              </td>
+
+              
+                <td scope="row">
+                {% for allocation in allAllocations %}
+                  {% if allocation.department == department %}
+                    {{ allocation.breakHours }}
+                  {% endif %}
+                {% endfor %}
+                </td>
+              
+
               <td style="white-space: nowrap">
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -166,6 +175,7 @@
               </td>
             </tr>
             {% endfor %}
+            
           </tbody>
         </table>
       </div>

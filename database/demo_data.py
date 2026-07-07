@@ -17,15 +17,12 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-<<<<<<< HEAD
 from app.models.supervisorDepartment import SupervisorDepartment 
-=======
 from app.models.allocation import Allocation 
 from app.models.positionHistory import PositionHistory 
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
 
->>>>>>> PeeWeeAttribute
 
 print("Inserting data for demo and testing purposes")
 
@@ -472,28 +469,32 @@ departments = [
               "DEPT_NAME": "Computer Science",
               "ACCOUNT": "6740",
               "ORG": "2114",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":2,
               "DEPT_NAME": "Technology and Applied Design",
               "ACCOUNT": "6740",
               "ORG": "2147",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":3,
               "DEPT_NAME": "Mathematics",
               "ACCOUNT": "6740",
               "ORG": "2150",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":4,
               "DEPT_NAME": "Biology",
               "ACCOUNT": "6740",
               "ORG": "2107",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             }, 
             {
               "departmentID":5,
