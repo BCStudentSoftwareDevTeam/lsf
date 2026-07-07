@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#manageStaff').DataTable({
+    $('#manageMembers').DataTable({
         'columnDefs': [{
             'targets': [1, 2],
             'orderable': false

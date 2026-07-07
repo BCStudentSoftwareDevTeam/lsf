@@ -16,26 +16,20 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from flask import abort
 
-@main_bp.route('/department/manage_staff', methods=['GET'])
-@main_bp.route('/department/manage_staff/<org>', methods=['GET'])
-@main_bp.route('/department/manage_staff/<org>/<account>', methods=['GET'])
+
+@main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageStaff(org=None,account=None):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         dept = None
+        abort(404)
 
-    staff = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).join(Supervisor).order_by(SupervisorDepartment.isActive.desc(), SupervisorDepartment.banStatus.desc()).dicts())
+    members = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).order_by(SupervisorDepartment.isActive.desc(), SupervisorDepartment.banStatus.desc()).dicts())
 
-    #if g.currentUser.isLaborAdmin:
-    #    departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    #else:
-    #    departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-
-    labor = [["Scott Heggen", 7, 11, 0, 1, "B0010201"], ["Brian Ramsay", 9, 12, 0, 1, "B0011251"], ["Bright Feitsop", 10, 20, 1, 0, "B023241"], ["Artem Kurasov", 6, 7, 0, 0, "B1110201"]]
-
-    return render_template('main/manageStaff.html', 
-                           staff = staff,
+    return render_template('main/manageMembers.html', 
+                           members = members,
                            department = dept)
 
