@@ -670,7 +670,6 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": True
     }, 
@@ -678,7 +677,6 @@ department_members = [
     {
         "supervisor": "B12365892",
         "department": 1,
-        "banStatus": True,
         "isActive": True,
         "isCoordinator": False
     }, 
@@ -686,7 +684,6 @@ department_members = [
     {
         "supervisor": "B12365893",
         "department": 1,
-        "banStatus": False,
         "isActive": False,
         "isCoordinator": False
     }, 
@@ -694,7 +691,6 @@ department_members = [
     {
         "supervisor": "B00763721",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": False
     },
@@ -702,7 +698,6 @@ department_members = [
     {
         "supervisor": "B00841417",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": True
     }
