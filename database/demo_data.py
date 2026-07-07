@@ -734,7 +734,7 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202400,
+    "termCode":         202500,
     "department":       1,
     "isApproved":       False,
     "approvedOn":       None,
