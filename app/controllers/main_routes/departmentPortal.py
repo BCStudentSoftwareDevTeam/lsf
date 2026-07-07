@@ -26,16 +26,16 @@ def manageStaff(org=None,account=None):
     except (NameError, DoesNotExist):
         dept = None
 
+    staff = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).join(Supervisor).order_by(SupervisorDepartment.isActive.desc(), SupervisorDepartment.banStatus.desc()).dicts())
 
-
-    if g.currentUser.isLaborAdmin:
-        departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    else:
-        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    #if g.currentUser.isLaborAdmin:
+    #    departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    #else:
+    #    departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     labor = [["Scott Heggen", 7, 11, 0, 1, "B0010201"], ["Brian Ramsay", 9, 12, 0, 1, "B0011251"], ["Bright Feitsop", 10, 20, 1, 0, "B023241"], ["Artem Kurasov", 6, 7, 0, 0, "B1110201"]]
 
     return render_template('main/manageStaff.html', 
-                           staff = labor,
+                           staff = staff,
                            department = dept)
 
