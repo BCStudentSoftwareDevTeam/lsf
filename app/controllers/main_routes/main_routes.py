@@ -75,16 +75,24 @@ def departmentPortal(org=None,account=None):
 
     staff = Tracy().getSupervisors()
     supervisors = []
-
+    try:
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm).get()
+    except DoesNotExist:
+        allocation = None
+    term = g.openTerm.termName
+    ViewAllocations(org, account)
     for i in staff:
         if i.DEPT_NAME == Department.DEPT_NAME:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
-                           supervisors = supervisors)
+                           supervisors = supervisors,
+                        #    department_name = dept.DEPT_NAME,
+                           allocation = allocation,
+                           term = term
+                           )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
@@ -168,26 +176,23 @@ def submitToBanner(formHistoryId):
     else:
         return "Submitting to Banner failed.", 500
     
-@main_bp.route('/department/<org>/<account>/viewallocations', methods=['GET'])
+@main_bp.route('/department/<org>/<account>', methods=['GET'])
 def ViewAllocations(org, account):
-    
+      
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
 
-    try:
-        term = Term.get(Term.termState == True)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
     
-    allocation = (Allocation
-               .select(Allocation, Term)
-               .join(Term)
-               .where(Allocation.department == dept, Allocation.termCode == term))
-
-    return render_template('main/viewAllocations.html',
+    allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm)
+    print(g.openTerm, '*********************************************************')
+    term = g.openTerm.termName
+    print(term, type(term), '*********************************************************')
+    return render_template('main/departmentPortal.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,
-                           allocations = allocation,)
+                           allocation = allocation,
+                           term = term
+                           )
 

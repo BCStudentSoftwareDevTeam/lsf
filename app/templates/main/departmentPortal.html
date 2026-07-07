@@ -24,7 +24,6 @@
         "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
       {% endfor %}
     </select>
-
   </div>
 
 {% if department %}
@@ -42,18 +41,18 @@
       </div>
       <div>
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>AY 26/27</h3> <h3>15/20 Positions</h3>
+          <h3>{{ term }}</h3> <h3>15/ {{allocation.primary_10 + allocation.primary_12 + allocation.primary_15 + allocation.primary_20 + allocation.secondary_5 + allocation.secondary_10}} Positions</h3>
         </div>
         <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
         <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 Hour - 2/2</li>
-          <li>12 Hour - 3/3</li>
-          <li>15 Hour - 5/5</li>
-          <li>20 Hour - 5/5</li>
+          <li>10 Hour - 2/{{allocation.primary_10}}</li>
+          <li>12 Hour - 3/{{allocation.primary_12}}</li>
+          <li>15 Hour - 5/{{allocation.primary_15}}</li>
+          <li>20 Hour - 5/{{allocation.primary_20}}</li>
         </ul>
          <ul style="font-size: 1.2em; padding-right: 75px;">
-          <li>5 Hour - 2/2</li>
-          <li>10 Hour - 3/3</li>
+          <li>5 Hour - 2/{{allocation.secondary_5}}</li>
+          <li>10 Hour - 3/{{allocation.secondary_10}}</li>
         </ul>
         </div>
       </div>
