@@ -168,13 +168,9 @@
                     <span class="sr-only">Toggle Dropdown</span>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Allocation History</a></li>
+                    <li><a href="{{ url_for('main.departmentPortal', org=department.ORG, account=department.ACCOUNT) }}">Allocation History</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#">Position Review</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Edit Dept Member</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Allocation Review</a></li>
+                    <li><a href="{{ url_for('main.departmentPortal', org=department.ORG, account=department.ACCOUNT) }}">Department Personnel</a></li>
                   </ul>
                 </div>
               </td>
