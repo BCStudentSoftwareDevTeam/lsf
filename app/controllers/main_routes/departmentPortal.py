@@ -27,7 +27,7 @@ def manageStaff(org=None,account=None):
         dept = None
         abort(404)
 
-    members = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).order_by(SupervisorDepartment.isActive.desc(), SupervisorDepartment.banStatus.desc()).dicts())
+    members = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).order_by(SupervisorDepartment.isActive.desc()).dicts())
 
     return render_template('main/manageMembers.html', 
                            members = members,
