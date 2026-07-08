@@ -735,35 +735,30 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "isActive": True,
         "isCoordinator": True
     }, 
 
     {
         "supervisor": "B12365892",
         "department": 1,
-        "isActive": True,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B12365893",
         "department": 1,
-        "isActive": False,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B00763721",
         "department": 1,
-        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00841417",
         "department": 1,
-        "isActive": True,
         "isCoordinator": True
     }
 ]
