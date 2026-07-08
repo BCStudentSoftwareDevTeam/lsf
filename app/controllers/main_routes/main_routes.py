@@ -78,17 +78,17 @@ def departmentPortal(org=None,account=None):
     supervisors = []
     print(dept, '*********************************************************Denys')
     try:
-        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm).get()
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
         print(allocation, '*********************************************************Scott')
     except DoesNotExist:
         allocation = None
-    term = g.openTerm.termName
+    term = 202500
     ViewAllocations(org, account)
     for i in staff:
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-    totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == g.openTerm).scalar()
-    usedAllocation = LaborStatusForm.select(LaborStatusForm).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm, LaborStatusForm.studentConfirmation == True).scalar()
+    totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+    usedAllocation = LaborStatusForm.select(LaborStatusForm).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation == True).scalar()
     print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
     return render_template('main/departmentPortal.html', 
                            departments = departments,
