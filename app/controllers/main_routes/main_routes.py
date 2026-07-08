@@ -84,13 +84,14 @@ def departmentPortal(org=None,account=None):
     for i in staff:
         if i.DEPT_NAME == Department.DEPT_NAME:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+    total_hours = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == g.openTerm).scalar()
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
-                        #    department_name = dept.DEPT_NAME,
                            allocation = allocation,
+                           total_allocation = total_hours,
                            term = term
                            )
 

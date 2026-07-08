@@ -41,7 +41,7 @@
       </div>
       <div>
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>{{ term }}</h3> <h3>15/ {{allocation.primary_10 + allocation.primary_12 + allocation.primary_15 + allocation.primary_20 + allocation.secondary_5 + allocation.secondary_10}} Positions</h3>
+          <h3>{{ term }}</h3> <h3>15/{{total_allocation or 0}} Positions</h3>
         </div>
         <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
         <ul style="font-size: 1.2em; padding-left: 75px;">
@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3> <h3>0/200 Hours</h3>
+        <h3>Break Hours</h3> <h3>0/{{allocation.breakHours or 0}} Hours</h3>
       </div>
     </div>
         <div class="card-footer text-center">
