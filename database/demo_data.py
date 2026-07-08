@@ -515,6 +515,8 @@ print(" * departments added")
 today = datetime.now()
 current_year = today.year - (today.month < 8)
 
+print("Current year:", current_year)
+
 terms = [
     {
         "termCode": f"{current_year}00",
@@ -741,7 +743,7 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202400,
+    "termCode":         202500,
     "department":       1,
     "isApproved":       False,
     "approvedOn":       None,
@@ -790,6 +792,7 @@ allocations = [
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print("Data insertion complete :)")
+
 allocation =[
                 {
                     "termCode":f"{current_year}00",

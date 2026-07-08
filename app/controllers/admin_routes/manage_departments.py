@@ -10,6 +10,7 @@ from app.models.term import *
 from flask_bootstrap import bootstrap_find_resource
 from app.models.department import *
 from app.models.allocation import *
+from app.models.laborStatusForm import * #Do we need to import all?
 from flask import request, redirect
 from flask import jsonify
 from playhouse.shortcuts import model_to_dict
@@ -33,11 +34,28 @@ def manage_departments():
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
 
+        #FIXME: hardcoded term year for the testing purposes
+        currentTerm = "202500"
 
-        activeDepartments = Department.select().where(Department.isActive == True)
+        print("Current term: ", currentTerm)
+
+
+        # activeDepartments = Department.select().where(Department.isActive == True)
+        # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
         inactiveDepartments = Department.select().where(Department.isActive == False)
-        allAllocations = Allocation.select()
-        print("Something",allAllocations, "\n\n\n\n\n","Something")
+        
+
+        activeDepartments = (
+            Department
+            .select(Department, Allocation)
+            .join(Allocation)
+            .where(
+                Department.isActive == True,
+                Allocation.termCode == currentTerm
+            )
+
+    
+)
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
@@ -45,7 +63,7 @@ def manage_departments():
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                allAllocations = allAllocations
+                                currentTerm = currentTerm
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
