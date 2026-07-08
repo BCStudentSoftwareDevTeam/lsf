@@ -507,6 +507,15 @@ current_year = today.year - (today.month < 8)
 
 terms = [
     {
+        "termCode": f"202000",
+        "termName": f"AY 2020-2021",
+        "termStart": f"2020-08-01",
+        "termEnd": f"2021-05-01",
+        "termState": 0,
+        "primaryCutOff": f"2020-09-01",
+        "adjustmentCutOff": f"2020-10-01",
+    },
+    {
         "termCode": f"{current_year}00",
         "termName": f"AY {current_year}-{current_year+1}",
         "termStart": f"{current_year}-08-01",
