@@ -78,8 +78,8 @@ def departmentPortal(org=None,account=None):
         for i in pos:
             positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
             try:
-                pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
-                pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
+                pos_his_obj = PositionHistory.get(PositionHistory.positionCode == i.POSN_CODE)
+                pos_his.append(str(pos_his_obj.positionCode) + str(pos_his_obj.revisionDate))
             except:
                 pos_his.append("#")
 
