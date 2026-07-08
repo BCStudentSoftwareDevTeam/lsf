@@ -45,7 +45,7 @@
         </div>
         <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
         <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 Hour - 2/{{allocation.primary_10}}</li>
+          <li>10 Hour - {{used_allocation or 0}}/{{allocation.primary_10}}</li>
           <li>12 Hour - 3/{{allocation.primary_12}}</li>
           <li>15 Hour - 5/{{allocation.primary_15}}</li>
           <li>20 Hour - 5/{{allocation.primary_20}}</li>
