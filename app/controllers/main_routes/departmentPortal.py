@@ -51,15 +51,17 @@ def manageStaff(org=None,account=None):
             LaborStatusForm.supervisor
         ).dicts()
     )
+
     
-    counts = {row['supervisor']: row for row in student_count}
+    counts = {(row["department"], row["supervisor"]): row for row in student_count}
     
     for member in members:
-        row = counts.get(member["supervisor"], {})
+
+        key = (member["department"], member["supervisor"])
+        row = counts.get(key, {})
+
         member["primary_positions"] = row.get("primary_positions", 0)
         member["secondary_positions"] = row.get("secondary_positions", 0)
-    
-    print(members)
 
     return render_template('main/manageMembers.html', 
                            members = members,
