@@ -1,6 +1,6 @@
 import json
 from datetime import date
-from flask import jsonify
+from flask import jsonify, g
 from app.models.formHistory import FormHistory
 from app.models.status import Status
 from app.logic.banner import Banner
@@ -14,6 +14,7 @@ from app.logic.tracy import Tracy
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.login_manager import DoesNotExist, render_template
+from app.logic.allocation import getAllocationWarning
 
 
 def saveStatus(new_status, formHistoryIds, currentUser):
@@ -196,9 +197,11 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
 
 # extract data from the database to populate pending form approval modal
 def modal_approval_and_denial_data(formHistoryIdList):
-    ''' This method grabs the data that populated the on approve modal for lsf'''
+    ''' This method grabs the data that populated the on approve modal for lsf,
+    plus an over-allocation warning per unique department among the selected forms. '''
 
     details_list = []
+    allocationWarningsByDept = {}
     for fhID in formHistoryIdList:
         formHistory = FormHistory.get(FormHistory.formHistoryID == fhID)
         lsf = formHistory.formID
@@ -208,7 +211,8 @@ def modal_approval_and_denial_data(formHistoryIdList):
         supervisorName = f"{lsf.supervisor.FIRST_NAME} {lsf.supervisor.LAST_NAME}"
         weeklyHours = lsf.weeklyHours
         contractHours = lsf.contractHours
-        deptName = lsf.department.DEPT_NAME
+        dept = lsf.department
+        deptName = dept.DEPT_NAME
 
         if formHistory.adjustedForm:
             match formHistory.adjustedForm.fieldAdjusted:
@@ -223,11 +227,17 @@ def modal_approval_and_denial_data(formHistoryIdList):
                 case "contractHours":
                     contractHours = formHistory.adjustedForm.newValue
                 case "department":
-                    deptName = Department.get(Department.ORG==formHistory.adjustedForm.newValue).DEPT_NAME
+                    dept = Department.get(Department.ORG==formHistory.adjustedForm.newValue)
+                    deptName = dept.DEPT_NAME
 
         details_list.append([studentName, deptName, position, str(weeklyHours),str(contractHours), supervisorName])
 
-    return details_list
+        if dept.departmentID not in allocationWarningsByDept:
+            warning = getAllocationWarning(dept, g.openTerm)
+            if warning:
+                allocationWarningsByDept[dept.departmentID] = warning
+
+    return {"details": details_list, "allocationWarnings": list(allocationWarningsByDept.values())}
 
 
 def financialAidSAASOverloadApproval(historyForm, rsp, status, currentUser, currentDate):

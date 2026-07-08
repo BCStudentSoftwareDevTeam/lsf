@@ -1,16 +1,12 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn
+from peewee import JOIN, DoesNotExist
 from functools import reduce
 import operator
-from app.models.allocation import Allocation
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
-from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
-from app.models.term import Term
-from app.models.allocation import Allocation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
@@ -19,6 +15,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
+from app.logic.allocation import getAllocationSummary
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -82,64 +79,18 @@ def departmentPortal(org=None,account=None):
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
-    allocation = None
-    allocationBands = None
-    totalPositionsAllocated = None
-    totalPositionsUsed = None
-    breakHoursUsed = None
-    if dept and g.openTerm:
-        allocation = Allocation.get_or_none(Allocation.department == dept, Allocation.termCode == g.openTerm)
-        if allocation:
-            bandFields = [
-                ('primary_10', 'Primary', 10),
-                ('primary_12', 'Primary', 12),
-                ('primary_15', 'Primary', 15),
-                ('primary_20', 'Primary', 20),
-                ('secondary_5', 'Secondary', 5),
-                ('secondary_10', 'Secondary', 10),
-            ]
-            allocationBands = {}
-            for fieldName, jobType, hours in bandFields:
-                used = (LaborStatusForm
-                        .select()
-                        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                        .where(LaborStatusForm.department == dept,
-                               LaborStatusForm.termCode == g.openTerm,
-                               LaborStatusForm.jobType == jobType,
-                               LaborStatusForm.weeklyHours == hours,
-                               FormHistory.historyType == "Labor Status Form",
-                               ~(FormHistory.status % "Denied%"))
-                        .distinct()
-                        .count())
-                allocationBands[fieldName] = {'used': used, 'allocated': getattr(allocation, fieldName)}
-
-            totalPositionsAllocated = sum(band['allocated'] for band in allocationBands.values())
-            totalPositionsUsed = sum(band['used'] for band in allocationBands.values())
-
-            # Break hours are tracked on separate break-term rows (e.g. Thanksgiving Break)
-            # that share the same academic year prefix as the open AY term.
-            yearPrefix = str(g.openTerm.termCode)[:-2]
-            breakTermCodes = [t.termCode for t in Term.select().where(Term.isBreak == True)
-                              if str(t.termCode).startswith(yearPrefix)]
-            breakHoursUsed = (LaborStatusForm
-                              .select(fn.SUM(LaborStatusForm.contractHours))
-                              .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                              .where(LaborStatusForm.department == dept,
-                                     LaborStatusForm.termCode.in_(breakTermCodes),
-                                     FormHistory.historyType == "Labor Status Form",
-                                     ~(FormHistory.status % "Denied%"))
-                              .scalar()) or 0
+    allocationSummary = getAllocationSummary(dept, g.openTerm)
 
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
-                           allocation = allocation,
-                           allocationBands = allocationBands,
-                           totalPositionsAllocated = totalPositionsAllocated,
-                           totalPositionsUsed = totalPositionsUsed,
-                           breakHoursUsed = breakHoursUsed,
+                           allocation = allocationSummary['allocation'],
+                           allocationBands = allocationSummary['allocationBands'],
+                           totalPositionsAllocated = allocationSummary['totalPositionsAllocated'],
+                           totalPositionsUsed = allocationSummary['totalPositionsUsed'],
+                           breakHoursUsed = allocationSummary['breakHoursUsed'],
                            currentTerm = g.openTerm)
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])

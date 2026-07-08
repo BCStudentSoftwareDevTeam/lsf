@@ -168,6 +168,7 @@ for student in (localStudents + bothStudents):
     student['ID'] = student['ID'].strip()
     student['legal_name'] = student['FIRST_NAME'].strip()
     del student['FIRST_NAME']
+    student['isActive'] = True
 
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
@@ -365,6 +366,7 @@ with app.app_context():
 
         staff['legal_name'] = staff['FIRST_NAME'].strip()
         del staff['FIRST_NAME']
+        staff['isActive'] = True
         Supervisor.get_or_create(**staff)
 
     # Add non Supervisor staffs to Tracy db

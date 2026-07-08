@@ -87,8 +87,8 @@ function insertApprovals(laborHistoryId = null) {
     contentType: 'application/json',
     success: function(response) {
       if (response) {
-        var returned_details = response;
-        updateApproveTableData(returned_details);
+        updateApproveTableData(response.details);
+        updateAllocationWarnings(response.allocationWarnings);
       }
     }
   });
@@ -112,6 +112,24 @@ function updateApproveTableData(returned_details) {
   }
 }
 
+// Shows a non-blocking allocation warning per department represented among the
+// selected forms, so admins can see the impact of approval before confirming.
+function updateAllocationWarnings(allocationWarnings) {
+  if (!allocationWarnings) { return; }
+  for (var i = 0; i < allocationWarnings.length; i++) {
+    var w = allocationWarnings[i];
+    var alertClass = w.isOverAllocated ? 'alert-danger' : 'alert-info';
+    var html = '<div class="alert ' + alertClass + '" role="alert">' +
+      '<strong>' + w.departmentName + ' Allocation</strong><br>' +
+      'Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
+      ' allocated (' + w.positionsRemaining + ' remaining)<br>' +
+      'Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
+      ' allocated (' + w.breakHoursRemaining + ' remaining)' +
+      '</div>';
+    $('#allocationWarnings').append(html);
+  }
+}
+
 
 $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functionality work when clicking outside of the modal
   approvalModalClose();
@@ -120,6 +138,7 @@ $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functi
 
 function approvalModalClose(){// on close of approval modal we are clearing the table to prevent duplicate data.
   $('#classTableBody').empty();
+  $('#allocationWarnings').empty();
   labor_details_ids = [] // emptying the list, becuase otherwise will cause duplicate data.
 }
 
