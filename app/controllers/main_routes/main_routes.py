@@ -2,6 +2,7 @@ from flask import render_template, request, json, redirect, url_for, send_file, 
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+from app.models.allocation import Allocation
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -149,11 +150,12 @@ def managePositions(org, account):
         return render_template('errors/404.html'), 404
 
     positions = Tracy().getPositionsFromDepartment(org, account)
-
+    print(positions)
     return render_template('main/managepositions.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,
-                           positions = positions)
+                           positions = positions
+                           )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
@@ -222,3 +224,4 @@ def submitToBanner(formHistoryId):
         return "Form successfully submitted to Banner.", 200
     else:
         return "Submitting to Banner failed.", 500
+

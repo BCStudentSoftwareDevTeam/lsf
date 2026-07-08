@@ -8,7 +8,7 @@ class Allocation(baseModel):
     department     = ForeignKeyField(Department)
     isApproved     = BooleanField(default=False)
     approvedOn     = DateField()
-    approvedBy     = ForeignKeyField(Supervisor)
+    approvedBy     = CharField()
     justification  = TextField()
     primary_10     = IntegerField()
     primary_12     = IntegerField()

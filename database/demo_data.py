@@ -17,7 +17,9 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
 
 print("Inserting data for demo and testing purposes")
 
@@ -517,6 +519,42 @@ terms = [
         "adjustmentCutOff": f"{current_year}-09-01",
     },
     {
+        "termCode": f"{current_year-1}00",
+        "termName": f"AY {current_year-1}-{current_year}",
+        "termStart": f"{current_year-1}-08-01",
+        "termEnd": f"{current_year}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-1}-09-01",
+        "adjustmentCutOff": f"{current_year-1}-09-01",
+    },
+    {
+        "termCode": f"{current_year-2}00",
+        "termName": f"AY {current_year-2}-{current_year-1}",
+        "termStart": f"{current_year-2}-08-01",
+        "termEnd": f"{current_year-1}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-2}-09-01",
+        "adjustmentCutOff": f"{current_year-2}-09-01",
+    },
+    {
+        "termCode": f"{current_year-3}00",
+        "termName": f"AY {current_year-3}-{current_year-2}",
+        "termStart": f"{current_year-3}-08-01",
+        "termEnd": f"{current_year-2}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-3}-09-01",
+        "adjustmentCutOff": f"{current_year-3}-09-01",
+    },
+    {
+        "termCode": f"{current_year-4}00",
+        "termName": f"AY {current_year-4}-{current_year-3}",
+        "termStart": f"{current_year-4}-08-01",
+        "termEnd": f"{current_year-3}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-4}-09-01",
+        "adjustmentCutOff": f"{current_year-4}-09-01",
+    },
+    {
         "termCode": f"{current_year}01",
         "termName": f"Thanksgiving Break {current_year}",
         "termStart": f"{current_year}-08-01",
@@ -611,6 +649,55 @@ notes = [
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
 
+##############################
+# Departement Members
+##############################
+
+department_members = [
+    {
+        "supervisor": "B12361006",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    },
+
+    {
+        "supervisor": "B12365892",
+        "department": 1,
+        "banStatus": True,
+        "isActive": True,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B12365893",
+        "department": 1,
+        "banStatus": False,
+        "isActive": False,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00763721",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00841417",
+        "department": 1,
+        "banStatus": False,
+        "isActive": True,
+        "isCoordinator": True
+    }
+]
+
+SupervisorDepartment.insert_many(department_members).on_conflict_replace().execute()
+print(" * Department members added")
+
 #############################
 # Allocation
 #############################
@@ -693,3 +780,55 @@ allocations = [
 ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 print(" * allocations added")
+
+#############################
+# Position History
+#############################
+
+positionhistory = [
+    {
+        "positioncode": "S61407",
+        "status": "Active",
+        "WLS": 1,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+
+        "positioncode": "S61408",
+        "status": "Active",
+        "WLS": 2,
+        "revisiondate": f"{current_year}-09-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+        "positioncode": "S61409",
+        "status": "Active",
+        "WLS": 3,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
+        "positioncode": "S61411",
+        "status": "Active",
+        "WLS":3,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
+
+        },
+        {
+        "positioncode": "S61410",
+        "status": "Inactive",
+        "WLS":2,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
+        },
+
+]
+PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+print(" * position history added")
