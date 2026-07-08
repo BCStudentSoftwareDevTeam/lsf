@@ -17,6 +17,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
+from app.models.activeposition import Activeposition
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -84,15 +85,18 @@ def departmentPortal(org=None,account=None):
                            supervisors = supervisors
                            )
 
-@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
     try:
+        currentUser = require_login()
+        if not currentUser or not currentUser.supervisor:
+            return render_template('errors/403.html'), 403
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-
-    positions = Tracy().getPositionsFromDepartment(org, account)
-    print(positions)
+    print("THIS IS Dept:", dept)
+    positions = list(Activeposition.select().where(Activeposition.Department == dept))
+    print(f"Positions for department {dept.DEPT_NAME}, ID {dept.id}: {[p.title for p in positions]}")
     return render_template('main/managepositions.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,

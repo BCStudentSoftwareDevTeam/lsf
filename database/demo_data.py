@@ -20,6 +20,7 @@ from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment 
 from app.models.allocation import Allocation 
 from app.models.positionHistory import PositionHistory 
+from app.models.activeposition import Activeposition
 
 print("Inserting data for demo and testing purposes")
 
@@ -870,3 +871,54 @@ positionhistory = [
     
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+
+Activepositions = [
+    {
+    "title": "Student Programmer",
+    "positioncode": "S61407",
+    "status": "",
+    "WLS": 1,
+    "revisiondate": f"{current_year}-07-01",
+    "Description": "Responsible for programming tasks",
+    "Department_id": 1
+    },
+    {
+    "title": "Student Assistant",
+    "positioncode": "S61408",
+    "status": "",
+    "WLS": 2,
+    "revisiondate": f"{current_year}-09-01",
+    "Description": "Responsible for assisting students  ",
+    "Department_id": 1
+    },
+    {
+    "title": "Student Researcher",
+    "positioncode": "S61409",
+    "status": "",
+    "WLS": 3,
+    "revisiondate": f"{current_year}-07-01",
+    "Description": "Responsible for conducting research",
+    "Department_id": 1
+    },
+    {
+    "title": "Student Consultant",
+    "positioncode": "S61411",
+    "status": "Inactive",
+    "WLS":3,
+    "revisiondate" : f"{current_year}-01-01",
+    "Description": "Responsible for providing consulting services",
+    "Department_id" : 1
+
+        },
+        {
+    "title": "Student Coordinator",
+    "positioncode": "S61410",
+    "status": "Active",
+    "WLS":2,
+   "revisiondate" : f"{current_year}-01-01",
+    "Description": "Responsible for coordinating student activities",
+    "Department_id" : 1
+        },
+    
+]
+Activeposition.insert_many(Activepositions).on_conflict_replace().execute()

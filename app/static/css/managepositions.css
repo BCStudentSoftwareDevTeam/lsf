@@ -1,7 +1,9 @@
 .width-12{
     width:12%;
 }
-
+.margin-top-10{
+    margin-top:-25px;
+}
 *{
     /* outline:solid 1px lime; */
     margin:0;
