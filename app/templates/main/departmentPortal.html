@@ -65,7 +65,7 @@
       {% endif %}
 
     
-      <h4><b>Supervisors</b></h4>
+      <h4> <b>{% if supervisors|length == 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
 
       {% if supervisors %}
         {% for s in supervisors %}

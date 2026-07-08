@@ -88,10 +88,8 @@ def departmentPortal(org=None,account=None):
             
 
     supervisor_departments = SupervisorDepartment.select().where(
-        SupervisorDepartment.department == dept,
-        SupervisorDepartment.isActive == True,
-        SupervisorDepartment.banStatus == False
-)
+        SupervisorDepartment.department == dept
+    )
 
     labor_coordinators = []
     supervisors = []
@@ -103,9 +101,8 @@ def departmentPortal(org=None,account=None):
             continue
 
         supervisor_name = (
-            supervisor.preferred_name
+            supervisor.preferred_name +" "+supervisor.LAST_NAME
             or supervisor.legal_name
-            or supervisor.LAST_NAME
             or supervisor.ID
         )
 
@@ -124,7 +121,7 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
-                           labor_coordinator=labor_coordinators,
+                           labor_coordinators=labor_coordinators,
                            pos_his = pos_his
                            )
 

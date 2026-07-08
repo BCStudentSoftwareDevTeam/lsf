@@ -6,8 +6,8 @@ from app.models.term import Term
 class Allocation(baseModel):
     termCode       = ForeignKeyField(Term)
     department     = ForeignKeyField(Department)
-    isApproved     = BooleanField(default=False)
-    approvedOn     = DateField()
+    isFinal        = BooleanField(default=False)
+    approvedOn     = DateField(null=True)
     approvedBy     = ForeignKeyField(Supervisor, null=True)
     justification  = TextField()
     primary_10     = IntegerField()
@@ -17,3 +17,7 @@ class Allocation(baseModel):
     secondary_5    = IntegerField()
     secondary_10   = IntegerField()
     breakHours     = IntegerField()
+
+    class Meta:
+        indexes = ( (('termCode', 'department', 'isFinal'), True), )
+
