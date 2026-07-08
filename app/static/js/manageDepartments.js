@@ -52,11 +52,11 @@ function attachModalToDepartment() {
 
 $("#supervisorModalSelect").on('change', function() {
   let supervisorID = $('#supervisorModalSelect :selected').val()
-  let supervisor_FirstName = $('#supervisorModalSelect :selected').data("firstname")
-  let supervisor_LastName = $('#supervisorModalSelect :selected').data("lastname")
+  let supervisorFirstName = $('#supervisorModalSelect :selected').data("firstname")
+  let supervisorLastName = $('#supervisorModalSelect :selected').data("lastname")
 
   let departmentID = $('#departmentModalSelect').data('department-id')
-  addSupervisorToDepartment(supervisorID, departmentID, supervisor_FirstName, supervisor_LastName, ()=>showSupervisorsInDepartment(departmentID))
+  addSupervisorToDepartment(supervisorID, departmentID, supervisorFirstName, supervisorLastName, ()=>showSupervisorsInDepartment(departmentID))
   
 })
 
@@ -75,6 +75,8 @@ function showSupervisorsInDepartment(departmentID) {
                                 <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
                                   data-supervisor="${supervisors[i]['ID']}" 
                                   data-department="${departmentID}" 
+                                  data-firstname="${supervisorFirstName}" 
+                                  data-lastname="${supervisors[i]['LAST_NAME']}"
                                   id="${supervisors[i]['ID']}-${departmentID}">Remove</div>
                                </span>`)}
       supervisorContent += ("</div>")
@@ -90,8 +92,8 @@ function removeSupervisorFromDepartment () {
   let departmentID = $(`#${this.id}`).data('department')
   let supervisorID = $(`#${this.id}`).data('supervisor')
   let data = {"supervisorID": supervisorID, "departmentID": departmentID}
-  let supervisorfirstName = $(`#${this.id}`).parent().find('div').first().text().split(" ").slice(1, -1).join(" ")
-  let supervisorLastName = $(`#${this.id}`).parent().find('div').first().text().split(" ").slice(-1)[0]
+  let supervisorfirstName = $(`#${this.id}`).data('firstname')
+  let supervisorLastName = $(`#${this.id}`).data('lastname')
   $.ajax({
     method: "POST",
     url: "/admin/manageDepartments/removeSupervisorFromDepartment",

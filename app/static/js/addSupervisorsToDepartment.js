@@ -1,7 +1,6 @@
-function addSupervisorToDepartment(supervisorID, departmentID, supervisor_FirstName, supervisor_LastName, callback=() => {}) {
-  let supervisorfirstName = supervisor_FirstName
-  let supervisorLastName = supervisor_LastName
-  console.log("Names  ",supervisorfirstName, supervisorLastName)
+function addSupervisorToDepartment(supervisorID, departmentID, supervisorFirstNameData, supervisorLastNameData, callback=() => {}) {
+  let supervisorFirstName = supervisorFirstNameData
+  let supervisorLastName = supervisorLastNameData
 
     return $.ajax({
       method: "POST",
@@ -9,10 +8,10 @@ function addSupervisorToDepartment(supervisorID, departmentID, supervisor_FirstN
       data: {"supervisorID": supervisorID, "departmentID": departmentID},
       success: function(response) {
         if (response == "True") {
-          msgFlash(`Supervisor ${supervisorfirstName} ${supervisorLastName} (${supervisorID}) has been added to the department.`, "success")
+          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} (${supervisorID}) has been added to the department.`, "success")
           clearDropdowns()
         } else {
-          msgFlash(`Supervisor ${supervisorfirstName} ${supervisorLastName} (${supervisorID}) is already a member of this department.`, "warning")
+          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} (${supervisorID}) is already a member of this department.`, "warning")
           clearDropdowns()
         }
         if (callback){
