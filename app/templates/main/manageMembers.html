@@ -17,14 +17,14 @@
 
 <br></br>
 
-<div id="add_member">
+<div id="add-member">
     <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
-    <form id="titleBlock" action="" method="POST" style="height:20px;">
+    <form id="titleBlock" action="" method="POST"">
         <div class="form-group" id='searchBoxContainer'>
             <select id="search"
                       class="form-control selectpicker"
-                      title="Add Staff by B# or Name"
-                    data-width="258px"
+                      title="Add Members by B# or Name"
+                      data-width="258px"
                       data-show-subtext="true"
                       data-live-search="true">
             </select>
@@ -37,12 +37,12 @@
         <thead class="tableHeaders">
             <tr>
                 <th>Name</th>
-                <th>Supervisees</th>
-                <th style="text-align: center !important;">Assign Coordinator</th>
+                <th class="no-sorting">Supervisees</th>
+                <th class="no-sorting centered-header">Assign Coordinator</th>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
-                <th style="text-align: center !important;">Change Status</th>
-                <th style="text-align: center !important;">Remove Member</th>
+                <th class="no-sorting centered-header">Change Status</th>
+                <th class="no-sorting centered-header">Remove Member</th>
                 {% endif %}
             </tr>
         </thead>
@@ -51,17 +51,17 @@
             {% for i in members %}
             <tr>
                 <td>
-                    <a aria-label="{{i['supervisor']}}" class="hover_indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
+                    <a aria-label="{{i['supervisor']}}" class="hover-indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
                     <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
 
                     <br>
 
                     {% if i[4] %}
-                        <span class="isbanned_badge">Banned</span>
+                        <span class="isbanned-badge">Banned</span>
                     {% endif %}
                 </td>
 
-                <td style="vertical-align: middle;">
+                <td class="centered-cell">
                     {% if i['primary_positions'] == 0 and i['secondary_positions'] == 0 %}
                         None
                     {% else %}
@@ -70,9 +70,9 @@
                     {% endif %}
                 </td>
 
-                <td class="text-center" style="vertical-align: middle;">
+                <td class="text-center centered-cell">
                     <div class="form-group">
-                        <label class="switch" style="top: 10px;">
+                        <label class="switch table-switch">
                             <input type="checkbox" {% if i['isCoordinator'] %} checked {% endif %}>
                             <span class="slider round"></span>
                         </label>
@@ -81,14 +81,14 @@
                 </td>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
-                <td class="text-center" style="vertical-align: middle;">
+                <td class="text-center centered-cell">
                     {% if not i[4] %}
                     <button class="btn btn-danger" align="center">&nbsp; Ban &nbsp;</button> 
                     {% else %}
                     <button class="btn btn-success " align="center">Unban</button>
                     {% endif %}
                 </td>
-                <td class="text-center" style="vertical-align: middle;">
+                <td class="text-center centered-cell">
                     <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
                 </td>
                 {% endif %}

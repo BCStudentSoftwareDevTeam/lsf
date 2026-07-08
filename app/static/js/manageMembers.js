@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('#manageMembers').DataTable({
         'columnDefs': [{
-            'targets': [1, 2],
+            'targets': '.no-sorting',
             'orderable': false
         }], // hide sort icon on header of first column
         'aaSorting': [
