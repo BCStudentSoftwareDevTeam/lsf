@@ -61,9 +61,13 @@
                     {% endif %}
                 </td>
 
-                <td>
-                    <b>Primary:</b> 12<br>
-                    <b>Secondary:</b> 13
+                <td style="vertical-align: middle;">
+                    {% if i['primary_positions'] == 0 and i['secondary_positions'] == 0 %}
+                        None
+                    {% else %}
+                        <b>Primary:</b> {{i['primary_positions']}}<br>
+                        <b>Secondary:</b> {{i['secondary_positions']}}
+                    {% endif %}
                 </td>
 
                 <td class="text-center" style="vertical-align: middle;">

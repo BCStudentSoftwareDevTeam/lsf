@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
 import operator
 from app.models.department import Department
@@ -27,7 +27,39 @@ def manageStaff(org=None,account=None):
         dept = None
         abort(404)
 
-    members = list(SupervisorDepartment.select(SupervisorDepartment, Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).order_by(SupervisorDepartment.isActive.desc()).dicts())
+    members = list(
+        SupervisorDepartment.
+        select(
+            SupervisorDepartment,
+            Supervisor
+        ).where(
+            SupervisorDepartment.department == dept
+        ).join(Supervisor).order_by(
+            SupervisorDepartment.isActive.desc()
+        ).dicts()
+    )
+
+    student_count = list(
+        LaborStatusForm.
+        select(
+            fn.SUM(Case(LaborStatusForm.jobType, (("Primary", 1),), 0)).alias("primary_positions"), 
+            fn.SUM(Case(LaborStatusForm.jobType, (("Secondary", 1),), 0)).alias("secondary_positions"),
+            LaborStatusForm.department, 
+            LaborStatusForm.supervisor
+        ).group_by(
+            LaborStatusForm.department, 
+            LaborStatusForm.supervisor
+        ).dicts()
+    )
+    
+    counts = {row['supervisor']: row for row in student_count}
+    
+    for member in members:
+        row = counts.get(member["supervisor"], {})
+        member["primary_positions"] = row.get("primary_positions", 0)
+        member["secondary_positions"] = row.get("secondary_positions", 0)
+    
+    print(members)
 
     return render_template('main/manageMembers.html', 
                            members = members,
