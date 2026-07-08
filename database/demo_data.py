@@ -674,7 +674,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -689,7 +689,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -704,7 +704,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       1,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -719,7 +719,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -734,7 +734,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isApproved":      False,
+    "isFinal":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -755,7 +755,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isApproved": True,
+                    "isFinal": True,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -770,7 +770,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isApproved": False,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
@@ -794,46 +794,46 @@ print(PositionHistory())
 
 positionhistory = [
     {
-        "positioncode": "S61407",
+        "positionCode": "S61407",
         "status": "Active",
-        "WLS": 1,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 1,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
+        "department": 1
     },
     {
         
-        "positioncode": "S61408",
+        "positionCode": "S61408",
         "status": "Active",
-        "WLS": 2,
-        "revisiondate": f"{current_year}-09-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 2,
+        "revisionDate": f"{current_year}-09-01",
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61409",
+        "positionCode": "S61409",
         "status": "Active",
-        "WLS": 3,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 3,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61411",
+        "positionCode": "S61411",
         "status": "Active",
-        "WLS":3,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "wls":3,
+        "revisionDate" : f"{current_year}-01-01",
+        "description": "",
+        "department" : 1
 
         },
         {
-        "positioncode": "S61410",
+        "positionCode": "S61410",
         "status": "Inactive",
-        "WLS":2,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "wls":2,
+        "revisionDate" : f"{current_year}-01-01",
+        "description": "",
+        "department" : 1
         },
     
 ]

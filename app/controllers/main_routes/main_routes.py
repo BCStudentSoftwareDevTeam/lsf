@@ -76,16 +76,18 @@ def departmentPortal(org=None,account=None):
     staff = Tracy().getSupervisors()
     supervisors = []
     try:
-        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm).get()
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
+        print(allocation, '*********************************************************Scott')
     except DoesNotExist:
         allocation = None
-    term = g.openTerm.termName
+    term = 202500
     ViewAllocations(org, account)
     for i in staff:
         if i.DEPT_NAME == Department.DEPT_NAME:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-    total_hours = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == g.openTerm).scalar()
-    used_allocation = LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm, LaborStatusForm.studentConfirmation == True, LaborStatusForm.weeklyHours.is_null(False)).scalar()
+    totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+    usedAllocation = LaborStatusForm.select(LaborStatusForm).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation == True).scalar()
+    print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
