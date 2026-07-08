@@ -6,9 +6,9 @@
     <link rel="stylesheet" type="text/css"
   href="{{url_for('static', filename ='css/departmentPortal.css')}}?u={{lastStaticUpdate}}">
 {% endblock %}
-
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -26,9 +26,25 @@
     </select>
 
   </div>
-<!-- <div class="col-sm-4">
-  <section class="card " aria-labelledby="members-title">
 
+{% if department %}
+<div class="card-group" style="display:inline-flex; gap: 2rem;" style="height: 1000px">
+     
+  <div class="card" style="width:50rem; border-radius: 2rem;">
+    <div class="card-body">
+      <h5 class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+        </svg>
+        Current Allocation
+      </h5>
+      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+
+  <section class="card "style="width:50rem; border-radius: 2rem;" aria-labelledby="members-title">
     <div class="card-body">
       <div class="media">
         <div class="media-left">
@@ -36,34 +52,66 @@
             <i class="fa fa-users"></i>
           </span>
         </div>
-
         <div class="media-body media-middle">
-          <h3>
+          <h1>
             Members
-          </h3>
+          </h1>
         </div>
       </div>
-
-      <h4>Labor Coordinator</h4>
+      <h4>Labor Coordinator(s)</h4>
       <p>Dr. Jones</p>
 
-      <h4>Supervisors</h4>
-      <p>
-        Dr. Heggen<br>
-        Dr. Nakazawa
-      </p>
+      <h2>Supervisors</h2>
+      {% for s in supervisors %}
+      {% if 3 > loop.index0 %}
+        <p>{{ s }}</p>
+      {% elif 4 > loop.index0 %}
+        <p>and {{ supervisors | length}} more...</p>
+      {% endif %}
+      {% endfor %}
     </div>
 
     <div class="card-footer text-center">
-      <a href="#" class="btn btn-default btn-sm">
-        View Details <span class="glyphicon glyphicon-chevron-right"></span>
+      <a href="#" class="btn btn-primary">View Details
+         <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
-
   </section>
-</div> -->
 
-<div class="col-sm-4">
+  <div class="card mb-3" style="width:50rem; border-radius: 2rem;">
+    <div class="card-body">
+       <div class="media">
+        <div class="media-body media-middle">
+          <h1>Positions</h1>
+        </div>
+        <div class="media-right">
+          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
+            <i class="fa fa-suitcase"></i>
+          </span>
+        </div>
+
+      </div>
+      <ul style="line-height:2;">
+      {% for p in positions %}
+        {% if 7 > loop.index0 %}
+          <li class="card-text">{{ p }}</li>
+        {% elif 8 == loop.index0 %}
+          </ul><p class="card-text">and {{ positions | length}} more...</p>
+        {% endif %}
+      {% endfor %}
+      </ul>
+      
+    </div>
+       <div class="card-footer text-center">
+          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
+       </div>
+      </div>
+</div>
+
+{% endif %}
+
+
+<!-- <div class="col-sm-4">
   <section class="card members-card" aria-labelledby="members-title">
     <div class="card-body">
 
@@ -101,7 +149,10 @@
 
     </div>
   </section>
-</div>
-{% endblock %}
+</div> -->
+
+{% endblock %}\
+
+
 
 
