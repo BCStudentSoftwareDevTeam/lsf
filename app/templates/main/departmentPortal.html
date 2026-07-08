@@ -54,12 +54,8 @@
       <ul style="line-height:2;">
       {% for p in positions %}
         {% if 7 > loop.index0 %}
-          {% if not pos_his[loop.index0] == "#" %}
           <li class="card-text">
-            <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{pos_his[loop.index0]}}">{{ p }}</a> </li>
-          {% else %}
-            <li class="card-text">{{ p }}</li>
-          {% endif %}
+            <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a> </li>
         {% elif 8 == loop.index0 %}
           </ul><p class="card-text">and {{ positions | length}} more...</p>
         {% endif %}
