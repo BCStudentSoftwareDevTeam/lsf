@@ -28,41 +28,7 @@
 
 {% if department %}
 <div class="card-group" style="display:inline-flex; gap: 1rem">
-     
-<section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="current_allocation-title">
-    <div class="card-body">
-      <div class="media">
-        <div class="header-container" style="padding-top: 12px;">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i> 
-            <h1 style="display: inline; margin: 0;" >Current Allocation</h1>
-          </span>
-        </div>
-      </div>
-      <div>
-        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>AY 26/27</h3> <h3>15/20 Positions</h3>
-        </div>
-        <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 HR : 2</li>
-          <li>12 HR : 3</li>
-          <li>15 HR : 5</li>
-          <li>20 HR : 5</li>
-        </ul>
-      </div>
-      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3> <h3>0 of 200 Hrs.</h3>
-      </div>
-    </div>
-        <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary btn-sm">
-        View Details <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-      <a href="#" class="btn btn-primary btn-sm">
-        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-    </section>
+    
 
   <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">
@@ -79,17 +45,49 @@
           </h1>
         </div>
       </div>
-      <h4>Labor Coordinator(s)</h4>
-      <p>Dr. Jones</p>
+      <h4> <b>{% if labor_coordinators|length == 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
+      {% if labor_coordinators %}
+        {% for coordinator in labor_coordinators %}
+          <p>
+            {{ coordinator.name }}
 
-      <h2>Supervisors</h2>
-      {% for s in supervisors %}
-      {% if 3 > loop.index0 %}
-        <p>{{ s }}</p>
-      {% elif 4 > loop.index0 %}
-        <p>and {{ supervisors | length}} more...</p>
+            {% if coordinator.email %}
+              <i class="bi bi-envelope-fill"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="{{ coordinator.email }}">
+              </i>
+            {% endif %}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p>None assigned</p>
       {% endif %}
-      {% endfor %}
+
+    
+      <h4><b>Supervisors</b></h4>
+
+      {% if supervisors %}
+        {% for s in supervisors %}
+          {% if loop.index0 < 3 %}
+            <p>
+              {{ s.name }}
+
+              {% if s.email %}
+                <i class="bi bi-envelope-fill"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="{{ s.email }}">
+                </i>
+              {% endif %}
+            </p>
+          {% elif loop.index0 == 3 %}
+            <p>and {{ supervisors|length - 3 }} more...</p>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p>No active supervisors assigned.</p>
+      {% endif %}
     </div>
 
     <div class="card-footer text-center">
@@ -98,37 +96,6 @@
       </a>
     </div>
   </section>
-
-  <div class="card" style="width:90%; border-radius: 1rem;">
-    <div class="card-body">
-       <div class="media">
-        <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-suitcase-lg-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
-          </span>
-        </div>
-        <div class="media-body media-middle">
-          <h1>Positions</h1>
-        </div>
-
-      </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-          <li class="card-text">
-            <a href= "/{{pos_his[loop.index0]}}">{{ p }}</a> </li>
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
-      {% endfor %}
-      </ul>
-      
-    </div>
-       <div class="card-footer text-center">
-          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
-    </div>
-</div>
 
 {% endif %}
 

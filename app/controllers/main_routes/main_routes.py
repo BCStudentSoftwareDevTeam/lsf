@@ -87,18 +87,44 @@ def departmentPortal(org=None,account=None):
             
             
 
-    staff = Tracy().getSupervisors()
+    supervisor_departments = SupervisorDepartment.select().where(
+        SupervisorDepartment.department == dept,
+        SupervisorDepartment.isActive == True,
+        SupervisorDepartment.banStatus == False
+)
+
+    labor_coordinators = []
     supervisors = []
 
-    for i in staff:
-        if i.ORG == org:
-            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+    for supervisor_department in supervisor_departments:
+        supervisor = supervisor_department.supervisor
+
+        if supervisor is None:
+            continue
+
+        supervisor_name = (
+            supervisor.preferred_name
+            or supervisor.legal_name
+            or supervisor.LAST_NAME
+            or supervisor.ID
+        )
+
+        supervisor_display = {
+            "name": supervisor_name,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisor_department.isCoordinator:
+            labor_coordinators.append(supervisor_display)
+        else:
+            supervisors.append(supervisor_display)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
+                           labor_coordinator=labor_coordinators,
                            pos_his = pos_his
                            )
 
