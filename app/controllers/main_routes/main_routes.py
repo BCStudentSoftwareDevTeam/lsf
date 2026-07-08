@@ -16,6 +16,8 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.tracy import Tracy
+from app.models.positionHistory import PositionHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -51,21 +53,62 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
+    if org and account:
+        try:
+            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        except (NameError, DoesNotExist):
+            dept = None
+    else:
         dept = None
-
-
-
+    
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    
+    pos = Tracy().getPositionsFromDepartment(org, account)
+    positions = []
+    pos_his = []
+    if pos == []:
+        positions = ["No Positions for this Department"]
+    else:
+        for i in pos:
+            positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
+            try:
+                pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
+                pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
+            except:
+                pos_his.append("#")
+
+    staff = Tracy().getSupervisors()
+    supervisors = []
+
+    for i in staff:
+        if i.ORG == org:
+            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                           department = dept,
+                           positions = positions,
+                           supervisors = supervisors,
+                           pos_his = pos_his
+                           )
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+    print(positions)
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
