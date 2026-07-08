@@ -60,7 +60,8 @@ def departmentPortal(org=None,account=None):
             dept = None
     else:
         dept = None
-    
+
+
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -86,6 +87,21 @@ def departmentPortal(org=None,account=None):
     for i in staff:
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+
+        
+    pos = Tracy().getPositionsFromDepartment(org, account)
+    positions = []
+    pos_his = []
+    if pos == []:
+        positions = ["No Positions for this Department"]
+    else:
+        for i in pos:
+            positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
+            try:
+                pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
+                pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
+            except:
+                pos_his.append("#")
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
