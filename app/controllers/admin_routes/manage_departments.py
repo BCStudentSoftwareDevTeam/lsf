@@ -1,4 +1,5 @@
 from app.controllers.admin_routes import *
+from app.models import term
 from app.models.user import *
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.login_manager import require_login
@@ -35,7 +36,7 @@ def manage_departments():
                 return render_template('errors/403.html'), 403
 
         #FIXME: hardcoded term year for the testing purposes
-        currentTerm = "202500"
+        currentTerm = 202500
 
         print("Current term: ", currentTerm)
 
@@ -44,6 +45,10 @@ def manage_departments():
         # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
         inactiveDepartments = Department.select().where(Department.isActive == False)
         
+        academicYear = (
+        Term.get(Term.termCode == currentTerm).termName
+)
+        academicYear = Term.get(Term.termCode == currentTerm).termName
 
         activeDepartments = (
             Department
@@ -63,7 +68,8 @@ def manage_departments():
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                currentTerm = currentTerm
+                                currentTerm = currentTerm,
+                                academicYear = academicYear
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
