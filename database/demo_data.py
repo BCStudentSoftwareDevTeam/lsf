@@ -626,55 +626,55 @@ print(" * laborOfficeNotes added")
 
 positionhistory = [
     {
-        "positioncode": "S61407",
+        "positionCode": "S61407",
         "status": "Active",
-        "WLS": 1,
+        "wls": 1,
         "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "description": "",
+        "department": 1
     },
     {
         
-        "positioncode": "S61408",
+        "positionCode": "S61408",
         "status": "Active",
-        "WLS": 2,
+        "wls": 2,
         "revisiondate": f"{current_year}-09-01",
-        "Description": "",
-        "Department_id": 1
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61409",
+        "positionCode": "S61409",
         "status": "Active",
-        "WLS": 3,
+        "wls": 3,
         "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61411",
+        "positionCode": "S61411",
         "status": "Active",
-        "WLS":3,
+        "wls":3,
         "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "description": "",
+        "department" : 1
 
         },
         {
-        "positioncode": "S61410",
+        "positionCode": "S61410",
         "status": "Inactive",
-        "WLS":2,
+        "wls":2,
         "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "description": "",
+        "department" : 1
         },
 
         {
-        "positioncode": "S12345",
+        "positionCode": "S12345",
         "status": "Active",
-        "WLS":3,
+        "wls":3,
         "revisiondate" : f"{current_year}-01-23",
-        "Description": "",
-        "Department_id" : 1
+        "description": "",
+        "department" : 1
         }
     
 ]
