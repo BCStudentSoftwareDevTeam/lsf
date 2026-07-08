@@ -9,7 +9,7 @@
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
   <!--selectpicker for department-->
-  <div class="form-group">
+  <div class="form-group" style="width:65rem; margin-left: auto; margin-right:auto">
     <select class="selectpicker"
             name='department'
             id='selectedDepartment'
@@ -24,4 +24,51 @@
     </select>
 
   </div>
+
+  {% if department %}
+<div class="card-group" style="display:inline-flex; gap: 1rem">
+     
+  <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="current_allocation-title">
+    </section>
+
+  <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="members-title">
+    </section>
+
+  <div class="card" style="width:90%; border-radius: 1rem;">
+    <div class="card-body">
+       <div class="media">
+        <div class="media-left media-middle">
+          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+            <i class="bi bi-suitcase-lg-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
+          </span>
+        </div>
+        <div class="media-body media-middle">
+          <h1>Positions</h1>
+        </div>
+
+      </div>
+      <ul style="line-height:2;">
+      {% for p in positions %}
+        {% if 7 > loop.index0 %}
+          {% if not pos_his[loop.index0] == "#" %}
+          <li class="card-text">
+            <a href= "/{{pos_his[loop.index0]}}">{{ p }}</a> </li>
+          {% else %}
+            <li class="card-text">{{ p }}</li>
+          {% endif %}
+        {% elif 8 == loop.index0 %}
+          </ul><p class="card-text">and {{ positions | length}} more...</p>
+        {% endif %}
+      {% endfor %}
+      </ul>
+      
+    </div>
+       <div class="card-footer text-center">
+          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
+       </div>
+    </div>
+</div>
+
+{% endif %}
+
 {% endblock %}
