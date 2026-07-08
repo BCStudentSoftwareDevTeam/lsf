@@ -34,8 +34,8 @@ def manageStaff(org=None,account=None):
             Supervisor
         ).where(
             SupervisorDepartment.department == dept
-        ).join(Supervisor).order_by(
-            SupervisorDepartment.isActive.desc()
+        ).join(
+            Supervisor
         ).dicts()
     )
 
