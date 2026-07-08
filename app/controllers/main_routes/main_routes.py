@@ -76,8 +76,10 @@ def departmentPortal(org=None,account=None):
 
     staff = Tracy().getSupervisors()
     supervisors = []
+    print(dept, '*********************************************************Denys')
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm).get()
+        print(allocation, '*********************************************************Scott')
     except DoesNotExist:
         allocation = None
     term = g.openTerm.termName
@@ -85,16 +87,17 @@ def departmentPortal(org=None,account=None):
     for i in staff:
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-    total_hours = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == g.openTerm).scalar()
-    used_allocation = LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm, LaborStatusForm.studentConfirmation == True, LaborStatusForm.weeklyHours.is_null(False)).scalar()
+    totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == g.openTerm).scalar()
+    usedAllocation = LaborStatusForm.select(LaborStatusForm).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == g.openTerm, LaborStatusForm.studentConfirmation == True).scalar()
+    print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
                            allocation = allocation,
-                           total_allocation = total_hours,
-                           used_allocation = used_allocation,
+                           total_allocation = totalPositions,
+                           used_allocation = usedAllocation,
                            term = term
                            )
 

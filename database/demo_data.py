@@ -586,6 +586,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
+            "studentConfirmation": True,
             "startDate": f"{current_year}-04-01",
             "endDate": f"{current_year}-09-01"
         }]).on_conflict_replace().execute()
@@ -704,7 +705,7 @@ print(" * Department members added")
 ###########################
 allocations = [ 
     {
-    "termCode":         202200,
+    "termCode":         202500,
     "department":       3,
     "isApproved":       False,
     "approvedOn":       None,
