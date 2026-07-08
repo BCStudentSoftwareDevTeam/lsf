@@ -626,6 +626,7 @@ print(" * laborOfficeNotes added")
 
 positionhistory = [
     {
+        "positionTitle": "Student Programmer",
         "positionCode": "S61407",
         "status": "Active",
         "wls": 1,
@@ -634,7 +635,7 @@ positionhistory = [
         "department": 1
     },
     {
-        
+        "positionTitle": "Research Associate",
         "positionCode": "S61408",
         "status": "Active",
         "wls": 2,
@@ -643,6 +644,7 @@ positionhistory = [
         "department": 1
     },
     {
+        "positionTitle": "Labor Workers",
         "positionCode": "S61409",
         "status": "Active",
         "wls": 3,
@@ -651,6 +653,7 @@ positionhistory = [
         "department": 1
     },
     {
+        "positionTitle": "Teaching Associate",
         "positionCode": "S61411",
         "status": "Active",
         "wls":3,
@@ -658,17 +661,18 @@ positionhistory = [
         "description": "",
         "department" : 1
 
-        },
-        {
+    },
+    {
+        "positionTitle": "Teaching Associate",
         "positionCode": "S61410",
         "status": "Inactive",
         "wls":2,
         "revisionDate" : f"{current_year}-01-01",
         "description": "",
         "department" : 1
-        },
-
-        {
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
         "positionCode": "S12345",
         "status": "Active",
         "wls":3,

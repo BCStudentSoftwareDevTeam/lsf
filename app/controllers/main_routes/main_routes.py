@@ -69,25 +69,22 @@ def departmentPortal(org=None,account=None):
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
         
-    positions = Tracy().getPositionsFromDepartment(org, account)
+    positions = list(PositionHistory.select().where(PositionHistory.department == dept).order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []
-    posHis = []
+    posUrl = []
     if positions == []:
         positionsList = ["No Positions for this Department"]
     else:
         for i in positions:
-            positionsList.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
-            try:
-                pos_his_obj = PositionHistory.get(PositionHistory.positionCode == i.POSN_CODE)
-                posHis.append(str(pos_his_obj.positionCode) + str(pos_his_obj.revisionDate))
-            except:
-                posHis.append("#")
+            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
+            posUrl.append(str(i.positionCode) + "/" + str(i.revisionDate))
+
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positionsList,
-                           posHis = posHis)
+                           posUrl = posUrl)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
