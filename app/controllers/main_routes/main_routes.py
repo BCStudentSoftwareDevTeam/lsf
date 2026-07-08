@@ -19,6 +19,7 @@ from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.models.positionHistory import PositionHistory
 
+
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
     return redirect(logout())
@@ -61,57 +62,32 @@ def departmentPortal(org=None,account=None):
     else:
         dept = None
 
+
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    
-    supervisorDepartments = (
-        SupervisorDepartment
-        .select()
-        .join(Supervisor)
-        .where(SupervisorDepartment.department == dept)
-        .order_by(
-          fn.COALESCE(
-            Supervisor.preferred_name,
-            Supervisor.legal_name,
-            Supervisor.LAST_NAME
-        ).asc()
-    )
-    )
 
-    laborCoordinators = []
-    supervisors = []
-
-    for supervisorDepartment in supervisorDepartments:
-        supervisor = supervisorDepartment.supervisor
-
-        if supervisor is None:
-            continue
-
-        firstName = supervisor.preferred_name or supervisor.legal_name or ""
-        lastName = supervisor.LAST_NAME or ""
-
-        supervisorName = f"{firstName} {lastName}".strip()
-
-        supervisorDisplay = {
-            "name": supervisorName,
-            "email": supervisor.EMAIL
-        }
-
-        if supervisorDepartment.isCoordinator:
-            laborCoordinators.append(supervisorDisplay)
-        else:
-            supervisors.append(supervisorDisplay)
+        
+    pos = Tracy().getPositionsFromDepartment(org, account)
+    positions = []
+    pos_his = []
+    if pos == []:
+        positions = ["No Positions for this Department"]
+    else:
+        for i in pos:
+            positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
+            try:
+                pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
+                pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
+            except:
+                pos_his.append("#")
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                           supervisors = supervisors,
-                           laborCoordinators=laborCoordinators,
-                           currentUser=g.currentUser
-                           )
-
+                           positions = positions,
+                           pos_his = pos_his)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

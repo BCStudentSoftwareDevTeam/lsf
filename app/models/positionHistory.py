@@ -2,21 +2,12 @@ from app.models import *
 from app.models.department import Department
 
 class PositionHistory(baseModel):
-    positionTitle        = CharField()
-    positionCode       = CharField()
-    department         = ForeignKeyField(Department)
+    positioncode       = CharField()
     status             = CharField()
-    wls                = IntegerField()
-    revisionDate       = DateField()
-    description        = TextField(default=None)
+    WLS                = IntegerField()
+    revisiondate       = DateField()
+    Description        = TextField(default=None)
+    Department         = ForeignKeyField(Department)
 
     class Meta:
-        indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
-
-   
-    ...
-    @classmethod
-    def active(cls):
-        return cls.select().where(cls.status == "Active")
-
-
+        primary_key = CompositeKey('positioncode', 'revisiondate', 'status')
