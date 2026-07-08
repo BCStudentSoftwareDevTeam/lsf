@@ -57,4 +57,7 @@ case "$1" in
 	no-ui)
 		no_ui
 		;;
+    *) # assume it is a file or flag
+        python -m pytest $FLAGS -m "unit or integration" $1
+        ;;
 esac
