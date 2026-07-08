@@ -114,17 +114,24 @@ function updateApproveTableData(returned_details) {
 
 // Shows a non-blocking allocation warning per department represented among the
 // selected forms, so admins can see the impact of approval before confirming.
+// Each category (positions / break hours) is highlighted independently, since
+// a department can be over on one and fine on the other.
 function updateAllocationWarnings(allocationWarnings) {
   if (!allocationWarnings) { return; }
   for (var i = 0; i < allocationWarnings.length; i++) {
     var w = allocationWarnings[i];
-    var alertClass = w.isOverAllocated ? 'alert-danger' : 'alert-info';
-    var html = '<div class="alert ' + alertClass + '" role="alert">' +
+    var boxClass = w.isOverAllocated ? 'alert-warning' : 'alert-info';
+    var overStyle = 'color:#a94442; font-weight:bold;';
+    var positionsStyle = w.isPositionsOverAllocated ? overStyle : '';
+    var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : '';
+    var positionsFlag = w.isPositionsOverAllocated ? ' &#9888; Over allocation' : '';
+    var breakHoursFlag = w.isBreakHoursOverAllocated ? ' &#9888; Over allocation' : '';
+    var html = '<div class="alert ' + boxClass + '" role="alert">' +
       '<strong>' + w.departmentName + ' Allocation</strong><br>' +
-      'Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
-      ' allocated (' + w.positionsRemaining + ' remaining)<br>' +
-      'Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
-      ' allocated (' + w.breakHoursRemaining + ' remaining)' +
+      '<span style="' + positionsStyle + '">Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
+      ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span><br>' +
+      '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
+      ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +
       '</div>';
     $('#allocationWarnings').append(html);
   }

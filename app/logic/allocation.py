@@ -93,14 +93,18 @@ def getAllocationWarning(dept, term):
 
     positionsRemaining = summary['totalPositionsAllocated'] - summary['totalPositionsUsed']
     breakHoursRemaining = summary['allocation'].breakHours - summary['breakHoursUsed']
+    isPositionsOverAllocated = positionsRemaining < 0
+    isBreakHoursOverAllocated = breakHoursRemaining < 0
 
     return {
         'departmentName': dept.DEPT_NAME,
         'totalPositionsAllocated': summary['totalPositionsAllocated'],
         'totalPositionsUsed': summary['totalPositionsUsed'],
         'positionsRemaining': positionsRemaining,
+        'isPositionsOverAllocated': isPositionsOverAllocated,
         'breakHoursAllocated': summary['allocation'].breakHours,
         'breakHoursUsed': summary['breakHoursUsed'],
         'breakHoursRemaining': breakHoursRemaining,
-        'isOverAllocated': positionsRemaining < 0 or breakHoursRemaining < 0,
+        'isBreakHoursOverAllocated': isBreakHoursOverAllocated,
+        'isOverAllocated': isPositionsOverAllocated or isBreakHoursOverAllocated,
     }
