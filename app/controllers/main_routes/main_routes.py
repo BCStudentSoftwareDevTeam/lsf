@@ -75,17 +75,10 @@ def departmentPortal(org=None,account=None):
         for i in pos:
             positions.append(i.POSN_TITLE + ": " + "(WLS " + i.WLS + ")")
             try:
-                print("trying to get position objects")
                 pos_his_obj = PositionHistory.get(PositionHistory.positioncode == i.POSN_CODE)
-                print("trying to add positions to list")
-                print(str(pos_his_obj.revisiondate) + str(pos_his_obj.positioncode))
                 pos_his.append(str(pos_his_obj.positioncode) + str(pos_his_obj.revisiondate))
             except:
                 pos_his.append("#")
-    print("TESTING THE POSITION HISTORY LIST")
-    print(pos_his)
-            
-            
 
     staff = Tracy().getSupervisors()
     supervisors = []
