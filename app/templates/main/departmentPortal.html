@@ -56,7 +56,7 @@
         {% if 7 > loop.index0 %}
           {% if not pos_his[loop.index0] == "#" %}
           <li class="card-text">
-            <a href= "/{{pos_his[loop.index0]}}">{{ p }}</a> </li>
+            <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{pos_his[loop.index0]}}">{{ p }}</a> </li>
           {% else %}
             <li class="card-text">{{ p }}</li>
           {% endif %}
