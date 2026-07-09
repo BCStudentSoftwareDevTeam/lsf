@@ -73,7 +73,7 @@
                 <td class="text-center centered-cell">
                     <div class="form-group">
                         <label class="switch table-switch">
-                            <input type="checkbox" {% if i['isCoordinator'] %} checked {% endif %}>
+                            <input class="assign-coordinator" type="checkbox" {% if i['isCoordinator'] %} checked {% endif %} data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
                             <span class="slider round"></span>
                         </label>
                         <span class="switch-label"></span>
@@ -96,7 +96,7 @@
                         data-member-status="Unbanned">Unban</button>
                     {% endif %}
                 </td>
-                <td class="text-center centered-cell">
+                <td class="text-center centered-cell remove-member" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
                     <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
                 </td>
                 {% endif %}

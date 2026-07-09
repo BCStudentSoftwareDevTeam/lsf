@@ -20,11 +20,12 @@ $(document).ready(function() {
         let memberStatus = $(this).data("member-status");
         let category;
 
-if (memberStatus === "Banned") {
-    category = "danger";
-} else {
-    category = "success";
-}
+        if (memberStatus === "Banned") {
+            category = "danger";
+        } else {
+            category = "success";
+        }
+                
         let quote = String.fromCharCode(39);
 
         $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + memberStatus + quote + ".</div>");
@@ -39,6 +40,25 @@ if (memberStatus === "Banned") {
             $(this).html("&nbsp; Ban &nbsp;");
             $(this).data("member-status", "Banned");
         }
+    });
+
+    $(document).on("click", ".remove-member", function() {
+        let  memberName = $(this).data("member-name");
+        $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
+        $("#flasher").delay(3000).fadeOut();
+    });
+
+    $(document).on("click", ".assign-coordinator", function() {
+        let  memberName = $(this).data("member-name");
+
+        if ($(this).is(":checked")) {
+            $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
+            $("#flasher").delay(3000).fadeOut();
+        } else {
+            $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
+            $("#flasher").delay(3000).fadeOut();
+        }
+        
     });
 })
 
