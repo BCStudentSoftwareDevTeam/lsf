@@ -52,11 +52,12 @@
             {{ coordinator.name }}
 
             {% if coordinator.email %}
-              <i class="bi bi-envelope-fill"
-                data-toggle="tooltip"
-                data-placement="bottom"
-                title="{{ coordinator.email }}">
-              </i>
+                 <a href="mailto:{{ coordinator.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ coordinator.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
             {% endif %}
           </p>
         {% endfor %}
@@ -74,11 +75,13 @@
               {{ s.name }}
 
               {% if s.email %}
-                <i class="bi bi-envelope-fill"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  title="{{ s.email }}">
-                </i>
+                  <a href="mailto:{{ s.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ s.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
+                
               {% endif %}
             </p>
           {% elif loop.index0 == 3 %}
