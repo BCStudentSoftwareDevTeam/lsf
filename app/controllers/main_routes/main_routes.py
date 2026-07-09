@@ -16,7 +16,6 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.logic.tracy import Tracy
 from app.models.positionHistory import PositionHistory
 
 
@@ -54,12 +53,9 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    if org and account:
-        try:
-            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-        except (NameError, DoesNotExist):
-            dept = None
-    else:
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
         dept = None
 
 
