@@ -544,7 +544,7 @@ print(f" * terms for {current_year}-{current_year+1} added")
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"202000",
+            "termCode_id": f"202500",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -572,7 +572,7 @@ LaborStatusForm.insert([{
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
-            "department_id": 5,
+            "department_id": 1,
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
