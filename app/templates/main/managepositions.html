@@ -40,8 +40,8 @@
                 {% for position in positions %}
                 <tr>
                     <td>{{position.title}} <span> <small class='text-muted'> {{position.positioncode}} </small> </span> </td> 
-                    <td class="text-center align-middle">{{position.WLS}}</td>
-                    <td class="text-center align-middle">{{position.revisiondate}}</td>
+                    <td>{{position.WLS}}</td>
+                    <td>{{position.revisiondate}}</td>
                     <td>
                         <button class="btn btn-success view-btn">
                             View
@@ -57,10 +57,10 @@
             </tbody>
         </table>
     </div>
-    <h3 class="total">
+    <!-- <h3 class="total">
         Total Positions:
         <span id="positionCount">{{ positions|length }} </span>
-    </h2>
+    </h2> -->
 </div>
 
 {% endblock %}
