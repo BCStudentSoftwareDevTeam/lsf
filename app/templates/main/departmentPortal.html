@@ -3,13 +3,14 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
 
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
   <!--selectpicker for department-->
-  <div class="form-group" style="width:65rem; margin-left: auto; margin-right:auto">
+  <div class="form-group">
     <select class="selectpicker"
             name='department'
             id='selectedDepartment'
@@ -26,22 +27,22 @@
   </div>
 
   {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 1rem">
+<div class="card-group">
      
-  <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="current_allocation-title">
+  <section class="dp-card" aria-labelledby="current_allocation-title">
     <!-- <div> Insert Allocations Card Here </div> -->
     </section>
 
-  <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="members-title">
+  <section class="dp-card" aria-labelledby="members-title">
     <!-- <div> Insert Members Card Here </div> -->
     </section>
 
-  <div class="card" style="width:90%; border-radius: 1rem;">
+  <div class="dp-card" aria-labelledby="positions-title">
     <div class="card-body">
        <div class="media">
         <div class="media-left media-middle">
           <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-suitcase-lg-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
+            <i class="bi bi-suitcase-lg-fill"></i>
           </span>
         </div>
         <div class="media-body media-middle">
