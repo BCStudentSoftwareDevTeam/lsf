@@ -103,6 +103,17 @@ $('.dropdown-menu .bs-searchbox input').on('keyup', function (e) {
     typeTimer = setTimeout(function() { sendQuery(e.target.value); }, keyInterval)
 });
 
+$('#search').on('changed.bs.select', function () {
+    let supervisorID = $(this).val();
+    let departmentID = $(this).data('department-id');
+
+    if (!supervisorID || !departmentID) return;
+
+    addSupervisorToDepartment(supervisorID, departmentID, function() {
+      window.location.reload();
+    });
+});
+
 // We load the options returned into an html string and then add them to the selectpicker at the end, to save A LOT of time.
 function sendQuery(search_str) {
     $("#search").empty();
@@ -110,7 +121,7 @@ function sendQuery(search_str) {
     if (search_str.length >= 3) {
       $.ajax({
         type: "GET",
-        url: "/main/search/" + encodeURIComponent(search_str),
+        url: "/members/search/" + encodeURIComponent(search_str),
         contentType: 'application/json',
         success: function(response) {
           let optionString = ""
@@ -120,7 +131,7 @@ function sendQuery(search_str) {
             let firstName = response[key]['firstName'];
             let lastName = response[key]['lastName'];
             let type = response[key]['type'];
-            if (type == "Student") {
+            if (type == "Supervisor") {
               choice_text = bnumber + ': ' + firstName + ' ' + lastName;
               highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;
               optionString += `<option value="${bnumber}" data-content="${highlighted_text}" data-subtext="${username}">${choice_text}</option>`;

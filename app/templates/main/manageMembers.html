@@ -8,6 +8,7 @@
 
 {% block scripts %}
 {{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/manageMembers.js') }}?u={{lastStaticUpdate}}"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
 {% endblock %}
@@ -26,7 +27,8 @@
                       title="Add Members by B# or Name"
                       data-width="258px"
                       data-show-subtext="true"
-                      data-live-search="true">
+                      data-live-search="true"
+                      data-department-id="{{ department.departmentID if department else '' }}">
             </select>
         </div>
     </form>
