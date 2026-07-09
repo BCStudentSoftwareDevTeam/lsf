@@ -16,15 +16,19 @@ from flask import request, redirect
 from flask import jsonify
 from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
+from datetime import date
+from app.logic.manageDepartments import getUsedBreakHours
 
 
-@admin.route('/admin/manageDepartments', methods=['GET'])
+@admin.route('/admin/manageDepartments/', methods=['GET'])
+@admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
 # @login_required
-def manage_departments():
+def manage_departments(academic_year = 202600):     # FIXME
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
     """
+    
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -35,28 +39,31 @@ def manage_departments():
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
 
-        #FIXME: hardcoded term year for the testing purposes
-        currentTerm = 202500
+        currentTerm = Term.get(Term.termCode == academic_year)
+       
+        totalBreakSum = getUsedBreakHours("202500")
 
-        print("Current term: ", currentTerm)
+        print("Something\n\n")
 
+        
+        for row in totalBreakSum:
+            print(row['department'],int(row['totalHours']),row['termCode'])
+            print(totalBreakSum)
+
+        print("\n\nSomething")
 
         # activeDepartments = Department.select().where(Department.isActive == True)
         # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
         inactiveDepartments = Department.select().where(Department.isActive == False)
         
-        academicYear = (
-        Term.get(Term.termCode == currentTerm).termName
-)
-        academicYear = Term.get(Term.termCode == currentTerm).termName
-
+        
         activeDepartments = (
             Department
             .select(Department, Allocation)
             .join(Allocation)
             .where(
                 Department.isActive == True,
-                Allocation.termCode == currentTerm
+                Allocation.termCode == currentTerm.termCode
             )
 
     
@@ -69,7 +76,8 @@ def manage_departments():
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
                                 currentTerm = currentTerm,
-                                academicYear = academicYear
+                                academicYear = currentTerm.termName
+                                # totalBreakSum = totalBreakSum
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
