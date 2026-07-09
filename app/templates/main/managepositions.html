@@ -23,15 +23,14 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-striped table-bordered text-centertable " id="positionTable">
+        <table class="table table-striped table-bordered text-center" id="positionTable">
             <thead>
                 <tr>
-                    <th class="text-center">Position</th>
-                    <th class="text-center">WLS</th>
-                    <th class="text-center">Status</th>
+                    <th class="text-center width-12">Position</th>
+                    <th class="text-center width-12">WLS</th>
                     <th class="width-12 text-center">Last Revision Date</th>
                     <th class="width-12 text-center">View Position Description</th>
-                    <th class="text-center">Edit Position Description</th>
+                    <th class="text-center width-12">Edit Position Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,20 +40,15 @@
                 {% for position in positions %}
                 <tr>
                     <td>{{position.title}} <span> <small class='text-muted'> {{position.positioncode}} </small> </span> </td> 
-                    <td>{{position.WLS}}</td>
-                    <td>
-                        <p class="bg-success p-5 text -white text-center">
-                            {{position.status}}
-                        </p>
-                    </td>
-                    <td>{{position.revisiondate}}</td>
+                    <td class="text-center align-middle">{{position.WLS}}</td>
+                    <td class="text-center align-middle">{{position.revisiondate}}</td>
                     <td>
                         <button class="btn btn-success view-btn">
                             View
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-primary request-btn">
+                        <button class="btn btn-primary request-btn text">
                             Request an Update
                         </button>
                     </td>
