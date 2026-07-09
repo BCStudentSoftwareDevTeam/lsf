@@ -17,7 +17,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
-from app.models.activeposition import Activeposition
+from app.models.positionHistory import PositionHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -95,8 +95,16 @@ def managePositions(org, account):
     except DoesNotExist:
         return render_template('errors/404.html'), 404
     print("THIS IS Dept:", dept)
-    positions = list(Activeposition.select().where(Activeposition.Department == dept))
-    print(f"Positions for department {dept.DEPT_NAME}, ID {dept.id}: {[p.title for p in positions]}")
+    
+    positions = list(
+    PositionHistory
+    .select()
+    .where(
+        (PositionHistory.department == dept) &
+        (PositionHistory.status == "Active")
+    )
+)
+    # print(f"Positions for department {dept.DEPT_NAME}, ID {dept.id}: {[p.title for p in positions]}")
     return render_template('main/managepositions.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,
