@@ -20,7 +20,7 @@ from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment 
 from app.models.allocation import Allocation 
 from app.models.positionHistory import PositionHistory 
-from app.models.activeposition import Activeposition
+from app.models.activepositions import ActivePosition
 
 print("Inserting data for demo and testing purposes")
 
@@ -668,40 +668,30 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
     }, 
 
     {
         "supervisor": "B12365892",
         "department": 1,
-        "banStatus": True,
-        "isActive": True,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B12365893",
         "department": 1,
-        "banStatus": False,
-        "isActive": False,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B00763721",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00841417",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
     }
 ]
@@ -716,7 +706,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -731,7 +721,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -746,7 +736,7 @@ allocations = [
     {
     "termCode":         202400,
     "department":       1,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -761,7 +751,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -776,7 +766,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isApproved":      False,
+    "isFinal":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -797,7 +787,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isApproved": True,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -812,7 +802,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isApproved": False,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
@@ -836,98 +826,75 @@ print(PositionHistory())
 
 positionhistory = [
     {
-        "positioncode": "S61407",
+        "positionTitle": "Student Programmer",
+        "positionCode": "S61407",
+        "department": 1,
         "status": "Active",
-        "WLS": 1,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
-    },
-    {
+        "wls": 1,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
         
-        "positioncode": "S61408",
-        "status": "Active",
-        "WLS": 2,
-        "revisiondate": f"{current_year}-09-01",
-        "Description": "",
-        "Department_id": 1
     },
     {
-        "positioncode": "S61409",
+        "positionTitle": "Research Associate",
+        "positionCode": "S61408",
+        "department": 1,
         "status": "Active",
-        "WLS": 3,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 2,
+        "revisionDate": f"{current_year}-09-01",
+        "description": "",
     },
     {
-        "positioncode": "S61411",
+        "positionTitle": "Labor Workers",
+        "positionCode": "S61409",
+        "department": 1, 
         "status": "Active",
-        "WLS":3,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "wls": 3,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
+        
+    },
+    {
+         "positionTitle": "Teaching Associate",
+        "positionCode": "S61411",
+        "department": 1,
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"{current_year}-01-01",
+        "description": "",
+    
 
         },
         {
-        "positioncode": "S61410",
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "department": 1,
         "status": "Inactive",
-        "WLS":2,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+        "wls":2,
+        "revisionDate" : f"{current_year}-01-01",
+        "description": "",
+    
         },
+        {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"{current_year}-03-29",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"{current_year}-01-23",
+        "description": "",
+        "department" : 1
+        }
     
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
 
-Activepositions = [
-    {
-    "title": "Student Programmer",
-    "positioncode": "S61407",
-    "status": "",
-    "WLS": 1,
-    "revisiondate": f"{current_year}-07-01",
-    "Description": "Responsible for programming tasks",
-    "Department_id": 1
-    },
-    {
-    "title": "Student Assistant",
-    "positioncode": "S61408",
-    "status": "",
-    "WLS": 2,
-    "revisiondate": f"{current_year}-09-01",
-    "Description": "Responsible for assisting students  ",
-    "Department_id": 1
-    },
-    {
-    "title": "Student Researcher",
-    "positioncode": "S61409",
-    "status": "",
-    "WLS": 3,
-    "revisiondate": f"{current_year}-07-01",
-    "Description": "Responsible for conducting research",
-    "Department_id": 1
-    },
-    {
-    "title": "Student Consultant",
-    "positioncode": "S61411",
-    "status": "Inactive",
-    "WLS":3,
-    "revisiondate" : f"{current_year}-01-01",
-    "Description": "Responsible for providing consulting services",
-    "Department_id" : 1
-
-        },
-        {
-    "title": "Student Coordinator",
-    "positioncode": "S61410",
-    "status": "Active",
-    "WLS":2,
-   "revisiondate" : f"{current_year}-01-01",
-    "Description": "Responsible for coordinating student activities",
-    "Department_id" : 1
-        },
-    
-]
-Activeposition.insert_many(Activepositions).on_conflict_replace().execute()
+ActivePosition.insert_many(PositionHistory.select().where(PositionHistory.status == "Active"))
