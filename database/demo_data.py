@@ -590,11 +590,11 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
             "department_id": 1,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
-            "weeklyHours": 10,
+            "contractHours": 100,
             "startDate": f"{current_year}-04-01",
             "endDate": f"{current_year}-09-01"
         }]).on_conflict_replace().execute()
@@ -614,11 +614,11 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
             "department_id": 5,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
-            "weeklyHours": 10,
+            "contractHours": 100,
             "startDate": f"{current_year}-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
