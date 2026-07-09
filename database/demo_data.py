@@ -17,11 +17,10 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.supervisorDepartment import SupervisorDepartment 
-from app.models.allocation import Allocation 
-from app.models.positionHistory import PositionHistory 
-from app.models.activepositions import ActivePosition
-
+from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
+ 
 print("Inserting data for demo and testing purposes")
 
 #############################
@@ -668,30 +667,40 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
+        "banStatus": False,
+        "isActive": True,
         "isCoordinator": True
     }, 
 
     {
         "supervisor": "B12365892",
         "department": 1,
+        "banStatus": True,
+        "isActive": True,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B12365893",
         "department": 1,
+        "banStatus": False,
+        "isActive": False,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B00763721",
         "department": 1,
+        "banStatus": False,
+        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00841417",
         "department": 1,
+        "banStatus": False,
+        "isActive": True,
         "isCoordinator": True
     }
 ]
@@ -706,7 +715,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isFinal":       False,
+    "isApproved":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -721,7 +730,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isFinal":       False,
+    "isApproved":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -736,7 +745,7 @@ allocations = [
     {
     "termCode":         202400,
     "department":       1,
-    "isFinal":       False,
+    "isApproved":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -751,7 +760,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isFinal":       False,
+    "isApproved":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -766,7 +775,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isFinal":      False,
+    "isApproved":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -787,7 +796,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isFinal": False,
+                    "isApproved": True,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -802,7 +811,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isFinal": False,
+                    "isApproved": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
@@ -826,75 +835,47 @@ print(PositionHistory())
 
 positionhistory = [
     {
-        "positionTitle": "Student Programmer",
-        "positionCode": "S61407",
-        "department": 1,
+        "positioncode": "S61407",
         "status": "Active",
-        "wls": 1,
-        "revisionDate": f"{current_year}-07-01",
-        "description": "",
+        "WLS": 1,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
+    },
+    {
         
+        "positioncode": "S61408",
+        "status": "Active",
+        "WLS": 2,
+        "revisiondate": f"{current_year}-09-01",
+        "Description": "",
+        "Department_id": 1
     },
     {
-        "positionTitle": "Research Associate",
-        "positionCode": "S61408",
-        "department": 1,
+        "positioncode": "S61409",
         "status": "Active",
-        "wls": 2,
-        "revisionDate": f"{current_year}-09-01",
-        "description": "",
+        "WLS": 3,
+        "revisiondate": f"{current_year}-07-01",
+        "Description": "",
+        "Department_id": 1
     },
     {
-        "positionTitle": "Labor Workers",
-        "positionCode": "S61409",
-        "department": 1, 
+        "positioncode": "S61411",
         "status": "Active",
-        "wls": 3,
-        "revisionDate": f"{current_year}-07-01",
-        "description": "",
-        
-    },
-    {
-         "positionTitle": "Teaching Associate",
-        "positionCode": "S61411",
-        "department": 1,
-        "status": "Active",
-        "wls":3,
-        "revisionDate" : f"{current_year}-01-01",
-        "description": "",
-    
+        "WLS":3,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
 
         },
         {
-        "positionTitle": "Teaching Associate",
-        "positionCode": "S61410",
-        "department": 1,
+        "positioncode": "S61410",
         "status": "Inactive",
-        "wls":2,
-        "revisionDate" : f"{current_year}-01-01",
-        "description": "",
-    
+        "WLS":2,
+        "revisiondate" : f"{current_year}-01-01",
+        "Description": "",
+        "Department_id" : 1
         },
-        {
-        "positionTitle": "Teaching Associate",
-        "positionCode": "S61410",
-        "status": "Active",
-        "wls":2,
-        "revisionDate" : f"{current_year}-03-29",
-        "description": "",
-        "department" : 3
-    },
-    {
-        "positionTitle": "DUMMY POSITION",
-        "positionCode": "S12345",
-        "status": "Active",
-        "wls":3,
-        "revisionDate" : f"{current_year}-01-23",
-        "description": "",
-        "department" : 1
-        }
     
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
-
-ActivePosition.insert_many(PositionHistory.select().where(PositionHistory.status == "Active"))
