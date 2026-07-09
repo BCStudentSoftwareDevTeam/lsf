@@ -28,8 +28,8 @@
 
 {% if department %}
 <div class="card-group" style="display:inline-flex; gap: 1rem">
-    
-
+  
+ <!-- ------------------------Members_Card Started----------------------- -->
   <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">
       <div class="media">
@@ -62,7 +62,9 @@
           </p>
         {% endfor %}
       {% else %}
-        <p>None assigned</p>
+        <p>None assigned. <a href="#" >Add one?</a> </p> 
+        <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
+          
       {% endif %}
 
     
@@ -88,17 +90,21 @@
             <p>and {{ supervisors|length - 3 }} more...</p>
           {% endif %}
         {% endfor %}
-      {% else %}
+      {% elif not labor_coordinators and currentUser.isLaborAdmin %}
+        <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
+      {% else  %}
         <p>No active supervisors assigned.</p>
       {% endif %}
+
     </div>
 
     <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Details
+      <a href="#" class="btn btn-primary">View Members
          <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
   </section>
+  <!-- ------------------------Members_Card Ended----------------------- -->
 
 {% endif %}
 

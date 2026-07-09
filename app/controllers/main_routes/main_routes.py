@@ -18,6 +18,7 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.models.positionHistory import PositionHistory
+from peewee import fn
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -53,6 +54,7 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    currentUser = require_login()
     if org and account:
         try:
             dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
@@ -87,8 +89,18 @@ def departmentPortal(org=None,account=None):
             
             
 
-    supervisor_departments = SupervisorDepartment.select().where(
-        SupervisorDepartment.department == dept
+    supervisor_departments = (
+        SupervisorDepartment
+        .select()
+        .join(Supervisor)
+        .where(SupervisorDepartment.department == dept)
+        .order_by(
+          fn.COALESCE(
+            Supervisor.preferred_name,
+            Supervisor.legal_name,
+            Supervisor.LAST_NAME
+        ).asc()
+    )
     )
 
     labor_coordinators = []
@@ -121,7 +133,8 @@ def departmentPortal(org=None,account=None):
                            positions = positions,
                            supervisors = supervisors,
                            labor_coordinators=labor_coordinators,
-                           pos_his = pos_his
+                           pos_his = pos_his,
+                           currentUser=currentUser
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
