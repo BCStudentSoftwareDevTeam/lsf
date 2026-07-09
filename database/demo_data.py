@@ -662,7 +662,6 @@ supervisorDepartmentMembers = [
 SupervisorDepartment.insert_many(supervisorDepartmentMembers).on_conflict_replace().execute()
 print(" * Department members added")
 print(f"termCode_id being used: {202500!r}")
-print(list(Term.select(Term.termCode)))
 
 ############################
 # Allocation Dummy Data:
@@ -747,8 +746,7 @@ allocations = [
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
-print("Data insertion complete :)")
-print(PositionHistory())
+print(" * allocation added")
 
 
 #############################
@@ -801,3 +799,4 @@ positionHistory = [
     
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
+print(" * position history added")
