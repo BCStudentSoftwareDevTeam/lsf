@@ -17,6 +17,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import createSupervisorFromTracy
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -108,7 +109,11 @@ def addUserToDept():
             return "False"
 
         else:
-            SupervisorDepartment.create(supervisor=userDeptData['supervisorID'], department=userDeptData['departmentID'])
+            supervisorID = userDeptData['supervisorID']
+            if not Supervisor.get_or_none(Supervisor.ID == supervisorID):
+                createSupervisorFromTracy(bnumber=supervisorID)
+
+            SupervisorDepartment.create(supervisor=supervisorID, department=userDeptData['departmentID'])
             return "True"
     
     except Exception as e:
