@@ -690,7 +690,7 @@ positionhistory = [
         "department" : 1
     },
     {
-        "positionTitle": "Claude Prompter",
+        "positionTitle": "Junior Data Analyst",
         "positionCode": "S39568",
         "status": "Active",
         "wls":4,
@@ -699,16 +699,16 @@ positionhistory = [
         "department" : 1
     },
     {
-        "positionTitle": "ChatGPT Prompter",
+        "positionTitle": "Student Manager",
         "positionCode": "S74933",
         "status": "Active",
-        "wls":2,
+        "wls":5,
         "revisionDate" : f"{current_year}-04-01",
         "description": "",
         "department" : 1
     },
     {
-        "positionTitle": "Prompter Extraordinaire",
+        "positionTitle": "IT Technician",
         "positionCode": "S94932",
         "status": "Active",
         "wls":6,
@@ -726,7 +726,7 @@ positionhistory = [
         "department" : 1
     },
     {
-        "positionTitle": "Prompter Exemplare",
+        "positionTitle": "Senior Software Engineer",
         "positionCode": "S00000",
         "status": "Active",
         "wls":6,
