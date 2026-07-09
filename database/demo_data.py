@@ -102,6 +102,11 @@ localStudents = [
                 "LAST_POSN":"Student Manager",
                 "LAST_SUP_PIDM":"7"
                 },
+                {"ID": "B00811617", "legal_name": "Chris Georgiev", "isActive": True, "PIDM": "8", "FIRST_NAME": "Chris", "LAST_NAME": "Georgiev"},
+                {"ID": "B00815474", "legal_name": "Julius Fritz", "isActive": True, "PIDM": "9", "FIRST_NAME": "Julius", "LAST_NAME": "Fritz"},
+                {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
+                {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
+                {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"}
         ]
 tracyStudents = [
                 {
@@ -838,3 +843,84 @@ positionhistory = [
     
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+
+dummy_lsf = [
+    {
+        "laborStatusFormID": 4,
+            "termCode_id": f"202500",
+            "studentName": "Chris Georgiev",
+            "studentSupervisee_id": "B00811617",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 4,
+            "POSN_TITLE": "guy who does stuff",
+            "POSN_CODE": "S61415",
+            "weeklyHours": 12,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        
+        "laborStatusFormID": 5,
+            "termCode_id": f"202500",
+            "studentName": "Julius Fritz",
+            "studentSupervisee_id": "B00815474",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 2,
+            "POSN_TITLE": "guy who sits in chair",
+            "POSN_CODE": "S61416",
+            "weeklyHours": 15,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        "laborStatusFormID": 6,
+            "termCode_id": f"202500",
+            "studentName": "Subaru Natsuki",
+            "studentSupervisee_id": "B12345223",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Aura Monster",
+            "POSN_CODE": "S61417",
+            "weeklyHours": 20,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        "laborStatusFormID": 7,
+            "termCode_id": f"202500",
+            "studentName": "Hatsune Miku",
+            "studentSupervisee_id": "B12345003",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 6,
+            "POSN_TITLE": "Singer",
+            "POSN_CODE": "S61409",
+            "weeklyHours": 20,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        },
+        {
+        "laborStatusFormID": 8,
+            "termCode_id": f"202500",
+            "studentName": "Michael Jackson",
+            "studentSupervisee_id": "B12345772",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Secondary",
+            "WLS": 6,
+            "POSN_TITLE": "Famous singer",
+            "POSN_CODE": "S61410",
+            "weeklyHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        },
+]
+LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()

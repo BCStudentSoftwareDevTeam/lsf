@@ -1,4 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
+from flask_bootstrap import forms
 from peewee import JOIN, DoesNotExist
 from functools import reduce
 import operator
@@ -86,23 +87,59 @@ def departmentPortal(org=None,account=None):
         if i.DEPT_NAME == Department.DEPT_NAME:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    hours_list = [row.weeklyHours for row in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(
-    LaborStatusForm.department == dept,
-    LaborStatusForm.termCode_id == 202500,
-    LaborStatusForm.studentConfirmation == True
-    )]
-    usedAllocation = sum(hours_list) or 0
+    usedAllocation = [hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True))]
+    usedAllocation = len(usedAllocation)
+    student_hours = {}
+    for form in LaborStatusForm.select().where(
+        LaborStatusForm.department == dept,
+        LaborStatusForm.termCode_id == 202500
+    ):
+        sid = form.studentSupervisee_id
+        student_hours.setdefault(sid, []).append({
+            "jobType": form.jobType,
+            "weeklyHours": form.weeklyHours
+        })
+    for sid, jobs in student_hours.items():
+        primary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Primary")
+        secondary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Secondary")
+        print(sid, "Primary:", primary, "Secondary:", secondary)
+    def count_workers(job_type, hours_bucket):
+        return LaborStatusForm.select().where(
+            LaborStatusForm.department == dept,
+            LaborStatusForm.termCode == 202500,
+            LaborStatusForm.jobType == job_type,
+            LaborStatusForm.weeklyHours == hours_bucket,
+            LaborStatusForm.studentConfirmation.is_null(True)  # pending counts as "used" for now
+        ).count()
+    
+    used_10     = count_workers("Primary", "10")
+    used_12     = count_workers("Primary", "12")
+    used_15     = count_workers("Primary", "15")
+    used_20     = count_workers("Primary", "20")
+    used_5_sec  = count_workers("Secondary", "5")
+    used_10_sec = count_workers("Secondary", "10")
+    print(usedAllocation, '*********************************************************hours_list')
     print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
-    print(list(LaborStatusForm.select().where(LaborStatusForm.department == dept)))
+    print(list(LaborStatusForm.select(LaborStatusForm.studentConfirmation).where(
+    LaborStatusForm.department == dept,
+    LaborStatusForm.termCode == 202500
+)))
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positions,
                            supervisors = supervisors,
                            allocation = allocation,
-                           total_allocation = total_hours,
-                           used_allocation = used_allocation,
-                           term = term
+                           total_allocation = totalPositions,
+                           used_allocation = usedAllocation,
+                           term = term,
+                           studentHours = student_hours,
+                           used_10 = used_10,
+                           used_12 = used_12,
+                           used_15 = used_15,
+                           used_20 = used_20,
+                           used_5_sec = used_5_sec,
+                           used_10_sec = used_10_sec
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
