@@ -688,7 +688,54 @@ positionhistory = [
         "revisionDate" : f"{current_year}-01-23",
         "description": "",
         "department" : 1
-        }
+    },
+    {
+        "positionTitle": "Claude Prompter",
+        "positionCode": "S39568",
+        "status": "Active",
+        "wls":4,
+        "revisionDate" : f"{current_year}-01-31",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "ChatGPT Prompter",
+        "positionCode": "S74933",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"{current_year}-04-01",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Prompter Extraordinaire",
+        "positionCode": "S94932",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"{current_year}-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Human code generator",
+        "positionCode": "S22222",
+        "status": "Active",
+        "wls":1,
+        "revisionDate" : f"{current_year}-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Prompter Exemplare",
+        "positionCode": "S00000",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"{current_year}-05-03",
+        "description": "",
+        "department" : 1
+    }
     
+    
+
 ]
 PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
