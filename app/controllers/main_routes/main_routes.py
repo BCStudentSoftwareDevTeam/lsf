@@ -100,11 +100,10 @@ def departmentPortal(org=None,account=None):
         if supervisor is None:
             continue
 
-        supervisor_name = (
-            supervisor.preferred_name +" "+supervisor.LAST_NAME
-            or supervisor.legal_name
-            or supervisor.ID
-        )
+        first_name = supervisor.preferred_name or supervisor.legal_name or ""
+        last_name = supervisor.LAST_NAME or ""
+
+        supervisor_name = f"{first_name} {last_name}".strip()
 
         supervisor_display = {
             "name": supervisor_name,

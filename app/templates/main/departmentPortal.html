@@ -45,7 +45,7 @@
           </h1>
         </div>
       </div>
-      <h4> <b>{% if labor_coordinators|length == 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
+      <h4> <b>{% if labor_coordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
       {% if labor_coordinators %}
         {% for coordinator in labor_coordinators %}
           <p>
@@ -65,7 +65,7 @@
       {% endif %}
 
     
-      <h4> <b>{% if supervisors|length == 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
+      <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
 
       {% if supervisors %}
         {% for s in supervisors %}

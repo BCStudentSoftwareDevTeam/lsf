@@ -667,41 +667,90 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
     }, 
 
     {
         "supervisor": "B12365892",
         "department": 1,
-        "banStatus": True,
-        "isActive": True,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B12365893",
         "department": 1,
-        "banStatus": False,
-        "isActive": False,
         "isCoordinator": False
     }, 
 
     {
         "supervisor": "B00763721",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00841417",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
+    },
+    {
+        "supervisor": "B12361006",
+        "department": 4,
+        "isCoordinator": True
+    }, 
+
+    {
+        "supervisor": "B12365892",
+        "department": 4,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365893",
+        "department": 4,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B00763721",
+        "department": 4,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00841417",
+        "department": 4,
+        "isCoordinator": False
+    },
+    
+    
+    {
+        "supervisor": "B12361006",
+        "department": 3,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365892",
+        "department": 3,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365893",
+        "department": 3,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B00763721",
+        "department": 3,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00841417",
+        "department": 3,
+        "isCoordinator": False
     }
 ]
 
@@ -715,7 +764,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -730,7 +779,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -745,7 +794,7 @@ allocations = [
     {
     "termCode":         202400,
     "department":       1,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -760,7 +809,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -775,7 +824,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isApproved":      False,
+    "isFinal":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -796,7 +845,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isApproved": True,
+                    "isFinal": True,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -811,7 +860,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isApproved": False,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
@@ -833,58 +882,58 @@ print(PositionHistory())
 # Position History
 #############################
 
-positionhistory = [
-    {
-        "positioncode": "S61407",
-        "status": "Active",
-        "WLS": 1,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
-    },
-    {
+# positionhistory = [
+#     {
+#         "positionCode": "S61407",
+#         "status": "Active",
+#         "wls": 1,
+#         "revisiondate": f"{current_year}-07-01",
+#         "Description": "",
+#         "Department_id": 1
+#     },
+#     {
         
-        "positioncode": "S61408",
-        "status": "Active",
-        "WLS": 2,
-        "revisiondate": f"{current_year}-09-01",
-        "Description": "",
-        "Department_id": 1
-    },
-    {
-        "positioncode": "S61409",
-        "status": "Active",
-        "WLS": 3,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
-    },
-    {
-        "positioncode": "S61411",
-        "status": "Active",
-        "WLS":3,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
+#         "positionCode": "S61408",
+#         "status": "Active",
+#         "wls": 2,
+#         "revisiondate": f"{current_year}-09-01",
+#         "Description": "",
+#         "Department_id": 1
+#     },
+#     {
+#         "positionCode": "S61409",
+#         "status": "Active",
+#         "wls": 3,
+#         "revisiondate": f"{current_year}-07-01",
+#         "Description": "",
+#         "Department_id": 1
+#     },
+#     {
+#         "positionCode": "S61411",
+#         "status": "Active",
+#         "wls":3,
+#         "revisiondate" : f"{current_year}-01-01",
+#         "Description": "",
+#         "Department_id" : 1
 
-        },
-        {
-        "positioncode": "S61410",
-        "status": "Inactive",
-        "WLS":2,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
-        },
+#         },
+#         {
+#         "positionCode": "S61410",
+#         "status": "Inactive",
+#         "wls":2,
+#         "revisiondate" : f"{current_year}-01-01",
+#         "Description": "",
+#         "Department_id" : 1
+#         },
 
-        {
-        "positioncode": "S12345",
-        "status": "Active",
-        "WLS":3,
-        "revisiondate" : f"{current_year}-01-23",
-        "Description": "",
-        "Department_id" : 1
-        }
+#         {
+#         "positionCode": "S12345",
+#         "status": "Active",
+#         "WLS":3,
+#         "revisiondate" : f"{current_year}-01-23",
+#         "Description": "",
+#         "Department_id" : 1
+#         }
     
-]
-PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+# ]
+# PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
