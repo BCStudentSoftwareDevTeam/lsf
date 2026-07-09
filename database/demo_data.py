@@ -669,7 +669,16 @@ positionhistory = [
         "wls":2,
         "revisionDate" : f"{current_year}-01-01",
         "description": "",
-        "department" : 1
+        "department" : 3
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"{current_year}-03-29",
+        "description": "",
+        "department" : 3
     },
     {
         "positionTitle": "DUMMY POSITION",
