@@ -28,50 +28,55 @@
 
   {% if department %}
 <div class="card-group">
-     
-  <section class="card" aria-labelledby="current_allocation-title">
-    <!-- <div> Insert Allocations Card Here </div> -->
-    </section>
+  <div class="col-sm-4">
+    <section class="card" aria-labelledby="current_allocation-title">
+      <div> Insert Allocations Card Here </div>
+      </section>
+    </div>
 
-  <section class="card" aria-labelledby="members-title">
-    <!-- <div> Insert Members Card Here </div> -->
-    </section>
+    <div class="col-sm-4">
+    <section class="card" aria-labelledby="members-title">
+      <div> Insert Members Card Here </div>
+      </section>
+    </div>
 
-  <div class="card" aria-labelledby="positions-title">
-    <div class="card-body">
-       <div class="media">
-        <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-suitcase-lg-fill"></i>
-          </span>
+    <div class="col-sm-4">
+    <section class="card" aria-labelledby="positions-title">
+      <div class="card-body">
+          <div class="media">
+          <div class="media-left media-middle">
+            <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+              <i class="bi bi-suitcase-lg-fill"></i>
+            </span>
+          </div>
+          <div class="media-body media-middle">
+            <h1>Positions</h1>
+          </div>
+
         </div>
-        <div class="media-body media-middle">
-          <h1>Positions</h1>
-        </div>
+        <ul style="line-height:2;">
+        {% for p in positions %}
+          {% if 7 > loop.index0 %}
+              {% if p == "No Positions for this Department" %}
+                <li class="card-text">
+                <p> {{ p }} </p>
+                </li>
+              {% else %}
+                <li class="card-text"><a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a></li>
+              {% endif %}
 
+          {% elif 8 == loop.index0 %}
+            </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
+          {% endif %}
+        {% endfor %}
+        </ul>
+        
       </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-            {% if p == "No Positions for this Department" %}
-              <li class="card-text">
-              <p> {{ p }} </p>
-              </li>
-            {% else %}
-              <li class="card-text"><a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a></li>
-            {% endif %}
-
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
-      {% endfor %}
-      </ul>
-      
-    </div>
-       <div class="card-footer text-center">
-          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
-    </div>
+          <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
+      </div>
+    </section>
 </div>
 
 {% endif %}
