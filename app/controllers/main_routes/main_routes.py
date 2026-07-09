@@ -73,7 +73,7 @@ def departmentPortal(org=None,account=None):
     else:
         for i in positions:
             positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
-            posUrl.append(str(i.positionCode) + "/" + str(i.revisionDate))
+            posUrl.append(str(i.positionCode))
 
 
     return render_template('main/departmentPortal.html', 
