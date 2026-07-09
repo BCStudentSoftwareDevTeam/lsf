@@ -585,7 +585,7 @@ today = datetime.now()
 current_year = today.year - (today.month < 8)
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"202000",
+            "termCode_id": f"202500",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -609,11 +609,11 @@ FormHistory.insert([{
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202500",
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
-            "department_id": 5,
+            "department_id": 1,
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",

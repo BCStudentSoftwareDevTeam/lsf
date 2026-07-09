@@ -79,7 +79,7 @@ def departmentPortal(org=None,account=None):
     print(dept, '*********************************************************Denys')
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
-        print(allocation, '*********************************************************Scott')
+        print(allocation,g.openTerm.termCode,  '*********************************************************Scott')
     except DoesNotExist:
         allocation = None
     term = 202500
@@ -88,8 +88,14 @@ def departmentPortal(org=None,account=None):
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    usedAllocation = LaborStatusForm.select(LaborStatusForm).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation == True).scalar()
+    hours_list = [row.weeklyHours for row in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(
+    LaborStatusForm.department == dept,
+    LaborStatusForm.termCode_id == 202500,
+    LaborStatusForm.studentConfirmation == True
+    )]
+    usedAllocation = sum(hours_list) or 0
     print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
+    print(list(LaborStatusForm.select().where(LaborStatusForm.department == dept)))
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
