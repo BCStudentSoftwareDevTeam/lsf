@@ -1,6 +1,6 @@
 import json
 from datetime import date
-from flask import jsonify, g
+from flask import jsonify, g, flash
 from app.models.formHistory import FormHistory
 from app.models.status import Status
 from app.logic.banner import Banner
@@ -18,6 +18,7 @@ from app.logic.allocation import getAllocationWarning
 
 
 def saveStatus(new_status, formHistoryIds, currentUser):
+    approvedDepartments = {}
     try:
         if new_status == 'Denied by Admin':
             # Index 1 will always hold the reject reason in the list, so we can
@@ -67,6 +68,8 @@ def saveStatus(new_status, formHistoryIds, currentUser):
                     email.laborStatusFormRejected()
                 if new_status == "Approved" and formType == "Labor Status Form":
                     email.laborStatusFormApproved()
+                    dept = formHistory.formID.department
+                    approvedDepartments[dept.departmentID] = dept
                 if new_status == "Approved" and formType == "Labor Adjustment Form":
                     # This function is triggered whenever an adjustment form is approved.
                     # The following function overrides the original data in lsf with the new data from adjustment form.
@@ -80,6 +83,18 @@ def saveStatus(new_status, formHistoryIds, currentUser):
     except Exception as e:
         print("Error preparing form for status update:", e)
         return jsonify({"success": False}), 500
+
+    # After approving, let the admin know right away if any affected department
+    # is now over its allocated positions or break hours (informational only).
+    for dept in approvedDepartments.values():
+        warning = getAllocationWarning(dept, g.openTerm)
+        if warning and warning['isOverAllocated']:
+            messageParts = []
+            if warning['isPositionsOverAllocated']:
+                messageParts.append(f"{warning['totalPositionsUsed']}/{warning['totalPositionsAllocated']} positions")
+            if warning['isBreakHoursOverAllocated']:
+                messageParts.append(f"{warning['breakHoursUsed']}/{warning['breakHoursAllocated']} break hours")
+            flash(f"{dept.DEPT_NAME} is now over its allocation ({' and '.join(messageParts)}).", "warning")
 
     return jsonify({"success": True})
 
