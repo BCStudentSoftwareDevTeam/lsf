@@ -73,7 +73,9 @@
                     <p> {{ p }} </p>
                     </li>
                   {% else %}
-                    <li class="card-text"><a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a></li>
+                    <li class="card-text">
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a>
+                    </li>
                   {% endif %}
 
               {% elif 8 == loop.index0 %}
@@ -89,7 +91,7 @@
         </section>
       </div>
   </div>
-  </div>
+
 {% endif %}
 
 {% endblock %}
