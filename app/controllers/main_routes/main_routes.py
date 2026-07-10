@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
 from app.models.department import Department
@@ -56,16 +56,73 @@ def departmentPortal(org=None,account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-
+    currentUser = require_login()
 
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    
+    supervisor_departments = (
+        SupervisorDepartment
+        .select()
+        .join(Supervisor)
+        .where(SupervisorDepartment.department == dept)
+        .order_by(
+          fn.COALESCE(
+            Supervisor.preferred_name,
+            Supervisor.legal_name,
+            Supervisor.LAST_NAME
+        ).asc()
+    )
+    )
+
+    labor_coordinators = []
+    supervisors = []
+
+    for supervisor_department in supervisor_departments:
+        supervisor = supervisor_department.supervisor
+
+        if supervisor is None:
+            continue
+
+        first_name = supervisor.preferred_name or supervisor.legal_name or ""
+        last_name = supervisor.LAST_NAME or ""
+
+        supervisor_name = f"{first_name} {last_name}".strip()
+
+        supervisor_display = {
+            "name": supervisor_name,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisor_department.isCoordinator:
+            labor_coordinators.append(supervisor_display)
+        else:
+            supervisors.append(supervisor_display)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                           department = dept,
+                           supervisors = supervisors,
+                           labor_coordinators=labor_coordinators,
+                           currentUser=currentUser
+                           )
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+    print(positions)
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
