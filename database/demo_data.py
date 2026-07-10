@@ -510,7 +510,7 @@ print(" * departments added")
 #############################
 
 
-print("Current year:", current_year)
+print("Current year:", "termName")
 
 terms = [
     {
@@ -606,7 +606,7 @@ FormHistory.insert([{
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 4,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202500",
             "studentName": "Elaheh Jamali",
             "studentSupervisee_id": "B00730361",
             "supervisor_id": "B12361006",
@@ -616,7 +616,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
             "contractHours": 100,
-            "startDate": f"{current_year}-04-01",
+            "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
@@ -625,13 +625,13 @@ FormHistory.insert([{
             "formID_id": "4",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"{current_year}-04-14",
+            "createdDate": f"2025-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()  
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 5,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202500",
             "studentName": "Elaheh Jamali",
             "studentSupervisee_id": "B00730361",
             "supervisor_id": "B12361006",
@@ -641,7 +641,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
             "contractHours": 100,
-            "startDate": f"{current_year}-04-01",
+            "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
@@ -650,7 +650,7 @@ FormHistory.insert([{
             "formID_id": "5",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"{current_year}-04-14",
+            "createdDate": f"2025-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()  
 
