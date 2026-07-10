@@ -50,6 +50,13 @@ def manage_departments(academic_year = 202500):     # FIXME
             print(row['department'],int(row['totalHours']),row['termCode'])
             print(totalBreakSum)
 
+        breakHoursByDepartment = {
+        row['department']: int(row['totalHours'])
+        for row in getUsedBreakHours(currentTerm)
+}
+
+        print(breakHoursByDepartment)
+
         print("\n\nSomething")
 
         # activeDepartments = Department.select().where(Department.isActive == True)
@@ -69,6 +76,8 @@ def manage_departments(academic_year = 202500):     # FIXME
     
 )
 
+
+
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
@@ -76,8 +85,9 @@ def manage_departments(academic_year = 202500):     # FIXME
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
                                 currentTerm = currentTerm,
-                                academicYear = currentTerm.termName
+                                academicYear = currentTerm.termName,
                                 # totalBreakSum = totalBreakSum
+                                breakHoursByDepartment = breakHoursByDepartment
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)

@@ -150,7 +150,7 @@
 
               
                 <td scope="row">
-                {{ department.allocation.breakHours }}
+                {{ breakHoursByDepartment.get(department.departmentID, 0) }} / {{ department.allocation.breakHours }}
                 </td>
               
 

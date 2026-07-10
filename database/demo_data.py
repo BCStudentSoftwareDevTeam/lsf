@@ -609,15 +609,15 @@ FormHistory.insert([{
 LaborStatusForm.insert([{
             "laborStatusFormID": 6,
             "termCode_id": f"202500",
-            "studentName": "Elaheh Jamali",
-            "studentSupervisee_id": "B00730361",
+            "studentName": "Pizza Taker",
+            "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
             "department_id": 1,
             "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
-            "contractHours": 1,
+            "contractHours": 15,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
@@ -642,14 +642,14 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
-            "contractHours": 1,
+            "contractHours": 3,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
 FormHistory.insert([{
-            "formHistoryID": 6,
-            "formID_id": "6",
+            "formHistoryID": 7,
+            "formID_id": "7",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
