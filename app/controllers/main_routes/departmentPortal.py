@@ -1,6 +1,5 @@
-import re
-
-from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
+import re, datetime
+from flask import render_template, request, json, redirect, session, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
 import operator
@@ -11,6 +10,7 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
+from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
@@ -28,6 +28,7 @@ from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usern
 def manageStaff(org=None,account=None):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        session['current_department'] = dept.DEPT_NAME
     except (NameError, DoesNotExist):
         dept = None
         abort(404)
@@ -44,11 +45,28 @@ def manageStaff(org=None,account=None):
         ).dicts()
     )
 
+    # released_forms = (
+    #     LaborStatusForm
+    #         .select(LaborStatusForm.studentSupervisee_id)
+    #         .join(FormHistory)  # join lsf -> its form histories
+    #         .where(FormHistory.releaseForm.is_null(False))
+    # )
+
+     # conditions for the student_count list 
+    active_primaries    = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == True) & (LaborStatusForm.endDate < datetime.datetime.now()) #& (LaborStatusForm.studentSupervisee_id.not_in(released_forms))
+    pending_primaries   = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == None) & (LaborStatusForm.endDate < datetime.datetime.now()) #& (LaborStatusForm.studentSupervisee_id.not_in(released_forms))
+
+    active_secondaries  = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation == True) & (LaborStatusForm.endDate < datetime.datetime.now())
+    pending_secondaries = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation == None) & (LaborStatusForm.endDate < datetime.datetime.now())
+
+
     student_count = list(
         LaborStatusForm.
         select(
-            fn.SUM(Case(LaborStatusForm.jobType, (("Primary", 1),), 0)).alias("primary_positions"), 
-            fn.SUM(Case(LaborStatusForm.jobType, (("Secondary", 1),), 0)).alias("secondary_positions"),
+            fn.SUM(Case(None, ((active_primaries, 1),), 0)).alias("active_primary_positions"), 
+            fn.SUM(Case(None, ((pending_primaries, 1),), 0)).alias("pending_primary_positions"), 
+            fn.SUM(Case(None, ((active_secondaries, 1),), 0)).alias("active_secondary_positions"),
+            fn.SUM(Case(None, ((pending_secondaries, 1),), 0)).alias("pending_secondary_positions"),
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).group_by(
@@ -56,7 +74,6 @@ def manageStaff(org=None,account=None):
             LaborStatusForm.supervisor
         ).dicts()
     )
-
     
     counts = {(row["department"], row["supervisor"]): row for row in student_count}
     
@@ -65,12 +82,15 @@ def manageStaff(org=None,account=None):
         key = (member["department"], member["supervisor"])
         row = counts.get(key, {})
 
-        member["primary_positions"] = row.get("primary_positions", 0)
-        member["secondary_positions"] = row.get("secondary_positions", 0)
+        member["active_primary_positions"]      = row.get("active_primary_positions", 0)
+        member["pending_primary_positions"]     = row.get("pending_primary_positions", 0)
+        member["active_secondary_positions"]    = row.get("active_secondary_positions", 0)
+        member["pending_secondary_positions"]   = row.get("pending_secondary_positions", 0)
 
     return render_template('main/manageMembers.html', 
                            members = members,
                            department = dept)
+                           
 def supervisorsDbToDict(supervisor):
     """
     Given a supervisor object it will return a mapped Dict with supervisor data.
@@ -79,6 +99,7 @@ def supervisorsDbToDict(supervisor):
                 'firstName': supervisor.FIRST_NAME.strip(),
                 'lastName': supervisor.LAST_NAME.strip(),
                 'bnumber': supervisor.ID.strip(),
+                'department': supervisor.DEPT_NAME.strip(),
                 'type': 'Supervisor'}
     return dbToDict
 
@@ -90,31 +111,39 @@ def add_member(query=None):
     if not accessAllowed:
         return render_template('errors/403.html'), 403
 
-    current_supervisors = []
-    our_supervisors = []
+    recorded_supervisors = []  # supervisors recorded in the database
+    current_supervisors = []   # supervisors from Tracy 
     query = query.strip()
+    
+    current_department = session.get('current_department')
 
     # bnumber search
-    if re.match('[Bb]\d+', query):
-        our_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper()))))
-        current_supervisors = list(map(supervisorsDbToDict, Tracy().getSupervisorsFromBNumberSearch(query)))
+    if re.match(r'[Bb]\d+', query):
+        recorded_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper())).where(Supervisor.DEPT_NAME != current_department)))
+        current_supervisors = [
+            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
+            if s.get('department') != current_department
+        ]
 
     # name search
     else:
         if " " not in query:
             search = query.upper() + "%"
-            results = Supervisor.select().where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
+            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
         else:
             search = query.upper().split()
             first_query = search[0] + "%"
             last_query = search[-1] + "%"
-            results = Supervisor.select().where((Supervisor.preferred_name ** first_query | Supervisor.legal_name ** first_query) & Supervisor.LAST_NAME ** last_query)
+            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where((Supervisor.preferred_name ** first_query | Supervisor.legal_name ** first_query) & Supervisor.LAST_NAME ** last_query)
 
-        our_supervisors = list(map(supervisorsDbToDict, results))
-        current_supervisors = list(map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query)))
+        recorded_supervisors = list(map(supervisorsDbToDict, results))
+        current_supervisors = [
+            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
+            if s.get('department') != current_department
+        ]
 
     # combine lists, remove duplicates, and then sort
-    supervisors = list({v['bnumber']:v for v in (current_supervisors + our_supervisors)}.values())
-    supervisors = sorted(supervisors, key=lambda f:f['firstName'] + f['lastName'])
+    supervisors = list({v['bnumber']:v for v in (current_supervisors + recorded_supervisors)}.values())
+    supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
 
     return jsonify(supervisors)
