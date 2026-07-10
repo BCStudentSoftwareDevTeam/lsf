@@ -1,4 +1,5 @@
-import re, datetime
+import re
+from datetime import date
 from flask import render_template, request, json, redirect, session, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
@@ -45,19 +46,43 @@ def manageStaff(org=None,account=None):
         ).dicts()
     )
 
-    # released_forms = (
-    #     LaborStatusForm
-    #         .select(LaborStatusForm.studentSupervisee_id)
-    #         .join(FormHistory)  # join lsf -> its form histories
-    #         .where(FormHistory.releaseForm.is_null(False))
-    # )
+    today = date.today()
+    released_forms = (
+        FormHistory
+        .select(FormHistory.formID)
+        .join(
+            LaborReleaseForm,
+            on=(FormHistory.releaseForm == LaborReleaseForm.laborReleaseFormID)
+        )
+        .where(
+            (FormHistory.historyType == "Labor Release Form") &
+            (FormHistory.status == "Approved") &
+            (LaborReleaseForm.releaseDate <= today)
+        )
+    )
 
-     # conditions for the student_count list 
-    active_primaries    = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == True) & (LaborStatusForm.endDate < datetime.datetime.now()) #& (LaborStatusForm.studentSupervisee_id.not_in(released_forms))
-    pending_primaries   = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == None) & (LaborStatusForm.endDate < datetime.datetime.now()) #& (LaborStatusForm.studentSupervisee_id.not_in(released_forms))
-
-    active_secondaries  = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation == True) & (LaborStatusForm.endDate < datetime.datetime.now())
-    pending_secondaries = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation == None) & (LaborStatusForm.endDate < datetime.datetime.now())
+    # Conditions for the supervisee counts. Expired and released positions do
+    # not contribute to any of the four totals.
+    active_primaries = (
+        (LaborStatusForm.jobType == 'Primary') &
+        (LaborStatusForm.studentConfirmation == True) &
+        (LaborStatusForm.endDate >= today)
+    )
+    pending_primaries = (
+        (LaborStatusForm.jobType == 'Primary') &
+        (LaborStatusForm.studentConfirmation.is_null(True)) &
+        (LaborStatusForm.endDate >= today)
+    )
+    active_secondaries = (
+        (LaborStatusForm.jobType == 'Secondary') &
+        (LaborStatusForm.studentConfirmation == True) &
+        (LaborStatusForm.endDate >= today)
+    )
+    pending_secondaries = (
+        (LaborStatusForm.jobType == 'Secondary') &
+        (LaborStatusForm.studentConfirmation.is_null(True)) &
+        (LaborStatusForm.endDate >= today)
+    )
 
 
     student_count = list(
@@ -69,6 +94,9 @@ def manageStaff(org=None,account=None):
             fn.SUM(Case(None, ((pending_secondaries, 1),), 0)).alias("pending_secondary_positions"),
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
+        ).where(
+            (LaborStatusForm.department == dept) &
+            (LaborStatusForm.laborStatusFormID.not_in(released_forms))
         ).group_by(
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
