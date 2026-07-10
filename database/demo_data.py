@@ -718,7 +718,7 @@ LaborReleaseForm.insert([{
 FormHistory.insert([{
             "formHistoryID": 13,
             "formID_id": "12",
-            "historyType_id": "Labor Status Form",
+            "historyType_id": "Labor Release Form",
             "releaseForm": 10,
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
@@ -763,7 +763,7 @@ LaborStatusForm.insert([{
             "POSN_CODE": "S61429",
             "weeklyHours": 10,
             "startDate": f"{current_year}-04-01",
-            "endDate": "2025-09-01"
+            "endDate": "2029-09-01"
         }]).on_conflict_replace().execute()  
 
 FormHistory.insert([{
