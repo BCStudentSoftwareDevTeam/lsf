@@ -218,16 +218,3 @@ def ViewAllocations(org, account):
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-
-    
-    allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == g.openTerm)
-    print(g.openTerm, '*********************************************************')
-    term = g.openTerm.termName
-    print(term, type(term), '*********************************************************')
-    return render_template('main/departmentPortal.html',
-                           department = dept,
-                           department_name = dept.DEPT_NAME,
-                           allocation = allocation,
-                           term = term
-                           )
-
