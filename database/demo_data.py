@@ -519,6 +519,15 @@ print("Current year:", current_year)
 
 terms = [
     {
+        "termCode": f"202000",
+        "termName": f"AY 2020-2021",
+        "termStart": f"2020-08-01",
+        "termEnd": f"2021-05-01",
+        "termState": 0,
+        "primaryCutOff": f"2020-09-01",
+        "adjustmentCutOff": f"2020-10-01",
+    },
+    {
         "termCode": f"{current_year}00",
         "termName": f"AY {current_year}-{current_year+1}",
         "termStart": f"{current_year}-08-01",
@@ -585,7 +594,7 @@ today = datetime.now()
 current_year = today.year - (today.month < 8)
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202000",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -594,9 +603,15 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
+<<<<<<< HEAD
             "contractHours": 100,
             "startDate": f"{current_year}-04-01",
             "endDate": f"{current_year}-09-01"
+=======
+            "weeklyHours": 10,
+            "startDate": f"2020-04-01",
+            "endDate": f"2020-09-01"
+>>>>>>> department-portal-base
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,

@@ -3,8 +3,9 @@ from app.models.supervisor import Supervisor
 from app.models.department import Department
 
 class SupervisorDepartment(baseModel):
-    supervisor = ForeignKeyField(Supervisor, null=True)
+    supervisor = ForeignKeyField(Supervisor)
     department = ForeignKeyField(Department)
+<<<<<<< HEAD
     banStatus = BooleanField(default=False)
     isActive = BooleanField(default=False)
     isCoordinator = BooleanField(default=False)
@@ -14,3 +15,6 @@ class SupervisorDepartment(baseModel):
         return self.banStatus
 
 
+=======
+    isCoordinator = BooleanField(default=False)
+>>>>>>> department-portal-base
