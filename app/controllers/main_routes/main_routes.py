@@ -1,10 +1,10 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist
 from functools import reduce
-import operator
+import operator     
 from app.models.department import Department
 from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.supervisorDepartment import SupervisorDepartment    
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
@@ -96,15 +96,8 @@ def managePositions(org, account):
         return render_template('errors/404.html'), 404
     print("THIS IS Dept:", dept)
     
-    positions = list(
-    PositionHistory
-    .select()
-    .where(
-        (PositionHistory.department == dept) &
-        (PositionHistory.status == "Active")
-    )
-)
-    # print(f"Positions for department {dept.DEPT_NAME}, ID {dept.id}: {[p.title for p in positions]}")
+    positions = PositionHistory.select().where((PositionHistory.department == dept) & (PositionHistory.status == "Active")).order_by(PositionHistory.positionTitle.asc())
+    
     return render_template('main/managepositions.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,
