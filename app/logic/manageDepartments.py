@@ -20,7 +20,7 @@ def getUsedBreakHours(terms):
     )
     .where(
         (FormHistory.historyType == "Labor Status Form") &
-        (FormHistory.status == "Approved") &
+        (FormHistory.status == "Approved") #&
         # LaborStatusForm.termCode.in_(terms) # Should have a list of terms, not just one term.
     )
     .group_by(LaborStatusForm.department, LaborStatusForm.termCode).dicts()

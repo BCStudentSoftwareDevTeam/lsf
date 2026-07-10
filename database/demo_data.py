@@ -603,15 +603,9 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
-<<<<<<< HEAD
-            "contractHours": 100,
-            "startDate": f"{current_year}-04-01",
-            "endDate": f"{current_year}-09-01"
-=======
             "weeklyHours": 10,
             "startDate": f"2020-04-01",
             "endDate": f"2020-09-01"
->>>>>>> department-portal-base
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,
@@ -735,7 +729,6 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": True
     }, 
@@ -743,7 +736,6 @@ department_members = [
     {
         "supervisor": "B12365892",
         "department": 1,
-        "banStatus": True,
         "isActive": True,
         "isCoordinator": False
     }, 
@@ -751,7 +743,6 @@ department_members = [
     {
         "supervisor": "B12365893",
         "department": 1,
-        "banStatus": False,
         "isActive": False,
         "isCoordinator": False
     }, 
@@ -759,7 +750,6 @@ department_members = [
     {
         "supervisor": "B00763721",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": False
     },
@@ -767,7 +757,6 @@ department_members = [
     {
         "supervisor": "B00841417",
         "department": 1,
-        "banStatus": False,
         "isActive": True,
         "isCoordinator": True
     }
@@ -783,7 +772,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -798,7 +787,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -813,7 +802,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       1,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -828,7 +817,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -843,7 +832,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isApproved":      False,
+    "isFinal":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -865,7 +854,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isApproved": True,
+                    "isFinal": True,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -880,7 +869,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isApproved": False,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 

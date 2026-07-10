@@ -5,16 +5,10 @@ from app.models.department import Department
 class SupervisorDepartment(baseModel):
     supervisor = ForeignKeyField(Supervisor)
     department = ForeignKeyField(Department)
-<<<<<<< HEAD
-    banStatus = BooleanField(default=False)
-    isActive = BooleanField(default=False)
+    banStatus = BooleanField(default=False) # Remove later
+    isActive = BooleanField(default=False) # Remove later
     isCoordinator = BooleanField(default=False)
 
     @property
     def isBanned(self):
         return self.banStatus
-
-
-=======
-    isCoordinator = BooleanField(default=False)
->>>>>>> department-portal-base
