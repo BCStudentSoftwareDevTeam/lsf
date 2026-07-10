@@ -30,21 +30,25 @@
   {% if department %}
     <div class="row g-3">
       <div class="col-12 col-lg-4 ">
+
         <section class="card" aria-labelledby="current_allocation-title">
-          <div> Insert Allocations Card Here </div>
-          <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-              </div>
-          </section>
-        </div>
+          <p> Insert Allocations Card Here </p>
+            <div class="card-footer text-center">
+              <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Alloations<span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </section>
+        
+       </div>
 
         <div class="col-12 col-lg-4">
         <section class="card" aria-labelledby="members-title">
-          <div> Insert Members Card Here </div>
+
+          <p> Insert Members Card Here </p>
           <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Members<span class="glyphicon glyphicon-chevron-right"></span></a>
               </div>
           </section>
+
         </div>
 
         <div class=" col-12 col-lg-4">
