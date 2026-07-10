@@ -93,7 +93,8 @@ def departmentPortal(org=None,account=None):
     student_hours = {}
     for form in LaborStatusForm.select().where(
         LaborStatusForm.department == dept,
-        LaborStatusForm.termCode_id == 202500
+        LaborStatusForm.termCode_id == 202500,
+        LaborStatusForm.contractHours.is_null(True)
     ):
         sid = form.studentSupervisee_id
         student_hours.setdefault(sid, []).append({
@@ -105,7 +106,7 @@ def departmentPortal(org=None,account=None):
         secondary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Secondary")
         print(sid, "Primary:", primary, "Secondary:", secondary)
     def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True)).count()
+        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True)).count()
     
     used_10     = count_workers("Primary", "10")
     used_12     = count_workers("Primary", "12")
@@ -113,6 +114,9 @@ def departmentPortal(org=None,account=None):
     used_20     = count_workers("Primary", "20")
     used_5_sec  = count_workers("Secondary", "5")
     used_10_sec = count_workers("Secondary", "10")
+
+    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+    sum_break = sum(form.contractHours or 0 for form in break_allocation)
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
@@ -128,7 +132,8 @@ def departmentPortal(org=None,account=None):
                            used_15 = used_15,
                            used_20 = used_20,
                            used_5_sec = used_5_sec,
-                           used_10_sec = used_10_sec
+                           used_10_sec = used_10_sec,
+                           break_hours = sum_break
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
