@@ -89,8 +89,7 @@ def departmentPortal(org=None,account=None):
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    usedAllocation = [hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True))]
-    usedAllocation = len(usedAllocation)
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True))])
     student_hours = {}
     for form in LaborStatusForm.select().where(
         LaborStatusForm.department == dept,
@@ -106,13 +105,7 @@ def departmentPortal(org=None,account=None):
         secondary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Secondary")
         print(sid, "Primary:", primary, "Secondary:", secondary)
     def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(
-            LaborStatusForm.department == dept,
-            LaborStatusForm.termCode == 202500,
-            LaborStatusForm.jobType == job_type,
-            LaborStatusForm.weeklyHours == hours_bucket,
-            LaborStatusForm.studentConfirmation.is_null(True)  # pending counts as "used" for now
-        ).count()
+        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True)).count()
     
     used_10     = count_workers("Primary", "10")
     used_12     = count_workers("Primary", "12")
@@ -120,12 +113,6 @@ def departmentPortal(org=None,account=None):
     used_20     = count_workers("Primary", "20")
     used_5_sec  = count_workers("Secondary", "5")
     used_10_sec = count_workers("Secondary", "10")
-    print(usedAllocation, '*********************************************************hours_list')
-    print(totalPositions, usedAllocation,Allocation.primary_10,  '*********************************************************brian')
-    print(list(LaborStatusForm.select(LaborStatusForm.studentConfirmation).where(
-    LaborStatusForm.department == dept,
-    LaborStatusForm.termCode == 202500
-)))
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
@@ -134,7 +121,7 @@ def departmentPortal(org=None,account=None):
                            allocation = allocation,
                            total_allocation = totalPositions,
                            used_allocation = usedAllocation,
-                           term = term,
+                           term = g.openTerm.termName,
                            studentHours = student_hours,
                            used_10 = used_10,
                            used_12 = used_12,

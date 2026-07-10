@@ -515,13 +515,13 @@ current_year = today.year - (today.month < 8)
 
 terms = [
     {
-        "termCode": f"202000",
-        "termName": f"AY 2020-2021",
-        "termStart": f"2020-08-01",
-        "termEnd": f"2021-05-01",
+        "termCode": f"202500",
+        "termName": f"AY 2025-2026",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
         "termState": 0,
-        "primaryCutOff": f"2020-09-01",
-        "adjustmentCutOff": f"2020-10-01",
+        "primaryCutOff": f"2025-09-01",
+        "adjustmentCutOff": f"2026-10-01",
     },
     {
         "termCode": f"{current_year}00",
@@ -594,7 +594,7 @@ LaborStatusForm.insert([{
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
-            "department_id": 1,
+            "department_id": 2,
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
@@ -618,7 +618,7 @@ LaborStatusForm.insert([{
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
-            "department_id": 1,
+            "department_id": 5,
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
