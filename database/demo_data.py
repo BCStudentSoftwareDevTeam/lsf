@@ -2,7 +2,6 @@
 Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
-from datetime import *
 from app import app
 
 from app.models.Tracy import db
@@ -505,8 +504,7 @@ print(" * departments added")
 #############################
 # Term
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
+
 
 terms = [
     {
@@ -545,8 +543,7 @@ print(f" * terms for 2025-2026 added")
 #############################
 # Create a Pending Labor Status Form
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
+
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
             "termCode_id": f"202000",
