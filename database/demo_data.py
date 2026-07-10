@@ -14,6 +14,7 @@ from app.models.department import Department
 from app.models.user import User
 from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 from app.models.allocation import Allocation 
@@ -41,8 +42,37 @@ bothStudents = [
                 "STU_CPO":"700",
                 "LAST_POSN":"Media Technician",
                 "LAST_SUP_PIDM":"7"
+                },          
+                {
+                "ID":"B00741361",
+                "PIDM":"99",
+                "FIRST_NAME":"Antonia",
+                "LAST_NAME":"Schmith",
+                "CLASS_LEVEL":"Freshman",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"schmitha@berea.edu",
+                "STU_CPO":"777",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
                 },
-
+                {
+                "ID":"B00732363",
+                "PIDM":"58",
+                "FIRST_NAME":"Barbara",
+                "LAST_NAME":"Williams",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jasmine Jones",
+                "STU_EMAIL":"williamsb@berea.edu",
+                "STU_CPO":"118",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
                 {
                 "ID":"B00730361",
                 "PIDM":"1",
@@ -417,6 +447,22 @@ users = [
         "isSaasAdmin": None
         },
         {
+        "student": "B00741361",
+        "supervisor": None,
+        "username": "schmitha",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
+        "student": "B00732363",
+        "supervisor":  None,
+        "username": "williamsb",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
         "student": "B00730361",
         "supervisor": None,
         "username": "jamalie",
@@ -585,6 +631,8 @@ print(f" * terms for {current_year}-{current_year+1} added")
 #############################
 # Create a Pending Labor Status Form
 #############################
+today = datetime.now()
+current_year = today.year - (today.month < 8)
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
@@ -599,16 +647,87 @@ LaborStatusForm.insert([{
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
             "startDate": f"2020-04-01",
-            "endDate": f"2020-09-01"
+            "endDate": f"2020-09-01",
+            "studentConfirmation": True
         }]).on_conflict_replace().execute()
+
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status_id": "Pending"
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
         }]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 11,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Antonia Schmith",
+            "studentSupervisee_id": "B00741361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 10,
+            "startDate": f"2026-04-01",
+            "endDate": f"2026-09-01",
+            "studentConfirmation": True
+        }]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+            "formHistoryID": 11,
+            "formID_id": "11",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 12,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Barbara Williams",
+            "studentSupervisee_id": "B00732363",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 10,
+            "startDate": f"2027-04-01",
+            "endDate": f"2029-09-01",
+            "studentConfirmation": True            
+        }]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+            "formHistoryID": 12,
+            "formID_id": "12",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()    
+
+LaborReleaseForm.insert([{
+            "laborReleaseFormID": 10,
+            "conditionAtRelease": "unsatisfactory",
+            "releaseDate": f"{current_year}-04-14",
+            "reasonForRelease": "Smoking Cigarettes in the Programmers' space."
+        }]).on_conflict_replace().execute()    
+
+FormHistory.insert([{
+            "formHistoryID": 13,
+            "formID_id": "12",
+            "historyType_id": "Labor Status Form",
+            "releaseForm": 10,
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()    
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 4,
@@ -622,8 +741,8 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61419",
             "weeklyHours": 10,
-            "startDate": f"{current_year}-04-01",
-            "endDate": "2025-09-01"
+            "startDate": f"2027-04-01",
+            "endDate": "2027-09-01"
         }]).on_conflict_replace().execute()  
 
 FormHistory.insert([{
