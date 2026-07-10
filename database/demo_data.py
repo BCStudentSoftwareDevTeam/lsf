@@ -168,6 +168,7 @@ for student in (localStudents + bothStudents):
     student['ID'] = student['ID'].strip()
     student['legal_name'] = student['FIRST_NAME'].strip()
     del student['FIRST_NAME']
+    student['isActive'] = True
 
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
@@ -365,6 +366,7 @@ with app.app_context():
 
         staff['legal_name'] = staff['FIRST_NAME'].strip()
         del staff['FIRST_NAME']
+        staff['isActive'] = True
         Supervisor.get_or_create(**staff)
 
     # Add non Supervisor staffs to Tracy db
@@ -567,13 +569,12 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(f" * terms for {current_year}-{current_year+1} added")
+print(f" * terms for 2025-2026 added")
 
 #############################
 # Create a Pending Labor Status Form
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
+
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
             "termCode_id": f"{current_year}00",
@@ -611,8 +612,8 @@ LaborStatusForm.insert([{
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
             "startDate": f"{current_year}-04-01",
-            "endDate": "2025-09-01"
-        }]).on_conflict_replace().execute()  
+            "endDate": f"{current_year}-09-01"
+        }]).on_conflict_replace().execute()
 
 FormHistory.insert([{
             "formHistoryID": 3,
@@ -657,40 +658,30 @@ department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
     },
 
     {
         "supervisor": "B12365892",
         "department": 1,
-        "banStatus": True,
-        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B12365893",
         "department": 1,
-        "banStatus": False,
-        "isActive": False,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00763721",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": False
     },
 
     {
         "supervisor": "B00841417",
         "department": 1,
-        "banStatus": False,
-        "isActive": True,
         "isCoordinator": True
     }
 ]
@@ -705,7 +696,7 @@ allocations = [
     {
         "termCode": f"{current_year}00",
         "department": 1,
-        "isApproved": True,
+        "isFinal": True,
         "approvedOn": f"{current_year}-08-15",
         "approvedBy": "B12361006",
         "justification": "Standard allocation for Computer Science based on enrollment.",
@@ -720,7 +711,7 @@ allocations = [
     {
         "termCode": f"{current_year}00",
         "department": 2,
-        "isApproved": True,
+        "isFinal": True,
         "approvedOn": f"{current_year}-08-15",
         "approvedBy": "B12361006",
         "justification": "Standard allocation for Technology and Applied Design.",
@@ -735,7 +726,7 @@ allocations = [
     {
         "termCode": f"{current_year}00",
         "department": 3,
-        "isApproved": True,
+        "isFinal": True,
         "approvedOn": f"{current_year}-08-15",
         "approvedBy": "B12361006",
         "justification": "Standard allocation for Mathematics.",
@@ -750,7 +741,7 @@ allocations = [
     {
         "termCode": f"{current_year}00",
         "department": 4,
-        "isApproved": True,
+        "isFinal": True,
         "approvedOn": f"{current_year}-08-15",
         "approvedBy": "B12361006",
         "justification": "Standard allocation for Biology.",
@@ -765,7 +756,7 @@ allocations = [
     {
         "termCode": f"{current_year}00",
         "department": 5,
-        "isApproved": True,
+        "isFinal": True,
         "approvedOn": f"{current_year}-08-15",
         "approvedBy": "B12361006",
         "justification": "Standard allocation for the Labor Department.",
@@ -785,50 +776,47 @@ print(" * allocations added")
 # Position History
 #############################
 
-positionhistory = [
+positionHistory = [
     {
-        "positioncode": "S61407",
+        "positionCode": "S61407",
         "status": "Active",
-        "WLS": 1,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 1,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
+        "department": 1
     },
     {
-
-        "positioncode": "S61408",
+        "positionCode": "S61408",
         "status": "Active",
-        "WLS": 2,
-        "revisiondate": f"{current_year}-09-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 2,
+        "revisionDate": f"{current_year}-09-01",
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61409",
+        "positionCode": "S61409",
         "status": "Active",
-        "WLS": 3,
-        "revisiondate": f"{current_year}-07-01",
-        "Description": "",
-        "Department_id": 1
+        "wls": 3,
+        "revisionDate": f"{current_year}-07-01",
+        "description": "",
+        "department": 1
     },
     {
-        "positioncode": "S61411",
+        "positionCode": "S61411",
         "status": "Active",
-        "WLS":3,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
-
-        },
-        {
-        "positioncode": "S61410",
+        "wls": 3,
+        "revisionDate": f"{current_year}-01-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionCode": "S61410",
         "status": "Inactive",
-        "WLS":2,
-        "revisiondate" : f"{current_year}-01-01",
-        "Description": "",
-        "Department_id" : 1
-        },
-
+        "wls": 2,
+        "revisionDate": f"{current_year}-01-01",
+        "description": "",
+        "department": 1
+    },
 ]
-PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")

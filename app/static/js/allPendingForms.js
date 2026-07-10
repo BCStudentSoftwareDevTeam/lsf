@@ -87,8 +87,8 @@ function insertApprovals(laborHistoryId = null) {
     contentType: 'application/json',
     success: function(response) {
       if (response) {
-        var returned_details = response;
-        updateApproveTableData(returned_details);
+        updateApproveTableData(response.details);
+        updateAllocationWarnings(response.allocationWarnings);
       }
     }
   });
@@ -112,6 +112,40 @@ function updateApproveTableData(returned_details) {
   }
 }
 
+// Shows a non-blocking allocation warning per department represented among the
+// selected forms, so admins can see the impact of approval before confirming.
+// Each category (positions / break hours) is highlighted independently, since
+// a department can be over on one and fine on the other.
+function updateAllocationWarnings(allocationWarnings) {
+  if (!allocationWarnings) { return; }
+  for (var i = 0; i < allocationWarnings.length; i++) {
+    var w = allocationWarnings[i];
+    var boxClass = w.isOverAllocated ? 'alert-warning' : 'alert-info';
+    var overStyle = 'color:#a94442; font-weight:bold;';
+    var positionsStyle = w.isPositionsOverAllocated ? overStyle : '';
+    var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : '';
+    var positionsFlag = w.isPositionsOverAllocated ? ' &#9888; Over allocation' : '';
+    var breakHoursFlag = w.isBreakHoursOverAllocated ? ' &#9888; Over allocation' : '';
+    // A department can look fine in total while one specific hour-band is over,
+    // so call those bands out by name instead of only showing the aggregate.
+    var bandDetail = '';
+    if (w.overAllocatedBands && w.overAllocatedBands.length > 0) {
+      var bandStrings = w.overAllocatedBands.map(function(b) {
+        return b.label + ' (' + b.used + '/' + b.allocated + ')';
+      });
+      bandDetail = '<br><span style="' + overStyle + '">Over on: ' + bandStrings.join(', ') + '</span>';
+    }
+    var html = '<div class="alert ' + boxClass + '" role="alert">' +
+      '<strong>' + w.departmentName + ' Allocation</strong><br>' +
+      '<span style="' + positionsStyle + '">Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
+      ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span>' + bandDetail + '<br>' +
+      '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
+      ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +
+      '</div>';
+    $('#allocationWarnings').append(html);
+  }
+}
+
 
 $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functionality work when clicking outside of the modal
   approvalModalClose();
@@ -120,6 +154,7 @@ $('#approvalModal').on('hidden.bs.modal', function () {// Makes the close functi
 
 function approvalModalClose(){// on close of approval modal we are clearing the table to prevent duplicate data.
   $('#classTableBody').empty();
+  $('#allocationWarnings').empty();
   labor_details_ids = [] // emptying the list, becuase otherwise will cause duplicate data.
 }
 
