@@ -23,7 +23,7 @@ from app.logic.manageDepartments import getUsedBreakHours
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
 # @login_required
-def manage_departments(academic_year = 202600):     # FIXME
+def manage_departments(academic_year = 202500):     # FIXME
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
@@ -40,8 +40,8 @@ def manage_departments(academic_year = 202600):     # FIXME
                 return render_template('errors/403.html'), 403
 
         currentTerm = Term.get(Term.termCode == academic_year)
-       
-        totalBreakSum = getUsedBreakHours("202500")
+
+        totalBreakSum = getUsedBreakHours(academic_year)
 
         print("Something\n\n")
 
