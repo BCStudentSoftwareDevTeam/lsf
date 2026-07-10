@@ -89,12 +89,10 @@ def saveStatus(new_status, formHistoryIds, currentUser):
     for dept in approvedDepartments.values():
         warning = getAllocationWarning(dept, g.openTerm)
         if warning and warning['isOverAllocated']:
-            messageParts = []
-            if warning['isPositionsOverAllocated']:
-                messageParts.append(f"{warning['totalPositionsUsed']}/{warning['totalPositionsAllocated']} positions")
+            messageParts = [f"{b['label']} ({b['used']}/{b['allocated']})" for b in warning['overAllocatedBands']]
             if warning['isBreakHoursOverAllocated']:
-                messageParts.append(f"{warning['breakHoursUsed']}/{warning['breakHoursAllocated']} break hours")
-            flash(f"{dept.DEPT_NAME} is now over its allocation ({' and '.join(messageParts)}).", "warning")
+                messageParts.append(f"break hours ({warning['breakHoursUsed']}/{warning['breakHoursAllocated']})")
+            flash(f"{dept.DEPT_NAME} is now over its allocation for: {', '.join(messageParts)}.", "warning")
 
     return jsonify({"success": True})
 
@@ -212,9 +210,6 @@ def laborAdminOverloadApproval(rsp, historyForm, status, currentUser, currentDat
 
 # extract data from the database to populate pending form approval modal
 def modal_approval_and_denial_data(formHistoryIdList):
-    ''' This method grabs the data that populated the on approve modal for lsf,
-    plus an over-allocation warning per unique department among the selected forms. '''
-
     details_list = []
     allocationWarningsByDept = {}
     for fhID in formHistoryIdList:

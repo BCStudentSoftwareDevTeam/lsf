@@ -126,10 +126,19 @@ function updateAllocationWarnings(allocationWarnings) {
     var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : '';
     var positionsFlag = w.isPositionsOverAllocated ? ' &#9888; Over allocation' : '';
     var breakHoursFlag = w.isBreakHoursOverAllocated ? ' &#9888; Over allocation' : '';
+    // A department can look fine in total while one specific hour-band is over,
+    // so call those bands out by name instead of only showing the aggregate.
+    var bandDetail = '';
+    if (w.overAllocatedBands && w.overAllocatedBands.length > 0) {
+      var bandStrings = w.overAllocatedBands.map(function(b) {
+        return b.label + ' (' + b.used + '/' + b.allocated + ')';
+      });
+      bandDetail = '<br><span style="' + overStyle + '">Over on: ' + bandStrings.join(', ') + '</span>';
+    }
     var html = '<div class="alert ' + boxClass + '" role="alert">' +
       '<strong>' + w.departmentName + ' Allocation</strong><br>' +
       '<span style="' + positionsStyle + '">Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
-      ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span><br>' +
+      ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span>' + bandDetail + '<br>' +
       '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
       ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +
       '</div>';

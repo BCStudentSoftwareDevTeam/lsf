@@ -14,17 +14,10 @@ ALLOCATION_BAND_FIELDS = [
     ('secondary_10', 'Secondary', 10),
 ]
 
+BAND_LABELS = {fieldName: f"{hours} Hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
+
 
 def getAllocationSummary(dept, term):
-    """
-    Returns a dict describing a department's allocation vs. actual usage for the given term:
-      - allocation: the Allocation row for this dept/term, or None if none exists
-      - allocationBands: {fieldName: {'used': int, 'allocated': int}} per hour-band, or None
-      - totalPositionsAllocated / totalPositionsUsed: ints, or None
-      - breakHoursUsed: int, or None
-    'used' counts are non-denied LaborStatusForms, matching the same filter pattern
-    used elsewhere in the app (see app/logic/statusFormFunctions.py).
-    """
     summary = {
         'allocation': None,
         'allocationBands': None,
@@ -78,22 +71,22 @@ def getAllocationSummary(dept, term):
 
 
 def getAllocationWarning(dept, term):
-    """
-    Returns a summary dict for displaying an over-allocation warning for the given
-    department/term (e.g. in the pending-LSF approval modal), or None if there's no
-    allocation on record for that department/term to compare against.
-
-    Note: 'used' counts (from getAllocationSummary) include Pending as well as
-    Approved forms, so a form currently Pending already occupies a slot here -
-    these numbers already reflect what utilization would be once it's approved.
-    """
     summary = getAllocationSummary(dept, term)
     if not summary['allocation']:
         return None
 
     positionsRemaining = summary['totalPositionsAllocated'] - summary['totalPositionsUsed']
     breakHoursRemaining = summary['allocation'].breakHours - summary['breakHoursUsed']
-    isPositionsOverAllocated = positionsRemaining < 0
+
+    # A department can be within its total position count while still exceeding
+    # one specific hour-band (e.g. over on 10-hour Primary but under on others),
+    # so each band needs to be checked individually, not just the aggregate total.
+    overAllocatedBands = [
+        {'label': BAND_LABELS[fieldName], 'used': band['used'], 'allocated': band['allocated']}
+        for fieldName, band in summary['allocationBands'].items()
+        if band['used'] > band['allocated']
+    ]
+    isPositionsOverAllocated = positionsRemaining < 0 or bool(overAllocatedBands)
     isBreakHoursOverAllocated = breakHoursRemaining < 0
 
     return {
@@ -102,6 +95,7 @@ def getAllocationWarning(dept, term):
         'totalPositionsUsed': summary['totalPositionsUsed'],
         'positionsRemaining': positionsRemaining,
         'isPositionsOverAllocated': isPositionsOverAllocated,
+        'overAllocatedBands': overAllocatedBands,
         'breakHoursAllocated': summary['allocation'].breakHours,
         'breakHoursUsed': summary['breakHoursUsed'],
         'breakHoursRemaining': breakHoursRemaining,
