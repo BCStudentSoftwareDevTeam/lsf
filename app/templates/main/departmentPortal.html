@@ -4,14 +4,14 @@
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
     <link rel="stylesheet" type="text/css"
-  href="{{url_for('static', filename ='css/departmentPortal.css')}}?u={{lastStaticUpdate}}">
 {% endblock %}
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
 
+
   <!--selectpicker for department-->
-  <div class="form-group">
+  <div class="form-group" style="width:65rem; margin-left: auto; margin-right:auto">
     <select class="selectpicker"
             name='department'
             id='selectedDepartment'
@@ -28,131 +28,85 @@
   </div>
 
 {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 2rem;" style="height: 1000px">
-     
-  <div class="card" style="width:50rem; border-radius: 2rem;">
-    <div class="card-body">
-      <h5 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16"height="16"fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
-          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
-          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
-        </svg>
-        Current Allocation
-      </h5>
-      <p class="card-text"><br> AY 26/27 15/20 POSITIONS <br><br> Break Hours 0 of 200 hrs</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
-    </div>
-  </div>
-
-  <section class="card "style="width:50rem; border-radius: 2rem;" aria-labelledby="members-title">
+<div class="card-group" style="display:inline-flex; gap: 1rem">
+  
+ <!-- ------------------------Members_Card Started----------------------- -->
+  <section class="card "style="width:90%; border-radius: 1rem;" aria-labelledby="members-title">
     <div class="card-body">
       <div class="media">
-        <div class="media-left">
-          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
-            <i class="fa fa-users"></i>
+         <div class="media-left media-middle">
+          <span aria-hidden="true" style="color: #000; font-size: 24px;">
+            <i class="bi bi-people-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
           </span>
         </div>
+
         <div class="media-body media-middle">
           <h1>
             Members
           </h1>
         </div>
       </div>
-      <h4>Labor Coordinator(s)</h4>
-      <p>Dr. Jones</p>
+      <h4> <b>{% if labor_coordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
+      {% if labor_coordinators %}
+        {% for coordinator in labor_coordinators %}
+          <p>
+            {{ coordinator.name }}
 
-      <h2>Supervisors</h2>
-      {% for s in supervisors %}
-      {% if 3 > loop.index0 %}
-        <p>{{ s }}</p>
-      {% elif 4 > loop.index0 %}
-        <p>and {{ supervisors | length}} more...</p>
+            {% if coordinator.email %}
+                 <a href="mailto:{{ coordinator.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ coordinator.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
+            {% endif %}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p>None assigned. <a href="#" >Add one?</a> </p> 
+        <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
+          
       {% endif %}
-      {% endfor %}
+
+    
+      <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
+
+      {% if supervisors %}
+        {% for s in supervisors %}
+          {% if loop.index0 < 3 %}
+            <p>
+              {{ s.name }}
+
+              {% if s.email %}
+                  <a href="mailto:{{ s.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ s.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
+                
+              {% endif %}
+            </p>
+          {% elif loop.index0 == 3 %}
+            <p>and {{ supervisors|length - 3 }} more...</p>
+          {% endif %}
+        {% endfor %}
+      {% elif not labor_coordinators and currentUser.isLaborAdmin %}
+        <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
+      {% else  %}
+        <p>No active supervisors assigned.</p>
+      {% endif %}
+
     </div>
 
     <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Details
+      <a href="#" class="btn btn-primary">View Members
          <span class="glyphicon glyphicon-chevron-right"></span>
       </a>
     </div>
   </section>
-
-  <div class="card mb-3" style="width:50rem; border-radius: 2rem;">
-    <div class="card-body">
-       <div class="media">
-        <div class="media-body media-middle">
-          <h1>Positions</h1>
-        </div>
-        <div class="media-right">
-          <span class="btn btn-default btn-lg img-circle disabled" aria-hidden="true">
-            <i class="fa fa-suitcase"></i>
-          </span>
-        </div>
-
-      </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-          <li class="card-text">{{ p }}</li>
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
-      {% endfor %}
-      </ul>
-      
-    </div>
-       <div class="card-footer text-center">
-          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
-      </div>
-</div>
+  <!-- ------------------------Members_Card Ended----------------------- -->
 
 {% endif %}
 
-
-<!-- <div class="col-sm-4">
-  <section class="card members-card" aria-labelledby="members-title">
-    <div class="card-body">
-
-      <div class="media">
-        <div class="media-left">
-          <span class="members-card-icon" aria-hidden="true">
-            <i class="fa fa-users"></i>
-          </span>
-        </div>
-
-        <div class="media-body media-middle">
-          <h3 id="members-title" class="media-heading card-title">
-            <strong>Members</strong>
-          </h3>
-        </div>
-      </div>
-
-      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
-      <p class="card-text">Dr. Jones</p>
-
-      <h4 class="text-primary"><strong>Supervisors</strong></h4>
-      <p class="card-text">
-        Dr. Heggen<br>
-        Dr. Nakazawa
-      </p>
-
-      <p class="text-center">
-        <span class="members-card-cta">
-          <a href="#" class="btn btn-primary btn-sm members-card-btn">
-            View Details <span class="glyphicon glyphicon-chevron-right"></span>
-          </a>
-
-        </span>
-      </p>
-
-    </div>
-  </section>
-</div> -->
-
 {% endblock %}\
-
-
-
-
