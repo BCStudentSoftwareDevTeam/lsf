@@ -627,7 +627,7 @@ positionhistory = [
         "positionCode": "S61407",
         "status": "Active",
         "wls": 1,
-        "revisionDate": f"{current_year}-07-01",
+        "revisionDate": f"2026-07-01",
         "description": "",
         "department": 1
     },
@@ -636,7 +636,7 @@ positionhistory = [
         "positionCode": "S61408",
         "status": "Active",
         "wls": 2,
-        "revisionDate": f"{current_year}-09-01",
+        "revisionDate": f"2026-09-01",
         "description": "",
         "department": 1
     },
@@ -645,7 +645,7 @@ positionhistory = [
         "positionCode": "S61409",
         "status": "Active",
         "wls": 3,
-        "revisionDate": f"{current_year}-07-01",
+        "revisionDate": f"2026-07-01",
         "description": "",
         "department": 1
     },
@@ -654,7 +654,7 @@ positionhistory = [
         "positionCode": "S61411",
         "status": "Active",
         "wls":3,
-        "revisionDate" : f"{current_year}-01-01",
+        "revisionDate" : f"2026-01-01",
         "description": "",
         "department" : 1
 
@@ -664,7 +664,7 @@ positionhistory = [
         "positionCode": "S61410",
         "status": "Inactive",
         "wls":2,
-        "revisionDate" : f"{current_year}-01-01",
+        "revisionDate" : f"2026-01-01",
         "description": "",
         "department" : 3
     },
@@ -673,7 +673,7 @@ positionhistory = [
         "positionCode": "S61410",
         "status": "Active",
         "wls":2,
-        "revisionDate" : f"{current_year}-03-29",
+        "revisionDate" : f"2026-03-29",
         "description": "",
         "department" : 3
     },
@@ -682,7 +682,7 @@ positionhistory = [
         "positionCode": "S12345",
         "status": "Active",
         "wls":3,
-        "revisionDate" : f"{current_year}-01-23",
+        "revisionDate" : f"2026-01-23",
         "description": "",
         "department" : 1
     },
@@ -691,7 +691,7 @@ positionhistory = [
         "positionCode": "S39568",
         "status": "Active",
         "wls":4,
-        "revisionDate" : f"{current_year}-01-31",
+        "revisionDate" : f"2026-01-31",
         "description": "",
         "department" : 1
     },
@@ -700,7 +700,7 @@ positionhistory = [
         "positionCode": "S74933",
         "status": "Active",
         "wls":5,
-        "revisionDate" : f"{current_year}-04-01",
+        "revisionDate" : f"2026-04-01",
         "description": "",
         "department" : 1
     },
@@ -709,7 +709,7 @@ positionhistory = [
         "positionCode": "S94932",
         "status": "Active",
         "wls":6,
-        "revisionDate" : f"{current_year}-05-03",
+        "revisionDate" : f"2026-05-03",
         "description": "",
         "department" : 1
     },
@@ -718,7 +718,7 @@ positionhistory = [
         "positionCode": "S22222",
         "status": "Active",
         "wls":1,
-        "revisionDate" : f"{current_year}-05-03",
+        "revisionDate" : f"2026-05-03",
         "description": "",
         "department" : 1
     },
@@ -727,7 +727,7 @@ positionhistory = [
         "positionCode": "S00000",
         "status": "Active",
         "wls":6,
-        "revisionDate" : f"{current_year}-05-03",
+        "revisionDate" : f"2026-05-03",
         "description": "",
         "department" : 1
     }
