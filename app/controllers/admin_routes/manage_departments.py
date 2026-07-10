@@ -41,7 +41,7 @@ def manage_departments(academic_year = 202500):     # FIXME
 
         currentTerm = Term.get(Term.termCode == academic_year)
 
-        totalBreakSum = getUsedBreakHours(academic_year)
+        totalBreakSum = getUsedBreakHours(currentTerm)
 
         print("Something\n\n")
 

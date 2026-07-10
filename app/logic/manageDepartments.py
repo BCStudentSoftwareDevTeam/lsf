@@ -3,28 +3,35 @@ from app.models.formHistory import *
 from peewee import fn
 
 
-def getUsedBreakHours(terms):
+def getUsedBreakHours(term):
     # totalBreakSum = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)).where( (FormHistory.historyType_id == "Labor Status Form ") & (FormHistory.status_id == "Approved"))
 
     totalBreakSum = (
     FormHistory
     .select(
         LaborStatusForm.department,
-        LaborStatusForm.termCode,
+        LaborStatusForm.termCode.termCode,
         fn.SUM(LaborStatusForm.contractHours).alias('totalHours')
         
     )
     .join(
         LaborStatusForm,
-        on=(FormHistory.formID == LaborStatusForm.laborStatusFormID)
+        on=(FormHistory.formID == LaborStatusForm.laborStatusFormID),
+    )
+    .join(
+        Term,
+        on = (LaborStatusForm.termCode == Term.termCode)
     )
     .where(
         (FormHistory.historyType == "Labor Status Form") &
-        (FormHistory.status == "Approved") #&
-        # LaborStatusForm.termCode.in_(terms) # Should have a list of terms, not just one term.
+        (FormHistory.status == "Approved") &
+        (LaborStatusForm.termCode == term)
     )
     .group_by(LaborStatusForm.department, LaborStatusForm.termCode).dicts()
 )
+    
+    print(list(totalBreakSum))
+    
     # correctLSF = LaborStatusForm.select().where(LaborStatusForm.termCode == term)
 
     # print("Something2\n\n\n\n",list(correctLSF))

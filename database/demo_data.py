@@ -601,8 +601,64 @@ FormHistory.insert([{
 
 
 #############################
-# Create Active Labor Status Form
+# Create Active Labor Status Form for the Break Term
 #############################
+
+# cs department
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 6,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 1,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 6,
+            "formID_id": "6",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 7,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 1,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 6,
+            "formID_id": "6",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+
+
+# labor department
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 4,
@@ -615,7 +671,7 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
-            "contractHours": 100,
+            "contractHours": 5,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
@@ -640,7 +696,7 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Media Technician",
             "POSN_CODE": "S61409",
-            "contractHours": 100,
+            "contractHours": 5,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
