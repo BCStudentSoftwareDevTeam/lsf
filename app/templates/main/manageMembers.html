@@ -74,13 +74,12 @@
                 </td>
 
                 <td class="text-center centered-cell">
-                    <form action="/members/coordinator_switch" method="POST">
+                    <form action="" method="POST">
                         <div class="form-group">
                             <label class="switch table-switch">
-                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" {% if i['isCoordinator'] %} checked {% endif %}>
+                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{i['supervisor']}}" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}" {% if i['isCoordinator'] %} checked {% endif %}>
                                 <span class="slider round"></span>
                             </label>
-                            <input name="member-id" type="hidden" value="{{i['supervisor']}}">
                             <span class="switch-label"></span>
                         </div>
                     </form>
