@@ -82,8 +82,7 @@
       <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
 
       {% if supervisors %}
-        {% for s in supervisors %}
-          {% if loop.index0 < 3 %}
+        {% for s in supervisors[:3] %}
             <p>
               {{ s.name }}
 
@@ -97,10 +96,12 @@
                 
               {% endif %}
             </p>
-          {% elif loop.index0 == 3 %}
-            <p>and {{ supervisors|length - 3 }} more...</p>
-          {% endif %}
-        {% endfor %}
+            {% endfor %}
+
+            {% if supervisors|length > 3 %}
+              <p>and {{ supervisors|length - 3 }} more...</p>
+            {% endif %}
+
       {% elif not laborCoordinators and currentUser.isLaborAdmin %}
         <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
       {% else  %}
