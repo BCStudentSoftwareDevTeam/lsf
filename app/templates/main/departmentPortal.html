@@ -134,8 +134,7 @@
 
             </div>
             <ul style="line-height:2;">
-            {% for p in positions %}
-              {% if 7 > loop.index0 %}
+            {% for p in positions[:7] %}
                   {% if p == "No active positions in this department" %}
                     <li class="card-text">
                     <p> {{ p }} </p>
@@ -145,12 +144,10 @@
                       <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
                     </li>
                   {% endif %}
-
-              {% elif 7 == loop.index0 %}
+            {% endfor %}
+            {% if positions| length >7 %}
                 </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
               {% endif %}
-            {% endfor %}
-            </ul>
             
           </div>
               <div class="card-footer text-center">
