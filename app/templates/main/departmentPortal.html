@@ -68,7 +68,7 @@
             <ul style="line-height:2;">
             {% for p in positions %}
               {% if 7 > loop.index0 %}
-                  {% if p == "No Positions for this Department" %}
+                  {% if p == "No active positions in this department" %}
                     <li class="card-text">
                     <p> {{ p }} </p>
                     </li>
