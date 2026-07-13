@@ -1,5 +1,6 @@
 from app.controllers.admin_routes import *
 from app.models import term
+from app.models.formHistory import FormHistory
 from app.models.user import *
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.login_manager import require_login
@@ -18,6 +19,7 @@ from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
 from datetime import date
 from app.logic.manageDepartments import getUsedBreakHours
+from app.logic.manageDepartments import getAllocationStatus
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
@@ -51,9 +53,9 @@ def manage_departments(academic_year = 202500):     # FIXME
             print(totalBreakSum)
 
         breakHoursByDepartment = {
-        row['department']: int(row['totalHours'])
-        for row in getUsedBreakHours(currentTerm)
-}
+                                    row['department']: int(row['totalHours'])
+                                    for row in getUsedBreakHours(currentTerm)
+                                    }
 
         print(breakHoursByDepartment)
 
@@ -64,19 +66,36 @@ def manage_departments(academic_year = 202500):     # FIXME
         inactiveDepartments = Department.select().where(Department.isActive == False)
         
         
-        activeDepartments = (
-            Department
-            .select(Department, Allocation)
-            .join(Allocation)
-            .where(
-                Department.isActive == True,
-                Allocation.termCode == currentTerm.termCode
-            )
+        activeDepartments = (Department
+                                        .select(Department, Allocation)
+                                        .join(Allocation)
+                                        .where(
+                                            Department.isActive == True,
+                                            Allocation.termCode == currentTerm.termCode
+                                        )
+                            )
+        
+        for dept in activeDepartments:
+            dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
+            dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
+            
+            lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == dept.departmentID).count()
+            lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == dept.departmentID).count()
+            dept.lsfCountPrimaries = lsfCountPrimaries
+            dept.lsfCountSecondaries = lsfCountSecondaries
+        print("######################")
+        print(f"COUNTS: {lsfCountSecondaries} ")
+        # print([lsf.formID for lsf in lsfCountPrimaries])
+        # print([lsf.formID for lsf in lsfCountSecondaries])
 
-    
-)
+        allocationStatus = {
+            department.departmentID: getAllocationStatus(currentTerm, department)
+            for department in activeDepartments
+        }
 
-
+        print("Pizza\n\n\n\n")
+        print ("Allocation Status:", allocationStatus)
+        print("\n\n\n\nPotato")
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
@@ -87,7 +106,8 @@ def manage_departments(academic_year = 202500):     # FIXME
                                 currentTerm = currentTerm,
                                 academicYear = currentTerm.termName,
                                 # totalBreakSum = totalBreakSum
-                                breakHoursByDepartment = breakHoursByDepartment
+                                breakHoursByDepartment = breakHoursByDepartment,
+                                allocationStatus = allocationStatus
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
