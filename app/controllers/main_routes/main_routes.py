@@ -61,7 +61,7 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
-    supervisor_departments = (
+    supervisorDepartments = (
         SupervisorDepartment
         .select()
         .join(Supervisor)
@@ -75,35 +75,35 @@ def departmentPortal(org=None,account=None):
     )
     )
 
-    labor_coordinators = []
+    laborCoordinators = []
     supervisors = []
 
-    for supervisor_department in supervisor_departments:
-        supervisor = supervisor_department.supervisor
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
 
         if supervisor is None:
             continue
 
-        first_name = supervisor.preferred_name or supervisor.legal_name or ""
-        last_name = supervisor.LAST_NAME or ""
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
 
-        supervisor_name = f"{first_name} {last_name}".strip()
+        supervisorName = f"{firstName} {lastName}".strip()
 
-        supervisor_display = {
-            "name": supervisor_name,
+        supervisorDisplay = {
+            "name": supervisorName,
             "email": supervisor.EMAIL
         }
 
-        if supervisor_department.isCoordinator:
-            labor_coordinators.append(supervisor_display)
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
         else:
-            supervisors.append(supervisor_display)
+            supervisors.append(supervisorDisplay)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            supervisors = supervisors,
-                           labor_coordinators=labor_coordinators,
+                           laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser
                            )
 
