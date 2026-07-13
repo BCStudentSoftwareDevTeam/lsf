@@ -73,12 +73,12 @@
               <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Members<span class="glyphicon glyphicon-chevron-right"></span></a>
             </div>
         </section>
-
       </div>
-      <div class=" col-12 col-lg-4">
+
+        <div class=" col-12 col-lg-4">
         <section class="card" aria-labelledby="positions-title">
           <div class="card-body">
-            <div class="media">
+              <div class="media">
               <div class="media-left media-middle">
                 <span aria-hidden="true" style="color: #424242; font-size: 24px;">
                   <i class="bi bi-suitcase-lg-fill"></i>
@@ -88,17 +88,32 @@
                 <h1>Positions</h1>
               </div>
             </div>
-          </div>
-          <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-          </div>
-        </section>
+            <ul style="line-height:2;">
+              {% for p in positions %}
+              {% if 7 > loop.index0 %}
+                  {% if p == "No active positions in this department" %}
+                    <li class="card-text">
+                    <p> {{ p }} </p>
+                    </li>
+                  {% else %}
+                    <li class="card-text">
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
+                    </li>
+                  {% endif %}
+
+              {% elif 7 == loop.index0 %}
+            </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
+                  {% endif %}
+                  {% endfor %}
+            </ul>
       </div>
-      
+      <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+      </div>
+    </section>
+  </div>
 </div>
-
 {% endif %}
-
 
 {% endblock %}
 
