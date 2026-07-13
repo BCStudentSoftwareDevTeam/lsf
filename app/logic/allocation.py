@@ -70,6 +70,25 @@ def getAllocationSummary(dept, term):
     return summary
 
 
+def getBandAllocationStatus(dept, term, jobType, hours):
+    fieldName = next((f for f, j, h in ALLOCATION_BAND_FIELDS if j == jobType and h == hours), None)
+    if not fieldName:
+        return None
+
+    summary = getAllocationSummary(dept, term)
+    if not summary['allocationBands']:
+        return None
+
+    band = summary['allocationBands'][fieldName]
+    return {
+        'label': BAND_LABELS[fieldName],
+        'used': band['used'],
+        'allocated': band['allocated'],
+        'remaining': band['allocated'] - band['used'],
+        'isOverAllocated': band['used'] > band['allocated'],
+    }
+
+
 def getAllocationWarning(dept, term):
     summary = getAllocationSummary(dept, term)
     if not summary['allocation']:

@@ -14,7 +14,7 @@ from app.models.department import *
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date, timedelta
-from flask import Flask, redirect, url_for, flash
+from flask import Flask, redirect, url_for, flash, g
 from app.logic.emailHandler import*
 from app.logic.userInsertFunctions import*
 from app.models.supervisor import Supervisor
@@ -22,6 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
+from app.logic.allocation import getBandAllocationStatus
 
 
 @main_bp.route('/laborstatusform', methods=['GET'])
@@ -169,6 +170,15 @@ def checkTotalHours(termCode, student, hours):
                 totalHours = totalHours + item.formID.weeklyHours
     totalHours = totalHours + int(hours)
     return json.dumps(totalHours)
+
+@main_bp.route("/laborstatusform/checkallocation/<departmentOrg>/<departmentAcct>/<jobType>/<hours>", methods=["GET"])
+def checkAllocation(departmentOrg, departmentAcct, jobType, hours):
+    """ Checks the department's allocation status for the hour-band being submitted. """
+    dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
+    if not dept:
+        return jsonify(None)
+    status = getBandAllocationStatus(dept, g.openTerm, jobType, int(hours))
+    return jsonify(status)
 
 @main_bp.route("/laborStatusForm/modal/releaseAndRehire", methods=['POST'])
 def releaseAndRehire():

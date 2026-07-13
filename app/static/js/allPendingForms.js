@@ -131,13 +131,13 @@ function updateAllocationWarnings(allocationWarnings) {
     var bandDetail = '';
     if (w.overAllocatedBands && w.overAllocatedBands.length > 0) {
       var bandStrings = w.overAllocatedBands.map(function(b) {
-        return b.label + ' (' + b.used + '/' + b.allocated + ')';
+        return b.label + ' (' + b.used + ' used / ' + b.allocated + ' allocated)';
       });
       bandDetail = '<br><span style="' + overStyle + '">Over on: ' + bandStrings.join(', ') + '</span>';
     }
     var html = '<div class="alert ' + boxClass + '" role="alert">' +
       '<strong>' + w.departmentName + ' Allocation</strong><br>' +
-      '<span style="' + positionsStyle + '">Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
+      '<span style="' + positionsStyle + '">Total Positions (all bands): ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
       ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span>' + bandDetail + '<br>' +
       '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
       ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +

@@ -11,6 +11,7 @@ $(document).ready(function(){
     var value = $("#selectedHoursPerWeek").val();
     $("#selectedHoursPerWeek").val(value);
     fillHoursPerWeek("fillhours");
+    checkAllocation();
   }
   var cookies = document.cookie;
   if (cookies){
@@ -334,6 +335,40 @@ function checkCompliance(obj) {
           }
         }
       });
+}
+
+// Checks the department's allocation status for the selected job type/hours band.
+// This is informational only and never blocks or disables form submission.
+function checkAllocation() {
+  $("#allocation-remaining-text").hide();
+  $("#allocation-warning").hide();
+
+  var departmentSelect = $("#selectedDepartment");
+  var departmentOrg = departmentSelect.val();
+  var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+  var jobType = $("#jobType").val();
+  var hours = $("#selectedHoursPerWeek").val();
+
+  if (!departmentOrg || !jobType || !hours) {
+    return;
+  }
+
+  var url = "/laborstatusform/checkallocation/" + departmentOrg + "/" + departmentAcct + "/" + jobType + "/" + hours;
+  $.ajax({
+    url: url,
+    dataType: "json",
+    success: function (response){
+      if (!response) {
+        return;
+      }
+      var remaining = response.remaining >= 0 ? response.remaining : 0;
+      $("#allocation-remaining-text").text(response.label + " Positions: " + response.used + "/" + response.allocated + " used (" + remaining + " remaining)").show();
+      if (response.isOverAllocated) {
+        $("#allocation-warning-text").html("This department is already over its allocation for " + response.label + " positions (" + response.used + "/" + response.allocated + "). You may still submit this form, but please contact the Labor Office.");
+        $("#allocation-warning").show();
+      }
+    }
+  });
 }
 
 // TABLE LABELS

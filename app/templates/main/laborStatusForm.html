@@ -85,7 +85,7 @@
                 data-live-search='true'
                 title="Department"
                 data-width="100%"
-                onchange = "checkCompliance(this); getDepartment(this); showAccessLevel()">
+                onchange = "checkCompliance(this); getDepartment(this); showAccessLevel(); checkAllocation()">
           <option value = "" disabled selected>Select a Department</option>
           {% for department in departments %}
             <option value-account="{{department.ACCOUNT}}" value="{{department.ORG}}"{% if forms %}{% if forms.department.DEPT_NAME == department.DEPT_NAME %} selected {% endif %}{% endif %} data-content=
@@ -188,7 +188,7 @@
                   data-live-search='true'
                   title="Job Type"
                   data-width="100%"
-                  onchange="fillHoursPerWeek()">
+                  onchange="fillHoursPerWeek(); checkAllocation()">
             <option value = "" disabled selected>Select a Job Type</option>
             <option id = "primary" value="Primary"{% if forms %}{% if forms.jobType == "Primary" %} data-jobType={{forms.jobType}} selected {% endif %}{% endif %}>Primary</option>
             <option value="Secondary"{% if forms %}{% if forms.jobType == "Secondary" %} data-jobType={{forms.jobType}} selected {% endif %}{% endif %}>Secondary</option>
@@ -203,10 +203,12 @@
                   id='selectedHoursPerWeek'
                   data-live-search='true'
                   data-width="100%"
-                  title="Hours per week" >
+                  title="Hours per week"
+                  onchange="checkAllocation()">
             <option value = "" disabled selected>Select Hours Per Week</option>
             {% if forms %} <option value="{{forms.weeklyHours}}" selected >{{forms.weeklyHours}}</option> {% endif %}
           </select>​
+          <small id="allocation-remaining-text" class="text-muted" hidden></small>
     </div>
     <div id="contractHours" class= "form-group ">
     <!-- Contract hours for breaks -->
@@ -221,6 +223,9 @@
                  oninput="this.value = Math.abs(this.value); this.value = parseInt(this.value)||0" >
          </input>
     </div>
+</div>
+<div class="col-md-12 alert alert-warning" role="alert" id="allocation-warning" hidden>
+  <span id="allocation-warning-text"></span>
 </div>
 <br>
 <div id="plus" class= "col-md-12">
