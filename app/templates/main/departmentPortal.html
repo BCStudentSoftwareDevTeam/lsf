@@ -74,7 +74,7 @@
                     </li>
                   {% else %}
                     <li class="card-text">
-                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions/{{posUrl[loop.index0]}}">{{ p }}</a>
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
                     </li>
                   {% endif %}
 
@@ -86,7 +86,7 @@
             
           </div>
               <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
               </div>
         </section>
       </div>
