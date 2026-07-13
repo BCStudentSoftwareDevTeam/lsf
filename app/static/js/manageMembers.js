@@ -57,16 +57,29 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".assign-coordinator", function() {
-        let memberName = $(this).data("member-name");
-        $(this).closest("form").submit();
 
-        if ($(this).is(":checked")) {
-            $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
-            $("#flasher").delay(3000).fadeOut();
-        } else {
-            $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
-            $("#flasher").delay(3000).fadeOut();
-        }
+        let memberName = $(this).data("member-name");
+        let supervisorID = $(this).data("supervisor");
+        let isChecked = $(this).is(":checked");
+        
+        $.ajax({
+            url: "/members/coordinator_switch",
+            data: JSON.stringify({supervisorID: supervisorID, isCoordinator: isChecked}),
+            type: "POST",
+            contentType: "application/json",
+            success: function() {
+                if (isChecked) {
+                    $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
+                    $("#flasher").delay(3000).fadeOut();
+                } else {
+                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
+                    $("#flasher").delay(3000).fadeOut();
+                }
+        
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
+
         
     });
 })

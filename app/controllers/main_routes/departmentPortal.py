@@ -178,14 +178,15 @@ def add_member(query=None):
 
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
 def coordinator_switch():
-    member_id = request.form.get("member-id")
-    is_coordinator = request.form.get("is_coordinator")
+    data = request.get_json()
+    supervisor_id = data.get("supervisorID")
+    is_coordinator = data.get("isCoordinator")
 
-    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == member_id)
+    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisor_id)
     member.isCoordinator = is_coordinator
     member.save()
 
-    return redirect(request.referrer)
+    return "", 200
 
 @main_bp.route('/members/ban_switch', methods=['POST'])
 def ban_switch():
