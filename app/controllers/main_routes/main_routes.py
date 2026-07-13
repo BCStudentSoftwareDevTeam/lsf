@@ -88,7 +88,6 @@ def departmentPortal(org=None,account=None):
     for sid, jobs in student_hours.items():
         primary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Primary")
         secondary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Secondary")
-        print(sid, "Primary:", primary, "Secondary:", secondary)
     def count_workers(job_type, hours_bucket):
         return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True)).count()
     
