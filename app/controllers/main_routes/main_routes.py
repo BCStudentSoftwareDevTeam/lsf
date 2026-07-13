@@ -1,6 +1,6 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from flask_bootstrap import forms
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
 from app.models.allocation import Allocation
@@ -62,7 +62,6 @@ def departmentPortal(org=None,account=None):
             dept = None
     else:
         dept = None
-    
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -70,9 +69,35 @@ def departmentPortal(org=None,account=None):
      
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
-        
     except DoesNotExist:
         allocation = None
+    
+    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+
+    laborCoordinators = []
+    supervisors = []
+
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
+
+        if supervisor is None:
+            continue
+
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        supervisorName = f"{firstName} {lastName}".strip()
+
+        supervisorDisplay = {
+            "name": supervisorName,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
     
     ViewAllocations(org, account)
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
@@ -124,7 +149,10 @@ def departmentPortal(org=None,account=None):
                            used_10_sec = used_10_sec,
                            break_hours = sum_break,
                            positions = positionsList,
-                           posUrl = posUrl
+                           posUrl = posUrl,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=g.currentUser
                            )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
