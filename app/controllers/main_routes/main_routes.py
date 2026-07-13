@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
 from app.models.department import Department
@@ -64,23 +64,37 @@ def departmentPortal(org=None,account=None):
         dept = None
     
 
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
-    pos = Tracy().getPositionsFromDepartment(org, account)
-    positions = []
-    for i in pos:
-        positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
+    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
 
-    staff = Tracy().getSupervisors()
+    laborCoordinators = []
     supervisors = []
 
-    for i in staff:
-        if i.ORG == org:
-            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
+
+        if supervisor is None:
+            continue
+
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        supervisorName = f"{firstName} {lastName}".strip()
+
+        supervisorDisplay = {
+            "name": supervisorName,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
 
         
     positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
@@ -97,6 +111,9 @@ def departmentPortal(org=None,account=None):
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=g.currentUser,
                            positions = positionsList,
                            posUrl = posUrl)
 

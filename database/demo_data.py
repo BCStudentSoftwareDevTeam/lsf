@@ -613,7 +613,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
-            "status_id": "Pending"
+            "status": "Pending"
         }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
@@ -639,7 +639,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
@@ -665,7 +665,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()    
 
 LaborReleaseForm.insert([{
@@ -682,7 +682,7 @@ FormHistory.insert([{
             "releaseForm": 10,
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()    
 
 LaborStatusForm.insert([{
@@ -707,7 +707,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()    
 
 LaborStatusForm.insert([{
@@ -732,7 +732,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()    
 
 LaborStatusForm.insert([{
@@ -757,7 +757,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute() 
 
 
@@ -783,7 +783,7 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "status": "Approved"
         }]).on_conflict_replace().execute()      
 
 
