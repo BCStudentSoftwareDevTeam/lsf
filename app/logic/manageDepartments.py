@@ -1,5 +1,6 @@
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
+from app.models.allocation import *
 from peewee import fn
 
 
@@ -37,6 +38,13 @@ def getUsedBreakHours(term):
     # print("Something2\n\n\n\n",list(correctLSF))
 
     return totalBreakSum
+
+def getAllocationStatus(term, department):
+    allocation = Allocation.get(
+        (Allocation.termCode == term) &
+        (Allocation.department == department)
+    )
+    return allocation.isFinal
 
 # def getCurrentSelectedTerm(currentTerm):
     #'''

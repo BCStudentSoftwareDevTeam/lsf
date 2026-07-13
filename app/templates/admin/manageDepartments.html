@@ -159,12 +159,10 @@
                 <p><strong>Sec: 12 </strong> of <strong> 16 </strong></p>
               </td>
               <td style="text-align: center; vertical-align: middle">
-                <button class="btn btn-success me-2" type="button">
-                  Approved
+                <button 
+                   class="btn {% if allocationStatus.get(department.departmentID) %}btn-success{% else %}btn-warning{% endif %}">
+                  {{ "Approved" if allocationStatus.get(department.departmentID) else "Pending" }}
                 </button>
-                <!-- <button class="btn btn-warning me-2" type="button">
-                  Pending
-                </button> -->
               </td>
 
               

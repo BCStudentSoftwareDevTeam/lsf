@@ -18,6 +18,7 @@ from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
 from datetime import date
 from app.logic.manageDepartments import getUsedBreakHours
+from app.logic.manageDepartments import getAllocationStatus
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
@@ -76,7 +77,15 @@ def manage_departments(academic_year = 202500):     # FIXME
     
 )
 
+        allocationStatus = {
+            department.departmentID: getAllocationStatus(currentTerm, department)
+            for department in activeDepartments
+        }
 
+
+        print("Pizza\n\n\n\n")
+        print ("Allocation Status:", allocationStatus)
+        print("\n\n\n\nPotato")
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
@@ -87,7 +96,8 @@ def manage_departments(academic_year = 202500):     # FIXME
                                 currentTerm = currentTerm,
                                 academicYear = currentTerm.termName,
                                 # totalBreakSum = totalBreakSum
-                                breakHoursByDepartment = breakHoursByDepartment
+                                breakHoursByDepartment = breakHoursByDepartment,
+                                allocationStatus = allocationStatus
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
