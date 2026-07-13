@@ -254,6 +254,7 @@ a {
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
   
+  margin-top: auto;
 }
 
 .card-footer:last-child {
