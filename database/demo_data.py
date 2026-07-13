@@ -459,6 +459,9 @@ print(" * users added")
 #############################
 # Department
 #############################
+#############################
+# Active Departments
+#############################
 departments = [
             {
               "departmentID":1,
@@ -499,8 +502,51 @@ departments = [
               "ORG": "4022",
               "departmentCompliance": 1,
               "isActive": 1
+            },
+#############################
+# Inactive Departments
+#############################
+            
+            {
+              "departmentID":6,
+              "DEPT_NAME": "Agriculture and Natural Resources",
+              "ACCOUNT": "6740",
+              "ORG": "1441",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":7,
+              "DEPT_NAME": "Art and Art History",
+              "ACCOUNT": "6740",
+              "ORG": "2004",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":8,
+              "DEPT_NAME": "Asian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "9801",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":9,
+              "DEPT_NAME": "Appalachian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "8787",
+              "departmentCompliance": 1,
+              "isActive": 0
+            }, 
+            {
+              "departmentID":10,
+              "DEPT_NAME": "Music",
+              "ACCOUNT": "6740",
+              "ORG": "4805",
+              "departmentCompliance": 1,
+              "isActive": 0
             }
-
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
 print(" * departments added")
