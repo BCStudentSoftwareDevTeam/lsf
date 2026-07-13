@@ -58,10 +58,7 @@
                     <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
 
                     <br>
-
-                    {% if i[4] %}
-                        <span class="isbanned-badge">Banned</span>
-                    {% endif %}
+                    <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Banned</span>
                 </td>
 
                 <td class="centered-cell">
@@ -87,20 +84,37 @@
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
                 <td class="text-center centered-cell">
-                    <form action="/members/ban_switch" method="POST">
-                        <button
-                            name="is_banned"
-                            class="btn btn-danger member-status-btn"
-                            align="center"
-                            data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
-                            {% if not i[4] %} value="Banned" {% else %} value="Unbanned" {% endif %}>&nbsp; Ban &nbsp;
-                        </button>
-                        <input name="member-id" type="hidden" value="{{i['supervisor']}}">
+                    <form action="" method="POST">
+                        {% if not i['isBanned'] %}
+                            <button
+                                name="is_banned"
+                                type="button"
+                                class="btn btn-danger member-status-btn"
+                                align="center"
+                                data-supervisor="{{i['supervisor']}}"
+                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                value="Unbanned">&nbsp; Ban &nbsp;
+                            </button>
+                        {% else %}
+                            <button
+                                name="is_banned"
+                                type="button"
+                                class="btn btn-success member-status-btn"
+                                align="center"
+                                data-supervisor="{{i['supervisor']}}"
+                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                value="Banned">Unban
+                            </button>
+                        {% endif %}
                     </form>
                 </td>
-                <td class="text-center centered-cell remove-member" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
+                <td class="text-center centered-cell remove-member" 
+                    data-supervisor="{{i['supervisor']}}"
+                    data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
                     <form action="" method="DELETE">
-                        <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
+                        <button class="btn btn-danger" align="center">
+                            <span class="bi bi-trash"></span>
+                        </button>
                     </form>
                 </td>
                 {% endif %}

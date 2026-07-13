@@ -29,6 +29,7 @@ from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usern
 def manageStaff(org=None,account=None):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        session['current_department_id'] = dept.departmentID
         session['current_department'] = dept.DEPT_NAME
     except (NameError, DoesNotExist):
         dept = None
@@ -118,7 +119,8 @@ def manageStaff(org=None,account=None):
     return render_template('main/manageMembers.html', 
                            members = members,
                            department = dept)
-                           
+
+
 def supervisorsDbToDict(supervisor):
     """
     Given a supervisor object it will return a mapped Dict with supervisor data.
@@ -130,6 +132,7 @@ def supervisorsDbToDict(supervisor):
                 'department': supervisor.DEPT_NAME.strip(),
                 'type': 'Supervisor'}
     return dbToDict
+
 
 # search student table and STUDATA for student results
 @main_bp.route('/members/search/<query>',  methods=['GET'])
@@ -149,9 +152,10 @@ def add_member(query=None):
     if re.match(r'[Bb]\d+', query):
         recorded_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper())).where(Supervisor.DEPT_NAME != current_department)))
         current_supervisors = [
-            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
+            s for s in map(supervisorsDbToDict, Tracy(mkk).getSupervisorsFromUserInput(query))
             if s.get('department') != current_department
         ]
+
 
     # name search
     else:
@@ -176,6 +180,7 @@ def add_member(query=None):
 
     return jsonify(supervisors)
 
+
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
 def coordinator_switch():
     data = request.get_json()
@@ -188,13 +193,51 @@ def coordinator_switch():
 
     return "", 200
 
+
 @main_bp.route('/members/ban_switch', methods=['POST'])
 def ban_switch():
-    member_id = request.form.get("member-id")
-    member = Supervisor.get(Supervisor.ID == member_id)
-    print("BEFORE:", member.ID, member.isBanned)
+    data = request.get_json()
+    supervisor_id = data.get("supervisorID")
+
+    member = Supervisor.get(Supervisor.ID == supervisor_id)
+    
     member.isBanned = not member.isBanned
     member.save()
-    print("AFTER:", member.ID, member.isBanned)
 
-    return redirect(request.referrer)
+    return "", 200
+
+
+@main_bp.route('/members/remove', methods=['DELETE'])
+def remove_member():
+    data = request.get_json()
+    supervisor_id = data.get("supervisorID")
+    
+    member = SupervisorDepartment.get(
+        (SupervisorDepartment.supervisor == supervisor_id) &
+        (SupervisorDepartment.department == session['current_department_id'])
+        )
+    member.delete_instance()
+
+    return "", 200
+
+
+
+@main_bp.route('/members/add', methods=['GET', 'POST'])
+def addUserToDept():
+    userDeptData = request.form
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
+    try:
+        if supervisorDeptRecord:
+            return "False"
+
+        else:
+            supervisorID = userDeptData['supervisorID']
+            if not Supervisor.get_or_none(Supervisor.ID == supervisorID):
+                createSupervisorFromTracy(bnumber=supervisorID)
+
+            SupervisorDepartment.create(supervisor=supervisorID, department=userDeptData['departmentID'])
+            return "True"
+    
+    except Exception as e:
+        print(f'Could not add user to department: {e}')
+        return "", 500
