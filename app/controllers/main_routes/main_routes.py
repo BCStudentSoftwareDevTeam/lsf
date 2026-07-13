@@ -81,6 +81,20 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            positions = positionsList,
                            posUrl = posUrl)
+    
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
+def positionDetails(org=None, account=None, positionCode=None):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        dept = None
+
+    try:
+        position = PositionHistory.get()
+    except (NameError, DoesNotExist):
+        dept = None
+
+    return render_template('main/positionDetails.html')
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
