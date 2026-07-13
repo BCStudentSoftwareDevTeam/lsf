@@ -130,7 +130,7 @@
             <tr>
               <td scope="row">
                 <a
-                  href="javascript:{}"
+                  href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}"
                   class="departmentName"
                   id="{{department.departmentID}}"
                   >{{department.DEPT_NAME}}</a
@@ -155,8 +155,8 @@
                 </button>
               </td>
               <td style="white-space: nowrap">
-                <p><strong>Prim: 6 </strong> of <strong> 16 </strong></p>
-                <p><strong>Sec: 12 </strong> of <strong> 16 </strong></p>
+                <p><strong>Prim: {{department.lsfCountPrimaries}} </strong> of <strong> {{department.totalPrimaries}} </strong></p>
+                <p><strong>Sec: {{department.lsfCountSecondaries}} </strong> of <strong> {{department.totalSecondaries}} </strong></p>
               </td>
               <td style="text-align: center; vertical-align: middle">
                 <button 
@@ -208,7 +208,7 @@
             <tr>
               <td scope="row">
                 <a
-                  href="javascript:{}"
+                  href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}"
                   class="departmentName"
                   id="{{department.departmentID}}"
                   >{{department.DEPT_NAME}}</a

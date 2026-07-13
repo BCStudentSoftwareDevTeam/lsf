@@ -1,6 +1,7 @@
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.allocation import *
+from app.controllers.main_routes import departmentPortal
 from peewee import fn
 
 
@@ -45,6 +46,8 @@ def getAllocationStatus(term, department):
         (Allocation.department == department)
     )
     return allocation.isFinal
+
+# def getTotalPositionHours
 
 # def getCurrentSelectedTerm(currentTerm):
     #'''
