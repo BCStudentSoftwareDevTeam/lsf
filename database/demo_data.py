@@ -756,6 +756,212 @@ FormHistory.insert([{
             "status_id": "Approved"
         }]).on_conflict_replace().execute()  
 
+# Biology Department
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 8,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 4,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 8,
+            "formID_id": "8",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 9,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 4,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 9,
+            "formID_id": "9",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()
+
+# Mathematics Department
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 10,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 3,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 10,
+            "formID_id": "10",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 11,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 3,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 11,
+            "formID_id": "11",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()
+
+#Technology and Applied Design Department
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 12,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 2,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 12,
+            "formID_id": "12",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 13,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 2,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 13,
+            "formID_id": "13",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 14,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 2,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 14,
+            "formID_id": "14",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 15,
+            "termCode_id": f"202500",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 2,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 15,
+            "formID_id": "15",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()
+
 #############################
 # admin Notes
 #############################
