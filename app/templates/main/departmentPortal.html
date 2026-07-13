@@ -3,8 +3,9 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
-    <link rel="stylesheet" type="text/css"
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
+
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
@@ -26,112 +27,74 @@
   </div>
 
 {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 1rem;">
-     
-<section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="current_allocation-title">
-    <div class="card-body">
-      <div class="media">
-        <div class="header-container" style="padding-top: 12px;">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i> 
-            <h1 style="display: inline; margin: 0;" >Allocations</h1>
-          </span>
-        </div>
+<div class="row g-3">
+      <div class="col-12 col-lg-4 ">
+        <section class="card" aria-labelledby="allocationTitle">
+          <div class="card-body">
+            <div class="media">
+            <div class="media-left media-middle">
+              <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                <i class="bi bi-clock"></i> 
+              </span>
+            </div>
+            <div class="media-body media-middle">
+              <h1>Allocations</h1>
+            </div>
+            <div class="header-container">
+              <h3>AY 2025-2026</h3> <h3>{{used_allocation}}/{{total_allocation or 0}} Positions</h3>
+            </div>
+            <div class="allocation-list">
+              <ul class="primary-chart">
+                <li>10 Hour - {{used_10}}/{{allocation.primary_10}}</li>
+                <li>12 Hour - {{used_12}}/{{allocation.primary_12}}</li>
+                <li>15 Hour - {{used_15}}/{{allocation.primary_15}}</li>
+                <li>20 Hour - {{used_20}}/{{allocation.primary_20}}</li>
+              </ul>
+              <ul class="secondary-chart">
+                <li>5 Hour - {{used_5_sec}}/{{allocation.secondary_5}}</li>
+                <li>10 Hour - {{used_10_sec}}/{{allocation.secondary_10}}</li>
+              </ul>
+            </div>
+            <div class="header-container">
+              <h3>Break Hours</h3> <h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
+            </div>
+          </div>
+          </div>
+          <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Alloations<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
+        </section>
       </div>
-      <div>
-        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>AY 2025-2026</h3> <h3>15/{{total_allocation or 0}} Positions</h3>
-        </div>
-        <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <ul style="font-size: 1.2em; padding-left: 75px;">
-          <li>10 Hour - {{used_10}}/{{allocation.primary_10}}</li>
-          <li>12 Hour - {{used_12}}/{{allocation.primary_12}}</li>
-          <li>15 Hour - {{used_15}}/{{allocation.primary_15}}</li>
-          <li>20 Hour - {{used_20}}/{{allocation.primary_20}}</li>
-        </ul>
-         <ul style="font-size: 1.2em; padding-right: 75px;">
-          <li>5 Hour - {{used_5_sec}}/{{allocation.secondary_5}}</li>
-          <li>10 Hour - {{used_10_sec}}/{{allocation.secondary_10}}</li>
-        </ul>
-        </div>
-      </div>
-      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3> <h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
-      </div>
-    </div>
+      <div class="col-12 col-lg-4">
+      <section class="card" aria-labelledby="members-title">
+
+        <h1>Members</h1>
         <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary btn-m">
-        Manage Allocations <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-      <a href="#" class="btn btn-primary btn-m">
-        Request Allocation <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-    </section>
-
-  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
-    <div class="card-body">
-      <div class="media">
-         <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #000; font-size: 24px;">
-            <i class="bi bi-people-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
-          </span>
-        </div>
-
-        <div class="media-body media-middle">
-          <h1>
-            Members
-          </h1>
-        </div>
-      </div>
-      <h4>Labor Coordinator(s)</h4>
-      <p>Dr. Jones</p>
-
-      <h2>Supervisors</h2>
-      {% for s in supervisors %}
-      {% if 3 > loop.index0 %}
-        <p>{{ s }}</p>
-      {% elif 4 > loop.index0 %}
-        <p>and {{ supervisors | length}} more...</p>
-      {% endif %}
-      {% endfor %}
-    </div>
-
-    <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Details
-         <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-  </section>
-
-  <div class="card" style="width:50rem; border-radius: 1rem;">
-    <div class="card-body">
-       <div class="media">
-        <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-suitcase-lg-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
-          </span>
-        </div>
-        <div class="media-body media-middle">
-          <h1>Positions</h1>
-        </div>
+              <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Members<span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </section>
 
       </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-          <li class="card-text">{{ p }}</li>
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
-      {% endfor %}
-      </ul>
+      <div class=" col-12 col-lg-4">
+        <section class="card" aria-labelledby="positions-title">
+          <div class="card-body">
+            <div class="media">
+              <div class="media-left media-middle">
+                <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                  <i class="bi bi-suitcase-lg-fill"></i>
+                </span>
+              </div>
+              <div class="media-body media-middle">
+                <h1>Positions</h1>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-center">
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
+        </section>
+      </div>
       
-    </div>
-       <div class="card-footer text-center" >
-          <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
-    </div>
 </div>
 
 {% endif %}

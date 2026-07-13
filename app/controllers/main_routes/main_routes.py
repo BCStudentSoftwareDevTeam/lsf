@@ -77,10 +77,10 @@ def departmentPortal(org=None,account=None):
 
     staff = Tracy().getSupervisors()
     supervisors = []
-    print(dept, '*********************************************************Denys')
+    
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
-        print(allocation,g.openTerm.termCode,  '*********************************************************Scott')
+        
     except DoesNotExist:
         allocation = None
     term = 202500
@@ -89,12 +89,9 @@ def departmentPortal(org=None,account=None):
         if i.ORG == org:
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True))])
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True))])
     student_hours = {}
-    for form in LaborStatusForm.select().where(
-        LaborStatusForm.department == dept,
-        LaborStatusForm.termCode_id == 202500,
-        LaborStatusForm.contractHours.is_null(True)
+    for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
     ):
         sid = form.studentSupervisee_id
         student_hours.setdefault(sid, []).append({
