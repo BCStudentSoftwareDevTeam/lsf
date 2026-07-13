@@ -73,7 +73,7 @@ def departmentPortal(org=None,account=None):
         
     except DoesNotExist:
         allocation = None
-    term = 202500
+    
     ViewAllocations(org, account)
     totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
     usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True))])
@@ -85,9 +85,7 @@ def departmentPortal(org=None,account=None):
             "jobType": form.jobType,
             "weeklyHours": form.weeklyHours
         })
-    for sid, jobs in student_hours.items():
-        primary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Primary")
-        secondary = sum(j["weeklyHours"] for j in jobs if j["jobType"] == "Secondary")
+
     def count_workers(job_type, hours_bucket):
         return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True)).count()
     
