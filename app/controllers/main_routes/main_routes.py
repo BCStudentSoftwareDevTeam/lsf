@@ -63,19 +63,8 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
-    supervisorDepartments = (
-        SupervisorDepartment
-        .select()
-        .join(Supervisor)
-        .where(SupervisorDepartment.department == dept)
-        .order_by(
-          fn.COALESCE(
-            Supervisor.preferred_name,
-            Supervisor.legal_name,
-            Supervisor.LAST_NAME
-        ).asc()
-    )
-    )
+    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
 
     laborCoordinators = []
     supervisors = []
