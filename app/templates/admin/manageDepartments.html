@@ -144,10 +144,10 @@
                 <p><strong>Sec: {{department.lsfCountSecondaries}} </strong> of <strong> {{department.totalSecondaries}} </strong></p>
               </td>
               <td style="text-align: center; vertical-align: middle">
-                <button 
-                   class="btn {% if allocationStatus.get(department.departmentID) %}btn-success{% else %}btn-warning{% endif %}">
+                <label 
+                   class="label {% if allocationStatus.get(department.departmentID) %}label-success{% else %}label-warning{% endif %}">
                   {{ "Approved" if allocationStatus.get(department.departmentID) else "Pending" }}
-                </button>
+                </label>
               </td>
 
 
