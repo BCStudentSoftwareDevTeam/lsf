@@ -69,7 +69,7 @@ def departmentPortal(org=None,account=None):
     positionsList = []
     posUrl = []
     if not positions:
-        positionsList = ["No Positions for this Department"]
+        positionsList = ["No active positions in this department"]
     else:
         for i in positions:
             positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
