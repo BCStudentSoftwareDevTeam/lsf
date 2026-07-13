@@ -74,33 +74,35 @@
                 </td>
 
                 <td class="text-center centered-cell">
-                    <div class="form-group">
-                        <label class="switch table-switch">
-                            <input class="assign-coordinator" type="checkbox" {% if i['isCoordinator'] %} checked {% endif %} data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="switch-label"></span>
-                    </div>
+                    <form action="/members/coordinator_switch" method="POST">
+                        <div class="form-group">
+                            <label class="switch table-switch">
+                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" {% if i['isCoordinator'] %} checked {% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                            <input name="member-id" type="hidden" value="{{i['supervisor']}}">
+                            <span class="switch-label"></span>
+                        </div>
+                    </form>
                 </td>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
                 <td class="text-center centered-cell">
-                    {% if not i[4] %}
-                    <button
-                        class="btn btn-danger member-status-btn"
-                        align="center"
-                        data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
-                        data-member-status="Banned">&nbsp; Ban &nbsp;</button>
-                    {% else %}
-                    <button
-                        class="btn btn-success member-status-btn"
-                        align="center"
-                        data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
-                        data-member-status="Unbanned">Unban</button>
-                    {% endif %}
+                    <form action="/members/ban_switch" method="POST">
+                        <button
+                            name="is_banned"
+                            class="btn btn-danger member-status-btn"
+                            align="center"
+                            data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                            {% if not i[4] %} value="Banned" {% else %} value="Unbanned" {% endif %}>&nbsp; Ban &nbsp;
+                        </button>
+                        <input name="member-id" type="hidden" value="{{i['supervisor']}}">
+                    </form>
                 </td>
                 <td class="text-center centered-cell remove-member" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
-                    <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
+                    <form action="" method="DELETE">
+                        <button class="btn btn-danger" align="center"><span class="bi bi-trash"></span></button>
+                    </form>
                 </td>
                 {% endif %}
 

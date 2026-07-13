@@ -175,3 +175,25 @@ def add_member(query=None):
     supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
 
     return jsonify(supervisors)
+
+@main_bp.route('/members/coordinator_switch', methods=['POST'])
+def coordinator_switch():
+    member_id = request.form.get("member-id")
+    is_coordinator = request.form.get("is_coordinator")
+
+    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == member_id)
+    member.isCoordinator = is_coordinator
+    member.save()
+
+    return redirect(request.referrer)
+
+@main_bp.route('/members/ban_switch', methods=['POST'])
+def ban_switch():
+    member_id = request.form.get("member-id")
+    member = Supervisor.get(Supervisor.ID == member_id)
+    print("BEFORE:", member.ID, member.isBanned)
+    member.isBanned = not member.isBanned
+    member.save()
+    print("AFTER:", member.ID, member.isBanned)
+
+    return redirect(request.referrer)

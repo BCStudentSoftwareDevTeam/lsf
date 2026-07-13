@@ -10,7 +10,7 @@ $(document).ready(function() {
         }], // hide sort icon on header of first column
         'aaSorting': [
         [0, 'asc']
-        ], // start to sort data in second column
+         ], // start to sort data in second column
         searching: false, 
         pageLength: 10,
         language: {
@@ -20,16 +20,20 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".member-status-btn", function() {
-        let  memberName = $(this).data("member-name");
-        let memberStatus = $(this).data("member-status");
+        let memberName = $(this).data("member-name");
+        let memberStatus = $(this).val();
         let category;
+
+        $(this).closest("form").submit();
+
+        //$(this).closest("form").submit();
 
         if (memberStatus === "Banned") {
             category = "danger";
         } else {
             category = "success";
         }
-                
+
         let quote = String.fromCharCode(39);
 
         $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + memberStatus + quote + ".</div>");
@@ -38,22 +42,23 @@ $(document).ready(function() {
         if (memberStatus === "Banned") {
             $(this).removeClass("btn-danger").addClass("btn-success");
             $(this).text("Unban");
-            $(this).data("member-status", "Unbanned");
+            $(this).val("Unbanned");
         } else {
             $(this).removeClass("btn-success").addClass("btn-danger");
             $(this).html("&nbsp; Ban &nbsp;");
-            $(this).data("member-status", "Banned");
+            $(this).val("Banned");
         }
     });
 
     $(document).on("click", ".remove-member", function() {
-        let  memberName = $(this).data("member-name");
+        let memberName = $(this).data("member-name");
         $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
         $("#flasher").delay(3000).fadeOut();
     });
 
     $(document).on("click", ".assign-coordinator", function() {
-        let  memberName = $(this).data("member-name");
+        let memberName = $(this).data("member-name");
+        $(this).closest("form").submit();
 
         if ($(this).is(":checked")) {
             $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
@@ -136,7 +141,7 @@ function sendQuery(search_str) {
               highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;
               optionString += `<option value="${bnumber}" data-content="${highlighted_text}" data-subtext="${username}">${choice_text}</option>`;
             }
-          }
+        }
           $("#search").append(createFragment(optionString))
           $('#search').selectpicker("refresh");
         }
