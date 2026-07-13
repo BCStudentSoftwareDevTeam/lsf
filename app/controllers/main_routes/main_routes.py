@@ -61,8 +61,6 @@ def departmentPortal(org=None,account=None):
     else:
         dept = None
 
-    currentUser = require_login()
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -111,7 +109,7 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            supervisors = supervisors,
                            labor_coordinators=labor_coordinators,
-                           currentUser=currentUser
+                           currentUser=g.currentUser
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
