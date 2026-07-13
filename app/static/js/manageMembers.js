@@ -19,43 +19,6 @@ $(document).ready(function() {
         //dom: '<"top"l>rt<"bottom"p><"clear">' 
     });
 
-    $(document).on("click", ".member-status-btn", function() {
-        let memberName = $(this).data("member-name");
-        let memberStatus = $(this).val();
-        let category;
-
-        $(this).closest("form").submit();
-
-        //$(this).closest("form").submit();
-
-        if (memberStatus === "Banned") {
-            category = "danger";
-        } else {
-            category = "success";
-        }
-
-        let quote = String.fromCharCode(39);
-
-        $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + memberStatus + quote + ".</div>");
-        $("#flasher").delay(3000).fadeOut();
-
-        if (memberStatus === "Banned") {
-            $(this).removeClass("btn-danger").addClass("btn-success");
-            $(this).text("Unban");
-            $(this).val("Unbanned");
-        } else {
-            $(this).removeClass("btn-success").addClass("btn-danger");
-            $(this).html("&nbsp; Ban &nbsp;");
-            $(this).val("Banned");
-        }
-    });
-
-    $(document).on("click", ".remove-member", function() {
-        let memberName = $(this).data("member-name");
-        $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
-        $("#flasher").delay(3000).fadeOut();
-    });
-
     $(document).on("click", ".assign-coordinator", function() {
 
         let memberName = $(this).data("member-name");
@@ -81,6 +44,71 @@ $(document).ready(function() {
         })	
 
         
+    });
+
+    $(document).on("click", ".member-status-btn", function() {
+
+        let button = $(this);
+        let ban_badge = $(this).closest("tr").find(".isbanned-badge");
+
+        let memberName = button.data("member-name");
+        let supervisorID = button.data("supervisor");
+
+        let banStatus = button.val();
+        let isBanned = banStatus === "Banned" ? true : false;
+
+        let quote = String.fromCharCode(39);
+
+        let category;
+
+        $.ajax({
+            url: "/members/ban_switch",
+            data: JSON.stringify({supervisorID: supervisorID, isBanned: isBanned}),
+            type: "POST",
+            contentType: "application/json",
+            success: function() {
+                if (!isBanned) {
+                    category = "danger";
+                    button.removeClass("btn-danger").addClass("btn-success");
+                    button.text("Unban");
+                    button.val("Banned");
+                    ban_badge.css("visibility", "visible");
+                } else {
+                    category = "success";
+                    button.removeClass("btn-success").addClass("btn-danger");
+                    button.html("&nbsp; Ban &nbsp;");
+                    button.val("Unbanned");
+                    ban_badge.css("visibility", "hidden");
+                }
+
+                $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + banStatus + quote + ".</div>");
+                $("#flasher").delay(3000).fadeOut();
+        
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
+    });
+
+    $(document).on("click", ".remove-member", function() {
+
+        let redButton = $(this);
+        let row = $(this).closest("tr");
+
+        let memberName = redButton.data("member-name");
+        let supervisorID = redButton.data("supervisor");
+
+        $.ajax({
+            url: "/members/remove",
+            data: JSON.stringify({supervisorID: supervisorID}),
+            type: "DELETE",
+            contentType: "application/json",
+            success: function() {
+                $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
+                $("#flasher").delay(3000).fadeOut();
+                row.remove();
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
     });
 })
 
@@ -161,3 +189,35 @@ function sendQuery(search_str) {
       });
     }
 }
+
+function addSupervisorToDepartment(supervisorID, departmentID, callback=() => {}) {
+    return $.ajax({
+      method: "POST",
+      url: `/members/add`,
+      data: {"supervisorID": supervisorID, "departmentID": departmentID},
+      success: function(response) {
+        if (response == "True") {
+          msgFlash("Supervisor has been added to department.", "success")
+          clearDropdowns();
+        } else {
+          msgFlash("Supervisor is already a member of this department.", "warning")
+          clearDropdowns();
+        }
+        if (callback){
+          callback();
+        }
+      },
+      error: function() {
+        msgFlash("Failed to add supervisor, please try again.", "fail")
+        clearDropdowns();
+      },
+    })
+
+}
+
+function clearDropdowns(){
+    $('select.selectpicker').each(function() {
+      $(`#${this.id} option:eq(0)`).prop("selected", true);
+      $(`#${this.id}`).selectpicker("refresh");
+    });
+};

@@ -100,26 +100,6 @@ def managePositions(org, account):
                            positions = positions
                            )
 
-@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
-def addUserToDept():
-    userDeptData = request.form
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
-    try:
-        if supervisorDeptRecord:
-            return "False"
-
-        else:
-            supervisorID = userDeptData['supervisorID']
-            if not Supervisor.get_or_none(Supervisor.ID == supervisorID):
-                createSupervisorFromTracy(bnumber=supervisorID)
-
-            SupervisorDepartment.create(supervisor=supervisorID, department=userDeptData['departmentID'])
-            return "True"
-    
-    except Exception as e:
-        print(f'Could not add user to department: {e}')
-        return "", 500
-
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
