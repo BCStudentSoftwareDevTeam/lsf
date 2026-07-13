@@ -843,7 +843,7 @@ allocations = [
     {
     "termCode":        202500,
     "department":       2,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -888,7 +888,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
