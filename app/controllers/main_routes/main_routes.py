@@ -123,9 +123,36 @@ def departmentPortal(org=None,account=None):
             
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept, 
-                           organization = org,
-                           account = account)
+                           department = dept,
+                           allocation = allocation,
+                           total_allocation = totalPositions,
+                           used_allocation = usedAllocation,
+                           term = g.openTerm.termName,
+                           studentHours = studentHours,
+                           usedPositions = usedPositions,
+                           break_hours = sumBreak,
+                           positions = positionsList,
+                           posUrl = posUrl,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=g.currentUser
+                           )
+
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    positions = Tracy().getPositionsFromDepartment(org, account)
+    print(positions)
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
