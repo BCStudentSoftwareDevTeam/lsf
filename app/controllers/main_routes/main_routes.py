@@ -151,7 +151,7 @@ def departmentPortal(org=None,account=None):
                            usedPositions = usedPositions,
                            break_hours = sumBreak,
                            positions = positionsList,
-                           posUrl = posURL,
+                           posURL = posURL,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser
