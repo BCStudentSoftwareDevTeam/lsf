@@ -1291,7 +1291,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       1,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -1341,7 +1341,7 @@ print("Data insertion complete :)")
 allocation =[
                 {
                     "termCode":f"{2025}00",
-                    "department": 3,
+                    "department": 6,
                     "isFinal": True,
                     "approvedOn": f"{2025}-06-30",
                     "approvedBy": "B12365892",
@@ -1356,7 +1356,7 @@ allocation =[
                 },
                 {
                     "termCode":f"{2025}00",
-                    "department": 2,
+                    "department": 7,
                     "isFinal": False,
                     "approvedOn": f"{2025}-06-20",
                     "approvedBy": "B00763721",
@@ -1496,7 +1496,7 @@ PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 
 dummy_lsf = [
     {
-        "laborStatusFormID": 4,
+        "laborStatusFormID": 20,
             "termCode_id": f"202500",
             "studentName": "Chris Georgiev",
             "studentSupervisee_id": "B00811617",
@@ -1512,7 +1512,7 @@ dummy_lsf = [
     },
     {
         
-        "laborStatusFormID": 5,
+        "laborStatusFormID": 20,
             "termCode_id": f"202500",
             "studentName": "Julius Fritz",
             "studentSupervisee_id": "B00815474",
@@ -1527,7 +1527,7 @@ dummy_lsf = [
             "endDate": "2025-09-01"
     },
     {
-        "laborStatusFormID": 6,
+        "laborStatusFormID": 21,
             "termCode_id": f"202500",
             "studentName": "Subaru Natsuki",
             "studentSupervisee_id": "B12345223",
@@ -1542,7 +1542,7 @@ dummy_lsf = [
             "endDate": "2025-09-01"
     },
     {
-        "laborStatusFormID": 7,
+        "laborStatusFormID": 22,
             "termCode_id": f"202500",
             "studentName": "Hatsune Miku",
             "studentSupervisee_id": "B12345003",
@@ -1558,7 +1558,7 @@ dummy_lsf = [
 
         },
         {
-        "laborStatusFormID": 8,
+        "laborStatusFormID": 23,
             "termCode_id": f"202500",
             "studentName": "Michael Jackson",
             "studentSupervisee_id": "B12345772",

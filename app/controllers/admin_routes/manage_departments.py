@@ -52,10 +52,7 @@ def manage_departments(academic_year = 202500):     # FIXME
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {
-                                    row['department']: int(row['totalHours'])
-                                    for row in getUsedBreakHours(currentTerm)
-                                    }
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentTerm)}
 
         # print(breakHoursByDepartment)
 
