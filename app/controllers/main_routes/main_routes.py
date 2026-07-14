@@ -84,29 +84,43 @@ def departmentPortal(org=None,account=None):
         allocation = None
     
     ViewAllocations(org, account)
-    for i in staff:
-        if i.DEPT_NAME == Department.DEPT_NAME:
-            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-    totalPositions = Allocation.select(Allocation.primary_10 + Allocation.primary_12 + Allocation.primary_15 + Allocation.primary_20 + Allocation.secondary_5 + Allocation.secondary_10).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.studentConfirmation.is_null(True), LaborStatusForm.contractHours.is_null(True))])
-    student_hours = {}
+    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
+    studentHours = {}
     for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
     ):
-        sid = form.studentSupervisee_id
-        student_hours.setdefault(sid, []).append({
-            "jobType": form.jobType,
-            "weeklyHours": form.weeklyHours
-        })
+        studentSuperviseeId = form.studentSupervisee_id
+        if studentSuperviseeId not in studentHours:
+            studentHours[studentSuperviseeId] = []
+        studentHours[studentSuperviseeId].append({
+                "jobType": form.jobType,
+                "weeklyHours": form.weeklyHours
+            })
+        
 
     def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket,LaborStatusForm.studentConfirmation.is_null(True)).count()
+        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
     
-    used_10     = count_workers("Primary", "10")
-    used_12     = count_workers("Primary", "12")
-    used_15     = count_workers("Primary", "15")
-    used_20     = count_workers("Primary", "20")
-    used_5_sec  = count_workers("Secondary", "5")
-    used_10_sec = count_workers("Secondary", "10")
+    usedPositions = {
+    "used_10": count_workers("Primary", "10"),
+    "used_12": count_workers("Primary", "12"),
+    "used_15": count_workers("Primary", "15"),
+    "used_20": count_workers("Primary", "20"),
+    "used_5_sec": count_workers("Secondary", "5"),
+    "used_10_sec": count_workers("Secondary", "10"),
+}
+    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+    sumBreak = sum(form.contractHours or 0 for form in break_allocation)
+    positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
+    positionsList = []
+    posUrl = []
+    if not positions:
+        positionsList = ["No active positions in this department"]
+    else:
+        for i in positions:
+            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
+            posUrl.append(str(i.positionCode))
+            
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
@@ -116,13 +130,14 @@ def departmentPortal(org=None,account=None):
                            total_allocation = totalPositions,
                            used_allocation = usedAllocation,
                            term = g.openTerm.termName,
-                           studentHours = student_hours,
-                           used_10 = used_10,
-                           used_12 = used_12,
-                           used_15 = used_15,
-                           used_20 = used_20,
-                           used_5_sec = used_5_sec,
-                           used_10_sec = used_10_sec
+                           studentHours = studentHours,
+                           usedPositions = usedPositions,
+                           break_hours = sumBreak,
+                           positions = positionsList,
+                           posUrl = posUrl,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=g.currentUser
                            )
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
