@@ -13,7 +13,3 @@ class PositionHistory(baseModel):
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
 
-    # @classmethod
-    # def active(self):
-    #     return self.select().where(self.status == "Active")
-    
