@@ -5,6 +5,7 @@ from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
 import operator
 from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
