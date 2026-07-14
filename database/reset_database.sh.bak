@@ -8,7 +8,7 @@ if [ "$1" != "test" ] && [ "$1" != "from-backup" ]; then
 fi
 
 cd database;
-                      
+
 PRODUCTION=0
 if [ "`hostname`" == 'lsf.berea.edu' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
@@ -22,12 +22,12 @@ if [ "$1" == "from-backup" ]; then
 fi
 
 echo "Dropping databases"
-mysql -u root -proot --skip-ssl --execute="DROP DATABASE \`lsf\`; DROP USER 'lsf_user';"
-mysql -u root -proot --skip-ssl --execute="DROP DATABASE \`UTE\`; DROP USER 'tracy_user';"
+mysql -u root -proot --execute="DROP DATABASE \`lsf\`; DROP USER 'lsf_user';"
+mysql -u root -proot --execute="DROP DATABASE \`UTE\`; DROP USER 'tracy_user';"
 
 echo "Recreating databases and users"
-mysql -u root -proot --skip-ssl --execute="CREATE DATABASE IF NOT EXISTS \`lsf\`; CREATE USER IF NOT EXISTS 'lsf_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'lsf_user'@'%';"
-mysql -u root -proot --skip-ssl --execute="CREATE DATABASE IF NOT EXISTS \`UTE\`; CREATE USER IF NOT EXISTS 'tracy_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'tracy_user'@'%';"
+mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`lsf\`; CREATE USER IF NOT EXISTS 'lsf_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'lsf_user'@'%';"
+mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`UTE\`; CREATE USER IF NOT EXISTS 'tracy_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'tracy_user'@'%';"
 
 cd database
 
@@ -38,14 +38,14 @@ rm -rf migrations.json
 echo "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo "  from backup"
-    mysql -u root -proot --skip-ssl lsf < prod-backup.sql
+    mysql -u root -proot lsf < prod-backup.sql
 else
     echo "  empty"
     ./migrate_db.sh
 fi
 
 if [ $PRODUCTION -ne 1 ]; then
-	./migrate_db_tracy.sh                                                      
+	./migrate_db_tracy.sh
 fi
 
 rm -rf lsf_migrations
