@@ -1,7 +1,9 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
+from flask_bootstrap import forms
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+from app.models.allocation import Allocation
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -62,12 +64,16 @@ def departmentPortal(org=None,account=None):
             dept = None
     else:
         dept = None
-    
 
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+     
+    try:
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
+    except DoesNotExist:
+        allocation = None
     
     supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
         .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
@@ -95,8 +101,35 @@ def departmentPortal(org=None,account=None):
             laborCoordinators.append(supervisorDisplay)
         else:
             supervisors.append(supervisorDisplay)
-
+    
+    ViewAllocations(org, account)
+    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
+    studentHours = {}
+    for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
+    ):
+        studentSuperviseeId = form.studentSupervisee_id
+        if studentSuperviseeId not in studentHours:
+            studentHours[studentSuperviseeId] = []
+        studentHours[studentSuperviseeId].append({
+                "jobType": form.jobType,
+                "weeklyHours": form.weeklyHours
+            })
         
+
+    def count_workers(job_type, hours_bucket):
+        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
+    
+    usedPositions = {
+    "used_10": count_workers("Primary", "10"),
+    "used_12": count_workers("Primary", "12"),
+    "used_15": count_workers("Primary", "15"),
+    "used_20": count_workers("Primary", "20"),
+    "used_5_sec": count_workers("Secondary", "5"),
+    "used_10_sec": count_workers("Secondary", "10"),
+}
+    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+    sumBreak = sum(form.contractHours or 0 for form in break_allocation)
     positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []
     posUrl = []
@@ -106,16 +139,24 @@ def departmentPortal(org=None,account=None):
         for i in positions:
             positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
             posUrl.append(str(i.positionCode))
-
-
+            
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
+                           allocation = allocation,
+                           total_allocation = totalPositions,
+                           used_allocation = usedAllocation,
+                           term = g.openTerm.termName,
+                           studentHours = studentHours,
+                           usedPositions = usedPositions,
+                           break_hours = sumBreak,
+                           positions = positionsList,
+                           posUrl = posUrl,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
-                           currentUser=g.currentUser,
-                           positions = positionsList,
-                           posUrl = posUrl)
+                           currentUser=g.currentUser
+                           )
+
 
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
@@ -183,3 +224,11 @@ def submitToBanner(formHistoryId):
         return "Form successfully submitted to Banner.", 200
     else:
         return "Submitting to Banner failed.", 500
+    
+@main_bp.route('/department/<org>/<account>', methods=['GET'])
+def ViewAllocations(org, account):
+      
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
