@@ -1,0 +1,154 @@
+/*styles for column alignment in the data table*/
+.centered-header {
+  text-align: center !important;
+}
+
+.centered-cell {
+  vertical-align: middle !important;
+}
+
+/* The add-member search bar*/
+#add-member {
+  display: flex; 
+  justify-content: center; 
+  gap: 0px;
+  height: 20px;
+  margin-bottom: 30px;
+}
+
+
+@media (min-width: 767px) {
+  #add-member{
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 0px;
+    /*margin-bottom: -20px;*/
+  }
+}
+
+
+/* The switch container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 31.25px;
+  height: 16.25px;
+  vertical-align: middle;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider track */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc !important;
+  transition: .4s;
+}
+
+/* The slider knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 11.25px;
+  width: 11.25px;
+  left: 2.5px;
+  bottom: 2.5px;
+  background-color: white !important;
+  transition: .4s;
+}
+
+/* Checked state track color */
+input:checked + .slider {
+  background-color: #337ab7 !important; /* Bootstrap 3 Primary Color */
+}
+
+/* Checked state knob movement */
+input:checked + .slider:before {
+  transform: translateX(15px) !important;
+}
+
+/* Rounded slider track and knob */
+.slider.round {
+  border-radius: 21.25px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Optional label spacing */
+.switch-label {
+  margin-left: 6.25px;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+/* hover indicator */
+a.hover-indicator {
+  text-decoration: none !important;
+  position: relative;
+  border-bottom: 1px dotted #000;
+  color: #000000;
+}
+
+a.hover-indicator:visited,
+a.hover-indicator:link,
+a.hover-indicator:hover,
+a.hover-indicator:active {
+  color: #000000;
+}
+
+[class*="hover-indicator"]:after {
+  content: attr(aria-label);
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 10px;
+  z-index: 5000;
+  pointer-events: none;
+  padding: 8px 10px;
+  line-height: 15px;
+  white-space: nowrap;
+  text-decoration: none !important;
+  text-indent: 0;
+  overflow: visible;
+  font-size: .9em;
+  font-weight: normal;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+[class*="hover-indicator"]:hover:after, [class*="hover_indicator"]:focus:after {
+  display: block;
+  color: #000000;
+}
+
+/*a "banned" badge displayed under the name of a banned department member*/
+.isbanned-badge {
+  position: relative;
+  display: inline-block;
+  margin-top: 3px;
+  padding: 2px 6px;
+  background: red;
+  color: white !important;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+/* switches inside the data table */
+.table-switch {
+  top: 10px;
+}

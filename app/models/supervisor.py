@@ -13,10 +13,11 @@ class Supervisor(baseModel):
     ORG                 = CharField(null=True)
     DEPT_NAME           = CharField(null=True)
 
-    legal_name      = CharField(null=True)
-    preferred_name  = CharField(null=True)
-    isActive        = BooleanField(default=False)
-    isBanned        = BooleanField(default=False)
+    legal_name          = CharField(null=True)
+    preferred_name      = CharField(null=True)
+    isActive            = BooleanField(default=False)
+    isBanned            = BooleanField(default=False)
+
 
 
     @property
