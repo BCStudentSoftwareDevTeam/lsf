@@ -45,21 +45,21 @@ def manage_departments(academic_year = 202500):     # FIXME
 
         totalBreakSum = getUsedBreakHours(currentTerm)
 
-        print("Something\n\n")
+        # print("Something\n\n")
 
         
-        for row in totalBreakSum:
-            print(row['department'],int(row['totalHours']),row['termCode'])
-            print(totalBreakSum)
+        # for row in totalBreakSum:
+        #     print(row['department'],int(row['totalHours']),row['termCode'])
+        #     print(totalBreakSum)
 
         breakHoursByDepartment = {
                                     row['department']: int(row['totalHours'])
                                     for row in getUsedBreakHours(currentTerm)
                                     }
 
-        print(breakHoursByDepartment)
+        # print(breakHoursByDepartment)
 
-        print("\n\nSomething")
+        # print("\n\nSomething")
 
         # activeDepartments = Department.select().where(Department.isActive == True)
         # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
@@ -83,8 +83,8 @@ def manage_departments(academic_year = 202500):     # FIXME
             lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == dept.departmentID).count()
             dept.lsfCountPrimaries = lsfCountPrimaries
             dept.lsfCountSecondaries = lsfCountSecondaries
-        print("######################")
-        print(f"COUNTS: {lsfCountSecondaries} ")
+        # print("######################")
+        # print(f"COUNTS: {lsfCountSecondaries} ")
         # print([lsf.formID for lsf in lsfCountPrimaries])
         # print([lsf.formID for lsf in lsfCountSecondaries])
 
@@ -93,9 +93,9 @@ def manage_departments(academic_year = 202500):     # FIXME
             for department in activeDepartments
         }
 
-        print("Pizza\n\n\n\n")
-        print ("Allocation Status:", allocationStatus)
-        print("\n\n\n\nPotato")
+        # print("Pizza\n\n\n\n")
+        # print ("Allocation Status:", allocationStatus)
+        # print("\n\n\n\nPotato")
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
