@@ -13,6 +13,35 @@
   font-size: 3rem;
   color:#6e6e6e;
 }
+.bi-clock {
+    border: 1px solid #c0c0c0;
+    border-radius: 8px;
+    padding: 3px 3.5px 1.5px 3.5px;
+    font-size: 3rem;
+    color:#6e6e6e;
+}
+.header-container {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding-left: 10px; 
+    padding-right: 10px;
+}
+.allocation-list {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding-left: 10px; 
+    padding-right: 10px;
+}
+.primary-chart {
+    font-size: 1.2em; 
+    padding-left: 75px;
+}
+.secondary-chart {
+    font-size: 1.2em; 
+    padding-right: 75px;
+}
 
 .bi-people-fill {  /* Bootstrap Icon for Members Card */
   border: 1px solid #c0c0c0;
