@@ -67,24 +67,16 @@ def manageStaff(org=None,account=None):
     # not contribute to any of the four totals.
     active_primaries = (
         (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation == True) &
-        (LaborStatusForm.endDate >= today)
-    )
+        (LaborStatusForm.studentConfirmation == True))
     pending_primaries = (
         (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)) &
-        (LaborStatusForm.endDate >= today)
-    )
+        (LaborStatusForm.studentConfirmation.is_null(True)))
     active_secondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation == True) &
-        (LaborStatusForm.endDate >= today)
-    )
+        (LaborStatusForm.studentConfirmation == True))
     pending_secondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)) &
-        (LaborStatusForm.endDate >= today)
-    )
+        (LaborStatusForm.studentConfirmation.is_null(True)))
 
 
     student_count = list(
