@@ -94,7 +94,9 @@ def positionDetails(org=None, account=None, positionCode=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    return render_template('main/positionDetails.html')
+    return render_template('main/positionDetails.html',
+                           position = position,
+                           department = dept)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
