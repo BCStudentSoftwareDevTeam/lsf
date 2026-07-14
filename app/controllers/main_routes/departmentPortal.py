@@ -153,7 +153,7 @@ def add_member(query=None):
     if re.match(r'[Bb]\d+', query):
         recorded_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper())).where(Supervisor.DEPT_NAME != current_department)))
         current_supervisors = [
-            s for s in map(supervisorsDbToDict, Tracy(mkk).getSupervisorsFromUserInput(query))
+            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
             if s.get('department') != current_department
         ]
 
