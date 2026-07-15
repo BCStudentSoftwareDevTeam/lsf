@@ -18,7 +18,7 @@ $(document).ready(function() {
         },
         //dom: '<"top"l>rt<"bottom"p><"clear">' 
     });
-
+    $('[data-toggle="popover"]').popover();
     $(document).on("click", ".assign-coordinator", function() {
 
         let memberName = $(this).data("member-name");

@@ -4,6 +4,7 @@
 {{super()}}
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/managemembers.css')}}?u={{lastStaticUpdate}}">
+    <link href=""
     {% endblock %}
 
 {% block scripts %}
@@ -44,7 +45,11 @@
                 <th class="no-sorting centered-header">Assign Coordinator</th>
 
                 {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
-                <th class="no-sorting centered-header">Change Status</th>
+                <th class="no-sorting centered-header">
+                    Supervisor Eligibility 
+                    &nbsp;
+                     <span  data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle "></span>
+                </th>
                 <th class="no-sorting centered-header">Remove Member</th>
                 {% endif %}
             </tr>
