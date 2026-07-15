@@ -207,6 +207,7 @@ a {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
+  overflow: hidden;
 }
 
 .card-body {
@@ -250,6 +251,10 @@ a {
   padding: 0.5rem 1rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  
+  margin-top: auto;
 }
 
 .card-footer:last-child {
@@ -262,13 +267,17 @@ a {
 
 .card-img-top {
   border-top-left-radius: calc(0.25rem - 1px);
-  border-top-right-radius: calc(0.25rem - 1px);}
+  border-top-right-radius: calc(0.25rem - 1px);
+}
+
+.members-icon {
+  font-size: 36px;
+}
 .site-footer {
   position: fixed;
   left: 280px;
   right: 0;
   bottom: 0;
-
 
   background-color: #e9ebec;
   color: #1e2433;

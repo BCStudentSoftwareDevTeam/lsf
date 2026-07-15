@@ -3,10 +3,11 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
-
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -22,6 +23,165 @@
         "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
       {% endfor %}
     </select>
-
   </div>
+
+{% if department %}
+<div class="row g-3">
+      <div class="col-12 col-lg-4 ">
+        <section class="card" aria-labelledby="allocationTitle">
+          <div class="card-body">
+            <div class="media">
+            <div class="media-left media-middle">
+              <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                <i class="bi bi-clock"></i> 
+              </span>
+            </div>
+            <div class="media-body media-middle">
+              <h1>Allocations</h1>
+            </div>
+            <div class="header-container">
+              <h3>AY 2025-2026</h3> <h3>{{used_allocation}}/{{total_allocation or 0}} Positions</h3>
+            </div>
+            <div class="allocation-list">
+              <ul class="primary-chart">
+                <li>10 Hour - {{usedPositions.used_10}}/{{allocation.primary_10}}</li>
+                <li>12 Hour - {{usedPositions.used_12}}/{{allocation.primary_12}}</li>
+                <li>15 Hour - {{usedPositions.used_15}}/{{allocation.primary_15}}</li>
+                <li>20 Hour - {{usedPositions.used_20}}/{{allocation.primary_20}}</li>
+              </ul>
+              <ul class="secondary-chart">
+                <li>5 Hour - {{usedPositions.used_5_sec}}/{{allocation.secondary_5}}</li>
+                <li>10 Hour - {{usedPositions.used_10_sec}}/{{allocation.secondary_10}}</li>
+              </ul>
+            </div>
+            <div class="header-container">
+              <h3>Break Hours</h3> <h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
+            </div>
+          </div>
+          </div>
+          <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Alloations<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
+        </section>
+      </div>
+
+        <div class="col-12 col-lg-4">
+          <section class="card">
+    <div class="card-body">
+      <div class="media">
+         <div class="media-left media-middle">
+          <span class="members-icon">
+            <i class="bi bi-people-fill"></i>
+          </span>
+        </div>
+
+        <div class="media-body media-middle">
+          <h1>
+            Members
+          </h1>
+        </div>
+      </div>
+      <h4> <b>{% if laborCoordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
+      {% if laborCoordinators %}
+        {% for coordinator in laborCoordinators %}
+          <p>
+            {{ coordinator.name }}
+
+            {% if coordinator.email %}
+                 <a href="mailto:{{ coordinator.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ coordinator.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
+            {% endif %}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p>None assigned. <a href="#" >Add one?</a> </p> 
+        <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
+          
+      {% endif %}
+
+    
+      <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
+
+      {% if supervisors %}
+        {% for s in supervisors[:3] %}
+            <p>
+              {{ s.name }}
+
+              {% if s.email %}
+                  <a href="mailto:{{ s.email }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      title="{{ s.email }}">
+                      <i class="bi bi-envelope-fill"></i>
+                  </a>
+                
+              {% endif %}
+            </p>
+            {% endfor %}
+
+            {% if supervisors|length > 3 %}
+              <p>and {{ supervisors|length - 3 }} more...</p>
+            {% endif %}
+
+      {% elif not laborCoordinators and currentUser.isLaborAdmin %}
+        <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
+      {% else  %}
+        <p>No active supervisors assigned.</p>
+      {% endif %}
+
+    </div>
+
+    <div class="card-footer text-center">
+      <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/members" class="btn btn-primary">View Members
+         <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+  </section>
+
+        </div>
+
+        <div class=" col-12 col-lg-4">
+        <section class="card" aria-labelledby="positions-title">
+          <div class="card-body">
+              <div class="media">
+              <div class="media-left media-middle">
+                <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                  <i class="bi bi-suitcase-lg-fill"></i>
+                </span>
+              </div>
+              <div class="media-body media-middle">
+                <h1>Positions</h1>
+              </div>
+            </div>
+            <ul style="line-height:2;">
+            {% for p in positions[:7] %}
+                  {% if p == "No active positions in this department" %}
+                    <li class="card-text">
+                    <p> {{ p }} </p>
+                    </li>
+                  {% else %}
+                    <li class="card-text">
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
+                    </li>
+                  {% endif %}
+            {% endfor %}
+            {% if positions| length >7 %}
+                </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
+              {% endif %}
+            
+          </div>
+              <div class="card-footer text-center">
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/managepositions" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+              </div>
+        </section>
+      </div>
+    </section>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

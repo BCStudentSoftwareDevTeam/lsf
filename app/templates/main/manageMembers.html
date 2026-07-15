@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{super()}}
+    <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/managemembers.css')}}?u={{lastStaticUpdate}}">
+    {% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/manageMembers.js') }}?u={{lastStaticUpdate}}"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+{% endblock %}
+
+{% block app_content %}
+<h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Members {% else %} Manage Members {% endif %} </h2>
+<h3 class="text-center"> Academic Year: 2026-2027</h3>
+
+<br></br>
+
+<div id="add-member">
+    <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
+    <form id="titleBlock" action="" method="POST"">
+        <div class="form-group" id='searchBoxContainer'>
+            <select id="search"
+                      class="form-control selectpicker"
+                      title="Add Members by B# or Name"
+                      data-width="258px"
+                      data-show-subtext="true"
+                      data-live-search="true"
+                      data-department-id="{{ department.departmentID if department else '' }}">
+            </select>
+        </div>
+    </form>
+</div>
+
+<div class="tab-pane activecol-lg-12" align="center">
+    <table class="table table-striped table-bordered dataTable" id="manageMembers">
+        <thead class="tableHeaders">
+            <tr>
+                <th>Name</th>
+                <th class="no-sorting">Supervisees</th>
+                <th class="no-sorting centered-header">Assign Coordinator</th>
+
+                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                <th class="no-sorting centered-header">Change Status</th>
+                <th class="no-sorting centered-header">Remove Member</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for i in members %}
+            <tr>
+                <td>
+                    <a aria-label="{{i['supervisor']}}" class="hover-indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
+                    <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
+
+                    <br>
+                    <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Banned</span>
+                </td>
+
+                <td class="centered-cell">
+                    {% if (i['active_primary_positions'] == 0 and i['active_secondary_positions'] == 0) and (i['pending_primary_positions'] == 0 and i['pending_secondary_positions'] == 0) %}
+                        None
+                    {% else %}
+                        <b>Primary:</b> {{i['active_primary_positions']}} active, {{i['pending_primary_positions']}} pending<br>
+                        <b>Secondary:</b> {{i['active_secondary_positions']}} active, {{i['pending_secondary_positions']}} pending
+                    {% endif %}
+                </td>
+
+                <td class="text-center centered-cell">
+                    <form action="" method="POST">
+                        <div class="form-group">
+                            <label class="switch table-switch">
+                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{i['supervisor']}}" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}" {% if i['isCoordinator'] %} checked {% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="switch-label"></span>
+                        </div>
+                    </form>
+                </td>
+
+                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                <td class="text-center centered-cell">
+                    <form action="" method="POST">
+                        {% if not i['isBanned'] %}
+                            <button
+                                name="is_banned"
+                                type="button"
+                                class="btn btn-danger member-status-btn"
+                                align="center"
+                                data-supervisor="{{i['supervisor']}}"
+                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                value="Unbanned">&nbsp; Ban &nbsp;
+                            </button>
+                        {% else %}
+                            <button
+                                name="is_banned"
+                                type="button"
+                                class="btn btn-success member-status-btn"
+                                align="center"
+                                data-supervisor="{{i['supervisor']}}"
+                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                value="Banned">Unban
+                            </button>
+                        {% endif %}
+                    </form>
+                </td>
+                <td class="text-center centered-cell remove-member" 
+                    data-supervisor="{{i['supervisor']}}"
+                    data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
+                    <form action="" method="DELETE">
+                        <button class="btn btn-danger" align="center">
+                            <span class="bi bi-trash"></span>
+                        </button>
+                    </form>
+                </td>
+                {% endif %}
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
