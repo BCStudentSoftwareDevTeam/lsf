@@ -129,24 +129,25 @@ def supervisorsDbToDict(supervisor):
 
 # search student table and STUDATA for student results
 @main_bp.route('/members/search/<query>',  methods=['GET'])
-def add_member(query=None):
+def searchMember(query=None):
     currentUser = require_login()
     accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
     if not accessAllowed:
         return render_template('errors/403.html'), 403
 
-    recorded_supervisors = []  # supervisors recorded in the database
-    current_supervisors = []   # supervisors from Tracy 
+    recordedSupervisors = []  # supervisors recorded in the database
+    currentSupervisors = []   # supervisors from Tracy
     query = query.strip()
-    
-    current_department = session.get('current_department')
+
+    currentDepartment = session.get('current_department')
+    displayedSupervisors = Supervisor.select()#.where(~fn.EXISTS(SupervisorDepartment.select().where((SupervisorDepartment.supervisor == Supervisor.ID) & (SupervisorDepartment.department != currentDepartment))))
 
     # bnumber search
     if re.match(r'[Bb]\d+', query):
-        recorded_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper())).where(Supervisor.DEPT_NAME != current_department)))
-        current_supervisors = [
+        recordedSupervisors = list(map(supervisorsDbToDict, displayedSupervisors.where(Supervisor.ID % "{}%".format(query.upper()))))
+        currentSupervisors = [
             s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != current_department
+            if s.get('department') != currentDepartment
         ]
 
 
@@ -154,25 +155,24 @@ def add_member(query=None):
     else:
         if " " not in query:
             search = query.upper() + "%"
-            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
+            results = displayedSupervisors.where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
         else:
             search = query.upper().split()
-            first_query = search[0] + "%"
-            last_query = search[-1] + "%"
-            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where((Supervisor.preferred_name ** first_query | Supervisor.legal_name ** first_query) & Supervisor.LAST_NAME ** last_query)
+            firstQuery = search[0] + "%"
+            lastQuery = search[-1] + "%"
+            results = displayedSupervisors.where((Supervisor.preferred_name ** firstQuery | Supervisor.legal_name ** firstQuery) & Supervisor.LAST_NAME ** lastQuery)
 
-        recorded_supervisors = list(map(supervisorsDbToDict, results))
-        current_supervisors = [
+        recordedSupervisors = list(map(supervisorsDbToDict, results))
+        currentSupervisors = [
             s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != current_department
+            if s.get('department') != currentDepartment
         ]
 
     # combine lists, remove duplicates, and then sort
-    supervisors = list({v['bnumber']:v for v in (current_supervisors + recorded_supervisors)}.values())
+    supervisors = list({v['bnumber']:v for v in (currentSupervisors + recordedSupervisors)}.values())
     supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
 
     return jsonify(supervisors)
-
 
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
 def coordinator_switch():
