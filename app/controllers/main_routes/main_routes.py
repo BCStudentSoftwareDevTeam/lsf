@@ -102,7 +102,6 @@ def departmentPortal(org=None,account=None):
         else:
             supervisors.append(supervisorDisplay)
     
-    ViewAllocations(org, account)
     totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
     usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
     studentHours = {}
@@ -225,10 +224,3 @@ def submitToBanner(formHistoryId):
     else:
         return "Submitting to Banner failed.", 500
     
-@main_bp.route('/department/<org>/<account>', methods=['GET'])
-def ViewAllocations(org, account):
-      
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
