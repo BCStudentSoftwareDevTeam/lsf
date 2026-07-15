@@ -139,7 +139,7 @@ def departmentPortal(org=None,account=None):
                            )
 
 
-@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
