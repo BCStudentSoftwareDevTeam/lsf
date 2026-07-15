@@ -36,26 +36,10 @@ def manageStaff(org=None,account=None):
         dept = None
         abort(404)
 
-    members = list(
-        SupervisorDepartment.
-        select(
-            SupervisorDepartment,
-            Supervisor
-        ).where(
-            SupervisorDepartment.department == dept
-        ).join(
-            Supervisor
-        ).dicts()
-    )
+    members = list( SupervisorDepartment.select(SupervisorDepartment,Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).dicts())
 
     today = date.today()
-    released_forms = (
-        FormHistory
-        .select(FormHistory.formID)
-        .join(
-            LaborReleaseForm,
-            on=(FormHistory.releaseForm == LaborReleaseForm.laborReleaseFormID)
-        )
+    released_forms = (FormHistory.select(FormHistory.formID).join(LaborReleaseForm)
         .where(
             (FormHistory.historyType == "Labor Release Form") &
             (FormHistory.status == "Approved") &

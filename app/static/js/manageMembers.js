@@ -55,7 +55,7 @@ $(document).ready(function() {
         let supervisorID = button.data("supervisor");
 
         let banStatus = button.val();
-        let isBanned = banStatus === "Banned" ? true : false;
+        let isBanned = banStatus === "Ineligible" ;
 
         let quote = String.fromCharCode(39);
 
@@ -68,16 +68,16 @@ $(document).ready(function() {
             contentType: "application/json",
             success: function() {
                 if (!isBanned) {
-                    category = "danger";
-                    button.removeClass("btn-danger").addClass("btn-success");
-                    button.text("Unban");
-                    button.val("Banned");
+                    category = "success";
+                    button.removeClass("btn-sucess").addClass("btn-danger");
+                    button.text("Ineligible");
+                    button.val("Ineligible");
                     ban_badge.css("visibility", "visible");
                 } else {
-                    category = "success";
-                    button.removeClass("btn-success").addClass("btn-danger");
-                    button.html("&nbsp; Ban &nbsp;");
-                    button.val("Unbanned");
+                    category = "danger";
+                    button.removeClass("btn-danger").addClass("btn-success");
+                    button.html("&nbsp; Eligible &nbsp;");
+                    button.val("Eligible");
                     ban_badge.css("visibility", "hidden");
                 }
 

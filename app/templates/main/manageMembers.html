@@ -94,21 +94,21 @@
                             <button
                                 name="is_banned"
                                 type="button"
-                                class="btn btn-danger member-status-btn"
+                                class="btn btn-success member-status-btn"
                                 align="center"
                                 data-supervisor="{{i['supervisor']}}"
                                 data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
-                                value="Unbanned">&nbsp; Ban &nbsp;
+                                value="Eligible">&nbsp; Eligible &nbsp;
                             </button>
                         {% else %}
                             <button
                                 name="is_banned"
                                 type="button"
-                                class="btn btn-success member-status-btn"
+                                class="btn btn-danger member-status-btn"
                                 align="center"
                                 data-supervisor="{{i['supervisor']}}"
                                 data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
-                                value="Banned">Unban
+                                value="Ineligible">Ineligible 
                             </button>
                         {% endif %}
                     </form>
