@@ -4,7 +4,6 @@ from flask import render_template, request, json, redirect, session, url_for, se
 from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
 import operator
-from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -120,20 +119,14 @@ def searchMember(query=None):
         return render_template('errors/403.html'), 403
 
     recordedSupervisors = []  # supervisors recorded in the database
-    currentSupervisors = []   # supervisors from Tracy
     query = query.strip()
 
-    currentDepartment = session.get('current_department')
-    displayedSupervisors = Supervisor.select()#.where(~fn.EXISTS(SupervisorDepartment.select().where((SupervisorDepartment.supervisor == Supervisor.ID) & (SupervisorDepartment.department != currentDepartment))))
+    displayedSupervisors = Supervisor.select()
 
     # bnumber search
     if re.match(r'[Bb]\d+', query):
         recordedSupervisors = list(map(supervisorsDbToDict, displayedSupervisors.where(Supervisor.ID % "{}%".format(query.upper()))))
-        currentSupervisors = [
-            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != currentDepartment
-        ]
-
+        
 
     # name search
     else:
@@ -147,13 +140,10 @@ def searchMember(query=None):
             results = displayedSupervisors.where((Supervisor.preferred_name ** firstQuery | Supervisor.legal_name ** firstQuery) & Supervisor.LAST_NAME ** lastQuery)
 
         recordedSupervisors = list(map(supervisorsDbToDict, results))
-        currentSupervisors = [
-            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != currentDepartment
-        ]
+        
 
     # combine lists, remove duplicates, and then sort
-    supervisors = list({v['bnumber']:v for v in (currentSupervisors + recordedSupervisors)}.values())
+    supervisors = list({v['bnumber']:v for v in (recordedSupervisors)}.values())
     supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
 
     return jsonify(supervisors)
