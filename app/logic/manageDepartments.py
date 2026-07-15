@@ -8,6 +8,9 @@ from peewee import fn
 
 
 def getUsedBreakHours(term):
+    """
+    Returns the total number of break hours used by each department for a given term.
+    """
     # totalBreakSum = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)).where( (FormHistory.historyType_id == "Labor Status Form ") & (FormHistory.status_id == "Approved"))
 
     totalBreakSum = (
@@ -42,14 +45,11 @@ def getUsedBreakHours(term):
 
     return totalBreakSum
 
-def getAllocationStatus(term, department):
-    allocation = Allocation.get(
-        (Allocation.termCode == term) &
-        (Allocation.department == department)
-    )
-    return allocation.isFinal
 
 def getActiveDepartmentsWithAllocation(currentTerm):
+    """
+    Returns a list of active departments that have an allocation for the given term.
+    """
     activeDep = (Department
                         .select(Department, Allocation)
                         .join(Allocation)
@@ -60,11 +60,29 @@ def getActiveDepartmentsWithAllocation(currentTerm):
                     )
     return activeDep
 
+def getAllocationStatus(term, department):
+    """
+    Returns the allocation status for a given department during a given term.
+    """
+    allocation = Allocation.get(
+        (Allocation.termCode == term) &
+        (Allocation.department == department)
+    )
+    return allocation.isFinal
+
+
+
 def getLSFCountPrimaries(currentTerm, department):
+    """
+    Returns the count of primary LSFs for a given department during a given term. (WIP)
+    """
     lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
     return lsfCountPrimaries
 
 def getLSFCountSecondaries(currentTerm, department):
+    """
+    Returns the count of secondary LSFs for a given department during a given term. (WIP)
+    """
     lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
     return lsfCountSecondaries
 
