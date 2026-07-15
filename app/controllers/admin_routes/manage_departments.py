@@ -7,7 +7,6 @@ from app.login_manager import require_login
 from app.logic.search import getSupervisorsForDepartment
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
-#from app.models.manageDepartments import *
 from app.models.term import *
 from flask_bootstrap import bootstrap_find_resource
 from app.models.department import *
@@ -18,9 +17,7 @@ from flask import jsonify
 from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
 from datetime import date
-from app.logic.manageDepartments import getUsedBreakHours
-from app.logic.manageDepartments import getAllocationStatus
-
+from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
@@ -52,7 +49,7 @@ def manage_departments(academic_year = 202500):     # FIXME
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentTerm)}
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentTerm)} # I think Scott wanted this to say NULL not zero, unsure.
 
         # print(breakHoursByDepartment)
 
@@ -63,21 +60,15 @@ def manage_departments(academic_year = 202500):     # FIXME
         inactiveDepartments = Department.select().where(Department.isActive == False)
         
         
-        activeDepartments = (Department
-                                        .select(Department, Allocation)
-                                        .join(Allocation)
-                                        .where(
-                                            Department.isActive == True,
-                                            Allocation.termCode == currentTerm.termCode
-                                        )
-                            )
+        activeDepartments = getActiveDepartmentsWithAllocation(currentTerm)
         
+        # Move some of this to Logic (maybe).
         for dept in activeDepartments:
             dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
             dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
-            
-            lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == dept.departmentID).count()
-            lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == dept.departmentID).count()
+
+            lsfCountPrimaries = getLSFCountPrimaries(currentTerm, dept)
+            lsfCountSecondaries = getLSFCountSecondaries(currentTerm, dept)
             dept.lsfCountPrimaries = lsfCountPrimaries
             dept.lsfCountSecondaries = lsfCountSecondaries
         # print("######################")

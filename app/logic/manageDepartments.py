@@ -1,6 +1,8 @@
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.allocation import *
+from app.models.department import *
+from app.models.term import *
 from app.controllers.main_routes import departmentPortal
 from peewee import fn
 
@@ -46,6 +48,25 @@ def getAllocationStatus(term, department):
         (Allocation.department == department)
     )
     return allocation.isFinal
+
+def getActiveDepartmentsWithAllocation(currentTerm):
+    activeDep = (Department
+                        .select(Department, Allocation)
+                        .join(Allocation)
+                        .where(
+                            Department.isActive == True,
+                            Allocation.termCode == currentTerm.termCode
+                        )
+                    )
+    return activeDep
+
+def getLSFCountPrimaries(currentTerm, department):
+    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
+    return lsfCountPrimaries
+
+def getLSFCountSecondaries(currentTerm, department):
+    lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
+    return lsfCountSecondaries
 
 # def getTotalPositionHours
 
