@@ -27,6 +27,14 @@ from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usern
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageStaff(org=None,account=None):
+    currentUser = require_login()
+    currentSupervisor = Supervisor.select().where(Supervisor.ID == currentUser.supervisor).get()
+    if not currentUser or not currentUser.supervisor:
+        if currentUser.student:
+            return redirect(url_for('main.laborhistory',id=currentUser.student.ID))
+
+        return render_template('errors/403.html'), 403
+    
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
         session['current_department_id'] = dept.departmentID
@@ -38,7 +46,7 @@ def manageStaff(org=None,account=None):
     members = list( SupervisorDepartment.select(SupervisorDepartment,Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).dicts())
 
     today = date.today()
-    released_forms = (FormHistory.select(FormHistory.formID).join(LaborReleaseForm)
+    releasedForms = (FormHistory.select(FormHistory.formID).join(LaborReleaseForm)
         .where(
             (FormHistory.historyType == "Labor Release Form") &
             (FormHistory.status == "Approved") &
@@ -48,39 +56,39 @@ def manageStaff(org=None,account=None):
 
     # Conditions for the supervisee counts. Expired and released positions do
     # not contribute to any of the four totals.
-    active_primaries = (
+    activePrimaries = (
         (LaborStatusForm.jobType == 'Primary') &
         (LaborStatusForm.studentConfirmation == True))
-    pending_primaries = (
+    pendingPrimaries = (
         (LaborStatusForm.jobType == 'Primary') &
         (LaborStatusForm.studentConfirmation.is_null(True)))
-    active_secondaries = (
+    activeSecondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
         (LaborStatusForm.studentConfirmation == True))
-    pending_secondaries = (
+    pendingSecondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
         (LaborStatusForm.studentConfirmation.is_null(True)))
 
 
-    student_count = list(
+    studentCount = list(
         LaborStatusForm.
         select(
-            fn.SUM(Case(None, ((active_primaries, 1),), 0)).alias("active_primary_positions"), 
-            fn.SUM(Case(None, ((pending_primaries, 1),), 0)).alias("pending_primary_positions"), 
-            fn.SUM(Case(None, ((active_secondaries, 1),), 0)).alias("active_secondary_positions"),
-            fn.SUM(Case(None, ((pending_secondaries, 1),), 0)).alias("pending_secondary_positions"),
+            fn.SUM(Case(None, ((activePrimaries, 1),), 0)).alias("active_primary_positions"), 
+            fn.SUM(Case(None, ((pendingPrimaries, 1),), 0)).alias("pending_primary_positions"), 
+            fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
+            fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).where(
             (LaborStatusForm.department == dept) &
-            (LaborStatusForm.laborStatusFormID.not_in(released_forms))
+            (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
         ).group_by(
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).dicts()
     )
     
-    counts = {(row["department"], row["supervisor"]): row for row in student_count}
+    counts = {(row["department"], row["supervisor"]): row for row in studentCount}
     
     for member in members:
 
@@ -94,7 +102,8 @@ def manageStaff(org=None,account=None):
 
     return render_template('main/manageMembers.html', 
                            members = members,
-                           department = dept)
+                           department = dept, 
+                           currentSupervisor= currentSupervisor)
 
 
 def supervisorsDbToDict(supervisor):
@@ -149,24 +158,24 @@ def searchMember(query=None):
     return jsonify(supervisors)
 
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
-def coordinator_switch():
+def coordinatorSwitch():
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
-    is_coordinator = data.get("isCoordinator")
+    supervisorID = data.get("supervisorID")
+    isCoordinator = data.get("isCoordinator")
 
-    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisor_id)
-    member.isCoordinator = is_coordinator
+    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisorID)
+    member.isCoordinator = isCoordinator
     member.save()
 
     return "", 200
 
 
 @main_bp.route('/members/ban_switch', methods=['POST'])
-def ban_switch():
+def banSwitch():
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
+    supervisorID = data.get("supervisorID")
 
-    member = Supervisor.get(Supervisor.ID == supervisor_id)
+    member = Supervisor.get(Supervisor.ID == supervisorID)
     
     member.isBanned = not member.isBanned
     member.save()
@@ -175,12 +184,12 @@ def ban_switch():
 
 
 @main_bp.route('/members/remove', methods=['DELETE'])
-def remove_member():
+def removeMember():
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
+    supervisorID = data.get("supervisorID")
     
     member = SupervisorDepartment.get(
-        (SupervisorDepartment.supervisor == supervisor_id) &
+        (SupervisorDepartment.supervisor == supervisorID) &
         (SupervisorDepartment.department == session['current_department_id'])
         )
     member.delete_instance()

@@ -4,7 +4,6 @@
 {{super()}}
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='css/managemembers.css')}}?u={{lastStaticUpdate}}">
-    <link href=""
     {% endblock %}
 
 {% block scripts %}
@@ -17,7 +16,11 @@
 {% block app_content %}
 <h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Members {% else %} Manage Members {% endif %} </h2>
 <h3 class="text-center"> Academic Year: 2026-2027</h3>
+{%if currentSupervisor.isBanned %}
 
+<br></br>
+<div class = "alert alert-danger" role="alert"> The Labor Office has banned you; hence, you can no longer add new students and create new status forms </div> 
+{%endif%}
 <br></br>
 
 <div id="add-member">
@@ -63,7 +66,7 @@
                     <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
 
                     <br>
-                    <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Banned</span>
+                    <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Ineligible</span>
                 </td>
 
                 <td class="centered-cell">

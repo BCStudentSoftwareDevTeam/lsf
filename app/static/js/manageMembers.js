@@ -57,9 +57,6 @@ $(document).ready(function() {
         let banStatus = button.val();
         let isBanned = banStatus === "Ineligible" ;
 
-        let quote = String.fromCharCode(39);
-
-        let category;
 
         $.ajax({
             url: "/members/ban_switch",
@@ -73,16 +70,17 @@ $(document).ready(function() {
                     button.text("Ineligible");
                     button.val("Ineligible");
                     ban_badge.css("visibility", "visible");
+                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName +  " is no longer an eligible coordinator, so they cannot add students or create labor status forms .</div>");
+                    $("#flasher").delay(3000).fadeOut();
                 } else {
                     category = "danger";
                     button.removeClass("btn-danger").addClass("btn-success");
                     button.html("&nbsp; Eligible &nbsp;");
                     button.val("Eligible");
                     ban_badge.css("visibility", "hidden");
+                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\"> " + memberName +  " is an eligible coordinator now; they can create labor status forms and add new students.</div>");
+                    $("#flasher").delay(3000).fadeOut();
                 }
-
-                $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + banStatus + quote + ".</div>");
-                $("#flasher").delay(3000).fadeOut();
         
             },
             error: function() {console.log("An error has occured.");}
