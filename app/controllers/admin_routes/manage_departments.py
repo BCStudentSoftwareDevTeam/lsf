@@ -17,17 +17,18 @@ from flask import jsonify
 from playhouse.shortcuts import model_to_dict
 from app.logic.tracy import Tracy
 from datetime import date
+from flask import g
 from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
 # @login_required
-def manage_departments(academic_year = 202500):     # FIXME
+def manage_departments(academic_year = None):     # FIXME
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
     """
-    
+    print ("######################", g.openTerm.termName, "######################")
     try:
         currentUser = require_login()
         if not currentUser:                    # Not logged in
@@ -37,10 +38,14 @@ def manage_departments(academic_year = 202500):     # FIXME
                 return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
-
+        
+        # Sets academic_year to the current open term if no academic year is provided in the URL.
+        if not academic_year:
+            academic_year = g.openTerm.termCode
+        
         currentTerm = Term.get(Term.termCode == academic_year)
 
-        totalBreakSum = getUsedBreakHours(currentTerm)
+        # totalBreakSum = getUsedBreakHours(currentTerm)
 
         # print("Something\n\n")
 
@@ -84,6 +89,8 @@ def manage_departments(academic_year = 202500):     # FIXME
         # print("Pizza\n\n\n\n")
         # print ("Allocation Status:", allocationStatus)
         # print("\n\n\n\nPotato")
+
+        
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
