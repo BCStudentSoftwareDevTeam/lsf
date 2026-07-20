@@ -16,6 +16,8 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.models.positionHistory import PositionHistory
+
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -57,7 +59,6 @@ def departmentPortal(org=None,account=None):
         dept = None
 
 
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
@@ -66,6 +67,7 @@ def departmentPortal(org=None,account=None):
         
     positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []
+<<<<<<< HEAD
     posURL = []
     if positions == []:
         pass    
@@ -73,13 +75,26 @@ def departmentPortal(org=None,account=None):
         for i in positions:
             positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
             posURL.append(str(i.positionCode))
+=======
+    posUrl = []
+    if not positions:
+        positionsList = ["No active positions in this department"]
+    else:
+        for i in positions:
+            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
+            posUrl.append(str(i.positionCode))
+>>>>>>> parent of 3e5a529c (Revert position card PR #639)
 
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            positions = positionsList,
+<<<<<<< HEAD
                            posURL = posURL)
+=======
+                           posUrl = posUrl)
+>>>>>>> parent of 3e5a529c (Revert position card PR #639)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

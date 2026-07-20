@@ -3,6 +3,7 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
 
 {% block app_content %}
@@ -64,20 +65,22 @@
 
             </div>
             <ul style="line-height:2;">
-            {% if positions == [] %}
-                <li class="card-text">
-                  <p> No active positions in this department </p>
-                </li>
-              {% else %}
-                {% for p in positions[:7] %}
+            {% for p in positions %}
+              {% if 7 > loop.index0 %}
+                  {% if p == "No active positions in this department" %}
                     <li class="card-text">
-                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posURL[loop.index0]}}">{{ p }}</a>
+                    <p> {{ p }} </p>
                     </li>
-                {% endfor %}
-                {% if (positions | length) > 7 %}
-                  </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
-                {% endif %}
+                  {% else %}
+                    <li class="card-text">
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
+                    </li>
+                  {% endif %}
+
+              {% elif 7 == loop.index0 %}
+                </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
               {% endif %}
+            {% endfor %}
             </ul>
             
           </div>
