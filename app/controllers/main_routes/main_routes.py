@@ -94,8 +94,8 @@ def departmentPortal(org=None,account=None):
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser,
-                           positions = positionsList,
-                           posUrl = posUrl
+                        #    positions = positionsList,
+                        #    posUrl = posUrl
                            )
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
