@@ -16,8 +16,6 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.logic.tracy import Tracy
-from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.positionHistory import PositionHistory
 
 
@@ -55,14 +53,10 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    if org and account:
-        try:
-            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-        except (NameError, DoesNotExist):
-            dept = None
-    else:
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
         dept = None
-    
 
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
@@ -115,22 +109,23 @@ def departmentPortal(org=None,account=None):
                            laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser,
                            positions = positionsList,
-                           posUrl = posUrl)
-
-@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
-def managePositions(org, account):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
-
-    positions = Tracy().getPositionsFromDepartment(org, account)
-    print(positions)
-    return render_template('main/managepositions.html',
-                           department = dept,
-                           department_name = dept.DEPT_NAME,
-                           positions = positions
+                           posUrl = posUrl
                            )
+@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
+def addUserToDept():
+    userDeptData = request.form
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
+    try:
+        if supervisorDeptRecord:
+            return "False"
+
+        else:
+            SupervisorDepartment.create(supervisor=userDeptData['supervisorID'], department=userDeptData['departmentID'])
+            return "True"
+    
+    except Exception as e:
+        print(f'Could not add user to department: {e}')
+        return "", 500
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
