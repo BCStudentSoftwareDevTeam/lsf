@@ -1,0 +1,223 @@
+$(document).ready(function() {
+
+    $('#searchBoxContainer').children('.dropdown, .bootstrap-select, .form-control').addClass('open')
+    $('[type="search"], .form-control').focus();
+
+    $('#manageMembers').DataTable({
+        'columnDefs': [{
+            'targets': '.no-sorting',
+            'orderable': false
+        }], // hide sort icon on header of first column
+        'aaSorting': [
+        [0, 'asc']
+         ], // start to sort data in second column
+        searching: false, 
+        pageLength: 10,
+        language: {
+        lengthMenu: " _MENU_ entries per page"
+        },
+        //dom: '<"top"l>rt<"bottom"p><"clear">' 
+    });
+
+    $(document).on("click", ".assign-coordinator", function() {
+
+        let memberName = $(this).data("member-name");
+        let supervisorID = $(this).data("supervisor");
+        let isChecked = $(this).is(":checked");
+        
+        $.ajax({
+            url: "/members/coordinator_switch",
+            data: JSON.stringify({supervisorID: supervisorID, isCoordinator: isChecked}),
+            type: "POST",
+            contentType: "application/json",
+            success: function() {
+                if (isChecked) {
+                    $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
+                    $("#flasher").delay(3000).fadeOut();
+                } else {
+                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
+                    $("#flasher").delay(3000).fadeOut();
+                }
+        
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
+
+        
+    });
+
+    $(document).on("click", ".member-status-btn", function() {
+
+        let button = $(this);
+        let ban_badge = $(this).closest("tr").find(".isbanned-badge");
+
+        let memberName = button.data("member-name");
+        let supervisorID = button.data("supervisor");
+
+        let banStatus = button.val();
+        let isBanned = banStatus === "Banned" ? true : false;
+
+        let quote = String.fromCharCode(39);
+
+        let category;
+
+        $.ajax({
+            url: "/members/ban_switch",
+            data: JSON.stringify({supervisorID: supervisorID, isBanned: isBanned}),
+            type: "POST",
+            contentType: "application/json",
+            success: function() {
+                if (!isBanned) {
+                    category = "danger";
+                    button.removeClass("btn-danger").addClass("btn-success");
+                    button.text("Unban");
+                    button.val("Banned");
+                    ban_badge.css("visibility", "visible");
+                } else {
+                    category = "success";
+                    button.removeClass("btn-success").addClass("btn-danger");
+                    button.html("&nbsp; Ban &nbsp;");
+                    button.val("Unbanned");
+                    ban_badge.css("visibility", "hidden");
+                }
+
+                $("#flash_container").html("<div class=\"alert alert-" + category + "\" role=\"alert\" id=\"flasher\">The status for " + memberName + " has been set to " + quote + banStatus + quote + ".</div>");
+                $("#flasher").delay(3000).fadeOut();
+        
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
+    });
+
+    $(document).on("click", ".remove-member", function() {
+
+        let redButton = $(this);
+        let row = $(this).closest("tr");
+
+        let memberName = redButton.data("member-name");
+        let supervisorID = redButton.data("supervisor");
+
+        $.ajax({
+            url: "/members/remove",
+            data: JSON.stringify({supervisorID: supervisorID}),
+            type: "DELETE",
+            contentType: "application/json",
+            success: function() {
+                $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
+                $("#flasher").delay(3000).fadeOut();
+                row.remove();
+            },
+            error: function() {console.log("An error has occured.");}
+        })	
+    });
+})
+
+// Creates a dom fragment from html, rather than having to add dom elements
+// https://love2dev.com/blog/inserting-html-using-createdocumentfragment-instead-of-using-jquery/
+function createFragment(htmlStr) {
+    let frag = document.createDocumentFragment(), temp = document.createElement('div');
+    temp.innerHTML = htmlStr;
+    while(temp.firstChild) { frag.appendChild(temp.firstChild); }
+    return frag;
+}
+
+// highlight search string. doesn't actually check for last name and first name, just highlights what we find
+$.fn.selectpicker.Constructor.DEFAULTS.whiteList.mark = [];
+function highlight(htmlStr, query) {
+    query = query.trim().split(" ");
+    for(i = 0; i < query.length; i++) {
+        htmlStr = htmlStr.replace(new RegExp(query[i], "gi"), function(match) { return `<mark>${match}</mark>`; });
+    }
+    return htmlStr;
+}
+
+let typeTimer;
+
+$('#search').selectpicker('refresh');
+$('.dropdown-menu .bs-searchbox input').on('keyup', function (e) {
+    // ignore arrow keys
+    if (e.keyCode == '40' || e.keyCode == '38') return;
+
+    // wait a little longer for bnumber typing
+    keyInterval = 200
+    if (e.keyCode >= 48 && e.keyCode <= 57) {
+        keyInterval = 500
+    }
+
+    // don't search for every key (especially relevant for bnumber)
+    clearTimeout(typeTimer)
+    typeTimer = setTimeout(function() { sendQuery(e.target.value); }, keyInterval)
+});
+
+$('#search').on('changed.bs.select', function () {
+    let supervisorID = $(this).val();
+    let departmentID = $(this).data('department-id');
+
+    if (!supervisorID || !departmentID) return;
+
+    addSupervisorToDepartment(supervisorID, departmentID, function() {
+      window.location.reload();
+    });
+});
+
+// We load the options returned into an html string and then add them to the selectpicker at the end, to save A LOT of time.
+function sendQuery(search_str) {
+    $("#search").empty();
+    $('#search').selectpicker("refresh");
+    if (search_str.length >= 3) {
+      $.ajax({
+        type: "GET",
+        url: "/members/search/" + encodeURIComponent(search_str),
+        contentType: 'application/json',
+        success: function(response) {
+          let optionString = ""
+          for (let key = 0; key < response.length; key++) {
+            let username = response[key]['username'];
+            let bnumber = response[key]['bnumber'];
+            let firstName = response[key]['firstName'];
+            let lastName = response[key]['lastName'];
+            let type = response[key]['type'];
+            if (type == "Supervisor") {
+              choice_text = bnumber + ': ' + firstName + ' ' + lastName;
+              highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;
+              optionString += `<option value="${bnumber}" data-content="${highlighted_text}" data-subtext="${username}">${choice_text}</option>`;
+            }
+        }
+          $("#search").append(createFragment(optionString))
+          $('#search').selectpicker("refresh");
+        }
+      });
+    }
+}
+
+function addSupervisorToDepartment(supervisorID, departmentID, callback=() => {}) {
+    return $.ajax({
+      method: "POST",
+      url: `/members/add`,
+      data: {"supervisorID": supervisorID, "departmentID": departmentID},
+      success: function(response) {
+        if (response == "True") {
+          msgFlash("Supervisor has been added to department.", "success")
+          clearDropdowns();
+        } else {
+          msgFlash("Supervisor is already a member of this department.", "warning")
+          clearDropdowns();
+        }
+        if (callback){
+          callback();
+        }
+      },
+      error: function() {
+        msgFlash("Failed to add supervisor, please try again.", "fail")
+        clearDropdowns();
+      },
+    })
+
+}
+
+function clearDropdowns(){
+    $('select.selectpicker').each(function() {
+      $(`#${this.id} option:eq(0)`).prop("selected", true);
+      $(`#${this.id}`).selectpicker("refresh");
+    });
+};
