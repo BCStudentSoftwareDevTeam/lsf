@@ -5,9 +5,9 @@
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
+
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
-
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -26,7 +26,6 @@
 
   </div>
 
-
   {% if department %}
     <div class="row g-3">
       <div class="col-12 col-lg-4 ">
@@ -41,81 +40,13 @@
        </div>
 
         <div class="col-12 col-lg-4">
-          <section class="card">
-    <div class="card-body">
-      <div class="media">
-         <div class="media-left media-middle">
-          <span class="members-icon">
-            <i class="bi bi-people-fill"></i>
-          </span>
-        </div>
+        <section class="card" aria-labelledby="members-title">
 
-        <div class="media-body media-middle">
-          <h1>
-            Members
-          </h1>
-        </div>
-      </div>
-      <h4> <b>{% if laborCoordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
-      {% if laborCoordinators %}
-        {% for coordinator in laborCoordinators %}
-          <p>
-            {{ coordinator.name }}
-
-            {% if coordinator.email %}
-                 <a href="mailto:{{ coordinator.email }}"
-                      data-toggle="tooltip"
-                      data-placement="bottom"
-                      title="{{ coordinator.email }}">
-                      <i class="bi bi-envelope-fill"></i>
-                  </a>
-            {% endif %}
-          </p>
-        {% endfor %}
-      {% else %}
-        <p>None assigned. <a href="#" >Add one?</a> </p> 
-        <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
-          
-      {% endif %}
-
-    
-      <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
-
-      {% if supervisors %}
-        {% for s in supervisors[:3] %}
-            <p>
-              {{ s.name }}
-
-              {% if s.email %}
-                  <a href="mailto:{{ s.email }}"
-                      data-toggle="tooltip"
-                      data-placement="bottom"
-                      title="{{ s.email }}">
-                      <i class="bi bi-envelope-fill"></i>
-                  </a>
-                
-              {% endif %}
-            </p>
-            {% endfor %}
-
-            {% if supervisors|length > 3 %}
-              <p>and {{ supervisors|length - 3 }} more...</p>
-            {% endif %}
-
-      {% elif not laborCoordinators and currentUser.isLaborAdmin %}
-        <p>No active supervisors assigned. <a href="#" >Add one?</a>  </p>
-      {% else  %}
-        <p>No active supervisors assigned.</p>
-      {% endif %}
-
-    </div>
-
-    <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Members
-         <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-  </section>
+          <p> Insert Members Card Here </p>
+          <div class="card-footer text-center">
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View All Members<span class="glyphicon glyphicon-chevron-right"></span></a>
+              </div>
+          </section>
 
         </div>
 
@@ -134,7 +65,8 @@
 
             </div>
             <ul style="line-height:2;">
-            {% for p in positions[:7] %}
+            {% for p in positions %}
+              {% if 7 > loop.index0 %}
                   {% if p == "No active positions in this department" %}
                     <li class="card-text">
                     <p> {{ p }} </p>
@@ -144,10 +76,12 @@
                       <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posUrl[loop.index0]}}">{{ p }}</a>
                     </li>
                   {% endif %}
-            {% endfor %}
-            {% if positions| length >7 %}
+
+              {% elif 7 == loop.index0 %}
                 </ul><p class="card-text">and {{ (positions | length) - 7}} more...</p>
               {% endif %}
+            {% endfor %}
+            </ul>
             
           </div>
               <div class="card-footer text-center">
