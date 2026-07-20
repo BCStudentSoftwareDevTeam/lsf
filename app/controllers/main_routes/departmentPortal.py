@@ -4,7 +4,6 @@ from flask import render_template, request, json, redirect, session, url_for, se
 from peewee import JOIN, DoesNotExist, fn, Case
 from functools import reduce
 import operator
-from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -27,7 +26,18 @@ from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usern
 
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
-def manageStaff(org=None,account=None):
+def manageMembers(org=None,account=None):
+    """
+    Generates the Manage Members page.
+    """
+    currentUser = require_login()
+    currentSupervisor = Supervisor.select().where(Supervisor.ID == currentUser.supervisor).get()
+    if not currentUser or not currentUser.supervisor:
+        if currentUser.student:
+            return redirect(url_for('main.laborhistory',id=currentUser.student.ID))
+
+        return render_template('errors/403.html'), 403
+    
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
         session['current_department_id'] = dept.departmentID
@@ -36,26 +46,10 @@ def manageStaff(org=None,account=None):
         dept = None
         abort(404)
 
-    members = list(
-        SupervisorDepartment.
-        select(
-            SupervisorDepartment,
-            Supervisor
-        ).where(
-            SupervisorDepartment.department == dept
-        ).join(
-            Supervisor
-        ).dicts()
-    )
+    members = list( SupervisorDepartment.select(SupervisorDepartment,Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).dicts())
 
     today = date.today()
-    released_forms = (
-        FormHistory
-        .select(FormHistory.formID)
-        .join(
-            LaborReleaseForm,
-            on=(FormHistory.releaseForm == LaborReleaseForm.laborReleaseFormID)
-        )
+    releasedForms = (FormHistory.select(FormHistory.formID).join(LaborReleaseForm)
         .where(
             (FormHistory.historyType == "Labor Release Form") &
             (FormHistory.status == "Approved") &
@@ -63,50 +57,54 @@ def manageStaff(org=None,account=None):
         )
     )
 
-    # Conditions for the supervisee counts. Expired and released positions do
-    # not contribute to any of the four totals.
-    active_primaries = (
+    # Finding the current academic year
+    currentYear = today.year
+    if today.month < 7: 
+        currentAcademicYear = (currentYear - 1, currentYear)
+    else: 
+        currentAcademicYear = (currentYear, currentYear + 1)
+    # Note that the start of July is 
+    # normally considered the start of a new academic year.
+
+    
+    # Conditions used for the studentCount variable
+    activePrimaries = (
         (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation == True) &
-        (LaborStatusForm.endDate >= today)
-    )
-    pending_primaries = (
+        (LaborStatusForm.studentConfirmation == True))
+    pendingPrimaries = (
         (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)) &
-        (LaborStatusForm.endDate >= today)
-    )
-    active_secondaries = (
+        (LaborStatusForm.studentConfirmation.is_null(True)))
+    activeSecondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation == True) &
-        (LaborStatusForm.endDate >= today)
-    )
-    pending_secondaries = (
+        (LaborStatusForm.studentConfirmation == True))
+    pendingSecondaries = (
         (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)) &
-        (LaborStatusForm.endDate >= today)
-    )
+        (LaborStatusForm.studentConfirmation.is_null(True)))
 
 
-    student_count = list(
+    # This variable is used for the Supervisees column on the
+    # Manage Members page.  
+    studentCount = list(
         LaborStatusForm.
         select(
-            fn.SUM(Case(None, ((active_primaries, 1),), 0)).alias("active_primary_positions"), 
-            fn.SUM(Case(None, ((pending_primaries, 1),), 0)).alias("pending_primary_positions"), 
-            fn.SUM(Case(None, ((active_secondaries, 1),), 0)).alias("active_secondary_positions"),
-            fn.SUM(Case(None, ((pending_secondaries, 1),), 0)).alias("pending_secondary_positions"),
+            fn.SUM(Case(None, ((activePrimaries, 1),), 0)).alias("active_primary_positions"), 
+            fn.SUM(Case(None, ((pendingPrimaries, 1),), 0)).alias("pending_primary_positions"), 
+            fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
+            fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).where(
+            # Expired and released positions are not counted! 
             (LaborStatusForm.department == dept) &
-            (LaborStatusForm.laborStatusFormID.not_in(released_forms))
+            (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
         ).group_by(
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).dicts()
     )
-    
-    counts = {(row["department"], row["supervisor"]): row for row in student_count}
-    
+
+
+    counts = {(row["department"], row["supervisor"]): row for row in studentCount}
     for member in members:
 
         key = (member["department"], member["supervisor"])
@@ -119,7 +117,10 @@ def manageStaff(org=None,account=None):
 
     return render_template('main/manageMembers.html', 
                            members = members,
-                           department = dept)
+                           department = dept, 
+                           currentSupervisor= currentSupervisor,
+                           currentAcademicYear = currentAcademicYear)
+
 
 
 def supervisorsDbToDict(supervisor):
@@ -135,72 +136,72 @@ def supervisorsDbToDict(supervisor):
     return dbToDict
 
 
-# search student table and STUDATA for student results
+
 @main_bp.route('/members/search/<query>',  methods=['GET'])
-def add_member(query=None):
+def searchMember(query=None):
+    """
+    Search student table and STUDATA for student results.
+    """
     currentUser = require_login()
     accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
     if not accessAllowed:
         return render_template('errors/403.html'), 403
 
-    recorded_supervisors = []  # supervisors recorded in the database
-    current_supervisors = []   # supervisors from Tracy 
+    recordedSupervisors = []  # supervisors recorded in the database
     query = query.strip()
-    
-    current_department = session.get('current_department')
+
+    displayedSupervisors = Supervisor.select()
 
     # bnumber search
     if re.match(r'[Bb]\d+', query):
-        recorded_supervisors = list(map(supervisorsDbToDict, Supervisor.select().where(Supervisor.ID % "{}%".format(query.upper())).where(Supervisor.DEPT_NAME != current_department)))
-        current_supervisors = [
-            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != current_department
-        ]
-
+        recordedSupervisors = list(map(supervisorsDbToDict, displayedSupervisors.where(Supervisor.ID % "{}%".format(query.upper()))))
+        
 
     # name search
     else:
         if " " not in query:
             search = query.upper() + "%"
-            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
+            results = displayedSupervisors.where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
         else:
             search = query.upper().split()
-            first_query = search[0] + "%"
-            last_query = search[-1] + "%"
-            results = Supervisor.select().where(Supervisor.DEPT_NAME != current_department).where((Supervisor.preferred_name ** first_query | Supervisor.legal_name ** first_query) & Supervisor.LAST_NAME ** last_query)
+            firstQuery = search[0] + "%"
+            lastQuery = search[-1] + "%"
+            results = displayedSupervisors.where((Supervisor.preferred_name ** firstQuery | Supervisor.legal_name ** firstQuery) & Supervisor.LAST_NAME ** lastQuery)
 
-        recorded_supervisors = list(map(supervisorsDbToDict, results))
-        current_supervisors = [
-            s for s in map(supervisorsDbToDict, Tracy().getSupervisorsFromUserInput(query))
-            if s.get('department') != current_department
-        ]
+        recordedSupervisors = list(map(supervisorsDbToDict, results))
+        
 
     # combine lists, remove duplicates, and then sort
-    supervisors = list({v['bnumber']:v for v in (current_supervisors + recorded_supervisors)}.values())
+    supervisors = list({v['bnumber']:v for v in (recordedSupervisors)}.values())
     supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
 
     return jsonify(supervisors)
 
-
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
-def coordinator_switch():
+def coordinatorSwitch():
+    """
+    Assigns or unassignes a supervisor as a Labor Coordinator. 
+    """
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
-    is_coordinator = data.get("isCoordinator")
+    supervisorID = data.get("supervisorID")
+    isCoordinator = data.get("isCoordinator")
 
-    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisor_id)
-    member.isCoordinator = is_coordinator
+    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisorID)
+    member.isCoordinator = isCoordinator
     member.save()
 
     return "", 200
 
 
 @main_bp.route('/members/ban_switch', methods=['POST'])
-def ban_switch():
+def elegibilitySwitch():
+    """
+    Updates a supervisor's eligibility status. 
+    """
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
+    supervisorID = data.get("supervisorID")
 
-    member = Supervisor.get(Supervisor.ID == supervisor_id)
+    member = Supervisor.get(Supervisor.ID == supervisorID)
     
     member.isBanned = not member.isBanned
     member.save()
@@ -209,12 +210,15 @@ def ban_switch():
 
 
 @main_bp.route('/members/remove', methods=['DELETE'])
-def remove_member():
+def removeMember():
+    """
+    Removes a staff member from a department. 
+    """
     data = request.get_json()
-    supervisor_id = data.get("supervisorID")
+    supervisorID = data.get("supervisorID")
     
     member = SupervisorDepartment.get(
-        (SupervisorDepartment.supervisor == supervisor_id) &
+        (SupervisorDepartment.supervisor == supervisorID) &
         (SupervisorDepartment.department == session['current_department_id'])
         )
     member.delete_instance()
@@ -225,6 +229,9 @@ def remove_member():
 
 @main_bp.route('/members/add', methods=['GET', 'POST'])
 def addUserToDept():
+    """
+    Adds a user to a department.
+    """
     userDeptData = request.form
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
     try:
