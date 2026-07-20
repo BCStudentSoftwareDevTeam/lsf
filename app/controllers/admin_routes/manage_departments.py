@@ -39,11 +39,27 @@ def manage_departments(academic_year = None):     # FIXME
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
         
-        # Sets academic_year to the current open term if no academic year is provided in the URL.
+        # Sets academic_year to the current open term if no academic year is provided in the URL. Current solution. WILL change in the future.
         if not academic_year:
             academic_year = g.openTerm.termCode
         
+        fall_suffix = 11 # Ex.) Fall 2025 = 202511
+        spring_suffix = 12 # Ex.) Spring 2026 = 202512 
+        summer_suffix = 13 # Ex.) Summer 2026 = 202513
+
         currentTerm = Term.get(Term.termCode == academic_year)
+        previousTerm = Term.get(Term.termCode == academic_year - 100)
+        nextTerm = Term.get(Term.termCode == academic_year + 100)
+
+
+
+        # Works. Just use production data to test. Add demo data for this later. (This was a request from Labor Office to have the ability to view based on term.)
+        fallTerm = Term.get(Term.termCode == academic_year + fall_suffix)
+        springTerm = Term.get(Term.termCode == academic_year + spring_suffix)
+        summerTerm = Term.get(Term.termCode == academic_year + summer_suffix)
+
+        print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
+        print("******************",previousTerm.termName, nextTerm.termName, currentTerm.termName, "**********************")
 
         # totalBreakSum = getUsedBreakHours(currentTerm)
 
