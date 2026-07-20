@@ -66,7 +66,7 @@
                     <a href="mailto:{{ i['EMAIL']}}" >✉</a>
 
                     <br>
-                    <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Ineligible</span>
+                    <span class="isbanned-badge" data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle " {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Ineligible</span>
                 </td>
 
                 <td class="centered-cell">
