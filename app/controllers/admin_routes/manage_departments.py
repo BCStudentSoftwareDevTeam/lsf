@@ -54,12 +54,12 @@ def manage_departments(academic_year = None):     # FIXME
 
 
         # Works. Just use production data to test. Add demo data for this later. (This was a request from Labor Office to have the ability to view based on term.)
-        fallTerm = Term.get(Term.termCode == academic_year + fall_suffix)
-        springTerm = Term.get(Term.termCode == academic_year + spring_suffix)
-        summerTerm = Term.get(Term.termCode == academic_year + summer_suffix)
+        # fallTerm = Term.get(Term.termCode == academic_year + fall_suffix)
+        # springTerm = Term.get(Term.termCode == academic_year + spring_suffix)
+        # summerTerm = Term.get(Term.termCode == academic_year + summer_suffix)
 
-        print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
-        print("******************",previousTerm.termName, nextTerm.termName, currentTerm.termName, "**********************")
+        # print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
+        # print("******************",previousTerm.termName, nextTerm.termName, currentTerm.termName, "**********************")
 
         # totalBreakSum = getUsedBreakHours(currentTerm)
 
@@ -114,7 +114,9 @@ def manage_departments(academic_year = None):     # FIXME
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                currentTerm = currentTerm,
+                                currentTerm = currentTerm.termName,
+                                previousTerm = previousTerm.termName,
+                                nextTerm = nextTerm.termName,
                                 academicYear = currentTerm.termName,
                                 # totalBreakSum = totalBreakSum
                                 breakHoursByDepartment = breakHoursByDepartment,
