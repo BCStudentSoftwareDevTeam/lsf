@@ -64,6 +64,15 @@ def departmentPortal(org=None,account=None):
     supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
         .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
     
+    def buildSupervisorDisplay(supervisor):
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        return {
+            "name": f"{firstName} {lastName}".strip(),
+            "email": supervisor.EMAIL
+        }
+        
     laborCoordinators = []
     supervisors = []
 
@@ -73,15 +82,7 @@ def departmentPortal(org=None,account=None):
         if supervisor is None:
             continue
 
-        firstName = supervisor.preferred_name or supervisor.legal_name or ""
-        lastName = supervisor.LAST_NAME or ""
-
-        supervisorName = f"{firstName} {lastName}".strip()
-
-        supervisorDisplay = {
-            "name": supervisorName,
-            "email": supervisor.EMAIL
-        }
+        supervisorDisplay= buildSupervisorDisplay(supervisor)
 
         if supervisorDepartment.isCoordinator:
             laborCoordinators.append(supervisorDisplay)
@@ -94,8 +95,6 @@ def departmentPortal(org=None,account=None):
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser,
-                        #    positions = positionsList,
-                        #    posUrl = posUrl
                            )
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
