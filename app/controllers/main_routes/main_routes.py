@@ -63,6 +63,33 @@ def departmentPortal(org=None,account=None):
     
     supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
         .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+<<<<<<< HEAD
+=======
+
+    laborCoordinators = []
+    supervisors = []
+
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
+
+        if supervisor is None:
+            continue
+
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        supervisorName = f"{firstName} {lastName}".strip()
+
+        supervisorDisplay = {
+            "name": supervisorName,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
+>>>>>>> parent of 78e87860 (Revert "Merge pull request #645 from BCStudentSoftwareDevTeam/MembersCard")
 
     laborCoordinators = []
     supervisors = []
