@@ -2,7 +2,7 @@ from app.models import *
 from app.models.department import Department
 
 class PositionHistory(baseModel):
-    positionTitle      = CharField()
+    positionTitle        = CharField()
     positionCode       = CharField()
     department         = ForeignKeyField(Department)
     status             = CharField()
@@ -13,7 +13,4 @@ class PositionHistory(baseModel):
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
 
-    # @classmethod
-    # def active(self):
-    #     return self.select().where(self.status == "Active")
-    
+   

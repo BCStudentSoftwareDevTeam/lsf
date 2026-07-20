@@ -87,22 +87,24 @@ def departmentPortal(org=None,account=None):
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
+    currentUser = require_login()
+    if not currentUser or not currentUser.supervisor:
+        return render_template('errors/403.html'), 403
+
     try:
-        currentUser = require_login()
-        if not currentUser or not currentUser.supervisor:
-            return render_template('errors/403.html'), 403
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-    print("THIS IS Dept:", dept)
-    
-    positions = PositionHistory.select().where((PositionHistory.department == dept) & (PositionHistory.status == "Active")).order_by(PositionHistory.positionTitle.asc())
-    
+
+    positions = (PositionHistory.select()
+                                .where((PositionHistory.department == dept) &
+                                       (PositionHistory.status == "Active"))
+                                .order_by(PositionHistory.positionTitle.asc()))
+
     return render_template('main/managepositions.html',
-                           department = dept,
-                           department_name = dept.DEPT_NAME,
-                           positions = positions
-                           )
+                            department=dept,
+                            department_name=dept.DEPT_NAME,
+                            positions=positions)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

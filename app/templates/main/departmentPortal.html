@@ -9,8 +9,6 @@
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
 
-
-  <!--selectpicker for department-->
   <div class="form-group">
     <select class="selectpicker"
             name='department'
@@ -109,47 +107,6 @@
 </div>
 
 {% endif %}
-
-
-<!-- <div class="col-sm-4">
-  <section class="card members-card" aria-labelledby="members-title">
-    <div class="card-body">
-
-      <div class="media">
-        <div class="media-left">
-          <span class="members-card-icon" aria-hidden="true">
-            <i class="fa fa-users"></i>
-          </span>
-        </div>
-
-        <div class="media-body media-middle">
-          <h3 id="members-title" class="media-heading card-title">
-            <strong>Members</strong>
-          </h3>
-        </div>
-      </div>
-
-      <h4 class="text-primary"><strong>Labor Coordinator</strong></h4>
-      <p class="card-text">Dr. Jones</p>
-
-      <h4 class="text-primary"><strong>Supervisors</strong></h4>
-      <p class="card-text">
-        Dr. Heggen<br>
-        Dr. Nakazawa
-      </p>
-
-      <p class="text-center">
-        <span class="members-card-cta">
-          <a href="#" class="btn btn-primary btn-sm members-card-btn">
-            View Details <span class="glyphicon glyphicon-chevron-right"></span>
-          </a>
-
-        </span>
-      </p>
-
-    </div>
-  </section>
-</div> -->
 
 {% endblock %}\
 
