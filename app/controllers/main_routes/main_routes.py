@@ -74,11 +74,12 @@ def departmentPortal(org=None,account=None):
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                           supervisors = supervisors,
-                           laborCoordinators=laborCoordinators,
+                        #    supervisors = supervisor,
+                        #    laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser,
-                           positions = positionsList,
-                           posUrl = posUrl)
+                        #    positions = positionsList,
+                        #    posUrl = posUrl
+                        )
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
