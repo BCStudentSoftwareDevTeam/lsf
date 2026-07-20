@@ -26,7 +26,10 @@ from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usern
 
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
-def manageStaff(org=None,account=None):
+def manageMembers(org=None,account=None):
+    """
+    Generates the Manage Members page.
+    """
     currentUser = require_login()
     currentSupervisor = Supervisor.select().where(Supervisor.ID == currentUser.supervisor).get()
     if not currentUser or not currentUser.supervisor:
@@ -54,8 +57,17 @@ def manageStaff(org=None,account=None):
         )
     )
 
-    # Conditions for the supervisee counts. Expired and released positions do
-    # not contribute to any of the four totals.
+    # Finding the current academic year
+    currentYear = today.year
+    if today.month < 7: 
+        currentAcademicYear = (currentYear - 1, currentYear)
+    else: 
+        currentAcademicYear = (currentYear, currentYear + 1)
+    # Note that the start of July is 
+    # normally considered the start of a new academic year.
+
+    
+    # Conditions used for the studentCount variable
     activePrimaries = (
         (LaborStatusForm.jobType == 'Primary') &
         (LaborStatusForm.studentConfirmation == True))
@@ -70,6 +82,8 @@ def manageStaff(org=None,account=None):
         (LaborStatusForm.studentConfirmation.is_null(True)))
 
 
+    # This variable is used for the Supervisees column on the
+    # Manage Members page.  
     studentCount = list(
         LaborStatusForm.
         select(
@@ -80,6 +94,7 @@ def manageStaff(org=None,account=None):
             LaborStatusForm.department, 
             LaborStatusForm.supervisor
         ).where(
+            # Expired and released positions are not counted! 
             (LaborStatusForm.department == dept) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
         ).group_by(
@@ -87,9 +102,9 @@ def manageStaff(org=None,account=None):
             LaborStatusForm.supervisor
         ).dicts()
     )
-    
+
+
     counts = {(row["department"], row["supervisor"]): row for row in studentCount}
-    
     for member in members:
 
         key = (member["department"], member["supervisor"])
@@ -103,7 +118,9 @@ def manageStaff(org=None,account=None):
     return render_template('main/manageMembers.html', 
                            members = members,
                            department = dept, 
-                           currentSupervisor= currentSupervisor)
+                           currentSupervisor= currentSupervisor,
+                           currentAcademicYear = currentAcademicYear)
+
 
 
 def supervisorsDbToDict(supervisor):
@@ -119,9 +136,12 @@ def supervisorsDbToDict(supervisor):
     return dbToDict
 
 
-# search student table and STUDATA for student results
+
 @main_bp.route('/members/search/<query>',  methods=['GET'])
 def searchMember(query=None):
+    """
+    Search student table and STUDATA for student results.
+    """
     currentUser = require_login()
     accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
     if not accessAllowed:
@@ -159,6 +179,9 @@ def searchMember(query=None):
 
 @main_bp.route('/members/coordinator_switch', methods=['POST'])
 def coordinatorSwitch():
+    """
+    Assigns or unassignes a supervisor as a Labor Coordinator. 
+    """
     data = request.get_json()
     supervisorID = data.get("supervisorID")
     isCoordinator = data.get("isCoordinator")
@@ -171,7 +194,10 @@ def coordinatorSwitch():
 
 
 @main_bp.route('/members/ban_switch', methods=['POST'])
-def banSwitch():
+def elegibilitySwitch():
+    """
+    Updates a supervisor's eligibility status. 
+    """
     data = request.get_json()
     supervisorID = data.get("supervisorID")
 
@@ -185,6 +211,9 @@ def banSwitch():
 
 @main_bp.route('/members/remove', methods=['DELETE'])
 def removeMember():
+    """
+    Removes a staff member from a department. 
+    """
     data = request.get_json()
     supervisorID = data.get("supervisorID")
     
@@ -200,6 +229,9 @@ def removeMember():
 
 @main_bp.route('/members/add', methods=['GET', 'POST'])
 def addUserToDept():
+    """
+    Adds a user to a department.
+    """
     userDeptData = request.form
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
     try:

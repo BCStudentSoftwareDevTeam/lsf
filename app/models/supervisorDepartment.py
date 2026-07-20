@@ -3,6 +3,6 @@ from app.models.supervisor import Supervisor
 from app.models.department import Department
 
 class SupervisorDepartment(baseModel):
-    supervisor = ForeignKeyField(Supervisor)
-    department = ForeignKeyField(Department)
-    isCoordinator = BooleanField(default=False)
+    supervisor      = ForeignKeyField(Supervisor)
+    department      = ForeignKeyField(Department)
+    isCoordinator   = BooleanField(default=False)
