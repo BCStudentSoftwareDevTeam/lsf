@@ -75,7 +75,7 @@ $(document).ready(function() {
                 } else {
                     category = "danger";
                     button.removeClass("btn-danger").addClass("btn-success");
-                    button.html("&nbsp; Eligible &nbsp;");
+                    button.html("Eligible");
                     button.val("Eligible");
                     ban_badge.css("visibility", "hidden");
                     $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\"> " + memberName +  " is an eligible coordinator now; they can create labor status forms and add new students.</div>");

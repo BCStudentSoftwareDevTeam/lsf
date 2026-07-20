@@ -7,22 +7,30 @@
   vertical-align: middle !important;
 }
 
+/*The Supervisor Eligibility button*/
+.member-status-btn {
+  width: 80px;
+}
+
 /* The add-member search bar*/
 #add-member {
   display: flex; 
   justify-content: center; 
+  margin-bottom: 20px;
+  z-index: 100;
   gap: 0px;
   height: 20px;
-  margin-bottom: 30px;
 }
 
 
-@media (min-width: 767px) {
+@media (min-width: 767.5px) {
   #add-member{
     display: flex; 
     justify-content: flex-end; 
     gap: 0px;
-    /*margin-bottom: -20px;*/
+    position: relative;
+    top: 24px;
+    margin-bottom: 0px;
   }
 }
 
