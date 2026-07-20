@@ -63,7 +63,7 @@
             <tr>
                 <td>
                     <a aria-label="{{i['supervisor']}}" class="hover-indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
-                    <a href="mailto:{{ i['legal_name'] + ' ' + i['LAST_NAME']}}">✉</a>
+                    <a href="mailto:{{ i['EMAIL']}}" >✉</a>
 
                     <br>
                     <span class="isbanned-badge" {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Ineligible</span>
