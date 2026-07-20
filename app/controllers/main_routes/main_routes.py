@@ -65,7 +65,9 @@ def departmentPortal(org=None,account=None):
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
         
-    positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
+    positions = list(PositionHistory.select()
+                    .where(PositionHistory.department == dept, PositionHistory.status == "Active")
+                    .order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []
     posURL = []
     if positions == []:
