@@ -1,10 +1,14 @@
 from app.models.allocation import Allocation
+from app.models.laborStatusForm import * 
+from app.models.department import *
+from app.models.term import *
+
 
 def getAllocation(termCode, dept):
     allocationObject = Allocation.select().where(Allocation.termCode == 202500, Allocation.department == 3, Allocation.isFinal == True).dicts().get() #FIXME
     return allocationObject
 
-def getAllocation(termCode, dept):
+def getTotalAllocations(termCode, dept):
     allocationObject = getAllocation(termCode, dept)
     allocationDict = {"primary_10": allocationObject["primary_10"],
                     "primary_12": allocationObject["primary_12"],
@@ -16,5 +20,28 @@ def getAllocation(termCode, dept):
                     "totalPrimaries": (allocationObject["primary_10"] + allocationObject["primary_12"] + allocationObject["primary_15"] + allocationObject["primary_20"]),
                     "totalSecondaries": (allocationObject["secondary_5"] + allocationObject["secondary_10"]) }
     return allocationDict
+ 
+def countContracts(jobType, contractHours):
+    return LaborStatusForm.select().where(
+        LaborStatusForm.department == 1,
+        LaborStatusForm.termCode == 202500, #FIXME
+        LaborStatusForm.jobType == jobType,
+        LaborStatusForm.weeklyHours == contractHours,
+        LaborStatusForm.contractHours.is_null(True)).count()
 
-def 
+
+def getContractedAllocations(termCode, dept):
+    allocationObject = getAllocation(termCode, dept)
+    # usedPrimariesAllocation = [hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True), LaborStatusForm.jobType == "Primary")]
+    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+    breakSum = int(sum(form.contractHours or 0 for form in break_allocation))
+    usedPositions = {
+    "used_10": countContracts("Primary", "10"),
+    "used_12": countContracts("Primary", "12"),
+    "used_15": countContracts("Primary", "15"),
+    "used_20": countContracts("Primary", "20"),
+    "used_5_sec": countContracts("Secondary", "5"),
+    "used_10_sec": countContracts("Secondary", "10"),
+    "break_hours": breakSum
+    }
+    return usedPositions

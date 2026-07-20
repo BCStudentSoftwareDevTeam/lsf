@@ -139,7 +139,8 @@ localStudents = [
                 {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
                 {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
                 {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"},
-                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"}
+                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"},
+                {"ID": "B12345759", "legal_name": "Mister Marlowe", "isActive": True, "PIDM": "14", "FIRST_NAME": "Mister", "LAST_NAME": "Marlowe"}
                 ]
 tracyStudents = [
                 {
@@ -819,6 +820,24 @@ LaborStatusForm.insert([{
             "endDate": "2025-09-01"
         
         }]).on_conflict_replace().execute()
+LaborStatusForm.insert([{
+    
+            "laborStatusFormID": 60,
+            "termCode_id": f"202500",
+            "studentName": "Mister Marlowe",
+            "studentSupervisee_id": "B12345759",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Break Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 400,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        
+        }]).on_conflict_replace().execute()
+
 
 
 
