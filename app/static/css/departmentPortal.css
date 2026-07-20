@@ -30,7 +30,7 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding-left: 10px; 
+    padding-left: 2%; 
     padding-right: 10px;
 }
 .allocation-list {
@@ -42,11 +42,11 @@
 }
 .primary-chart {
     font-size: 1.2em; 
-    padding-left: 75px;
+    padding-left: 15%;
 }
 .secondary-chart {
     font-size: 1.2em; 
-    padding-right: 75px;
+    padding-right: 15%;
 }
 
 .bi-people-fill {  /* Bootstrap Icon for Members Card */
