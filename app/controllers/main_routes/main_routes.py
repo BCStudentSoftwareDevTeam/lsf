@@ -157,8 +157,6 @@ def departmentPortal(org=None,account=None):
                            currentUser=g.currentUser
                            )
 
-
-@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
     currentUser = require_login()
