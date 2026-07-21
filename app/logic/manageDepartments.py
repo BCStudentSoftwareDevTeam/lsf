@@ -1,3 +1,4 @@
+from app.controllers.admin_routes.termManagement import createTerms
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.allocation import *
@@ -46,19 +47,37 @@ def getUsedBreakHours(term):
     return totalBreakSum
 
 
-def getActiveDepartmentsWithAllocation(currentTerm):
+def getActiveDepartmentsWithAllocation(term):
     """
-    Returns a list of active departments that have an allocation for the given term.
+    Returns a list of active departments with allocations for the given term.
     """
-    activeDep = (Department
+
+    # This was left just incase anything went wrong. Delete this if everything works as expected. Not necessary in current implementation.
+    # activeDepartments = Department.select().where(Department.isActive == True)
+    # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
+
+    activeDepartments = (Department
                         .select(Department, Allocation)
                         .join(Allocation)
                         .where(
                             Department.isActive == True,
-                            Allocation.termCode == currentTerm.termCode
+                            Allocation.termCode == term.termCode
                         )
                     )
-    return activeDep
+    
+    for dept in activeDepartments:
+        dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
+        dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
+
+        dept.lsfCountPrimaries = getLSFCountPrimaries(term, dept)
+        dept.lsfCountSecondaries = getLSFCountSecondaries(term, dept)
+
+        # # print("######################")
+        # print(f"COUNTS: {lsfCountSecondaries} ")
+        # print([lsf.formID for lsf in lsfCountPrimaries])
+        # print([lsf.formID for lsf in lsfCountSecondaries])
+
+    return activeDepartments
 
 def getAllocationStatus(term, department):
     """
@@ -93,4 +112,13 @@ def getLSFCountSecondaries(currentTerm, department):
     #Returns the current term code based on a the selected term from a dropdown menu in the manage departments page.
     #Should only contain the current term, the next term, and the previous term.
     #'''
+
+def generateTerms(termCode):
+    """
+    Generates all the terms in an academic year. 
+    """
+
+    # Truncating term codes to hundreds. That's how we get the academic year. 
+    academicYearCode = (termCode // 100)
     
+    return createTerms(academicYearCode)    

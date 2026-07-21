@@ -31,30 +31,30 @@ def manage_departments(academic_year = None):
     print ("######################", g.openTerm.termName, "######################")
     try:
         currentUser = require_login()
-        if not currentUser:                    # Not logged in
+        if not currentUser:                    # If the current user is not logged in
             return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
+        if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
+            if currentUser.student: # If the currrent user is logged in as a student
                 return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
         
-        # Sets academic_year to the current open term if no academic year is provided in the URL. Current solution. WILL change in the future.
-        if not academic_year:
-            academic_year = g.openTerm.termCode
-        else:
+
+        if academic_year:   # If there is an academic year (term code) in the URL
             academic_year = int(academic_year)
+        else:
+            academic_year = g.openTerm.termCode
+            # Sets academic_year to the current open term if no academic year is provided in the URL. 
+            # Current solution. WILL change in the future.
 
         currentAY = Term.get(Term.termCode == academic_year)
         print("Current Term:", currentAY.termName)
 
-        previousAcademicYear = (academic_year - 100) // 100
-        createPreviousAY = createTerms(previousAcademicYear)
+        createPreviousAY = generateTerms(academic_year - 100)
         previousAY = createPreviousAY[0]
         print("Previous Term:", previousAY.termName)
 
-        nextAcademicYear = (academic_year + 100) // 100
-        createNextAY = createTerms(nextAcademicYear)
+        createNextAY = generateTerms(academic_year + 100)
         nextAY = createNextAY[0]
         print("Next Term:", nextAY.termName)
         
@@ -62,8 +62,8 @@ def manage_departments(academic_year = None):
         # We've also thought about having a drop down menu to select the term once the academic year is selected. This should also include the ability to view the entire academic year.
         # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
         # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  This will be a much more efficient way to manage the terms and departments.
-        plainAcademicYear = academic_year // 100 # Might be a good idea to create a function for // 100 since it appears in multiple places.  This will make it easier to change the implementation in the future if needed.
-        createdTerms = createTerms(plainAcademicYear) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
+        
+        createdTerms = createTerms(academic_year) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
         fallTerm = createdTerms[1]
         springTerm = createdTerms[4]
         summerTerm = createdTerms[6]
@@ -77,49 +77,22 @@ def manage_departments(academic_year = None):
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentAY)} # I think Scott wanted this to say NULL not zero, unsure.
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentAY)} 
+        # I think Scott wanted this to say NULL not zero, unsure.
 
-        # print(breakHoursByDepartment)
 
-        # print("\n\nSomething")
-
-        # This was left just incase anything went wrong. Delete this if everything works as expected. Not nessicary in current implementation.
-        # activeDepartments = Department.select().where(Department.isActive == True)
-        # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
-
-        inactiveDepartments = Department.select().where(Department.isActive == False)
-        
-        
         activeDepartments = getActiveDepartmentsWithAllocation(currentAY)
+        inactiveDepartments = Department.select().where(Department.isActive == False)  
         
-        # Move some of this to Logic.
-        for dept in activeDepartments:
-            dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
-            dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
-
-            lsfCountPrimaries = getLSFCountPrimaries(currentAY, dept)
-            lsfCountSecondaries = getLSFCountSecondaries(currentAY, dept)
-            dept.lsfCountPrimaries = lsfCountPrimaries
-            dept.lsfCountSecondaries = lsfCountSecondaries
-        # print("######################")
-        # print(f"COUNTS: {lsfCountSecondaries} ")
-        # print([lsf.formID for lsf in lsfCountPrimaries])
-        # print([lsf.formID for lsf in lsfCountSecondaries])
 
         allocationStatus = {
             department.departmentID: getAllocationStatus(currentAY, department)
             for department in activeDepartments
         }
 
-        # print("Pizza\n\n\n\n")
-        # print ("Allocation Status:", allocationStatus)
-        # print("\n\n\n\nPotato")
-
-        
-
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
         return render_template( 'admin/manageDepartments.html',
-                                title = ("Manage Departments"),
+                                #title = ("Manage Departments"),
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
@@ -183,7 +156,7 @@ def complianceStatusCheck():
     This function changes the compliance status in the database for labor status forms.  It works in collaboration with the ajax call in manageDepartments.js
     """
     try:
-        rsp = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
+        rsp = request.get_json() # This fixes byte indices must be intergers or slices error
         if rsp:
             department = Department.get(int(rsp['deptName']))
             department.departmentCompliance = not department.departmentCompliance
