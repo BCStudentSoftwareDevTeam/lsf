@@ -1060,7 +1060,6 @@ positionHistory = [
         "wls":2,
         "revisionDate" : f"2026-01-01",
         "description": "",
-        "department" : 3
     },
     {
         "positionTitle": "Teaching Associate",
