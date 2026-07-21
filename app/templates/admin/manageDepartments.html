@@ -64,22 +64,22 @@
         <div class="dropdown">
           <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="true">
-            Current AY: {{ currentAY }}
+            Current AY: {{ academicYear }}
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1"
             style="margin: 0; right: auto; left: auto; text-align: center">
             <li>
             {% if previousAY %}
-            <a href="#">Previous AY: {{ previousAY }}</a>
+            <a href="/admin/manageDepartments/{{ previousAY.termCode }}">Previous AY: {{ previousAY.termName }}</a>
             {% else %}
             <a href="#" class="disabled">Previous AY: N/A</a>
             {% endif %}
             </li>
-            <li><a href="#">Current AY: {{ currentAY }}</a></li>
+            <li><a href="/admin/manageDepartments/{{ currentAY.termCode }}">Current AY: {{ currentAY.termName }}</a></li>
             <li>
             {% if nextAY %}
-            <a href="#">Future AY: {{ nextAY }}</a>
+            <a href="/admin/manageDepartments/{{ nextAY.termCode }}">Future AY: {{ nextAY.termName }}</a>
             {% else %}
             <a href="#" class="disabled">Future AY: N/A</a>
             {% endif %}

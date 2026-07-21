@@ -38,32 +38,39 @@ def manage_departments(academic_year = None):
                 return redirect('/laborHistory/' + currentUser.student.ID)
             elif currentUser.supervisor:
                 return render_template('errors/403.html'), 403
-        
 
-        if academic_year:   # If there is an academic year (term code) in the URL
-            academic_year = int(academic_year)
-        else:
+        if academic_year == None: 
             academic_year = g.openTerm.termCode
-            # Sets academic_year to the current open term if no academic year is provided in the URL. 
-            # Current solution. WILL change in the future.
 
-        currentAY = Term.get(Term.termCode == academic_year)
+        academic_year = int(academic_year)
+
+        if (academic_year != g.openTerm.termCode - 100) and (academic_year != g.openTerm.termCode) and (academic_year != g.openTerm.termCode + 100):
+            return "", 400
+
+        createdTerms = generateTerms(g.openTerm.termCode) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
+        currentAY = Term.get(Term.termCode == g.openTerm.termCode)
         print("Current Term:", currentAY.termName)
 
-        createPreviousAY = generateTerms(academic_year - 100)
+        createPreviousAY = generateTerms(g.openTerm.termCode - 100)
         previousAY = createPreviousAY[0]
         print("Previous Term:", previousAY.termName)
 
-        createNextAY = generateTerms(academic_year + 100)
+        createNextAY = generateTerms(g.openTerm.termCode + 100)
         nextAY = createNextAY[0]
         print("Next Term:", nextAY.termName)
+
+        if academic_year == g.openTerm.termCode - 100: 
+            usedAY = previousAY
+        elif academic_year == g.openTerm.termCode:
+            usedAY = currentAY
+        else: 
+            usedAY = nextAY
         
         # Works. Should work without production data now.
         # We've also thought about having a drop down menu to select the term once the academic year is selected. This should also include the ability to view the entire academic year.
         # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
         # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  This will be a much more efficient way to manage the terms and departments.
         
-        createdTerms = createTerms(academic_year) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
         fallTerm = createdTerms[1]
         springTerm = createdTerms[4]
         summerTerm = createdTerms[6]
@@ -77,16 +84,16 @@ def manage_departments(academic_year = None):
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentAY)} 
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(usedAY)} 
         # I think Scott wanted this to say NULL not zero, unsure.
 
 
-        activeDepartments = getActiveDepartmentsWithAllocation(currentAY)
+        activeDepartments = getActiveDepartmentsWithAllocation(usedAY)
         inactiveDepartments = Department.select().where(Department.isActive == False)  
         
 
         allocationStatus = {
-            department.departmentID: getAllocationStatus(currentAY, department)
+            department.departmentID: getAllocationStatus(usedAY, department)
             for department in activeDepartments
         }
 
@@ -96,10 +103,10 @@ def manage_departments(academic_year = None):
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                currentAY = currentAY.termName,
-                                previousAY = previousAY.termName,
-                                nextAY = nextAY.termName,
-                                academicYear = currentAY.termName,
+                                currentAY = currentAY,
+                                previousAY = previousAY,
+                                nextAY = nextAY,
+                                academicYear = usedAY.termName,
                                 # totalBreakSum = totalBreakSum
                                 breakHoursByDepartment = breakHoursByDepartment,
                                 allocationStatus = allocationStatus
