@@ -16,6 +16,7 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.getSupervisors import fuck
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -62,36 +63,38 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
-    def buildSupervisorDisplay(supervisor):
-        firstName = supervisor.preferred_name or supervisor.legal_name or ""
-        lastName = supervisor.LAST_NAME or ""
+    # def buildSupervisorDisplay(supervisor):
+    #     firstName = supervisor.preferred_name or supervisor.legal_name or ""
+    #     lastName = supervisor.LAST_NAME or ""
 
-        return {
-            "name": f"{firstName} {lastName}".strip(),
-            "email": supervisor.EMAIL
-        }
+    #     return {
+    #         "name": f"{firstName} {lastName}".strip(),
+    #         "email": supervisor.EMAIL
+    #     }
         
-    laborCoordinators = []
-    supervisors = []
+    # laborCoordinators = []
+    # supervisors = []
     
-    # Avoid querying department members unless the selected department exists.
-    if dept is not None:
-        supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-            .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+    # # Avoid querying department members unless the selected department exists.
+    # if dept is not None:
+    #     supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+    #         .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
         
 
-        for supervisorDepartment in supervisorDepartments:
-            supervisor = supervisorDepartment.supervisor
+    #     for supervisorDepartment in supervisorDepartments:
+    #         supervisor = supervisorDepartment.supervisor
 
-            if supervisor is None:
-                continue
+    #         if supervisor is None:
+    #             continue
 
-            supervisorDisplay = buildSupervisorDisplay(supervisor)
+    #         supervisorDisplay = buildSupervisorDisplay(supervisor)
 
-            if supervisorDepartment.isCoordinator:
-                laborCoordinators.append(supervisorDisplay)
-            else:
-                supervisors.append(supervisorDisplay)
+    #         if supervisorDepartment.isCoordinator:
+    #             laborCoordinators.append(supervisorDisplay)
+    #         else:
+    #             supervisors.append(supervisorDisplay)
+
+    supervisors, laborCoordinators = fuck(dept)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
