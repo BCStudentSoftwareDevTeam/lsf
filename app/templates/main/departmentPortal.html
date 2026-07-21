@@ -3,10 +3,11 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
-
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -22,6 +23,48 @@
         "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
       {% endfor %}
     </select>
-
   </div>
+
+{% if department %}
+<div class="row g-3">
+      <div class="col-12 col-lg-4 ">
+        <section class="card" aria-labelledby="allocationTitle">
+          <div class="card-body">
+            <div class="media">
+            <div class="media-left media-middle">
+              <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                <i class="bi bi-clock"></i> 
+              </span>
+            </div>
+            <div class="media-body media-middle">
+              <h1>Allocations</h1>
+            </div>
+            <div class="header-container">
+              <h3>AY 2025-2026 <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Used/Given"></i></h3> <h3>{{used_allocation}}/{{total_allocation or 0}} Positions</h3>
+            </div>
+            <div class="allocation-list">
+              <ul class="primary-chart">
+                <li>10 Hour - {{usedPositions.used_10}}/{{allocation.primary_10}}</li>
+                <li>12 Hour - {{usedPositions.used_12}}/{{allocation.primary_12}}</li>
+                <li>15 Hour - {{usedPositions.used_15}}/{{allocation.primary_15}}</li>
+                <li>20 Hour - {{usedPositions.used_20}}/{{allocation.primary_20}}</li>
+              </ul>
+              <ul class="secondary-chart">
+                <li>5 Hour - {{usedPositions.used_5_sec}}/{{allocation.secondary_5}}</li>
+                <li>10 Hour - {{usedPositions.used_10_sec}}/{{allocation.secondary_10}}</li>
+              </ul>
+            </div>
+            <div class="header-container">
+              <h3>Break Hours <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="the values do not reflect actual hours worked, but rather contracts fulfilled."></i></h3><h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
+            </div>
+          </div>
+          </div>
+          <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/REPLACEME" class="btn btn-primary">View Allocations<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
+        </section>
+      </div>
+  </div>
+{% endif %}
+
 {% endblock %}
