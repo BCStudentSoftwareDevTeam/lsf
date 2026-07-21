@@ -51,18 +51,16 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    currentUser = g.currentUser
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
+    except DoesNotExist:
         dept = None
 
-    if g.currentUser.isLaborAdmin:
+    if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
-        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    
-    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
     def buildSupervisorDisplay(supervisor):
         firstName = supervisor.preferred_name or supervisor.legal_name or ""
@@ -75,26 +73,32 @@ def departmentPortal(org=None,account=None):
         
     laborCoordinators = []
     supervisors = []
+    
+    # Avoid querying department members unless the selected department exists.
+    if dept is not None:
+        supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+            .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+        
 
-    for supervisorDepartment in supervisorDepartments:
-        supervisor = supervisorDepartment.supervisor
+        for supervisorDepartment in supervisorDepartments:
+            supervisor = supervisorDepartment.supervisor
 
-        if supervisor is None:
-            continue
+            if supervisor is None:
+                continue
 
-        supervisorDisplay= buildSupervisorDisplay(supervisor)
+            supervisorDisplay = buildSupervisorDisplay(supervisor)
 
-        if supervisorDepartment.isCoordinator:
-            laborCoordinators.append(supervisorDisplay)
-        else:
-            supervisors.append(supervisorDisplay)
+            if supervisorDepartment.isCoordinator:
+                laborCoordinators.append(supervisorDisplay)
+            else:
+                supervisors.append(supervisorDisplay)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
-                           currentUser=g.currentUser,
+                           currentUser=currentUser,
                            )
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
