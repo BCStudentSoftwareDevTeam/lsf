@@ -21,6 +21,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from flask import abort
+from app.logic.manageMembers import supervisorsDbToDict, currentAcademicYear
 from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
 
 
@@ -56,15 +57,6 @@ def manageMembers(org=None,account=None):
             (LaborReleaseForm.releaseDate <= today)
         )
     )
-
-    # Finding the current academic year
-    currentYear = today.year
-    if today.month < 7: 
-        currentAcademicYear = (currentYear - 1, currentYear)
-    else: 
-        currentAcademicYear = (currentYear, currentYear + 1)
-    # Note that the start of July is 
-    # normally considered the start of a new academic year.
 
     
     # Conditions used for the studentCount variable
@@ -119,7 +111,7 @@ def manageMembers(org=None,account=None):
                            members = members,
                            department = dept, 
                            currentSupervisor= currentSupervisor,
-                           currentAcademicYear = currentAcademicYear)
+                           currentAcademicYear = currentAcademicYear())
 
 
 
