@@ -57,20 +57,33 @@
         Download Allocation History
       </button>
     </div>
-
+    <!-- Fix URL for current, previous, and next academic year links in the dropdown menu. (Will require more than just HTML changes). -->
+     <!-- A new dropdown for the Fall, Spring, Summer, and Academic Year terms for the current academic year should be added alongside this one. -->
     <div class="column mb-4">
       <div class="text-right">
         <div class="dropdown">
           <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="true">
-            Current AY: {{ currentTerm }}
+            Current AY: {{ currentAY }}
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1"
             style="margin: 0; right: auto; left: auto; text-align: center">
-            <li><a href="#">Previous AY: {{ previousTerm }}</a></li>
-            <li><a href="#">Current AY: {{ currentTerm }}</a></li>
-            <li><a href="#">Future AY: {{ nextTerm }}</a></li>
+            <li>
+            {% if previousAY %}
+            <a href="#">Previous AY: {{ previousAY }}</a>
+            {% else %}
+            <a href="#" class="disabled">Previous AY: N/A</a>
+            {% endif %}
+            </li>
+            <li><a href="#">Current AY: {{ currentAY }}</a></li>
+            <li>
+            {% if nextAY %}
+            <a href="#">Future AY: {{ nextAY }}</a>
+            {% else %}
+            <a href="#" class="disabled">Future AY: N/A</a>
+            {% endif %}
+            </li>
           </ul>
         </div>
       </div>

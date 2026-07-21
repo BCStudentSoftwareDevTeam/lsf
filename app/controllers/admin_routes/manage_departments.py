@@ -19,11 +19,11 @@ from app.logic.tracy import Tracy
 from datetime import date
 from flask import g
 from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
-
+from app.controllers.admin_routes.termManagement import createTerms
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
+@admin.route('/admin/manageDepartments/<academic_year>', methods=['GET']) # FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
 # @login_required
-def manage_departments(academic_year = None):     # FIXME
+def manage_departments(academic_year = None):
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
@@ -42,54 +42,63 @@ def manage_departments(academic_year = None):     # FIXME
         # Sets academic_year to the current open term if no academic year is provided in the URL. Current solution. WILL change in the future.
         if not academic_year:
             academic_year = g.openTerm.termCode
+        else:
+            academic_year = int(academic_year)
+
+        currentAY = Term.get(Term.termCode == academic_year)
+        print("Current Term:", currentAY.termName)
+
+        previousAcademicYear = (academic_year - 100) // 100
+        createPreviousAY = createTerms(previousAcademicYear)
+        previousAY = createPreviousAY[0]
+        print("Previous Term:", previousAY.termName)
+
+        nextAcademicYear = (academic_year + 100) // 100
+        createNextAY = createTerms(nextAcademicYear)
+        nextAY = createNextAY[0]
+        print("Next Term:", nextAY.termName)
         
-        fall_suffix = 11 # Ex.) Fall 2025 = 202511
-        spring_suffix = 12 # Ex.) Spring 2026 = 202512 
-        summer_suffix = 13 # Ex.) Summer 2026 = 202513
+        # Works. Should work without production data now.
+        # We've also thought about having a drop down menu to select the term once the academic year is selected. This should also include the ability to view the entire academic year.
+        # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
+        # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  This will be a much more efficient way to manage the terms and departments.
+        plainAcademicYear = academic_year // 100 # Might be a good idea to create a function for // 100 since it appears in multiple places.  This will make it easier to change the implementation in the future if needed.
+        createdTerms = createTerms(plainAcademicYear) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
+        fallTerm = createdTerms[1]
+        springTerm = createdTerms[4]
+        summerTerm = createdTerms[6]
 
-        currentTerm = Term.get(Term.termCode == academic_year)
-        previousTerm = Term.get(Term.termCode == academic_year - 100)
-        nextTerm = Term.get(Term.termCode == academic_year + 100)
+        print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
+        print("******************",previousAY.termName, nextAY.termName, currentAY.termName, "**********************")
 
-
-
-        # Works. Just use production data to test. Add demo data for this later. (This was a request from Labor Office to have the ability to view based on term.)
-        # fallTerm = Term.get(Term.termCode == academic_year + fall_suffix)
-        # springTerm = Term.get(Term.termCode == academic_year + spring_suffix)
-        # summerTerm = Term.get(Term.termCode == academic_year + summer_suffix)
-
-        # print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
-        # print("******************",previousTerm.termName, nextTerm.termName, currentTerm.termName, "**********************")
-
-        # totalBreakSum = getUsedBreakHours(currentTerm)
-
-        # print("Something\n\n")
-
-        
+        # For Testing Purposes.  This will be removed once the term management page is fully implemented and the terms are created for the academic year.
+        # totalBreakSum = getUsedBreakHours(currentAY)
         # for row in totalBreakSum:
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentTerm)} # I think Scott wanted this to say NULL not zero, unsure.
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(currentAY)} # I think Scott wanted this to say NULL not zero, unsure.
 
         # print(breakHoursByDepartment)
 
         # print("\n\nSomething")
 
+        # This was left just incase anything went wrong. Delete this if everything works as expected. Not nessicary in current implementation.
         # activeDepartments = Department.select().where(Department.isActive == True)
-        # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
+        # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
+
         inactiveDepartments = Department.select().where(Department.isActive == False)
         
         
-        activeDepartments = getActiveDepartmentsWithAllocation(currentTerm)
+        activeDepartments = getActiveDepartmentsWithAllocation(currentAY)
         
-        # Move some of this to Logic (maybe).
+        # Move some of this to Logic.
         for dept in activeDepartments:
             dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
             dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
 
-            lsfCountPrimaries = getLSFCountPrimaries(currentTerm, dept)
-            lsfCountSecondaries = getLSFCountSecondaries(currentTerm, dept)
+            lsfCountPrimaries = getLSFCountPrimaries(currentAY, dept)
+            lsfCountSecondaries = getLSFCountSecondaries(currentAY, dept)
             dept.lsfCountPrimaries = lsfCountPrimaries
             dept.lsfCountSecondaries = lsfCountSecondaries
         # print("######################")
@@ -98,7 +107,7 @@ def manage_departments(academic_year = None):     # FIXME
         # print([lsf.formID for lsf in lsfCountSecondaries])
 
         allocationStatus = {
-            department.departmentID: getAllocationStatus(currentTerm, department)
+            department.departmentID: getAllocationStatus(currentAY, department)
             for department in activeDepartments
         }
 
@@ -114,10 +123,10 @@ def manage_departments(academic_year = None):     # FIXME
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                currentTerm = currentTerm.termName,
-                                previousTerm = previousTerm.termName,
-                                nextTerm = nextTerm.termName,
-                                academicYear = currentTerm.termName,
+                                currentAY = currentAY.termName,
+                                previousAY = previousAY.termName,
+                                nextAY = nextAY.termName,
+                                academicYear = currentAY.termName,
                                 # totalBreakSum = totalBreakSum
                                 breakHoursByDepartment = breakHoursByDepartment,
                                 allocationStatus = allocationStatus
