@@ -42,11 +42,11 @@
 }
 .primary-chart {
     font-size: 1.2em; 
-    padding-left: 15%;
+    padding-left: 7%;
 }
 .secondary-chart {
     font-size: 1.2em; 
-    padding-right: 15%;
+    padding-right: 7%;
 }
 
 .bi-people-fill {  /* Bootstrap Icon for Members Card */

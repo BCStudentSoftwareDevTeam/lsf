@@ -101,9 +101,9 @@ def departmentPortal(org=None,account=None):
         else:
             supervisors.append(supervisorDisplay)
 
-    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar() #grabs the total positions that can be fufilled by contracts
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))]) #grabs the total amount of contracts fufilled from totalPositions
-    studentHours = {} #Group each active LSF (job type + weekly hours) by student, so we can show all of a student's jobs together 
+    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar() # Total allocated positions for this department/term, summed across all hour buckets
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))]) # Count how many of those positions are currently filled (excludes contract/break-hour forms)
+    studentHours = {} # Group each active LSF (job type + weekly hours) by student, so we can show all of a student's jobs together
     for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
     ):
         studentSuperviseeId = form.studentSupervisee_id
@@ -139,13 +139,21 @@ def departmentPortal(org=None,account=None):
                            studentHours = studentHours,
                            usedPositions = usedPositions,
                            break_hours = sumBreak,
-                           positions = positionsList,
-                           posUrl = posUrl,
-                           supervisors = supervisors,
-                           laborCoordinators=laborCoordinators,
-                           currentUser=g.currentUser
                            )
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
 
+    positions = Tracy().getPositionsFromDepartment(org, account)
+    print(positions)
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
