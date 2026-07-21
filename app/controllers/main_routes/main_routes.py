@@ -69,7 +69,10 @@ def departmentPortal(org=None,account=None):
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-     
+
+    if dept and not g.currentUser.isLaborAdmin and dept.departmentID not in [d.departmentID for d in departments]:
+        return render_template('errors/403.html'), 403
+
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
     except DoesNotExist:
@@ -167,6 +170,11 @@ def managePositions(org, account):
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
+
+    if not currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
 
     positions = (PositionHistory.select()
                                 .where((PositionHistory.department == dept) &
