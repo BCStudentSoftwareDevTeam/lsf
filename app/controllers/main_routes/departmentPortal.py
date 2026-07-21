@@ -115,19 +115,6 @@ def manageMembers(org=None,account=None):
 
 
 
-def supervisorsDbToDict(supervisor):
-    """
-    Given a supervisor object it will return a mapped Dict with supervisor data.
-    """
-    dbToDict =  {'username': usernameFromEmail(supervisor.EMAIL.strip()),
-                'firstName': supervisor.FIRST_NAME.strip(),
-                'lastName': supervisor.LAST_NAME.strip(),
-                'bnumber': supervisor.ID.strip(),
-                'department': supervisor.DEPT_NAME.strip(),
-                'type': 'Supervisor'}
-    return dbToDict
-
-
 
 @main_bp.route('/members/search/<query>',  methods=['GET'])
 def searchMember(query=None):
