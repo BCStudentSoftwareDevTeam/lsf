@@ -186,7 +186,14 @@ def coordinatorSwitch():
     supervisorID = data.get("supervisorID")
     isCoordinator = data.get("isCoordinator")
 
-    member = SupervisorDepartment.get(SupervisorDepartment.supervisor == supervisorID)
+    departmentID = session.get('current_department_id')
+    if not departmentID:
+        return "", 400
+
+    member = SupervisorDepartment.get(
+        (SupervisorDepartment.supervisor == supervisorID) &
+        (SupervisorDepartment.department == departmentID)
+    )
     member.isCoordinator = isCoordinator
     member.save()
 
