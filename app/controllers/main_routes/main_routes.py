@@ -17,6 +17,7 @@ from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.models.positionHistory import PositionHistory
+from app.logic.getPositions import getActivePositions
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -64,19 +65,7 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-        
-    positions = list(PositionHistory.select()
-                    .where(PositionHistory.department == dept, PositionHistory.status == "Active")
-                    .order_by(PositionHistory.positionTitle.asc())) if dept else []
-    positionsList = []
-    posURL = []
-    if positions == []:
-        pass    
-    else:
-        for i in positions:
-            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
-            posURL.append(str(i.positionCode))
-
+    positionsList, posURL = getActivePositions(dept)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
