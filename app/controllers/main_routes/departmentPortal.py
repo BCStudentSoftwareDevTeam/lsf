@@ -23,96 +23,31 @@ from app.logic.banner import Banner
 from flask import abort
 from app.logic.manageMembers import supervisorsDbToDict, currentAcademicYear
 from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
-
-
+from app.logic.manageMembers import getCurrentDepartment,getDepartmentMembers,getReleasedFormIds,getStudentCounts,attachPositionCounts
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
-def manageMembers(org=None,account=None):
-    """
-    Generates the Manage Members page.
-    """
+def manageMembers(org=None, account=None):
+    """Generates the Manage Members page."""
     currentUser = require_login()
-    currentSupervisor = Supervisor.select().where(Supervisor.ID == currentUser.supervisor).get()
     if not currentUser or not currentUser.supervisor:
         if currentUser.student:
-            return redirect(url_for('main.laborhistory',id=currentUser.student.ID))
-
+            return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
         return render_template('errors/403.html'), 403
-    
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-        session['current_department_id'] = dept.departmentID
-        session['current_department'] = dept.DEPT_NAME
-    except (NameError, DoesNotExist):
-        dept = None
-        abort(404)
 
-    members = list( SupervisorDepartment.select(SupervisorDepartment,Supervisor).where(SupervisorDepartment.department == dept).join(Supervisor).dicts())
+    currentSupervisor = Supervisor.get(Supervisor.ID == currentUser.supervisor)
+    dept = getCurrentDepartment(org, account)
 
-    today = date.today()
-    releasedForms = (FormHistory.select(FormHistory.formID).join(LaborReleaseForm)
-        .where(
-            (FormHistory.historyType == "Labor Release Form") &
-            (FormHistory.status == "Approved") &
-            (LaborReleaseForm.releaseDate <= today)
-        )
+    members = getDepartmentMembers(dept)
+    counts = getStudentCounts(dept)
+    members = attachPositionCounts(members, counts)
+
+    return render_template(
+        'main/manageMembers.html',
+        members=members,
+        department=dept,
+        currentSupervisor=currentSupervisor,
+        currentAcademicYear=currentAcademicYear()
     )
-
-    
-    # Conditions used for the studentCount variable
-    activePrimaries = (
-        (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation == True))
-    pendingPrimaries = (
-        (LaborStatusForm.jobType == 'Primary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)))
-    activeSecondaries = (
-        (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation == True))
-    pendingSecondaries = (
-        (LaborStatusForm.jobType == 'Secondary') &
-        (LaborStatusForm.studentConfirmation.is_null(True)))
-
-
-    # This variable is used for the Supervisees column on the
-    # Manage Members page.  
-    studentCount = list(
-        LaborStatusForm.
-        select(
-            fn.SUM(Case(None, ((activePrimaries, 1),), 0)).alias("active_primary_positions"), 
-            fn.SUM(Case(None, ((pendingPrimaries, 1),), 0)).alias("pending_primary_positions"), 
-            fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
-            fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
-            LaborStatusForm.department, 
-            LaborStatusForm.supervisor
-        ).where(
-            # Expired and released positions are not counted! 
-            (LaborStatusForm.department == dept) &
-            (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
-        ).group_by(
-            LaborStatusForm.department, 
-            LaborStatusForm.supervisor
-        ).dicts()
-    )
-
-
-    counts = {(row["department"], row["supervisor"]): row for row in studentCount}
-    for member in members:
-
-        key = (member["department"], member["supervisor"])
-        row = counts.get(key, {})
-
-        member["active_primary_positions"]      = row.get("active_primary_positions", 0)
-        member["pending_primary_positions"]     = row.get("pending_primary_positions", 0)
-        member["active_secondary_positions"]    = row.get("active_secondary_positions", 0)
-        member["pending_secondary_positions"]   = row.get("pending_secondary_positions", 0)
-
-    return render_template('main/manageMembers.html', 
-                           members = members,
-                           department = dept, 
-                           currentSupervisor= currentSupervisor,
-                           currentAcademicYear = currentAcademicYear())
-
 
 
 

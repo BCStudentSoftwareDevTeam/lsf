@@ -50,3 +50,79 @@ def currentAcademicYear():
 
     return currentAcademicYear
 
+def getCurrentDepartment(org, account):
+    """Look up the department by org/account, stash it in session, or 404."""
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        abort(404)
+    session['current_department_id'] = dept.departmentID
+    session['current_department'] = dept.DEPT_NAME
+    return dept
+
+
+def getDepartmentMembers(dept):
+    """Supervisor-department rows for a department, as dicts."""
+    return list(
+        SupervisorDepartment.select(SupervisorDepartment, Supervisor)
+        .where(SupervisorDepartment.department == dept)
+        .join(Supervisor)
+        .dicts()
+    )
+
+
+def getReleasedFormIds():
+    """formIDs for labor release forms already in effect as of today."""
+    today = date.today()
+    return (
+        FormHistory.select(FormHistory.formID)
+        .join(LaborReleaseForm)
+        .where(
+            (FormHistory.historyType == "Labor Release Form") &
+            (FormHistory.status == "Approved") &
+            (LaborReleaseForm.releaseDate <= today)
+        )
+    )
+
+
+def getStudentCounts(dept):
+    """Active/pending primary/secondary position counts, keyed by (dept, supervisor)."""
+    releasedForms = getReleasedFormIds()
+
+    activePrimaries = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == True)
+    pendingPrimaries = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation.is_null(True))
+    activeSecondaries = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation == True)
+    pendingSecondaries = (LaborStatusForm.jobType == 'Secondary') & (LaborStatusForm.studentConfirmation.is_null(True))
+
+    rows = list(
+        LaborStatusForm.select(
+            fn.SUM(Case(None, ((activePrimaries, 1),), 0)).alias("active_primary_positions"),
+            fn.SUM(Case(None, ((pendingPrimaries, 1),), 0)).alias("pending_primary_positions"),
+            fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
+            fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
+            LaborStatusForm.department,
+            LaborStatusForm.supervisor
+        ).where(
+            (LaborStatusForm.department == dept) &
+            (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
+        ).group_by(
+            LaborStatusForm.department, LaborStatusForm.supervisor
+        ).dicts()
+    )
+    return {(row["department"], row["supervisor"]): row for row in rows}
+
+
+def attachPositionCounts(members, counts):
+    """Merge counts onto each member dict, defaulting missing values to 0."""
+    fields = [
+        "active_primary_positions", "pending_primary_positions",
+        "active_secondary_positions", "pending_secondary_positions",
+    ]
+    for member in members:
+        row = counts.get((member["department"], member["supervisor"]), {})
+        for field in fields:
+            member[field] = row.get(field, 0)
+
+    return members
+
+
