@@ -74,33 +74,6 @@ def departmentPortal(org=None,account=None):
     except DoesNotExist:
         allocation = None
     
-    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-                                                            .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
-
-    laborCoordinators = []
-    supervisors = []
-
-    for supervisorDepartment in supervisorDepartments:
-        supervisor = supervisorDepartment.supervisor
-
-        if supervisor is None:
-            continue
-
-        firstName = supervisor.preferred_name or supervisor.legal_name or ""
-        lastName = supervisor.LAST_NAME or ""
-
-        supervisorName = f"{firstName} {lastName}".strip()
-
-        supervisorDisplay = {
-            "name": supervisorName,
-            "email": supervisor.EMAIL
-        }
-
-        if supervisorDepartment.isCoordinator:
-            laborCoordinators.append(supervisorDisplay)
-        else:
-            supervisors.append(supervisorDisplay)
-
     totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar() # Total allocated positions for this department/term, summed across all hour buckets
     usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))]) # Count how many of those positions are currently filled (excludes contract/break-hour forms)
    
