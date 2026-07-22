@@ -20,63 +20,34 @@ from datetime import date
 from flask import g
 from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
 from app.controllers.admin_routes.termManagement import createTerms
+
+
+
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academic_year>', methods=['GET']) # FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) # FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
 # @login_required
-def manage_departments(academic_year = None):
+def manage_departments(academicYear = None):
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
     """
-    print ("######################", g.openTerm.termName, "######################")
+
     try:
-        currentUser = require_login()
-        if not currentUser:                    # If the current user is not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
-            if currentUser.student: # If the currrent user is logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
 
-        if academic_year == None: 
-            academic_year = g.openTerm.termCode
+        checkAdmistratorRights()
+        academicYear = int(academicYear)
 
-        academic_year = int(academic_year)
+        previousAYTerms, currentAYTerms, nextAYTerms = generateTermsForAdjacentYears(academicYear)
+        chosenAY = Term.get(Term.termCode == academicYear)
 
-        if (academic_year != g.openTerm.termCode - 100) and (academic_year != g.openTerm.termCode) and (academic_year != g.openTerm.termCode + 100):
-            return "", 400
-
-        createdTerms = generateTerms(g.openTerm.termCode) #FIXME: Use the selected academic year to create the terms for that year.  This will be a much more efficient way to manage the terms and departments.
-        currentAY = Term.get(Term.termCode == g.openTerm.termCode)
-        print("Current Term:", currentAY.termName)
-
-        createPreviousAY = generateTerms(g.openTerm.termCode - 100)
-        previousAY = createPreviousAY[0]
-        print("Previous Term:", previousAY.termName)
-
-        createNextAY = generateTerms(g.openTerm.termCode + 100)
-        nextAY = createNextAY[0]
-        print("Next Term:", nextAY.termName)
-
-        if academic_year == g.openTerm.termCode - 100: 
-            usedAY = previousAY
-        elif academic_year == g.openTerm.termCode:
-            usedAY = currentAY
-        else: 
-            usedAY = nextAY
         
         # Works. Should work without production data now.
         # We've also thought about having a drop down menu to select the term once the academic year is selected. This should also include the ability to view the entire academic year.
-        # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
-        # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  This will be a much more efficient way to manage the terms and departments.
+        # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the 
+        # departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
+        # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  
+        # This will be a much more efficient way to manage the terms and departments.
         
-        fallTerm = createdTerms[1]
-        springTerm = createdTerms[4]
-        summerTerm = createdTerms[6]
-
-        print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
-        print("******************",previousAY.termName, nextAY.termName, currentAY.termName, "**********************")
 
         # For Testing Purposes.  This will be removed once the term management page is fully implemented and the terms are created for the academic year.
         # totalBreakSum = getUsedBreakHours(currentAY)
@@ -84,30 +55,38 @@ def manage_departments(academic_year = None):
         #     print(row['department'],int(row['totalHours']),row['termCode'])
         #     print(totalBreakSum)
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(usedAY)} 
+
+        # fallTerm = createdTerms[1]
+        # springTerm = createdTerms[4]
+        # summerTerm = createdTerms[6]
+        #
+        # print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
+        # print("******************",previousAY.termName, nextAY.termName, currentAY.termName, "**********************")
+
+
+        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(chosenAY)} 
         # I think Scott wanted this to say NULL not zero, unsure.
 
 
-        activeDepartments = getActiveDepartmentsWithAllocation(usedAY)
+        activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
         inactiveDepartments = Department.select().where(Department.isActive == False)  
         
 
         allocationStatus = {
-            department.departmentID: getAllocationStatus(usedAY, department)
+            department.departmentID: getAllocationStatus(chosenAY, department)
             for department in activeDepartments
         }
 
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
+
         return render_template( 'admin/manageDepartments.html',
-                                #title = ("Manage Departments"),
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
                                 allSupervisors = allSupervisors,
-                                currentAY = currentAY,
-                                previousAY = previousAY,
-                                nextAY = nextAY,
-                                academicYear = usedAY.termName,
-                                # totalBreakSum = totalBreakSum
+                                currentAY = currentAYTerms[0],
+                                previousAY = previousAYTerms[0],
+                                nextAY = nextAYTerms[0],
+                                academicYear = chosenAY.termName,
                                 breakHoursByDepartment = breakHoursByDepartment,
                                 allocationStatus = allocationStatus
                                 )
@@ -132,6 +111,8 @@ def getSupervisorsInDepartment(departmentID):
         supervisors = [model_to_dict(supervisor) for supervisor in supervisors]
         return jsonify(supervisors)
     
+
+
 @admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
 def removeSupervisorFromDepartment():
     try:
@@ -156,6 +137,8 @@ def removeSupervisorFromDepartment():
     except Exception as e:
         print(f'Could not remove user from department: {e}')
         return "", 500
+
+
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
