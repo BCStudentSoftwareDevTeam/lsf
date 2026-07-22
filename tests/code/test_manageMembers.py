@@ -12,6 +12,8 @@ import app.logic.manageMembers as manageMembersLogic
 from datetime import date
 from app.models.term import Term
 from app.models.student import Student
+from app.models.formHistory import FormHistory
+from app.models.laborReleaseForm import LaborReleaseForm
 from app.logic.manageMembers import (
     getCurrentDepartment,
     getDepartmentMembers,
@@ -255,5 +257,112 @@ def test_getStudentCounts_counts_active_and_pending_positions():
         assert row["pending_primary_positions"] == 1
         assert row["active_secondary_positions"] == 1
         assert row["pending_secondary_positions"] == 1
+
+        transaction.rollback()
+        
+@pytest.mark.integration
+def test_getStudentCounts_excludes_released_forms():
+    with mainDB.atomic() as transaction:
+        testFormIds = [9011, 9012]
+        testReleaseFormId = 9011
+
+        # Clean up old test data if the test was run before.
+        FormHistory.delete().where(
+            FormHistory.formID.in_(testFormIds)
+        ).execute()
+
+        LaborReleaseForm.delete().where(
+            LaborReleaseForm.laborReleaseFormID == testReleaseFormId
+        ).execute()
+
+        LaborStatusForm.delete().where(
+            LaborStatusForm.laborStatusFormID.in_(testFormIds)
+        ).execute()
+
+        dept = Department.create(
+            ORG=2115,
+            ACCOUNT="60001",
+            DEPT_NAME="Computer Science Test"
+        )
+
+        supervisor = Supervisor.create(
+            ID="B00000002",
+            PIDM=76,
+            legal_name="Test Supervisor",
+            LAST_NAME="Supervisor",
+            EMAIL="testsupervisor@berea.edu",
+            CPO="None",
+            DEPT_NAME="Computer Science Test"
+        )
+
+        student, created = Student.get_or_create(
+            ID="B90000002",
+            defaults={
+                "PIDM": 900002
+            }
+        )
+
+        term, created = Term.get_or_create(
+            termCode=202500,
+            defaults={
+                "termName": "AY 2025-2026",
+                "termStart": "2025-08-01",
+                "termEnd": "2026-05-01",
+                "termState": 1,
+                "primaryCutOff": "2025-09-01",
+                "adjustmentCutOff": "2025-10-01"
+            }
+        )
+
+        # This form should be counted.
+        LaborStatusForm.create(
+            laborStatusFormID=9011,
+            termCode=term,
+            studentName="Active Student",
+            studentSupervisee=student,
+            supervisor=supervisor,
+            department=dept,
+            jobType="Primary",
+            weeklyHours=10,
+            studentConfirmation=True
+        )
+
+        # This form would normally be counted, but it has an approved release form.
+        LaborStatusForm.create(
+            laborStatusFormID=9012,
+            termCode=term,
+            studentName="Released Student",
+            studentSupervisee=student,
+            supervisor=supervisor,
+            department=dept,
+            jobType="Primary",
+            weeklyHours=10,
+            studentConfirmation=True
+        )
+
+        releaseForm = LaborReleaseForm.create(
+            laborReleaseFormID=testReleaseFormId,
+            conditionAtRelease="satisfactory",
+            releaseDate=date.today(),
+            reasonForRelease="Test release"
+        )
+
+        FormHistory.create(
+            formHistoryID=9012,
+            formID=9012,
+            historyType="Labor Release Form",
+            releaseForm=releaseForm,
+            createdBy=1,
+            createdDate=date.today(),
+            status="Approved"
+        )
+
+        counts = getStudentCounts(dept)
+        row = counts[(dept.departmentID, supervisor.ID)]
+
+        assert row["active_primary_positions"] == 1
+        assert row["pending_primary_positions"] == 0
+        assert row["active_secondary_positions"] == 0
+        assert row["pending_secondary_positions"] == 0
 
         transaction.rollback()
