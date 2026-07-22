@@ -158,8 +158,6 @@ def generateTermsForAdjacentYears(academicYear):
     Generates all ther terms for the current year, the previous year, and the future year. 
     """
 
-    if academicYear == None: 
-        academicYear = g.openTerm.termCode
 
     previousAYCode  = g.openTerm.termCode - 100
     currentAYCode   = g.openTerm.termCode 
