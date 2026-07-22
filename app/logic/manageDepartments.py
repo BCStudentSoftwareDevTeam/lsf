@@ -173,10 +173,3 @@ def generateTermsForAdjacentYears(academicYear):
     NextAYTerms        = generateTerms(nextATCode)
 
     return (PreviousAYTerms, CurrentAYTerms, NextAYTerms)
-
-
-
-def determineChosenTerm(): 
-    """
-    Returns the chosen term. 
-    """
