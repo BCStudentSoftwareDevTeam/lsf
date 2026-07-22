@@ -63,26 +63,41 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
+    if dept and not g.currentUser.isLaborAdmin and dept.departmentID not in [d.departmentID for d in departments]:
+        return render_template('errors/403.html'), 403
+
+    positionsList, posURL = getActivePositions(dept)
+
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept)
 
-@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
-def addUserToDept():
-    userDeptData = request.form
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
+@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
+def managePositions(org, account):
+    currentUser = require_login()
+    if not currentUser or not currentUser.supervisor:
+        return render_template('errors/403.html'), 403
+
     try:
-        if supervisorDeptRecord:
-            return "False"
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
 
-        else:
-            SupervisorDepartment.create(supervisor=userDeptData['supervisorID'], department=userDeptData['departmentID'])
-            return "True"
-    
-    except Exception as e:
-        print(f'Could not add user to department: {e}')
-        return "", 500
+    if not currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
 
+    positions = (PositionHistory.select()
+                                .where((PositionHistory.department == dept) &
+                                       (PositionHistory.status == "Active"))
+                                .order_by(PositionHistory.positionTitle.asc()))
+
+    return render_template('main/managePositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''

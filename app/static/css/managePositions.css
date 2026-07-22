@@ -1,0 +1,33 @@
+.width-12{
+    width:12%;
+}
+.margin-top-10{
+    margin-top:-25px;
+}
+*{
+    /* outline:solid 1px lime; */
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+.department-header{
+    padding:1%;
+    margin-top:-20px;
+}
+
+td{
+    text-align:center !important;
+}/* managePositions.css */
+
+.position-management .width-12 {
+    width: 12%;
+}
+
+.position-management h1 {
+    margin-top: 10px;
+}
+
+.position-management td {
+    text-align: center;
+}
