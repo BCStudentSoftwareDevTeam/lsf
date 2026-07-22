@@ -1,30 +1,16 @@
 import pytest
 from flask import session
-import re
-from datetime import date
-from flask import render_template, request, json, redirect, session, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn, Case
-from functools import reduce
-import operator
-from app.logic.userInsertFunctions import createSupervisorFromTracy
+from werkzeug.exceptions import NotFound
+
+from app import app
+from app.models import mainDB
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
-from app.models.student import Student
-from app.models.laborStatusForm import LaborStatusForm
-from app.models.formHistory import FormHistory
-from app.models.laborReleaseForm import LaborReleaseForm
-from app.models.term import Term
-from app.controllers.admin_routes.allPendingForms import checkAdjustment
-from app.controllers.main_routes import main_bp
-from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
-from app.login_manager import require_login, logout
-from app.logic.getTableData import getDatatableData
-from app.logic.banner import Banner
-from flask import abort
-from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
-
+from app.logic.manageMembers import (
+    getCurrentDepartment,
+    getDepartmentMembers,
+)
 
 @pytest.mark.integration
 def test_getCurrentDepartment():
