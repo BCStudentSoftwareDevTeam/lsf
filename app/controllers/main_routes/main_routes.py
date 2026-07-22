@@ -67,11 +67,10 @@ def departmentPortal(org=None,account=None):
     if dept and not g.currentUser.isLaborAdmin and dept.departmentID not in [d.departmentID for d in departments]:
         return render_template('errors/403.html'), 403
 
-    positionsList, posURL = getActivePositions(dept)
-
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                        department = dept,
+                        )
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
