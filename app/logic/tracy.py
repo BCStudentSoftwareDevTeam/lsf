@@ -142,14 +142,6 @@ class Tracy():
         students = STUDATA.query.filter(STUDATA.ID.like(bnum_search)).all()
         return students
 
-    def getSupervisorsFromBNumberSearch(self, bnum_part: str):
-        """
-        Return a list of supervisors searching by bnumber
-        """
-        bnum_search = bnum_part.strip().upper() + "%"
-        supervisors = STUSTAFF.query.filter(STUSTAFF.ID.like(bnum_search)).all()
-        return supervisors
-
     def checkStudentOrSupervisor(self, username: str):
         """
         Checks if the username belongs to a student or supervisor
