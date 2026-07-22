@@ -19,7 +19,6 @@ class Supervisor(baseModel):
     isBanned        = BooleanField(default=False)
 
 
-
     @property
     def FIRST_NAME(self):
         return self.preferred_name or self.legal_name
