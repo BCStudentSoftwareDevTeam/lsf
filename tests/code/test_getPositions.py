@@ -10,7 +10,7 @@ def test_getActivePositions(): # Test results in duplicate errors.
     
     """
     with mainDB.atomic() as transaction:
-        dept1 = Department.create(departmentID=1, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
+        dept1 = Department.create(departmentID=100, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
 
         position1 = PositionHistory.create(positionTitle="Teaching Assistant", 
                                             positionCode="S34512", 
@@ -74,7 +74,7 @@ def test_checkNoPositionInDepartment(): # Test results in duplicate errors.
     
     """
     with mainDB.atomic() as transaction:
-        dept5 = Department.create(departmentID=2, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
+        dept5 = Department.create(departmentID=101, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
 
         positionsList, posURL = getActivePositions(dept5)
 
@@ -103,10 +103,10 @@ def test_checkNoDepartment(): # Test passes.
 @pytest.mark.integration
 def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
     with mainDB.atomic() as transaction:
-        deptA = Department.create(departmentID=1, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
-        deptB = Department.create(departmentID=2, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
-        deptC = Department.create(departmentID=3, DEPT_NAME="Physics", ACCOUNT="6742", ORG="2116", departmentCompliance=True, isActive=True)
-        deptD = Department.create(departmentID=4, DEPT_NAME="Chemistry", ACCOUNT="6743", ORG="2117", departmentCompliance=True, isActive=True)
+        deptA = Department.create(departmentID=102, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
+        deptB = Department.create(departmentID=103, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
+        deptC = Department.create(departmentID=104, DEPT_NAME="Physics", ACCOUNT="6742", ORG="2116", departmentCompliance=True, isActive=True)
+        deptD = Department.create(departmentID=105, DEPT_NAME="Chemistry", ACCOUNT="6743", ORG="2117", departmentCompliance=True, isActive=True)
         
         position5 = PositionHistory.create(positionTitle="Teaching Assistant", 
                                             positionCode="S34522", 
@@ -119,10 +119,26 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
         position5Dup = PositionHistory.create(positionTitle="Teaching Assistant", # Duplicate active position in the same department (Unsure if this should count as 1 or 2 active positions (Double Check with the team))
                                             positionCode="S34522", 
                                             department=deptA, 
+                                            status="Inactive", 
+                                            wls=4,
+                                            revisionDate="2023-01-01", 
+                                            description="")
+
+        position9 = PositionHistory.create(positionTitle="Teaching Assistant",
+                                            positionCode="S34526", 
+                                            department=deptA, 
                                             status="Active", 
                                             wls=4,
                                             revisionDate="2023-01-01", 
                                             description="")
+
+        # position5DepartmentBCopy = PositionHistory.create(positionTitle="Book Handler", 
+        #                                     positionCode="S34522", 
+        #                                     department=deptB, 
+        #                                     status="Active", 
+        #                                     wls=4,
+        #                                     revisionDate="2023-01-01", 
+        #                                     description="")
         
         position6 = PositionHistory.create(positionTitle="Research Assistant",
                                             positionCode="S34523",
@@ -130,14 +146,6 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
                                             status="Active",
                                             wls=3,
                                             revisionDate="2023-01-01",
-                                            description="")
-        
-        position5DepartmentBCopy = PositionHistory.create(positionTitle="Teaching Assistant", 
-                                            positionCode="S34522", 
-                                            department=deptB, 
-                                            status="Active", 
-                                            wls=4,
-                                            revisionDate="2023-01-01", 
                                             description="")
         
         position7 = PositionHistory.create(positionTitle="Lab Assistant",
@@ -151,7 +159,7 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
         position8 = PositionHistory.create(positionTitle="Intern",
                                             positionCode="S34525",
                                             department=deptD,
-                                            status="Active",
+                                            status="Inactive",
                                             wls=1,
                                             revisionDate="2023-01-01",
                                             description="")
@@ -166,14 +174,18 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
         assert len(posURLA) == 2
         
         # Check if two different departments with the same position title and code are counted as separate active positions for each department.
-        assert len(positionsListB) == 2 # Has a duplicate active position with another department, should still return 2 unique active positions (Organized by Department)
-        assert len(posURLB) == 2
+        assert len(positionsListB) == 1# Has a duplicate active position with another department, should still return 1 unique active positions (Organized by Department)
+        assert len(posURLB) == 1
 
         assert len(positionsListC) == 1
         assert len(posURLC) == 1
 
-        assert len(positionsListD) == 1
-        assert len(posURLD) == 1
+        assert len(positionsListD) == 0
+        assert len(posURLD) == 0
+
+        # Check if the different departments can not have same position code
+        # assert "Book Handler: (WLS 4)" not in positionsListB
+
         
 
         transaction.rollback()
