@@ -19,7 +19,11 @@
 {%if currentSupervisor.isBanned %}
 
 <br></br>
-<div class = "alert alert-danger" role="alert"> The Labor Office has banned you; hence, you can no longer add new students and create new status forms </div> 
+<div class = "alert alert-danger" role="alert"> Your account is currently ineligible to add new students or create new status forms. Please contact the Labor Office for more information.
+ </div> 
+ <script>
+setTimeout(() => document.querySelector('.alert-danger').style.display = 'none', 5000);
+</script>
 {%endif%}
 <br></br>
 
