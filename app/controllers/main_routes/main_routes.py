@@ -16,6 +16,7 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.models.positionHistory import PositionHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
