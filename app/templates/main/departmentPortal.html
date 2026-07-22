@@ -61,7 +61,7 @@
       </div>
       <h4> <b>{% if laborCoordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
       {% if laborCoordinators %}
-        {% for coordinator in laborCoordinators %}
+        {% for coordinator in laborCoordinators[:3] %}
           <p>
             {{ coordinator.name }}
 
@@ -75,17 +75,22 @@
             {% endif %}
           </p>
         {% endfor %}
+        {% if laborCoordinators|length > 3 %}
+              <p>and {{ laborCoordinators|length - 3 }} more...</p>
+        {% endif %}
+
       {% else %}
         <p>None assigned. <a href="#" >Add one?</a> </p> 
         <!-- href will be the link same as view members because we already have the logci to add labor coordinator and supervisor there and we don't want the card to be clsutered -->
           
       {% endif %}
+      
 
     
       <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
 
       {% if supervisors %}
-        {% for s in supervisors[:3] %}
+        {% for s in supervisors[:5] %}
             <p>
               {{ s.name }}
 
@@ -101,8 +106,8 @@
             </p>
             {% endfor %}
 
-            {% if supervisors|length > 3 %}
-              <p>and {{ supervisors|length - 3 }} more...</p>
+            {% if supervisors|length > 5 %}
+              <p>and {{ supervisors|length - 5 }} more...</p>
             {% endif %}
 
 
