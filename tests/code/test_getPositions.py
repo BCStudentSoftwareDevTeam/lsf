@@ -33,7 +33,7 @@ def test_getActivePositions():
                                             department=dept1,
                                             status="Active",
                                             wls=2,
-                                            revisionDate="2023-01-01",
+                                            revisionDate="2026-01-01",
                                             description="") 
 
         position4 = PositionHistory.create(positionTitle="Intern",
@@ -136,14 +136,17 @@ def test_checkPositionDuplicates(): # Test results in duplicate errors.
                                             wls=4,
                                             revisionDate="2023-01-01", 
                                             description="")
-
-        # position5DepartmentBCopy = PositionHistory.create(positionTitle="Book Handler", 
-        #                                     positionCode="S34522", 
-        #                                     department=deptB, 
-        #                                     status="Active", 
-        #                                     wls=4,
-        #                                     revisionDate="2023-01-01", 
-        #                                     description="")
+        
+        # Note: position5DepartmentBCopy intentionally uses a different revisionDate
+        # (2026-01-01) than position5 (2023-01-01) to confirm revisionDate does NOT
+        # factor into which department keeps a contested positionCode.
+        position5DepartmentBCopy = PositionHistory.create(positionTitle="Book Handler", 
+                                            positionCode="S34522", 
+                                            department=deptB, 
+                                            status="Active", 
+                                            wls=4,
+                                            revisionDate="2026-01-01", 
+                                            description="")
         
         position6 = PositionHistory.create(positionTitle="Research Assistant",
                                             positionCode="S34523",
@@ -169,6 +172,7 @@ def test_checkPositionDuplicates(): # Test results in duplicate errors.
                                             revisionDate="2023-01-01",
                                             description="")
         
+        # Get the active positions for each department
         positionsListA, posURLA = getActivePositions(deptA) 
         positionsListB, posURLB = getActivePositions(deptB)
         positionsListC, posURLC = getActivePositions(deptC)
@@ -179,6 +183,7 @@ def test_checkPositionDuplicates(): # Test results in duplicate errors.
         assert len(posURLA) == 2
         
         # Check if two different departments with the same position code are counted as separate active positions for each department.
+        # The position with code "S34522" is active in department A, so it should not be counted as active in department B.
         assert len(positionsListB) == 1
         assert len(posURLB) == 1
 
@@ -187,5 +192,188 @@ def test_checkPositionDuplicates(): # Test results in duplicate errors.
 
         assert len(positionsListD) == 0
         assert len(posURLD) == 0
+
+        # Check that the correct position titles and codes are returned for department B and A (Focused on the contested position code "S34522" due to the duplicate across departments) 
+        assert "Research Assistant: (WLS 3)" in positionsListB
+        assert "Book Handler: (WLS 4)" not in positionsListB
+        assert "Book Handler: (WLS 4)" not in positionsListA
+        assert "S34523" in posURLB
+        assert "S34522" not in posURLB
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_checkPositionClaimOrderIndependentOfDeptOrder(): # FAILS
+    """
+    
+    """
+    with mainDB.atomic() as transaction:
+        deptA = Department.create(departmentID=106, 
+                                  DEPT_NAME="Biology", 
+                                  ACCOUNT="6744", 
+                                  ORG="2118", 
+                                  departmentCompliance=True, 
+                                  isActive=True)
+        
+        deptB = Department.create(departmentID=107, 
+                                  DEPT_NAME="History", 
+                                  ACCOUNT="6745", 
+                                  ORG="2119", 
+                                  departmentCompliance=True, 
+                                  isActive=True)
+
+        # deptB's row is created FIRST
+        positionB = PositionHistory.create(positionTitle="Archivist", 
+                                           positionCode="S99001", 
+                                           department=deptB, 
+                                           status="Active", wls=2, 
+                                           revisionDate="2023-01-01", 
+                                           description="")
+        
+        positionA = PositionHistory.create(positionTitle="Curator", 
+                                           positionCode="S99001", 
+                                           department=deptA, 
+                                           status="Active", 
+                                           wls=2, 
+                                           revisionDate="2023-01-01", 
+                                           description="")
+
+        positionsListA, posURLA = getActivePositions(deptA)
+        positionsListB, posURLB = getActivePositions(deptB)
+
+        # deptB claimed the code first therefore deptA should lose it, not deptB
+        assert len(positionsListA) == 0
+        assert len(positionsListB) == 1
+        assert "Archivist: (WLS 2)" in positionsListB
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_checkDuplicateActiveWithinSameDepartment():
+    """
+    
+    """
+    with mainDB.atomic() as transaction:
+        dept = Department.create(departmentID=108, 
+                                 DEPT_NAME="Art", 
+                                 ACCOUNT="6746", 
+                                 ORG="2120", 
+                                 departmentCompliance=True, 
+                                 isActive=True)
+
+        # Create two active positions with the same code in the same department
+        pos1 = PositionHistory.create(positionTitle="Assistant A", 
+                                      positionCode="S99002", 
+                                      department=dept, 
+                                      status="Active", 
+                                      wls=1, 
+                                      revisionDate="2023-01-01", 
+                                      description="")
+        
+        pos2 = PositionHistory.create(positionTitle="Assistant B", 
+                                      positionCode="S99002", 
+                                      department=dept, 
+                                      status="Active", 
+                                      wls=1, 
+                                      revisionDate="2023-06-01", 
+                                      description="")
+
+        positionsList, posURL = getActivePositions(dept)
+
+        # Only one should be counted despite two Active rows with the same code
+        assert len(positionsList) == 1
+        assert len(posURL) == 1
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_checkThreeWayPositionCodeConflict(): # FAILS
+    """
+
+    """
+    with mainDB.atomic() as transaction:
+        deptA = Department.create(departmentID=109, 
+                                  DEPT_NAME="Physics2", 
+                                  ACCOUNT="6747", 
+                                  ORG="2121", 
+                                  departmentCompliance=True, 
+                                  isActive=True)
+        
+        deptB = Department.create(departmentID=110, 
+                                  DEPT_NAME="Chem2", 
+                                  ACCOUNT="6748", 
+                                  ORG="2122", 
+                                  departmentCompliance=True, 
+                                  isActive=True)
+        
+        deptC = Department.create(departmentID=111, 
+                                  DEPT_NAME="Bio2", 
+                                  ACCOUNT="6749", 
+                                  ORG="2123", 
+                                  departmentCompliance=True, 
+                                  isActive=True)
+
+        # Create three active positions with the same code in different departments
+        posA = PositionHistory.create(positionTitle="First Claim", 
+                                      positionCode="S99003", 
+                                      department=deptA, 
+                                      status="Active", 
+                                      wls=1, 
+                                      revisionDate="2023-01-01", 
+                                      description="")
+        
+        posB = PositionHistory.create(positionTitle="Second Claim", 
+                                      positionCode="S99003", 
+                                      department=deptB, 
+                                      status="Active", 
+                                      wls=1, 
+                                      revisionDate="2023-01-01", 
+                                      description="")
+        
+        posC = PositionHistory.create(positionTitle="Third Claim", 
+                                      positionCode="S99003", 
+                                      department=deptC, 
+                                      status="Active", 
+                                      wls=1, 
+                                      revisionDate="2023-01-01", 
+                                      description="")
+
+        listA, urlA = getActivePositions(deptA)
+        listB, urlB = getActivePositions(deptB)
+        listC, urlC = getActivePositions(deptC)
+
+        assert len(listA) == 1  # only the first-created claim survives
+        assert len(listB) == 0
+        assert len(listC) == 0
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_checkInactiveElsewhereDoesNotBlockActiveClaim():
+    with mainDB.atomic() as transaction:
+        deptA = Department.create(departmentID=114, DEPT_NAME="Geology", ACCOUNT="6752", ORG="2126", departmentCompliance=True, isActive=True)
+        deptB = Department.create(departmentID=115, DEPT_NAME="Astronomy", ACCOUNT="6753", ORG="2127", departmentCompliance=True, isActive=True)
+
+        # Create an inactive position in deptA and an active position in deptB with the same code
+        PositionHistory.create(positionTitle="Old Role", 
+                               positionCode="S99005", 
+                               department=deptA, 
+                               status="Inactive", 
+                               wls=1, 
+                               revisionDate="2020-01-01", 
+                               description="")
+        
+        PositionHistory.create(positionTitle="Current Role", 
+                               positionCode="S99005", 
+                               department=deptB, 
+                               status="Active", 
+                               wls=1, 
+                               revisionDate="2023-01-01", 
+                               description="")
+
+        listB, urlB = getActivePositions(deptB)
+
+        # deptA's row is Inactive, so it should never block deptB's Active claim
+        assert len(listB) == 1
+        assert "Current Role: (WLS 1)" in listB
 
         transaction.rollback()
