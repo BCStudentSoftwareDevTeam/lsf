@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn
+from peewee import JOIN, DoesNotExist
 from flask_bootstrap import forms
 from functools import reduce
 import operator
@@ -17,6 +17,7 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.allocation_utilization import get_department_allocation_summary
 from app.models.allocation import Allocation
 from app.logic.tracy import Tracy
 from app.models.positionHistory import PositionHistory
@@ -77,32 +78,17 @@ def departmentPortal(org=None,account=None):
     except DoesNotExist:
         allocation = None
     
-    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == term_code).scalar() # Total allocated positions for this department/term, summed across all hour buckets
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.contractHours.is_null(True))]) # Count how many of those positions are currently filled (excludes contract/break-hour forms)
-   
-    def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
-    
-    usedPositions = {
-    "used_10": count_workers("Primary", "10"),
-    "used_12": count_workers("Primary", "12"),
-    "used_15": count_workers("Primary", "15"),
-    "used_20": count_workers("Primary", "20"),
-    "used_5_sec": count_workers("Secondary", "5"),
-    "used_10_sec": count_workers("Secondary", "10"),
-}
-    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.contractHours.is_null(False))
-    sumBreak = sum(form.contractHours or 0 for form in break_allocation)
+    allocation_summary = get_department_allocation_summary(dept, term_code)
     
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            allocation = allocation,
-                           total_allocation = totalPositions,
-                           used_allocation = usedAllocation,
+                           total_allocation = allocation_summary["total_positions"],
+                           used_allocation = allocation_summary["used_allocation"],
                            term = open_term,
-                           usedPositions = usedPositions,
-                           break_hours = sumBreak,
+                           usedPositions = allocation_summary["used_positions"],
+                           break_hours = allocation_summary["break_hours"],
                            )
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
