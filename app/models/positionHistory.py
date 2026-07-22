@@ -6,10 +6,10 @@ class PositionHistory(baseModel):
     positionCode       = CharField()
     department         = ForeignKeyField(Department)
     status             = CharField()
-    WLS                = IntegerField()
-    revisiondate       = DateField()
-    Description        = TextField(default=None)
-    Department         = ForeignKeyField(Department)
+    wls                = IntegerField()
+    revisionDate       = DateField()
+    description        = TextField(default=None)
 
     class Meta:
-        primary_key = CompositeKey('positioncode', 'revisiondate', 'status')
+        indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
+

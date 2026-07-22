@@ -17,11 +17,11 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.allocation import Allocation 
-from app.models.positionHistory import PositionHistory 
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
-
+from app.models.positionHistory import PositionHistory      
+# from app.models.ActivePosition import ActivePosition
+ 
 print("Inserting data for demo and testing purposes")
 
 #############################
@@ -139,8 +139,9 @@ localStudents = [
                 {"ID": "B00815474", "legal_name": "Julius Fritz", "isActive": True, "PIDM": "9", "FIRST_NAME": "Julius", "LAST_NAME": "Fritz"},
                 {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
                 {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
-                {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"}
-        ]
+                {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"},
+                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"}
+                ]
 tracyStudents = [
                 {
                 "ID":"B00785329",
@@ -569,55 +570,19 @@ terms = [
         "adjustmentCutOff": f"{2026}-10-01",
     },
     {
-        "termCode": f"{2025}00",
-        "termName": f"AY {2025}-{2025+1}",
-        "termStart": f"{2025}-08-01",
-        "termEnd": f"{2025+1}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025}-09-01",
-        "adjustmentCutOff": f"{2025}-09-01",
-    },
-    {
-        "termCode": f"{2025-1}00",
-        "termName": f"AY {2025-1}-{2025}",
-        "termStart": f"{2025-1}-08-01",
-        "termEnd": f"{2025}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-1}-09-01",
-        "adjustmentCutOff": f"{2025-1}-09-01",
-    },
-    {
-        "termCode": f"{2025-2}00",
-        "termName": f"AY {2025-2}-{2025-1}",
-        "termStart": f"{2025-2}-08-01",
-        "termEnd": f"{2025-1}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-2}-09-01",
-        "adjustmentCutOff": f"{2025-2}-09-01",
-    },
-    {
-        "termCode": f"{2025-3}00",
-        "termName": f"AY {2025-3}-{2025-2}",
-        "termStart": f"{2025-3}-08-01",
-        "termEnd": f"{2025-2}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-3}-09-01",
-        "adjustmentCutOff": f"{2025-3}-09-01",
-    },
-    {
-        "termCode": f"{2025-4}00",
-        "termName": f"AY {2025-4}-{2025-3}",
-        "termStart": f"{2025-4}-08-01",
-        "termEnd": f"{2025-3}-05-01",
+        "termCode": f"202500",
+        "termName": f"AY 2025-2026",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
         "termState": 1,
         "primaryCutOff": f"{2025-4}-09-01",
         "adjustmentCutOff": f"{2025-4}-09-01",
     },
     {
-        "termCode": f"{2025}01",
-        "termName": f"Thanksgiving Break {2025}",
-        "termStart": f"{2025}-08-01",
-        "termEnd": f"{2025+1}-05-01",
+        "termCode": f"202501",
+        "termName": f"Thanksgiving Break 2025",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
         "termState": 0,
         "primaryCutOff": f"{2025}-09-01",
         "adjustmentCutOff": f"{2025}-09-01",
@@ -626,13 +591,11 @@ terms = [
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(f" * terms for {current_year}-{current_year+1} added")
+print(f" * terms for 2025-2026 added")
 
 #############################
 # Create a Pending Labor Status Form
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
@@ -656,8 +619,8 @@ FormHistory.insert([{
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"{current_year}-04-14",
-            "status_id": "Approved"
+            "createdDate": f"2025-04-14",
+            "status": "Pending"
         }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
@@ -802,33 +765,25 @@ FormHistory.insert([{
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
             "status_id": "Approved"
-        }]).on_conflict_replace().execute() 
-
+        }]).on_conflict_replace().execute()  
 
 LaborStatusForm.insert([{
-            "laborStatusFormID": 6,
+    
+            "laborStatusFormID": 9,
             "termCode_id": f"202500",
-            "studentName": "Guillermo Adams",
-            "studentSupervisee_id": "B00734292",
-            "supervisor_id": "B12365892",
+            "studentName": "Genji Overwatch",
+            "studentSupervisee_id": "B12345756",
+            "supervisor_id": "B12361006",
             "department_id": 1,
             "jobType": "Primary",
             "WLS": 1,
-            "POSN_TITLE": "Labor Workers",
-            "POSN_CODE": "S61439",
-            "weeklyHours": 10,
+            "POSN_TITLE": "overwtahc guy",
+            "POSN_CODE": "S61410",
+            "contractHours": 15,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
-        }]).on_conflict_replace().execute()  
-
-FormHistory.insert([{
-            "formHistoryID": 6,
-            "formID_id": "6",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()      
+        
+        }]).on_conflict_replace().execute()
 
 
 
@@ -861,7 +816,7 @@ print(" * laborOfficeNotes added")
 # Departement Members 
 ##############################
 
-department_members = [
+supervisorDepartmentMembers = [
     {
         "supervisor": "B12361006",
         "department": 1,
@@ -893,17 +848,18 @@ department_members = [
     }
 ]
 
-SupervisorDepartment.insert_many(department_members).on_conflict_replace().execute()
+SupervisorDepartment.insert_many(supervisorDepartmentMembers).on_conflict_replace().execute()
 print(" * Department members added")
+print(f"termCode_id being used: {202500!r}")
 
 ############################
 # Allocation Dummy Data:
 ###########################
 allocations = [ 
     {
-    "termCode":         202200,
+    "termCode":         202500,
     "department":       3,
-    "isFinal":       False,
+    "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -916,9 +872,9 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":        202300,
+    "termCode":        202500,
     "department":       2,
-    "isFinal":       False,
+    "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -933,7 +889,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       1,
-    "isFinal":       False,
+    "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -948,7 +904,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isFinal":       False,
+    "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -963,7 +919,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isFinal":      False,
+    "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -1000,7 +956,7 @@ allocation =[
                     "termCode":f"{2025}00",
                     "department": 2,
                     "isFinal": False,
-                    "approvedOn": f"{2025 }-06-20",
+                    "approvedOn": f"{2025}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
                     "primary_10": 1,
@@ -1014,60 +970,156 @@ allocation =[
             ]
 Allocation.insert_many(allocation).on_conflict_replace().execute()
 print(" * allocation added")
-print(PositionHistory())
-print(" * allocation added")
 
 
 #############################
 # Position History
 #############################
 
-positionhistory = [
+positionHistory = [
     {
+        "positionTitle": "Student Programmer",
         "positionCode": "S61407",
+        "department": 1,
         "status": "Active",
         "wls": 1,
-        "revisionDate": f"{current_year}-07-01",
+        "revisionDate": f"2026-07-01",
+        "revisionDate": "2025-07-01",
         "description": "",
-        "department": 1
+        
     },
     {
-        
+        "positionTitle": "Research Associate",
+        "positionTitle": "Research Associate",
         "positionCode": "S61408",
+        "department": 1,
         "status": "Active",
         "wls": 2,
-        "revisionDate": f"{current_year}-09-01",
+        "revisionDate": f"2026-09-01",
+        "revisionDate": "2025-09-01",
         "description": "",
-        "department": 1
     },
     {
+        "positionTitle": "Labor Workers",
         "positionCode": "S61409",
+        "department": 1, 
         "status": "Active",
         "wls": 3,
-        "revisionDate": f"{current_year}-07-01",
+        "revisionDate": f"2026-07-01",
         "description": "",
-        "department": 1
+        
     },
     {
+         "positionTitle": "Teaching Associate",
         "positionCode": "S61411",
+        "department": 1,
         "status": "Active",
         "wls":3,
-        "revisionDate" : f"{current_year}-01-01",
+        "revisionDate" : f"2026-01-01",
         "description": "",
-        "department" : 1
+    
 
         },
         {
+        "positionTitle": "Teaching Associate",
+    },
+    {
+        "positionTitle": "Teaching Associate",
         "positionCode": "S61410",
+        "department": 1,
         "status": "Inactive",
         "wls":2,
-        "revisionDate" : f"{current_year}-01-01",
+        "revisionDate" : f"2026-01-01",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"2026-03-29",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-23",
         "description": "",
         "department" : 1
-        },
+    },
+    {
+        "positionTitle": "Junior Data Analyst",
+        "positionCode": "S39568",
+        "status": "Active",
+        "wls":4,
+        "revisionDate" : f"2026-01-31",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Student Manager",
+        "positionCode": "S74933",
+        "status": "Active",
+        "wls":5,
+        "revisionDate" : f"2026-04-01",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "IT Technician",
+        "positionCode": "S94932",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Human code generator",
+        "positionCode": "S22222",
+        "status": "Active",
+        "wls":1,
+        "revisionDate" : f"2026-05-03",
+        "revisionDate" : "2025-01-01",
+        "description": "",
     
+        },
+        {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : "2025-03-29",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : "2025-01-23",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Senior Software Engineer",
+        "positionCode": "S00000",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    }
+    
+    
+
 ]
-PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 
 dummy_lsf = [
     {
@@ -1146,6 +1198,7 @@ dummy_lsf = [
             "weeklyHours": 5,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
-        },
+        }
 ]
 LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()
+print(" * position history added")

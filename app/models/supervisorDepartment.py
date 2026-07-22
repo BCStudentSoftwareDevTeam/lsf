@@ -6,5 +6,3 @@ class SupervisorDepartment(baseModel):
     supervisor = ForeignKeyField(Supervisor)
     department = ForeignKeyField(Department)
     isCoordinator = BooleanField(default=False)
-
-

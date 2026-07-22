@@ -1,12 +1,12 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from flask_bootstrap import forms
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
 from app.models.allocation import Allocation
 from app.models.department import Department
 from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.supervisorDepartment import SupervisorDepartment    
 from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
@@ -20,6 +20,8 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createSupervisorFromTracy
+from app.models.positionHistory import PositionHistory
+
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -60,28 +62,42 @@ def departmentPortal(org=None,account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    
-    pos = Tracy().getPositionsFromDepartment(org, account)
-    positions = []
-    if pos == []:
-        positions = ["No Positions for this Department"]
-    else:
-        for i in pos:
-            positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
-
-    staff = Tracy().getSupervisors()
-    supervisors = []
-    
+     
     try:
         allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
-        
     except DoesNotExist:
         allocation = None
+    
+    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+
+    laborCoordinators = []
+    supervisors = []
+
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
+
+        if supervisor is None:
+            continue
+
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        supervisorName = f"{firstName} {lastName}".strip()
+
+        supervisorDisplay = {
+            "name": supervisorName,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
     
     ViewAllocations(org, account)
     totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
@@ -142,12 +158,16 @@ def departmentPortal(org=None,account=None):
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
     try:
+        currentUser = require_login()
+        if not currentUser or not currentUser.supervisor:
+            return render_template('errors/403.html'), 403
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-
-    positions = Tracy().getPositionsFromDepartment(org, account)
-    print(positions)
+    print("THIS IS Dept:", dept)
+    
+    positions = PositionHistory.select().where((PositionHistory.department == dept) & (PositionHistory.status == "Active")).order_by(PositionHistory.positionTitle.asc())
+    
     return render_template('main/managepositions.html',
                            department = dept,
                            department_name = dept.DEPT_NAME,

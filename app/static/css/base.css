@@ -254,6 +254,7 @@ a {
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
   
+  margin-top: auto;
 }
 
 .card-footer:last-child {
@@ -267,6 +268,10 @@ a {
 .card-img-top {
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px);
+}
+
+.members-icon {
+  font-size: 36px;
 }
 .site-footer {
   position: fixed;
