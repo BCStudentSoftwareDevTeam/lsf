@@ -7,8 +7,7 @@ if [ "$1" != "test" ] && [ "$1" != "from-backup" ]; then
 	exit 1;
 fi
 
-cd database;
-                      
+cd database;                     
 PRODUCTION=0
 if [ "`hostname`" == 'lsf.berea.edu' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
@@ -45,7 +44,7 @@ else
 fi
 
 if [ $PRODUCTION -ne 1 ]; then
-	./migrate_db_tracy.sh                                                      
+	./migrate_db_tracy.sh                                      
 fi
 
 rm -rf lsf_migrations
