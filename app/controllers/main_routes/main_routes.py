@@ -55,6 +55,9 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    open_term = g.openTerm
+    term_code = open_term.termCode
+
     if org and account:
         try:
             dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
@@ -70,15 +73,15 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     try:
-        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == term_code).get()
     except DoesNotExist:
         allocation = None
     
-    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar() # Total allocated positions for this department/term, summed across all hour buckets
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))]) # Count how many of those positions are currently filled (excludes contract/break-hour forms)
+    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == term_code).scalar() # Total allocated positions for this department/term, summed across all hour buckets
+    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.contractHours.is_null(True))]) # Count how many of those positions are currently filled (excludes contract/break-hour forms)
    
     def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
+        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
     
     usedPositions = {
     "used_10": count_workers("Primary", "10"),
@@ -88,7 +91,7 @@ def departmentPortal(org=None,account=None):
     "used_5_sec": count_workers("Secondary", "5"),
     "used_10_sec": count_workers("Secondary", "10"),
 }
-    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == term_code, LaborStatusForm.contractHours.is_null(False))
     sumBreak = sum(form.contractHours or 0 for form in break_allocation)
     
     return render_template('main/departmentPortal.html', 
@@ -97,7 +100,7 @@ def departmentPortal(org=None,account=None):
                            allocation = allocation,
                            total_allocation = totalPositions,
                            used_allocation = usedAllocation,
-                           term = g.openTerm.termName,
+                           term = open_term,
                            usedPositions = usedPositions,
                            break_hours = sumBreak,
                            )
