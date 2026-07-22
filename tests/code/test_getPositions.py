@@ -349,6 +349,9 @@ def test_checkThreeWayPositionCodeConflict(): # FAILS
 
 @pytest.mark.integration
 def test_checkInactiveElsewhereDoesNotBlockActiveClaim():
+    """
+    
+    """
     with mainDB.atomic() as transaction:
         deptA = Department.create(departmentID=114, DEPT_NAME="Geology", ACCOUNT="6752", ORG="2126", departmentCompliance=True, isActive=True)
         deptB = Department.create(departmentID=115, DEPT_NAME="Astronomy", ACCOUNT="6753", ORG="2127", departmentCompliance=True, isActive=True)

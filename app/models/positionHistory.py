@@ -11,5 +11,5 @@ class PositionHistory(baseModel):
     description        = TextField(default=None)
 
     class Meta:
-        indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
+        indexes = ( (('positionCode', 'revisionDate', 'status'), False), )
 
