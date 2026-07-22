@@ -55,7 +55,7 @@ def departmentPortal(org=None,account=None):
     currentUser = g.currentUser
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
+    except (NameError, DoesNotExist):
         dept = None
 
     if currentUser.isLaborAdmin:

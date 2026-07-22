@@ -5,8 +5,16 @@ from peewee import fn
 
 
 def buildSupervisorDisplay(supervisor):
-    firstName = supervisor.preferred_name or supervisor.legal_name or ""
-    lastName = supervisor.LAST_NAME or ""
+    try:
+        firstName = supervisor.FIRST_NAME 
+        lastName = supervisor.LAST_NAME
+        if not (firstName and lastName):
+            print("First name and last name are required////////////////////////////////////////////////////////////////////////////////////////////")
+            raise NameError("First name and last name are required")
+
+    except NameError as e:
+        print(e)
+        return None
 
     return {
         "name": f"{firstName} {lastName}".strip(),
@@ -29,6 +37,9 @@ def getSupervisors(dept):
                 continue
 
             supervisorDisplay = buildSupervisorDisplay(supervisor)
+
+            if not supervisorDisplay:
+                continue
 
             if supervisorDepartment.isCoordinator:
                 laborCoordinators.append(supervisorDisplay)
