@@ -4,8 +4,25 @@ from app.models.formHistory import *
 from app.models.allocation import *
 from app.models.department import *
 from app.models.term import *
+from app.login_manager import require_login
 from app.controllers.main_routes import departmentPortal
+from flask import g, abort
 from peewee import fn
+
+
+def checkAdmistratorRights():
+    """
+    Checks whether the current user has administrator rights to view the page.  
+    """
+    currentUser = require_login()
+    if not currentUser:                    # If the current user is not logged in
+        return render_template('errors/403.html')
+    if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
+        if currentUser.student: # If the currrent user is logged in as a student
+            return redirect('/laborHistory/' + currentUser.student.ID)
+        elif currentUser.supervisor:
+            return render_template('errors/403.html'), 403
+
 
 
 def getUsedBreakHours(term):
@@ -47,6 +64,7 @@ def getUsedBreakHours(term):
     return totalBreakSum
 
 
+
 def getActiveDepartmentsWithAllocation(term):
     """
     Returns a list of active departments with allocations for the given term.
@@ -79,6 +97,8 @@ def getActiveDepartmentsWithAllocation(term):
 
     return activeDepartments
 
+
+
 def getAllocationStatus(term, department):
     """
     Returns the allocation status for a given department during a given term.
@@ -98,6 +118,8 @@ def getLSFCountPrimaries(currentTerm, department):
     lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
     return lsfCountPrimaries
 
+
+
 def getLSFCountSecondaries(currentTerm, department):
     """
     Returns the count of secondary LSFs for a given department during a given term. (WIP)
@@ -105,13 +127,19 @@ def getLSFCountSecondaries(currentTerm, department):
     lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
     return lsfCountSecondaries
 
+
+
 # def getTotalPositionHours
+
+
 
 # def getCurrentSelectedTerm(currentTerm):
     #'''
     #Returns the current term code based on a the selected term from a dropdown menu in the manage departments page.
     #Should only contain the current term, the next term, and the previous term.
     #'''
+
+
 
 def generateTerms(termCode):
     """
@@ -121,4 +149,34 @@ def generateTerms(termCode):
     # Truncating term codes to hundreds. That's how we get the academic year. 
     academicYearCode = (termCode // 100)
     
-    return createTerms(academicYearCode)    
+    return createTerms(academicYearCode)   
+
+
+
+def generateTermsForAdjacentYears(academicYear): 
+    """
+    Generates all ther terms for the current year, the previous year, and the future year. 
+    """
+
+    if academicYear == None: 
+        academicYear = g.openTerm.termCode
+
+    previousAYCode  = g.openTerm.termCode - 100
+    currentAYCode   = g.openTerm.termCode 
+    nextATCode      = g.openTerm.termCode + 100
+
+    if (academicYear != previousAYCode) and (academicYear != currentAYCode) and (academicYear != nextATCode):
+        abort(400)
+
+    PreviousAYTerms    = generateTerms(previousAYCode)
+    CurrentAYTerms     = generateTerms(currentAYCode) 
+    NextAYTerms        = generateTerms(nextATCode)
+
+    return (PreviousAYTerms, CurrentAYTerms, NextAYTerms)
+
+
+
+def determineChosenTerm(): 
+    """
+    Returns the chosen term. 
+    """
