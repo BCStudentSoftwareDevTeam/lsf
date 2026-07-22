@@ -5,9 +5,9 @@ from app.models.positionHistory import PositionHistory
 from app.logic.getPositions import getActivePositions
 
 @pytest.mark.integration
-def test_getActivePositions(): # Test results in duplicate errors.
+def test_getActivePositions():
     """
-    
+    Test to check if the getActivePositions function in getPositions.py correctly retrieves active positions for a single department.
     """
     with mainDB.atomic() as transaction:
         dept1 = Department.create(departmentID=100, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
@@ -69,9 +69,10 @@ def test_getActivePositions(): # Test results in duplicate errors.
         transaction.rollback()
 
 @pytest.mark.integration
-def test_checkNoPositionInDepartment(): # Test results in duplicate errors.
+def test_checkNoPositionInDepartment(): 
     """
-    
+    Checks the behavior of getActivePositions when there are no positions in the department.
+    It should return empty lists for both positionsList and posURL, indicating that no positions are available for the department.
     """
     with mainDB.atomic() as transaction:
         dept5 = Department.create(departmentID=101, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
@@ -88,7 +89,8 @@ def test_checkNoPositionInDepartment(): # Test results in duplicate errors.
 @pytest.mark.integration
 def test_checkNoDepartment(): # Test passes.
     """
-    
+    Checks the behavior of getActivePositions when the department is None. 
+    It should return empty lists for both positionsList and posURL, indicating that no positions are available for a non-existent department.
     """
 # checks when dept is None (that is similar to when Department.get raises DoesNotExist)
     with mainDB.atomic() as transaction:
@@ -101,7 +103,10 @@ def test_checkNoDepartment(): # Test passes.
         transaction.rollback()
 
 @pytest.mark.integration
-def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
+def test_checkPositionDuplicates(): # Test results in duplicate errors.
+    """
+    Test to check if the function correctly handles duplicate position codes within the same department and duplicate elements across different departments.
+    """
     with mainDB.atomic() as transaction:
         deptA = Department.create(departmentID=102, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
         deptB = Department.create(departmentID=103, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
@@ -116,7 +121,7 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
                                             revisionDate="2023-01-01", 
                                             description="")
         
-        position5Dup = PositionHistory.create(positionTitle="Teaching Assistant", # Duplicate active position in the same department (Unsure if this should count as 1 or 2 active positions (Double Check with the team))
+        position5Dup = PositionHistory.create(positionTitle="Teaching Assistant", # Duplicate position from the same department, but with a different status (Inactive).
                                             positionCode="S34522", 
                                             department=deptA, 
                                             status="Inactive", 
@@ -170,11 +175,11 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
         positionsListD, posURLD = getActivePositions(deptD)
 
         # Check that the correct number of active positions are returned for each department
-        assert len(positionsListA) == 2 # Has a duplicate active position, should return 2 unique active positions 
+        assert len(positionsListA) == 2 # Has a duplicate position name, should return 2 unique active positions due to unique position codes. 
         assert len(posURLA) == 2
         
-        # Check if two different departments with the same position title and code are counted as separate active positions for each department.
-        assert len(positionsListB) == 1# Has a duplicate active position with another department, should still return 1 unique active positions (Organized by Department)
+        # Check if two different departments with the same position code are counted as separate active positions for each department.
+        assert len(positionsListB) == 1
         assert len(posURLB) == 1
 
         assert len(positionsListC) == 1
@@ -182,10 +187,5 @@ def test_checkPositionAcrossDepartments(): # Test results in duplicate errors.
 
         assert len(positionsListD) == 0
         assert len(posURLD) == 0
-
-        # Check if the different departments can not have same position code
-        # assert "Book Handler: (WLS 4)" not in positionsListB
-
-        
 
         transaction.rollback()
