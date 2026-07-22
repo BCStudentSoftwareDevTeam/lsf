@@ -87,7 +87,7 @@ def test_checkNoPositionInDepartment():
 
 # what if there the department is None?
 @pytest.mark.integration
-def test_checkNoDepartment(): # Test passes.
+def test_checkNoDepartment():
     """
     Checks the behavior of getActivePositions when the department is None. 
     It should return empty lists for both positionsList and posURL, indicating that no positions are available for a non-existent department.
@@ -103,7 +103,7 @@ def test_checkNoDepartment(): # Test passes.
         transaction.rollback()
 
 @pytest.mark.integration
-def test_checkPositionDuplicates(): # Test results in duplicate errors.
+def test_checkPositionDuplicates():
     """
     Test to check if the function correctly handles duplicate position codes within the same department and duplicate elements across different departments.
     """
@@ -202,9 +202,10 @@ def test_checkPositionDuplicates(): # Test results in duplicate errors.
         transaction.rollback()
 
 @pytest.mark.integration
-def test_checkPositionClaimOrderIndependentOfDeptOrder(): # FAILS
+def test_checkPositionClaimOrderIndependentOfDeptOrder():
     """
-    
+    Checks that the order of department creation does not affect which department receives a contested position code.
+    The department that created the position first (based on the auto-incrementing ID) should be the one that retains the active position, regardless of the order in which departments were created.
     """
     with mainDB.atomic() as transaction:
         deptA = Department.create(departmentID=106, 
@@ -250,7 +251,8 @@ def test_checkPositionClaimOrderIndependentOfDeptOrder(): # FAILS
 @pytest.mark.integration
 def test_checkDuplicateActiveWithinSameDepartment():
     """
-    
+    Checks that if the same department has two active positions with the same position code, only one of them is counted in the results.
+    This test ensures that the function correctly filters out duplicates based on position code within the same department
     """
     with mainDB.atomic() as transaction:
         dept = Department.create(departmentID=108, 
@@ -286,9 +288,10 @@ def test_checkDuplicateActiveWithinSameDepartment():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_checkThreeWayPositionCodeConflict(): # FAILS
+def test_checkThreeWayPositionCodeConflict():
     """
-
+    Checks that if three different departments have active positions with the same position code, 
+    only the department that created the position first (based on the auto-incrementing ID) retains the active position.
     """
     with mainDB.atomic() as transaction:
         deptA = Department.create(departmentID=109, 
@@ -350,7 +353,7 @@ def test_checkThreeWayPositionCodeConflict(): # FAILS
 @pytest.mark.integration
 def test_checkInactiveElsewhereDoesNotBlockActiveClaim():
     """
-    
+    Checks that if a department has an inactive position with a certain position code, it does not block another department from claiming that position code as active.
     """
     with mainDB.atomic() as transaction:
         deptA = Department.create(departmentID=114, DEPT_NAME="Geology", ACCOUNT="6752", ORG="2126", departmentCompliance=True, isActive=True)
