@@ -14,8 +14,8 @@ details = {
 pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=7.4;'.format(details['server'],details['db'],details['user'],details['password'])
 pyconn = pyodbc.connect(pyodbc_uri)
 c = pyconn.cursor()
-for row in c.execute("select * from STUDATA where ID like '%B00766883%'"):
-#for row in c.execute("select * from STUPOSN"):
+#for row in c.execute("select * from STUDATA where ID like '%B00815333%'"):
+for row in c.execute("select * from STUPOSN"):
     print("PYODBC:",row)
     break
 
