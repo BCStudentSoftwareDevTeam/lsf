@@ -9,11 +9,9 @@ def buildSupervisorDisplay(supervisor):
         firstName = supervisor.FIRST_NAME 
         lastName = supervisor.LAST_NAME
         if not (firstName and lastName):
-            print("First name and last name are required////////////////////////////////////////////////////////////////////////////////////////////")
             raise NameError("First name and last name are required")
 
     except NameError as e:
-        print(e)
         return None
 
     return {
