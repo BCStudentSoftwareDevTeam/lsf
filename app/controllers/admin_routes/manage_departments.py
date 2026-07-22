@@ -25,8 +25,9 @@ from app.controllers.admin_routes.termManagement import createTerms
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) # FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
+
 # @login_required
-def manage_departments(academicYear = None):
+def manage_departments(academicYear = 202500):
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
