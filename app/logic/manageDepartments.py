@@ -6,7 +6,7 @@ from app.models.department import *
 from app.models.term import *
 from app.login_manager import require_login
 from app.controllers.main_routes import departmentPortal
-from flask import g, abort
+from flask import g, abort, render_template
 from peewee import fn
 
 
@@ -15,13 +15,19 @@ def checkAdmistratorRights():
     Checks whether the current user has administrator rights to view the page.  
     """
     currentUser = require_login()
+
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
+
+    if currentUser.isLaborAdmin:       # If the currrent user is an admin
+        return "", 500
+    else: 
         if currentUser.student: # If the currrent user is logged in as a student
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
+
+    
 
 
 

@@ -12,6 +12,7 @@ from app.logic.manageDepartments import *
 from werkzeug.exceptions import BadRequest
 from unittest.mock import patch
 from app.controllers.admin_routes.manage_departments import manage_departments
+from flask import g, render_template
 
 
 # The following test file is for testing the manageDepartments logic file and its associated functions and queries. 
@@ -121,15 +122,29 @@ def test_ManageDepartmentsPrimaryandSecondary():
 
 @pytest.mark.integration
 def test_checkAdmistratorRights():
-    with app.test_request_context(), patch("app.login_manager.require_login", return_value="pearcej"):
-
-        response, status  = checkAdmistratorRights()
-        assert status == 403
+    with app.test_request_context(), mainDB.atomic() as transaction: 
+        user, _ = User.get_or_create(username = "pearcej", defaults={"isLaborAdmin": False})
+        with patch("app.login_manager.require_login", return_value=user):
+            response, status  = checkAdmistratorRights()
+            assert status == 4032
+        transaction.rollback()
     
-    with app.test_request_context(), patch("app.login_manager.require_login", return_value="samantha"):
+    with app.test_request_context(), mainDB.atomic() as transaction: 
+        user, _  = User.get_or_create(username = "samantha", defaults={"isLaborAdmin": True})
+        with patch("app.login_manager.require_login", return_value=user):
+            response, status  = checkAdmistratorRights()
+            assert status == 500
+        transaction.rollback()
 
-        response, status  = checkAdmistratorRights()
-        assert status == 403
+    with app.test_request_context(), mainDB.atomic() as transaction: 
+        user = None
+        with patch("app.login_manager.require_login", return_value=user):
+            response, status  = checkAdmistratorRights()
+            assert status == 403
+        transaction.rollback()
+    
+    
+    
 
 @pytest.mark.integration
 def test_getUsedBreakHours():
@@ -155,6 +170,7 @@ def test_getLSFCountSecondaries():
 @pytest.mark.integration
 def test_generateTermsForAdjacentYears():
     with app.app_context():
+        g.openTerm.termCode = 2026
         assert generateTermsForAdjacentYears(g.openTerm.termCode) == (generateTerms(g.openTerm.termCode - 100), generateTerms(g.openTerm.termCode), generateTerms(g.openTerm.termCode + 100))
         assert generateTermsForAdjacentYears(g.openTerm.termCode-100) == (generateTerms(g.openTerm.termCode - 100), generateTerms(g.openTerm.termCode), generateTerms(g.openTerm.termCode + 100))
         assert generateTermsForAdjacentYears(g.openTerm.termCode+100) == (generateTerms(g.openTerm.termCode - 100), generateTerms(g.openTerm.termCode), generateTerms(g.openTerm.termCode + 100))
