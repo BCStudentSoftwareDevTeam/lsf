@@ -81,21 +81,6 @@ def departmentPortal(org=None,account=None):
                         #    posUrl = posUrl
                         )
 
-@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
-def managePositions(org, account):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
-
-    positions = Tracy().getPositionsFromDepartment(org, account)
-    print(positions)
-    return render_template('main/managepositions.html',
-                           department = dept,
-                           department_name = dept.DEPT_NAME,
-                           positions = positions
-                           )
-
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
