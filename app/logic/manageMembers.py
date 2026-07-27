@@ -53,9 +53,8 @@ def getDepartmentMembers(dept):
     """Supervisor-department rows for a department, as dicts."""
     return list(
         SupervisorDepartment.select(SupervisorDepartment, Supervisor)
-        .where(SupervisorDepartment.department == dept)
         .join(Supervisor)
-        .dicts()
+        .where(SupervisorDepartment.department == dept)
     )
 
 
@@ -101,15 +100,19 @@ def getStudentCounts(dept):
 
 
 def attachPositionCounts(members, counts):
-    """Merge counts onto each member dict, defaulting missing values to 0."""
+    """Attach position counts to each supervisor-department row."""
     fields = [
-        "active_primary_positions", "pending_primary_positions",
-        "active_secondary_positions", "pending_secondary_positions",
+        "active_primary_positions",
+        "pending_primary_positions",
+        "active_secondary_positions",
+        "pending_secondary_positions",
     ]
+
     for member in members:
-        row = counts.get((member["department"], member["supervisor"]), {})
+        row = counts.get((member.department_id, member.supervisor_id), {})
+
         for field in fields:
-            member[field] = row.get(field, 0)
+            setattr(member, field, row.get(field, 0))
 
     return members
 

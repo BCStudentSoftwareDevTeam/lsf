@@ -63,22 +63,22 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
         </thead>
 
         <tbody>
-            {% for i in members %}
+            {% for member in members %}
             <tr>
                 <td>
-                    <a aria-label="{{i['supervisor']}}" class="hover-indicator">{{ i['legal_name'] + " " + i['LAST_NAME']}}</a>
-                    <a href="mailto:{{ i['EMAIL']}}" >✉</a>
+                    <a aria-label="{{ member.supervisor.ID }}" class="hover-indicator"> {{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}</a>
+                    <a href="mailto:{{ member.supervisor.EMAIL }}">✉</a>
 
                     <br>
-                    <span class="isbanned-badge" data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle " {% if not i['isBanned'] %} style="visibility: hidden;" {% endif %}>Ineligible</span>
+                    <span class="isbanned-badge" data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle " {% if not member.supervisor.isBanned %} style="visibility: hidden;" {% endif %}>Ineligible</span>
                 </td>
 
                 <td class="centered-cell">
-                    {% if (i['active_primary_positions'] == 0 and i['active_secondary_positions'] == 0) and (i['pending_primary_positions'] == 0 and i['pending_secondary_positions'] == 0) %}
+                    {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
                         None
                     {% else %}
-                        <b>Primary:</b> {{i['active_primary_positions']}} active, {{i['pending_primary_positions']}} pending<br>
-                        <b>Secondary:</b> {{i['active_secondary_positions']}} active, {{i['pending_secondary_positions']}} pending
+                        <b>Primary:</b> {{member.active_primary_positions}} active, {{member.pending_primary_positions]}} pending<br>
+                        <b>Secondary:</b> {{member.active_secondary_positions ]}} active, {{member.pending_secondary_positions }} pending
                     {% endif %}
                 </td>
 
@@ -86,7 +86,7 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                     <form action="" method="POST">
                         <div class="form-group">
                             <label class="switch table-switch">
-                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{ i['supervisor'] }}" data-department="{{ department.departmentID }}" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}" {% if i['isCoordinator'] %} checked {% endif %}>
+                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{ member.supervisor.ID}}" data-department="{{ department.departmentID }}" data-member-name="{{ member.supervisor.legal_name  + ' ' + member.supervisor.LAST_NAME  }}" {% if member.isCoordinator %} checked {% endif %}>
                                 <span class="slider round"></span>
                             </label>
                             <span class="switch-label"></span>
@@ -97,14 +97,14 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                 {% if g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent %}
                 <td class="text-center centered-cell">
                     <form action="" method="POST">
-                        {% if not i['isBanned'] %}
+                        {% if not member.supervisor.isBanned %}
                             <button
                                 name="is_banned"
                                 type="button"
                                 class="btn btn-success member-status-btn"
                                 align="center"
-                                data-supervisor="{{i['supervisor']}}"
-                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                data-supervisor="{{member.supervisor.ID}}"
+                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
                                 value="Eligible"> Eligible
                             </button>
                         {% else %}
@@ -113,8 +113,8 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                                 type="button"
                                 class="btn btn-danger member-status-btn"
                                 align="center"
-                                data-supervisor="{{i['supervisor']}}"
-                                data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}"
+                                data-supervisor="{{member.supervisor.ID }}"
+                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
                                 value="Ineligible"> Ineligible 
                             </button>
                         {% endif %}

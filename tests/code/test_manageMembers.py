@@ -23,16 +23,19 @@ from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.term import Term
 
+
 @pytest.mark.integration
 def test_getCurrentDepartment():
     with mainDB.atomic() as transaction:
-        testDept = Department.create(ORG = 2114,
-                                     ACCOUNT = "60000",
-                                     DEPT_NAME = "Computer Science")
+        testDept = Department.create(
+            ORG=2114,
+            ACCOUNT="60000",
+            DEPT_NAME="Computer Science"
+        )
 
         with app.test_request_context():
-            # Case 1: verify the department is found and stashed in session
-            dept = getCurrentDepartment(org = 2114, account = "60000")
+            # Case 1: verify the department is found
+            dept = getCurrentDepartment(org=2114, account="60000")
 
             assert dept.departmentID == testDept.departmentID
             assert dept.DEPT_NAME == "Computer Science"
@@ -40,7 +43,7 @@ def test_getCurrentDepartment():
         with app.test_request_context():
             # Case 2: confirm a non-existent org/account combo 404s
             with pytest.raises(NotFound):
-                getCurrentDepartment(org = 9999, account = "00000")
+                getCurrentDepartment(org=9999, account="00000")
 
         transaction.rollback()
 
@@ -48,31 +51,39 @@ def test_getCurrentDepartment():
 @pytest.mark.integration
 def test_getDepartmentMembers():
     with mainDB.atomic() as transaction:
-        testDept = Department.create(ORG = 2114,
-                                     ACCOUNT = "60000",
-                                     DEPT_NAME = "Computer Science")
+        testDept = Department.create(
+            ORG=2114,
+            ACCOUNT="60000",
+            DEPT_NAME="Computer Science"
+        )
 
-        testingSupervisor = Supervisor.create(ID = "B00000001",
-                                              PIDM = 75,
-                                              legal_name = "Not",
-                                              LAST_NAME = "Scott",
-                                              EMAIL = "None",
-                                              CPO = "None",
-                                              DEPT_NAME = "Computer Science")
+        testingSupervisor = Supervisor.create(
+            ID="B00000001",
+            PIDM=75,
+            legal_name="Not",
+            LAST_NAME="Scott",
+            EMAIL="None",
+            CPO="None",
+            DEPT_NAME="Computer Science"
+        )
 
-        SupervisorDepartment.create(supervisor = testingSupervisor.ID,
-                                    department = testDept.departmentID)
+        SupervisorDepartment.create(
+            supervisor=testingSupervisor.ID,
+            department=testDept.departmentID
+        )
 
         with app.test_request_context():
             # Case 1: confirm the supervisor tied to the department comes back
             members = getDepartmentMembers(testDept)
 
             assert len(members) == 1
-            assert members[0]['supervisor'] == testingSupervisor.ID
-            assert members[0]['LAST_NAME'] == "Scott"
+            assert members[0].supervisor.ID == testingSupervisor.ID
+            assert members[0].supervisor.LAST_NAME == "Scott"
+            assert members[0].department_id == testDept.departmentID
 
         transaction.rollback()
-        
+
+
 def test_supervisorsDbToDict_formats_supervisor_data():
     supervisor = SimpleNamespace(
         EMAIL=" scott.heggen@berea.edu ",
@@ -118,10 +129,10 @@ def test_currentAcademicYear_after_july(monkeypatch):
 
 def test_attachPositionCounts_adds_existing_counts():
     members = [
-        {
-            "department": 1,
-            "supervisor": "B00000001"
-        }
+        SimpleNamespace(
+            department_id=1,
+            supervisor_id="B00000001"
+        )
     ]
 
     counts = {
@@ -135,26 +146,26 @@ def test_attachPositionCounts_adds_existing_counts():
 
     result = attachPositionCounts(members, counts)
 
-    assert result[0]["active_primary_positions"] == 2
-    assert result[0]["pending_primary_positions"] == 1
-    assert result[0]["active_secondary_positions"] == 3
-    assert result[0]["pending_secondary_positions"] == 4
+    assert result[0].active_primary_positions == 2
+    assert result[0].pending_primary_positions == 1
+    assert result[0].active_secondary_positions == 3
+    assert result[0].pending_secondary_positions == 4
 
 
 def test_attachPositionCounts_defaults_missing_counts_to_zero():
     members = [
-        {
-            "department": 1,
-            "supervisor": "B00000001"
-        }
+        SimpleNamespace(
+            department_id=1,
+            supervisor_id="B00000001"
+        )
     ]
 
     result = attachPositionCounts(members, {})
 
-    assert result[0]["active_primary_positions"] == 0
-    assert result[0]["pending_primary_positions"] == 0
-    assert result[0]["active_secondary_positions"] == 0
-    assert result[0]["pending_secondary_positions"] == 0
+    assert result[0].active_primary_positions == 0
+    assert result[0].pending_primary_positions == 0
+    assert result[0].active_secondary_positions == 0
+    assert result[0].pending_secondary_positions == 0
 
 
 @pytest.mark.integration
@@ -258,7 +269,8 @@ def test_getStudentCounts_counts_active_and_pending_positions():
         assert row["pending_secondary_positions"] == 1
 
         transaction.rollback()
-        
+
+
 @pytest.mark.integration
 def test_getStudentCounts_excludes_released_forms():
     with mainDB.atomic() as transaction:

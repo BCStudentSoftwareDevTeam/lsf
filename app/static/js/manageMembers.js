@@ -62,11 +62,10 @@ $(document).ready(function() {
             url: "/members/update_eligibility",
             data: { supervisorID: supervisorID },
             type: "POST",
-            contentType: "application/json",
             success: function() {
                 if (!isBanned) {
                     category = "success";
-                    button.removeClass("btn-sucess").addClass("btn-danger");
+                    button.removeClass("btn-success").addClass("btn-danger");
                     button.text("Ineligible");
                     button.val("Ineligible");
                     ban_badge.css("visibility", "visible");
@@ -100,7 +99,6 @@ $(document).ready(function() {
             url: "/members/remove",
             data: { supervisorID: supervisorID, departmentID: departmentID },
             type: "DELETE",
-            contentType: "application/json",
             success: function() {
                 $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
                 $("#flasher").delay(3000).fadeOut();
