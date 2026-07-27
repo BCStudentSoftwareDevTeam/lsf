@@ -25,7 +25,7 @@ def getSupervisors(dept):
     # Avoid querying department members unless the selected department exists.
     if dept is not None:
         supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-            .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
+            .order_by(Supervisor.LAST_NAME.asc()))
         for supervisorDepartment in supervisorDepartments:
             supervisor = supervisorDepartment.supervisor
             if supervisor is None:
@@ -39,5 +39,5 @@ def getSupervisors(dept):
                 laborCoordinators.append(supervisorDisplay)
             else:
                 supervisors.append(supervisorDisplay)
-                
+
     return supervisors, laborCoordinators
