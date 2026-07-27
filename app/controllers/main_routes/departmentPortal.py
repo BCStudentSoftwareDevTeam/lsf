@@ -1,5 +1,3 @@
-import re
-
 from flask import g, jsonify, redirect, render_template, request, url_for
 
 from app.controllers.main_routes import main_bp
@@ -12,6 +10,7 @@ from app.logic.manageMembers import (
     getStudentCounts,
     supervisorsDbToDict,
 )
+from app.logic.search import searchPerson
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -41,40 +40,20 @@ def manageMembers(org=None, account=None):
 @main_bp.route('/members/search/<query>',  methods=['GET'])
 def searchMember(query=None):
     """
-    Search student table and STUDATA for student results.
+    Search supervisors by name or B-number.
     """
     currentUser = g.currentUser
-    accessAllowed = currentUser and (currentUser.supervisor or currentUser.isLaborAdmin)
-    if not accessAllowed:
+
+    if not canManageMembers(currentUser):
         return render_template('errors/403.html'), 403
 
-    recordedSupervisors = []  # supervisors recorded in the database
-    query = query.strip()
+    supervisors = (
+        searchPerson(Supervisor, query)
+        .order_by(Supervisor.LAST_NAME.asc())
+        .limit(10)
+    )
 
-    displayedSupervisors = Supervisor.select()
-
-    # bnumber search
-    if re.match(r'[Bb]\d+', query):
-        recordedSupervisors = list(map(supervisorsDbToDict, displayedSupervisors.where(Supervisor.ID % "{}%".format(query.upper()))))
-        
-
-    # name search
-    else:
-        if " " not in query:
-            search = query.upper() + "%"
-            results = displayedSupervisors.where(Supervisor.preferred_name ** search | Supervisor.legal_name ** search | Supervisor.LAST_NAME ** search)
-        else:
-            search = query.upper().split()
-            firstQuery = search[0] + "%"
-            lastQuery = search[-1] + "%"
-            results = displayedSupervisors.where((Supervisor.preferred_name ** firstQuery | Supervisor.legal_name ** firstQuery) & Supervisor.LAST_NAME ** lastQuery)
-
-        recordedSupervisors = list(map(supervisorsDbToDict, results))
-        
-
-    # combine lists, remove duplicates, and then sort
-    supervisors = list({v['bnumber']:v for v in (recordedSupervisors)}.values())
-    supervisors = sorted(supervisors, key=lambda f: f['firstName'] + f['lastName'])
+    supervisors = list(map(supervisorsDbToDict, supervisors))
 
     return jsonify(supervisors)
 
