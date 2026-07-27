@@ -50,6 +50,15 @@ def fakeAdminUser():
     )
 
 
+def fakeLaborDepartmentStudentUser():
+    return SimpleNamespace(
+        supervisor=SimpleNamespace(ID="B00000098"),
+        student=None,
+        isLaborAdmin=False,
+        isLaborDepartmentStudent=True,
+    )
+
+
 def fakeSupervisorUser():
     return SimpleNamespace(
         supervisor=SimpleNamespace(ID="B00000001"),
@@ -86,22 +95,28 @@ def test_manage_members_for_supervisor(client, monkeypatch):
     )
 
     fake_members = [
-        {
-            "supervisor": "B00000002",
-            "LAST_NAME": "Scott",
-        }
+        SimpleNamespace(
+            supervisor=SimpleNamespace(
+                ID="B00000002",
+                LAST_NAME="Scott",
+            )
+        )
     ]
 
     fake_counts = {
-        "B00000002": 3,
+        ("10", "B00000002"): {
+            "active_primary_positions": 3,
+        },
     }
 
     fake_members_with_counts = [
-        {
-            "supervisor": "B00000002",
-            "LAST_NAME": "Scott",
-            "positionCount": 3,
-        }
+        SimpleNamespace(
+            supervisor=SimpleNamespace(
+                ID="B00000002",
+                LAST_NAME="Scott",
+            ),
+            active_primary_positions=3,
+        )
     ]
 
     setCurrentUser(client, fake_user)
@@ -198,23 +213,26 @@ def test_manage_members_redirects_student(client, monkeypatch):
 
 @pytest.mark.integration
 def test_search_member_by_bnumber(client, monkeypatch):
-    fake_user = fakeSupervisorUser()
+    fake_user = fakeAdminUser()
 
     fake_database_supervisor = SimpleNamespace(
         ID="B00000002",
     )
 
     fake_query = MagicMock()
-    fake_query.where.return_value = [
+    fake_query.order_by.return_value = fake_query
+    fake_query.limit.return_value = [
         fake_database_supervisor,
     ]
+
+    search_mock = MagicMock(return_value=fake_query)
 
     setCurrentUser(client, fake_user)
 
     monkeypatch.setattr(
-        department_portal.Supervisor,
-        "select",
-        lambda: fake_query,
+        department_portal,
+        "searchPerson",
+        search_mock,
     )
 
     monkeypatch.setattr(
@@ -241,26 +259,34 @@ def test_search_member_by_bnumber(client, monkeypatch):
         }
     ]
 
+    search_mock.assert_called_once_with(
+        department_portal.Supervisor,
+        "B00000002",
+    )
+
 
 @pytest.mark.integration
 def test_search_member_by_single_name(client, monkeypatch):
-    fake_user = fakeSupervisorUser()
+    fake_user = fakeAdminUser()
 
     fake_database_supervisor = SimpleNamespace(
         ID="B00000003",
     )
 
     fake_query = MagicMock()
-    fake_query.where.return_value = [
+    fake_query.order_by.return_value = fake_query
+    fake_query.limit.return_value = [
         fake_database_supervisor,
     ]
+
+    search_mock = MagicMock(return_value=fake_query)
 
     setCurrentUser(client, fake_user)
 
     monkeypatch.setattr(
-        department_portal.Supervisor,
-        "select",
-        lambda: fake_query,
+        department_portal,
+        "searchPerson",
+        search_mock,
     )
 
     monkeypatch.setattr(
@@ -287,26 +313,34 @@ def test_search_member_by_single_name(client, monkeypatch):
         }
     ]
 
+    search_mock.assert_called_once_with(
+        department_portal.Supervisor,
+        "Mary",
+    )
+
 
 @pytest.mark.integration
 def test_search_member_by_full_name(client, monkeypatch):
-    fake_user = fakeSupervisorUser()
+    fake_user = fakeAdminUser()
 
     fake_database_supervisor = SimpleNamespace(
         ID="B00000004",
     )
 
     fake_query = MagicMock()
-    fake_query.where.return_value = [
+    fake_query.order_by.return_value = fake_query
+    fake_query.limit.return_value = [
         fake_database_supervisor,
     ]
+
+    search_mock = MagicMock(return_value=fake_query)
 
     setCurrentUser(client, fake_user)
 
     monkeypatch.setattr(
-        department_portal.Supervisor,
-        "select",
-        lambda: fake_query,
+        department_portal,
+        "searchPerson",
+        search_mock,
     )
 
     monkeypatch.setattr(
@@ -333,49 +367,70 @@ def test_search_member_by_full_name(client, monkeypatch):
         }
     ]
 
+    search_mock.assert_called_once_with(
+        department_portal.Supervisor,
+        "James Smith",
+    )
+
 
 @pytest.mark.integration
-def test_search_member_removes_duplicates(client, monkeypatch):
-    fake_user = fakeSupervisorUser()
-
-    duplicate_supervisor_one = SimpleNamespace(
-        ID="B00000002",
-    )
-
-    duplicate_supervisor_two = SimpleNamespace(
-        ID="B00000002",
-    )
+def test_search_member_returns_empty_list(client, monkeypatch):
+    fake_user = fakeAdminUser()
 
     fake_query = MagicMock()
-    fake_query.where.return_value = [
-        duplicate_supervisor_one,
-        duplicate_supervisor_two,
-    ]
+    fake_query.order_by.return_value = fake_query
+    fake_query.limit.return_value = []
+
+    search_mock = MagicMock(return_value=fake_query)
 
     setCurrentUser(client, fake_user)
 
     monkeypatch.setattr(
-        department_portal.Supervisor,
-        "select",
-        lambda: fake_query,
-    )
-
-    monkeypatch.setattr(
         department_portal,
-        "supervisorsDbToDict",
-        lambda supervisor: {
-            "bnumber": supervisor.ID,
-            "firstName": "John",
-            "lastName": "Scott",
-        },
+        "searchPerson",
+        search_mock,
     )
 
     response = client.get(
-        "/members/search/B00000002"
+        "/members/search/Unknown"
     )
 
     assert response.status_code == 200
-    assert len(response.get_json()) == 1
+    assert response.get_json() == []
+
+    search_mock.assert_called_once_with(
+        department_portal.Supervisor,
+        "Unknown",
+    )
+
+
+@pytest.mark.integration
+def test_search_member_allows_labor_department_student(
+    client,
+    monkeypatch,
+):
+    fake_user = fakeLaborDepartmentStudentUser()
+
+    fake_query = MagicMock()
+    fake_query.order_by.return_value = fake_query
+    fake_query.limit.return_value = []
+
+    search_mock = MagicMock(return_value=fake_query)
+
+    setCurrentUser(client, fake_user)
+
+    monkeypatch.setattr(
+        department_portal,
+        "searchPerson",
+        search_mock,
+    )
+
+    response = client.get(
+        "/members/search/Unknown"
+    )
+
+    assert response.status_code == 200
+    assert response.get_json() == []
 
 
 @pytest.mark.integration
@@ -383,12 +438,7 @@ def test_search_member_returns_403_for_unauthorized_user(
     client,
     monkeypatch,
 ):
-    fake_user = SimpleNamespace(
-        supervisor=None,
-        student=None,
-        isLaborAdmin=False,
-        isLaborDepartmentStudent=False,
-    )
+    fake_user = fakeSupervisorUser()
 
     setCurrentUser(client, fake_user)
 
@@ -404,32 +454,6 @@ def test_search_member_returns_403_for_unauthorized_user(
 
     assert response.status_code == 403
     assert response.get_data(as_text=True) == "Forbidden"
-
-
-@pytest.mark.integration
-def test_search_member_allows_labor_admin(
-    client,
-    monkeypatch,
-):
-    fake_user = fakeAdminUser()
-
-    fake_query = MagicMock()
-    fake_query.where.return_value = []
-
-    setCurrentUser(client, fake_user)
-
-    monkeypatch.setattr(
-        department_portal.Supervisor,
-        "select",
-        lambda: fake_query,
-    )
-
-    response = client.get(
-        "/members/search/Unknown"
-    )
-
-    assert response.status_code == 200
-    assert response.get_json() == []
 
 
 # -------------------------------------------------------------------
@@ -561,12 +585,6 @@ def test_update_eligibility_bans_supervisor(
     )
 
     setCurrentUser(client, fakeAdminUser())
-    
-    monkeypatch.setattr(
-    department_portal,
-    "render_template",
-    lambda template: "Forbidden",
-)
 
     monkeypatch.setattr(
         department_portal.Supervisor,
@@ -621,10 +639,9 @@ def test_update_eligibility_unbans_supervisor(
 def test_update_eligibility_requires_permission(
     client,
     monkeypatch,
-    
 ):
     setCurrentUser(client, fakeSupervisorUser())
-    
+
     monkeypatch.setattr(
         department_portal,
         "render_template",
@@ -639,6 +656,7 @@ def test_update_eligibility_requires_permission(
     )
 
     assert response.status_code == 403
+    assert response.get_data(as_text=True) == "Forbidden"
 
 
 # -------------------------------------------------------------------
@@ -675,7 +693,7 @@ def test_remove_member(client, monkeypatch):
 @pytest.mark.integration
 def test_remove_member_requires_permission(client, monkeypatch):
     setCurrentUser(client, fakeSupervisorUser())
-    
+
     monkeypatch.setattr(
         department_portal,
         "render_template",
@@ -691,6 +709,7 @@ def test_remove_member_requires_permission(client, monkeypatch):
     )
 
     assert response.status_code == 403
+    assert response.get_data(as_text=True) == "Forbidden"
 
 
 # -------------------------------------------------------------------
@@ -904,7 +923,7 @@ def test_add_user_returns_500_when_creation_fails(
 @pytest.mark.integration
 def test_add_user_requires_permission(client, monkeypatch):
     setCurrentUser(client, fakeSupervisorUser())
-    
+
     monkeypatch.setattr(
         department_portal,
         "render_template",
@@ -920,3 +939,4 @@ def test_add_user_requires_permission(client, monkeypatch):
     )
 
     assert response.status_code == 403
+    assert response.get_data(as_text=True) == "Forbidden"
