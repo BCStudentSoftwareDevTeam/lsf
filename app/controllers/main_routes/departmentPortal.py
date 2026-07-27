@@ -29,7 +29,10 @@ from app.logic.manageMembers import getCurrentDepartment,getDepartmentMembers,ge
 def manageMembers(org=None, account=None):
     """Generates the Manage Members page."""
     currentUser = require_login()
-    if not currentUser or not currentUser.supervisor:
+    if currentUser is None:
+            return render_template('errors/403.html'), 403
+
+    if not currentUser.supervisor:
         if currentUser.student:
             return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
         return render_template('errors/403.html'), 403
