@@ -45,6 +45,8 @@
   <br />
   <div class="row mb-2" style="display: flex; justify-content: space-between;">
     <div class="col-md-4" align="left" style="margin-bottom: 1px">
+      {% include "snips/annualAllocationReview.html" %}
+      {% include "snips/annualPositionReview.html" %}
       <button class="btn btn-success me-2" type="button"> Upload Allocations </button>
       <button class="btn btn-success me-2" type="button"> Download Allocation History </button>
     </div>
@@ -82,10 +84,10 @@
 
 
     <div class="col-md-4" align="right" style="margin-bottom: 1px">
-      <button class="btn btn-primary me-2" type="button">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal">
         Annual Allocation Review
       </button>
-      <button class="btn btn-primary" type="button">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal">
         Annual Position Review
       </button>
     </div>
