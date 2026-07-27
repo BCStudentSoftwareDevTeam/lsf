@@ -64,7 +64,7 @@ $(document).ready(function() {
             type: "POST",
             success: function() {
                 if (!isBanned) {
-                    category = "success";
+                    let category = "success";
                     button.removeClass("btn-success").addClass("btn-danger");
                     button.text("Ineligible");
                     button.val("Ineligible");
@@ -122,7 +122,7 @@ function createFragment(htmlStr) {
 $.fn.selectpicker.Constructor.DEFAULTS.whiteList.mark = [];
 function highlight(htmlStr, query) {
     query = query.trim().split(" ");
-    for(i = 0; i < query.length; i++) {
+    for( let i = 0; i < query.length; i++) {
         htmlStr = htmlStr.replace(new RegExp(query[i], "gi"), function(match) { return `<mark>${match}</mark>`; });
     }
     return htmlStr;
