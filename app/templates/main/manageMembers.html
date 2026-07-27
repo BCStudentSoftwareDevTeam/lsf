@@ -16,7 +16,7 @@
 {% block app_content %}
 <h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Members {% else %} Manage Members {% endif %} </h2>
 <h3 class="text-center"> Academic Year: {{currentAcademicYear[0]}}–{{currentAcademicYear[1]}}</h3>
-{%if currentSupervisor.isBanned %}
+{%if g.currentUser.supervisor.isBanned %}
 
 <br></br>
 <div class = "alert alert-danger" role="alert"> Your account is currently ineligible to add new students or create new status forms. Please contact the Labor Office for more information.
@@ -51,7 +51,7 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                 <th class="no-sorting">Supervisees</th>
                 <th class="no-sorting centered-header">Assign Coordinator</th>
 
-                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                {% if g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent %}
                 <th class="no-sorting centered-header">
                     Supervisor Eligibility 
                     &nbsp;
@@ -86,7 +86,7 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                     <form action="" method="POST">
                         <div class="form-group">
                             <label class="switch table-switch">
-                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{i['supervisor']}}" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}" {% if i['isCoordinator'] %} checked {% endif %}>
+                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{ i['supervisor'] }}" data-department="{{ department.departmentID }}" data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}" {% if i['isCoordinator'] %} checked {% endif %}>
                                 <span class="slider round"></span>
                             </label>
                             <span class="switch-label"></span>
@@ -94,7 +94,7 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                     </form>
                 </td>
 
-                {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent %}
+                {% if g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent %}
                 <td class="text-center centered-cell">
                     <form action="" method="POST">
                         {% if not i['isBanned'] %}
@@ -122,6 +122,7 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                 </td>
                 <td class="text-center centered-cell remove-member" 
                     data-supervisor="{{i['supervisor']}}"
+                    data-department="{{ department.departmentID }}"
                     data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
                     <form action="" method="DELETE">
                         <button class="btn btn-danger" align="center">

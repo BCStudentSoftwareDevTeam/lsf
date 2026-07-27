@@ -18,7 +18,6 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createSupervisorFromTracy
-from app.models.positionHistory import PositionHistory
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -74,11 +73,7 @@ def departmentPortal(org=None,account=None):
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                        #    supervisors = supervisor,
-                        #    laborCoordinators=laborCoordinators,
                            currentUser=g.currentUser,
-                        #    positions = positionsList,
-                        #    posUrl = posUrl
                         )
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])

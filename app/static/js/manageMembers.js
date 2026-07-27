@@ -23,13 +23,13 @@ $(document).ready(function() {
 
         let memberName = $(this).data("member-name");
         let supervisorID = $(this).data("supervisor");
+        let departmentID = $(this).data("department");
         let isChecked = $(this).is(":checked");
         
         $.ajax({
-            url: "/members/coordinator_switch",
-            data: JSON.stringify({supervisorID: supervisorID, isCoordinator: isChecked}),
+            url: "/members/update_coordinator",
+            data: { supervisorID: supervisorID, departmentID: departmentID, isCoordinator: isChecked },
             type: "POST",
-            contentType: "application/json",
             success: function() {
                 if (isChecked) {
                     $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
@@ -59,8 +59,8 @@ $(document).ready(function() {
 
 
         $.ajax({
-            url: "/members/ban_switch",
-            data: JSON.stringify({supervisorID: supervisorID, isBanned: isBanned}),
+            url: "/members/update_eligibility",
+            data: { supervisorID: supervisorID },
             type: "POST",
             contentType: "application/json",
             success: function() {
@@ -94,10 +94,11 @@ $(document).ready(function() {
 
         let memberName = redButton.data("member-name");
         let supervisorID = redButton.data("supervisor");
+        let departmentID = redButton.data("department");
 
         $.ajax({
             url: "/members/remove",
-            data: JSON.stringify({supervisorID: supervisorID}),
+            data: { supervisorID: supervisorID, departmentID: departmentID },
             type: "DELETE",
             contentType: "application/json",
             success: function() {

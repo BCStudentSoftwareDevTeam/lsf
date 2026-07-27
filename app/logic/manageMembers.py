@@ -1,27 +1,15 @@
-import re
 from datetime import date
-from flask import render_template, request, json, redirect, session, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn, Case
-from functools import reduce
-import operator
-from app.logic.userInsertFunctions import createSupervisorFromTracy
+
+from flask import abort
+from peewee import Case, DoesNotExist, fn
+
+from app.logic.search import usernameFromEmail
 from app.models.department import Department
-from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
-from app.models.student import Student
-from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.laborReleaseForm import LaborReleaseForm
-from app.models.term import Term
-from app.controllers.admin_routes.allPendingForms import checkAdjustment
-from app.controllers.main_routes import main_bp
-from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
-from app.login_manager import require_login, logout
-from app.logic.getTableData import getDatatableData
-from app.logic.banner import Banner
-from flask import abort
-from app.logic.search import limitSearchByUserDepartment, studentDbToDict, usernameFromEmail
+from app.models.laborStatusForm import LaborStatusForm
+from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 
 def supervisorsDbToDict(supervisor):
     """
@@ -53,12 +41,12 @@ def currentAcademicYear():
 def getCurrentDepartment(org, account):
     """Look up the department by org/account, stash it in session, or 404."""
     try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        return Department.get(
+            Department.ORG == org,
+            Department.ACCOUNT == account
+        )
     except (NameError, DoesNotExist):
         abort(404)
-    session['current_department_id'] = dept.departmentID
-    session['current_department'] = dept.DEPT_NAME
-    return dept
 
 
 def getDepartmentMembers(dept):
@@ -87,7 +75,7 @@ def getReleasedFormIds():
 
 def getStudentCounts(dept):
     """Active/pending primary/secondary position counts, keyed by (dept, supervisor)."""
-    releasedForms = getReleasedFormIds()
+    releasedFormIds = getReleasedFormIds()
 
     activePrimaries = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation == True)
     pendingPrimaries = (LaborStatusForm.jobType == 'Primary') & (LaborStatusForm.studentConfirmation.is_null(True))
@@ -104,7 +92,7 @@ def getStudentCounts(dept):
             LaborStatusForm.supervisor
         ).where(
             (LaborStatusForm.department == dept) &
-            (LaborStatusForm.laborStatusFormID.not_in(releasedForms))
+            (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
         ).group_by(
             LaborStatusForm.department, LaborStatusForm.supervisor
         ).dicts()
@@ -125,4 +113,11 @@ def attachPositionCounts(members, counts):
 
     return members
 
-
+def canManageMembers(currentUser):
+    """
+    Returns True if the current user is allowed to manage department members.
+    """
+    return (
+        getattr(currentUser, "isLaborAdmin", False) or
+        getattr(currentUser, "isLaborDepartmentStudent", False)
+    )

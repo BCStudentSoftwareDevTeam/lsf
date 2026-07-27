@@ -1,26 +1,27 @@
-import pytest
-from flask import session
-from werkzeug.exceptions import NotFound
-from types import SimpleNamespace
-from app import app
-from app.models import mainDB
-from app.models.department import Department
-from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
-from app.models.laborStatusForm import LaborStatusForm
-import app.logic.manageMembers as manageMembersLogic
 from datetime import date
-from app.models.term import Term
-from app.models.student import Student
-from app.models.formHistory import FormHistory
-from app.models.laborReleaseForm import LaborReleaseForm
+from types import SimpleNamespace
+
+import pytest
+from werkzeug.exceptions import NotFound
+
+from app import app
+import app.logic.manageMembers as manageMembersLogic
 from app.logic.manageMembers import (
+    attachPositionCounts,
     getCurrentDepartment,
     getDepartmentMembers,
+    getStudentCounts,
     supervisorsDbToDict,
-    attachPositionCounts,
-    getStudentCounts
 )
+from app.models import mainDB
+from app.models.department import Department
+from app.models.formHistory import FormHistory
+from app.models.laborReleaseForm import LaborReleaseForm
+from app.models.laborStatusForm import LaborStatusForm
+from app.models.student import Student
+from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.term import Term
 
 @pytest.mark.integration
 def test_getCurrentDepartment():
@@ -35,8 +36,6 @@ def test_getCurrentDepartment():
 
             assert dept.departmentID == testDept.departmentID
             assert dept.DEPT_NAME == "Computer Science"
-            assert session['current_department_id'] == testDept.departmentID
-            assert session['current_department'] == "Computer Science"
 
         with app.test_request_context():
             # Case 2: confirm a non-existent org/account combo 404s
