@@ -1,7 +1,7 @@
 function addSupervisorToDepartment(supervisorID, departmentID, callback=() => {}) {
     return $.ajax({
       method: "POST",
-      url: `/supervisorPortal/addUserToDept`,
+      url: `/members/add`,
       data: {"supervisorID": supervisorID, "departmentID": departmentID},
       success: function(response) {
         if (response == "True") {
