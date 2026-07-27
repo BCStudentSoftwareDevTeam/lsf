@@ -1,6 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist
-from flask_bootstrap import forms
 from functools import reduce
 import operator
 from app.models.department import Department
@@ -17,9 +16,8 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.logic.allocation_utilization import get_department_allocation_summary
+from app.logic.allocationUtilization import getDepartmentAllocationSummary
 from app.models.allocation import Allocation
-from app.logic.tracy import Tracy
 from app.models.positionHistory import PositionHistory
 
 @main_bp.route('/logout', methods=['GET'])
@@ -56,37 +54,33 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    open_term = g.openTerm
-    term_code = open_term.termCode
-
-    if org and account:
-        try:
-            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-        except (NameError, DoesNotExist):
-            dept = None
-    else:
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
         dept = None
-
-
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    try:
-        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == term_code).get()
-    except DoesNotExist:
+
+    allocation_summary = getDepartmentAllocationSummary(dept)
+    recentTerm = allocation_summary["term"]
+
+    if recentTerm:
+        try:
+            allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == recentTerm.termCode).get()
+        except DoesNotExist:
+            allocation = None
+    else:
         allocation = None
-    
-    allocation_summary = get_department_allocation_summary(dept, term_code)
-    
-    return render_template('main/departmentPortal.html', 
+
+    return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
                            allocation = allocation,
-                           total_allocation = allocation_summary["total_positions"],
-                           used_allocation = allocation_summary["used_allocation"],
-                           term = open_term,
+                           allocated = allocation_summary["allocated"],
+                           used = allocation_summary["used"],
+                           term = recentTerm,
                            usedPositions = allocation_summary["used_positions"],
                            break_hours = allocation_summary["break_hours"],
                            )

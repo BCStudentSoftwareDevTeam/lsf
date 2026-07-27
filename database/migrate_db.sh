@@ -1,4 +1,6 @@
 
+export PYTHONPATH="$(cd "$(dirname "$0")/.." && pwd):$PYTHONPATH"
+
 pem init
 
 # See: https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script/18434831

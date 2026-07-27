@@ -2,10 +2,33 @@ from peewee import fn
 
 from app.models.allocation import Allocation
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.term import Term
 
 
-def get_department_allocation_summary(department, term_code):
-    """Return allocation-utilization values for one department and term."""
+def getDepartmentAllocationSummary(department):
+    """Return allocation-utilization values for a department's most recent term."""
+    departmentAllocations = list(
+        Allocation.select(Allocation, Term).join(Term).where(Allocation.department == department)
+    )
+    if not departmentAllocations:
+        return {
+            "term": None,
+            "allocated": 0,
+            "used": 0,
+            "used_positions": {
+                "used_10": 0,
+                "used_12": 0,
+                "used_15": 0,
+                "used_20": 0,
+                "used_5_sec": 0,
+                "used_10_sec": 0,
+            },
+            "break_hours": 0,
+        }
+
+    recentTerm = Term.order_by_term([a.termCode for a in departmentAllocations], reverse=True)[0]
+    term_code = recentTerm.termCode
+
     total_positions = (
         Allocation.select(
             fn.SUM(Allocation.primary_10)
@@ -64,8 +87,9 @@ def get_department_allocation_summary(department, term_code):
     )
 
     return {
-        "total_positions": total_positions or 0,
-        "used_allocation": used_allocation,
+        "term": recentTerm,
+        "allocated": total_positions or 0,
+        "used": used_allocation,
         "used_positions": used_positions,
         "break_hours": break_hours,
     }
