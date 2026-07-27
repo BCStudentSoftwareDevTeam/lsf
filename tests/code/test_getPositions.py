@@ -263,7 +263,7 @@ def test_checkDuplicateActiveWithinSameDepartment():
                                  isActive=True)
 
         # Create two active positions with the same code in the same department
-        pos1 = PositionHistory.create(positionTitle="Assistant A", 
+        position1 = PositionHistory.create(positionTitle="Assistant A", 
                                       positionCode="S99002", 
                                       department=dept, 
                                       status="Active", 
@@ -271,7 +271,7 @@ def test_checkDuplicateActiveWithinSameDepartment():
                                       revisionDate="2023-01-01", 
                                       description="")
         
-        pos2 = PositionHistory.create(positionTitle="Assistant B", 
+        position2 = PositionHistory.create(positionTitle="Assistant B", 
                                       positionCode="S99002", 
                                       department=dept, 
                                       status="Active", 
@@ -302,21 +302,21 @@ def test_checkThreeWayPositionCodeConflict():
                                   isActive=True)
         
         deptB = Department.create(departmentID=110, 
-                                  DEPT_NAME="Chem2", 
+                                  DEPT_NAME="Chemistry2", 
                                   ACCOUNT="6748", 
                                   ORG="2122", 
                                   departmentCompliance=True, 
                                   isActive=True)
         
         deptC = Department.create(departmentID=111, 
-                                  DEPT_NAME="Bio2", 
+                                  DEPT_NAME="Biology2", 
                                   ACCOUNT="6749", 
                                   ORG="2123", 
                                   departmentCompliance=True, 
                                   isActive=True)
 
         # Create three active positions with the same code in different departments
-        posA = PositionHistory.create(positionTitle="First Claim", 
+        positionA = PositionHistory.create(positionTitle="First Claim", 
                                       positionCode="S99003", 
                                       department=deptA, 
                                       status="Active", 
@@ -324,7 +324,7 @@ def test_checkThreeWayPositionCodeConflict():
                                       revisionDate="2023-01-01", 
                                       description="")
         
-        posB = PositionHistory.create(positionTitle="Second Claim", 
+        positionB = PositionHistory.create(positionTitle="Second Claim", 
                                       positionCode="S99003", 
                                       department=deptB, 
                                       status="Active", 
@@ -332,7 +332,7 @@ def test_checkThreeWayPositionCodeConflict():
                                       revisionDate="2023-01-01", 
                                       description="")
         
-        posC = PositionHistory.create(positionTitle="Third Claim", 
+        positionC = PositionHistory.create(positionTitle="Third Claim", 
                                       positionCode="S99003", 
                                       department=deptC, 
                                       status="Active", 
@@ -340,13 +340,13 @@ def test_checkThreeWayPositionCodeConflict():
                                       revisionDate="2023-01-01", 
                                       description="")
 
-        listA, urlA = getActivePositions(deptA)
-        listB, urlB = getActivePositions(deptB)
-        listC, urlC = getActivePositions(deptC)
+        positionListA, posUrlA = getActivePositions(deptA)
+        positionListB, posUrlB = getActivePositions(deptB)
+        positionListC, posUrlC = getActivePositions(deptC)
 
-        assert len(listA) == 1  # only the first-created claim survives
-        assert len(listB) == 0
-        assert len(listC) == 0
+        assert len(positionListA) == 1  # only the first-created claim survives
+        assert len(positionListB) == 0
+        assert len(positionListC) == 0
 
         transaction.rollback()
 
@@ -376,10 +376,10 @@ def test_checkInactiveElsewhereDoesNotBlockActiveClaim():
                                revisionDate="2023-01-01", 
                                description="")
 
-        listB, urlB = getActivePositions(deptB)
+        positionListB, posUrlB = getActivePositions(deptB)
 
         # deptA's row is Inactive, so it should never block deptB's Active claim
-        assert len(listB) == 1
-        assert "Current Role: (WLS 1)" in listB
+        assert len(positionListB) == 1
+        assert "Current Role: (WLS 1)" in positionListB
 
         transaction.rollback()
