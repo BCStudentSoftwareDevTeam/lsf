@@ -1,8 +1,5 @@
 $(document).ready(function() {
 
-    $('#searchBoxContainer').children('.dropdown, .bootstrap-select, .form-control').addClass('open')
-    $('[type="search"], .form-control').focus();
-
     $('#manageMembers').DataTable({
         'columnDefs': [{
             'targets': '.no-sorting',
