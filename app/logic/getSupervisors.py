@@ -26,16 +26,12 @@ def getSupervisors(dept):
     if dept is not None:
         supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
             .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
-        
-
         for supervisorDepartment in supervisorDepartments:
             supervisor = supervisorDepartment.supervisor
-
             if supervisor is None:
                 continue
 
             supervisorDisplay = buildSupervisorDisplay(supervisor)
-
             if not supervisorDisplay:
                 continue
 
