@@ -64,7 +64,7 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-    if dept and not g.currentUser.isLaborAdmin and dept.departmentID not in [d.departmentID for d in departments]:
+    if dept and dept.departmentID not in [d.departmentID for d in departments]:
         return render_template('errors/403.html'), 403
 
     return render_template('main/departmentPortal.html', 
@@ -74,8 +74,7 @@ def departmentPortal(org=None,account=None):
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
-    currentUser = require_login()
-    if not currentUser or not currentUser.supervisor:
+    if not g.currentUser or not g.currentUser.supervisor: 
         return render_template('errors/403.html'), 403
 
     try:
@@ -83,8 +82,8 @@ def managePositions(org, account):
     except DoesNotExist:
         return render_template('errors/404.html'), 404
 
-    if not currentUser.isLaborAdmin:
-        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+    if not g.currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
         if dept.departmentID not in allowedDepartmentIds:
             return render_template('errors/403.html'), 403
 
