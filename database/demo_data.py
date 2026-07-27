@@ -309,7 +309,7 @@ staffs = [
             "EMAIL"  :"jonesj@berea.edu",
             "CPO":"6301",
             "ORG":"2114",
-            "DEPT_NAME": "Computer Science",
+            "DEPT_NAME": "Computer Science"
             },
             {
             "ID": "B00763721",

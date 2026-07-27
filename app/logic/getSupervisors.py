@@ -39,4 +39,5 @@ def getSupervisors(dept):
                 laborCoordinators.append(supervisorDisplay)
             else:
                 supervisors.append(supervisorDisplay)
+                
     return supervisors, laborCoordinators
