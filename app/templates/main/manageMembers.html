@@ -77,8 +77,8 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                     {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
                         None
                     {% else %}
-                        <b>Primary:</b> {{member.active_primary_positions}} active, {{member.pending_primary_positions]}} pending<br>
-                        <b>Secondary:</b> {{member.active_secondary_positions ]}} active, {{member.pending_secondary_positions }} pending
+                        <b>Primary:</b> {{member.active_primary_positions}} active, {{member.pending_primary_positions}} pending<br>
+                        <b>Secondary:</b> {{member.active_secondary_positions }} active, {{member.pending_secondary_positions }} pending
                     {% endif %}
                 </td>
 
@@ -121,9 +121,9 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                     </form>
                 </td>
                 <td class="text-center centered-cell remove-member" 
-                    data-supervisor="{{i['supervisor']}}"
+                    data-supervisor="{{member.supervisor.ID }}"
                     data-department="{{ department.departmentID }}"
-                    data-member-name="{{ i['legal_name'] + ' ' + i['LAST_NAME'] }}">
+                    data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
                     <form action="" method="DELETE">
                         <button class="btn btn-danger" align="center">
                             <span class="bi bi-trash"></span>

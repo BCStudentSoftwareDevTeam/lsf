@@ -39,7 +39,7 @@ def currentAcademicYear():
     return currentAcademicYear
 
 def getCurrentDepartment(org, account):
-    """Look up the department by org/account, stash it in session, or 404."""
+    """Look up the department by org/account, or 404."""
     try:
         return Department.get(
             Department.ORG == org,
@@ -50,7 +50,7 @@ def getCurrentDepartment(org, account):
 
 
 def getDepartmentMembers(dept):
-    """Supervisor-department rows for a department, as dicts."""
+    """Supervisor-department rows for a department"""
     return list(
         SupervisorDepartment.select(SupervisorDepartment, Supervisor)
         .join(Supervisor)
