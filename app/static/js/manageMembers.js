@@ -64,7 +64,6 @@ $(document).ready(function() {
             type: "POST",
             success: function() {
                 if (!isBanned) {
-                    let category = "success";
                     button.removeClass("btn-success").addClass("btn-danger");
                     button.text("Ineligible");
                     button.val("Ineligible");
@@ -72,7 +71,6 @@ $(document).ready(function() {
                     $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName +  " is no longer an eligible coordinator, so they cannot add students or create labor status forms .</div>");
                     $("#flasher").delay(3000).fadeOut();
                 } else {
-                    category = "danger";
                     button.removeClass("btn-danger").addClass("btn-success");
                     button.html("Eligible");
                     button.val("Eligible");
@@ -136,7 +134,7 @@ $('.dropdown-menu .bs-searchbox input').on('keyup', function (e) {
     if (e.keyCode == '40' || e.keyCode == '38') return;
 
     // wait a little longer for bnumber typing
-    keyInterval = 200
+    let keyInterval = 200
     if (e.keyCode >= 48 && e.keyCode <= 57) {
         keyInterval = 500
     }
@@ -175,8 +173,8 @@ function sendQuery(search_str) {
             let lastName = response[key]['lastName'];
             let type = response[key]['type'];
             if (type == "Supervisor") {
-              choice_text = bnumber + ': ' + firstName + ' ' + lastName;
-              highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;
+              let choice_text = bnumber + ': ' + firstName + ' ' + lastName;
+              let highlighted_text = highlight(choice_text, search_str) + `<small class='text-muted'>${username}</small>`;
               optionString += `<option value="${bnumber}" data-content="${highlighted_text}" data-subtext="${username}">${choice_text}</option>`;
             }
         }

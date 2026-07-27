@@ -12,7 +12,6 @@ from app.logic.manageMembers import (
     getStudentCounts,
     supervisorsDbToDict,
 )
-from app.logic.search import searchPerson
 from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -156,7 +155,7 @@ def removeMember():
 
 
 
-@main_bp.route('/members/add', methods=['GET', 'POST'])
+@main_bp.route('/members/add', methods=['POST'])
 def addUserToDept():
     """
     Adds a user to a department.
