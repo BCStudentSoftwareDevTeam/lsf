@@ -47,47 +47,72 @@
     <div class="col-md-4" align="left" style="margin-bottom: 1px">
       {% include "snips/annualAllocationReview.html" %}
       {% include "snips/annualPositionReview.html" %}
-      <button class="btn btn-success me-2" type="button"> Upload Allocations </button>
-      <button class="btn btn-success me-2" type="button"> Download Allocation History </button>
+      <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Upload Allocations </button>
+      <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Download Allocation History </button>
     </div>
-        <!-- Fix URL for current, previous, and next academic year links in the dropdown menu. (Will require more than just HTML
-        changes).
-        A new dropdown for the Fall, Spring, Summer, and Academic Year terms for the current academic year should be added
+        <!-- A new dropdown for the Fall, Spring, Summer, and Academic Year terms for the current academic year should be added
         alongside this one. -->
     <div class="col-md-4" align="center" style="margin-bottom: 1px">
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="true">
-            Current AY: {{ academicYear }}
+        <div class="btn-group">
+          <button class="form-control btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="true" style="width: 200px; margin-bottom: 5px;">
+            Chosen AY: {{ academicYear.split(" ")[1] }}
             <span class="caret"></span>
           </button>
-          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1"
-            style="margin: 0; right: auto; left: auto; text-align: center">
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" style="width: 200px; text-align: center;">
             <li>
-              {% if previousAY %}
-              <a href="/admin/manageDepartments/{{ previousAY.termCode }}">Previous AY: {{ previousAY.termName
-                }}</a>
-              {% else %}
-              <a href="#" class="disabled">Previous AY: N/A</a>
-              {% endif %}
-            </li>
-            <li><a href="/admin/manageDepartments/{{ currentAY.termCode }}">Current AY: {{ currentAY.termName }}</a>
+              <a href="/admin/manageDepartments/{{ previousAY.termCode }}">
+                Previous AY: {{ previousAY.termName.split(" ")[1] }}
+              </a>
             </li>
             <li>
-              {% if nextAY %}
-              <a href="/admin/manageDepartments/{{ nextAY.termCode }}">Future AY: {{ nextAY.termName }}</a>
-              <a href="#" class="disabled">Future AY: N/A</a>
-              {% endif %}
+              <a href="/admin/manageDepartments/{{ currentAY.termCode }}">
+                Current AY: {{ currentAY.termName.split(" ")[1] }}
+              </a>
+            </li>
+            <li>
+              <a href="/admin/manageDepartments/{{ nextAY.termCode }}">
+                Future AY: {{ nextAY.termName.split(" ")[1] }}
+              </a>
+            </li>
+      </div>
+    
+        <div class="btn-group">
+          <button class="form-control btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="true" style="width: 200px; margin-bottom: 5px;">
+            All Terms
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" style="width: 200px; text-align: center;">
+            <li>
+              <a>
+                All Terms
+              </a>
+            </li>
+            <li>
+              <a>
+                Fall Term
+              </a>
+            </li>
+            <li>
+              <a>
+                Spring Term
+              </a>
+            </li>
+            <li>
+              <a>
+                Summer Term
+              </a>
             </li>
       </div>
     </div>
 
 
-    <div class="col-md-4" align="right" style="margin-bottom: 1px">
-      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal">
+    <div class="col-md-4" align="right" style="margin-bottom: 1px;">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal" style="width: 200px; margin-bottom: 5px;">
         Annual Allocation Review
       </button>
-      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal" style="width: 200px; margin-bottom: 5px;">
         Annual Position Review
       </button>
     </div>
@@ -134,7 +159,7 @@
   <div style="height: 10px"></div>
   <div class="row">
     <div class="col-md-2"></div>
-    <div class="col-md-8">
+    <div class="col-md-12">
       <ul class="nav nav-tabs display: flex" style="text-align: center">
         <li id="activeTab" class="active">
           <a> Active Departments </a>
@@ -155,7 +180,7 @@
               <th>Department</th>
               <th>Status</th>
               <th>Positions</th>
-              <th>Allocation Approval Status {{ academicYear }}</th>
+              <th>Allocation Status ({{ academicYear }})</th>
               <th>Break Hours Used/Given</th>
               <th>Actions</th>
             </tr>
@@ -166,7 +191,7 @@
             <tr>
               <td scope="row">
                 <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="departmentName"
-                  id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><small>({{department.ORG}},
+                  id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><br><small>({{department.ORG}},
                   {{department.ACCOUNT}})</small>
               </td>
               <td id="dept_{{department.departmentID}}" scope="row" style="text-align: center; vertical-align: middle"
@@ -180,17 +205,21 @@
                 </button>
               </td>
               <td style="white-space: nowrap">
-                <p><strong>Prim: {{department.lsfCountPrimaries}} </strong> of <strong> {{department.totalPrimaries}}
-                  </strong></p>
-                <p><strong>Sec: {{department.lsfCountSecondaries}} </strong> of <strong>
-                    {{department.totalSecondaries}}
-                  </strong></p>
+                <span>
+                  <strong>Primary: </strong>
+                  {{department.lsfCountPrimaries}} of {{department.totalPrimaries}}
+                </span>
+                <br>
+                <span>
+                  <strong>Secondary:</strong>
+                  {{department.lsfCountSecondaries}} of {{department.totalSecondaries}}
+                </span>
               </td>
               <td style="text-align: center; vertical-align: middle">
 
                 <button
                   class="btn status-btn btn-sm {% if allocationStatus.get(department.departmentID) %}btn-success{% else %}btn-warning{% endif %}"
-                  style="pointer-events: none; cursor: default;">
+                  style="pointer-events: none; cursor: default; width: 70px;">
                   {{ "Approved" if allocationStatus.get(department.departmentID) else "Pending" }}
                 </button>
 
@@ -212,7 +241,7 @@
                     Action
                     <span class="caret"></span>
                   </button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
                     <li><a href="#">Allocation History</a></li>
                     <li><a href="#">Position Review</a></li>
                     <li><a href="#">Edit Dept Member</a></li>
