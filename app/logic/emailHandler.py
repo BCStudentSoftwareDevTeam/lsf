@@ -259,10 +259,6 @@ class emailHandler():
                       "Labor Overload Form Approved For Supervisor",
                       "Labor Overload Form Approved For Financial Aid",
                       "Labor Overload Form Approved For Academic Advisor")
-    # Ignore and remove later.    
-    #def LaborOverLoadFormApprovedAdvisorEmail(self):
-        #""" This email is sent to the student's academic advisor when the overload form is approved by the labor office and is waiting for their approval. """
-       #self.checkRecipient(False, False, "Labor Overload Form Approved and sent to Advisor")
 
     def LaborOverLoadFormRejected(self):
         self.checkRecipient("Labor Overload Form Rejected For Student",
