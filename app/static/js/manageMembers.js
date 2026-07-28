@@ -90,6 +90,13 @@ $(document).ready(function() {
         let supervisorID = redButton.data("supervisor");
         let departmentID = redButton.data("department");
 
+        let confirmed = confirm( "Are you sure you want to remove " + memberName + " from this department?" );
+
+    // Stop here if the user clicks Cancel
+    if (!confirmed) {
+        return;
+    }
+
         $.ajax({
             url: "/members/remove",
             data: { supervisorID: supervisorID, departmentID: departmentID },
