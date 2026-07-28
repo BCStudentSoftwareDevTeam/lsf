@@ -2,7 +2,7 @@
 
 {% block scripts %}
 {{super()}}
-    <!-- <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script> -->
+    <!-- <script type="text/javascript" src="{{url_for('static', filename='js/individualPositions.js') }}?u={{lastStaticUpdate}}"></script> -->
     <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
 
@@ -18,28 +18,27 @@
         <div class="mb-5">
           <dl class="row">
         
-            <dt class="col-sm-3">Position Title</dt>
+            <dt class="col-sm-3">Position Title:</dt>
             <dd class="col-sm-9">{{ position.positionTitle }}</dd>
 
-            <dt class="col-sm-3">Position Code</dt>
+            <dt class="col-sm-3">Position Code:</dt>
             <dd class="col-sm-9">{{ position.positionCode }}</dd>
 
-            <dt class="col-sm-3">WLS Level</dt>
+            <dt class="col-sm-3">WLS Level:</dt>
             <dd class="col-sm-9">{{ position.wls }}</dd>
 
-            <dt class="col-sm-3">Status</dt>
+            <dt class="col-sm-3">Status:</dt>
             <dd class="col-sm-9">{{ position.status }}</dd>
 
-            <dt class="col-sm-3">Last Revision Date</dt>
+            <dt class="col-sm-3">Last Revision Date:</dt>
             <dd class="col-sm-9">{{ position.revisionDate }}</dd>
 
             <dt class="col-sm-3">Revised By</dt>
             <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
           </dl>
         </div>
-
+        <h3>Description</h3>
         <section class="mb-5">
-          <h3>Description</h3>
           {% if position.description %}
             <p>{{ position.description }}</p>
           {% else %}
@@ -47,8 +46,13 @@
           {% endif %}
         </section>
 
-        <div class="mb-3">
-          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="btn btn-secondary">Back to Department</a>
+        <div class="mb-3 d-flex justify-content-between">
+          <div>
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="btn btn-secondary">Back to Department</a>
+          </div>
+          <div>
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download" class="btn btn-success" id="downloadDescription">Download Description</a>
+          </div>
         </div>
       </div>
     </div>
