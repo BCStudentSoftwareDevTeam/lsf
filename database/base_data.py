@@ -368,15 +368,6 @@ emailtemps= [
                 "audience":"Supervisor"
                 },
                 {
-                "purpose":"Labor Overload Form Approved For Academic Advisor",
-                "formType":"Labor Overload Form",
-                "action":"Submitted",
-                "subject":"Labor Overload Form Approved",
-                "body":'''
-                            ''',
-                "audience":"Academic Advisor"
-                },
-                {
                 "purpose":"Labor Overload Form Approved For Student",
                 "formType":"Labor Overload Form",
                 "action":"Approved",
@@ -393,6 +384,15 @@ emailtemps= [
                 "body":'''
                             ''',
                 "audience":"Supervisor"
+                },
+                {
+                "purpose":"Labor Overload Form Approved For Academic Advisor",
+                "formType":"Labor Overload Form",
+                "action":"Approved",
+                "subject":"Labor Overload Form Approved",
+                "body":''' <p> An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved.
+                            ''',
+                "audience":"Academic Advisor"
                 },
                 {
                 "purpose":"Labor Overload Form Rejected For Student",
