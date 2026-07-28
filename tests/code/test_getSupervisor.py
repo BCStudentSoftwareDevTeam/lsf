@@ -14,12 +14,6 @@ def test_getSupervisors():
                                  ORG = "1",
                                  departmentCoimpliance = 1,
                                  isActive = 1)
-        Department.create(departmentID = 10001,
-                          DEPT_NAME = "Test Labor Office",
-                          ACCOUNT = "4",
-                          ORG = "8",
-                          epartmentCoimpliance = 1,
-                          isActive = 1)
         
         staff = Supervisor.create(ID = "B0000000",
                                   PIDM = 10000,
