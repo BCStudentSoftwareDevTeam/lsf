@@ -5,7 +5,7 @@ from app.models.positionHistory import PositionHistory
 from app.logic.getPositions import getActivePositions
 
 @pytest.mark.integration
-def test_getPositions():
+def test_getActivePositions():
     """
     Test to check if the getActivePositions function in getPositions.py correctly retrieves active positions for a single department.
     """
