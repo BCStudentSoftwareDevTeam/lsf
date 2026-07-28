@@ -73,6 +73,31 @@ def departmentPortal(org=None,account=None):
                            positions = positionsList,
                            posURL = posURL)
 
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
+def individualPosition(org, account, positionCode):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    position = PositionHistory.get_or_none(
+        PositionHistory.department == dept,
+        PositionHistory.positionCode == positionCode,
+        PositionHistory.status == "Active"
+    )
+
+    if not position:
+        return render_template('errors/404.html'), 404
+
+    revision_author = position.revisedBy if getattr(position, 'revisedBy', None) else None
+
+    return render_template(
+        'main/individualPositions.html',
+        department=dept,
+        position=position,
+        revision_author=revision_author
+    )
+
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form

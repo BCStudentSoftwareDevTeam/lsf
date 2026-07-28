@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+    <!-- <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script> -->
+    <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{lastStaticUpdate}}"/>
+{% endblock %}
+
+{% block app_content %}
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10">
+        <div class="mb-4">
+          <h1 class="text-center">{{ department.DEPT_NAME }}</h1>
+        </div>
+
+        <div class="mb-5">
+          <dl class="row">
+        
+            <dt class="col-sm-3">Position Title</dt>
+            <dd class="col-sm-9">{{ position.positionTitle }}</dd>
+
+            <dt class="col-sm-3">Position Code</dt>
+            <dd class="col-sm-9">{{ position.positionCode }}</dd>
+
+            <dt class="col-sm-3">WLS Level</dt>
+            <dd class="col-sm-9">{{ position.wls }}</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">{{ position.status }}</dd>
+
+            <dt class="col-sm-3">Last Revision Date</dt>
+            <dd class="col-sm-9">{{ position.revisionDate }}</dd>
+
+            <dt class="col-sm-3">Revised By</dt>
+            <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
+          </dl>
+        </div>
+
+        <section class="mb-5">
+          <h3>Description</h3>
+          {% if position.description %}
+            <p>{{ position.description }}</p>
+          {% else %}
+            <p class="text-muted">No description available.</p>
+          {% endif %}
+        </section>
+
+        <div class="mb-3">
+          <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="btn btn-secondary">Back to Department</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
