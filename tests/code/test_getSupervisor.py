@@ -61,10 +61,10 @@ def test_getSupervisors():
         #checks whether not the supervisors Names are in the correct list, [supervisors, coordinators]
         #The checkDept returns a tuple(Supervisor, Coordinator) with a list with dictionaries with the information about each person.
         #The checkDept return is in order by LAST_NAME
-        assert staff.__data__["LAST_NAME"] == checkDept[0][1]['name'].split(' ')[1]
-        assert staff.__data__["LAST_NAME"] != checkDept[1][0]['name'].split(' ')[1]
-        assert testCoordinator.__data__["LAST_NAME"] == checkDept[1][0]['name'].split(' ')[1]
-        assert staff2.__data__["LAST_NAME"] == checkDept[0][0]['name'].split(' ')[1]
+        assert "Subject" == checkDept[0][1]['name'].split(' ')[1]
+        assert"Subject" != checkDept[1][0]['name'].split(' ')[1]
+        assert "Coordinator" == checkDept[1][0]['name'].split(' ')[1]
+        assert "Extra" == checkDept[0][0]['name'].split(' ')[1]
 
         transaction.rollback()
  
