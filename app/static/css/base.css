@@ -250,6 +250,7 @@ a {
   padding: 0.5rem 1rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  margin-top: auto;
 }
 
 .card-footer:last-child {
@@ -263,4 +264,30 @@ a {
 .card-img-top {
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px);
+}
+.site-footer {
+  position: fixed;
+  left: 280px;
+  right: 0;
+  bottom: 0;
+
+  background-color: #e9ebec;
+  color: #1e2433;
+
+  padding: 8px 15px;
+  line-height: 1.4;
+  box-sizing: border-box;
+  z-index: 101;
+
+}
+
+.sidebar-push {
+  padding-bottom: 85px;
+}
+
+@media (max-width: 991px) {
+  .site-footer {
+    left: 0;
+    width: 100%;
+  }
 }

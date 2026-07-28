@@ -1117,50 +1117,119 @@ print(" * allocation added")
 # Position History
 #############################
 
-positionHistory = [
+positionhistory = [
     {
+        "positionTitle": "Student Programmer",
         "positionCode": "S61407",
         "status": "Active",
         "wls": 1,
-        "revisionDate": f"2025-07-01",
+        "revisionDate": f"2026-07-01",
         "description": "",
         "department": 1
     },
     {
-        
+        "positionTitle": "Research Associate",
         "positionCode": "S61408",
         "status": "Active",
         "wls": 2,
-        "revisionDate": f"2025-09-01",
+        "revisionDate": f"2026-09-01",
         "description": "",
         "department": 1
     },
     {
+        "positionTitle": "Labor Workers",
         "positionCode": "S61409",
         "status": "Active",
         "wls": 3,
-        "revisionDate": f"2025-07-01",
+        "revisionDate": f"2026-07-01",
         "description": "",
         "department": 1
     },
     {
+        "positionTitle": "Teaching Associate",
         "positionCode": "S61411",
         "status": "Active",
         "wls":3,
-        "revisionDate" : f"2025-01-01",
+        "revisionDate" : f"2026-01-01",
         "description": "",
         "department" : 1
 
-        },
-        {
+    },
+    {
+        "positionTitle": "Teaching Associate",
         "positionCode": "S61410",
         "status": "Inactive",
         "wls":2,
-        "revisionDate" : f"2025-01-01",
+        "revisionDate" : f"2026-01-01",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"2026-03-29",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-23",
         "description": "",
         "department" : 1
-        },
+    },
+    {
+        "positionTitle": "Junior Data Analyst",
+        "positionCode": "S39568",
+        "status": "Active",
+        "wls":4,
+        "revisionDate" : f"2026-01-31",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Student Manager",
+        "positionCode": "S74933",
+        "status": "Active",
+        "wls":5,
+        "revisionDate" : f"2026-04-01",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "IT Technician",
+        "positionCode": "S94932",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Human code generator",
+        "positionCode": "S22222",
+        "status": "Active",
+        "wls":1,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Senior Software Engineer",
+        "positionCode": "S00000",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    }
     
+    
+
 ]
-PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
+PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
 print(" * position history added")
