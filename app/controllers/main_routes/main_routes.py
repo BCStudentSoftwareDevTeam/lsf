@@ -1,7 +1,9 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from flask_bootstrap import forms
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+from app.models.allocation import Allocation
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -16,8 +18,10 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.tracy import Tracy
+from app.logic.userInsertFunctions import createSupervisorFromTracy
+from app.logic.allocationManager import *
 from app.models.positionHistory import PositionHistory
-from app.logic.getPositions import getActivePositions
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -54,40 +58,129 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
+    if org and account:
+        try:
+            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        except (NameError, DoesNotExist):
+            dept = None
+    else:
         dept = None
-
 
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+     
+    try:
+        allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == 202500).get()
+    except DoesNotExist:
+        allocation = None
+    
+    supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
+        .order_by(fn.COALESCE(Supervisor.preferred_name, Supervisor.legal_name, Supervisor.LAST_NAME).asc()))
 
-    positionsList, posURL = getActivePositions(dept)
+    laborCoordinators = []
+    supervisors = []
 
+    for supervisorDepartment in supervisorDepartments:
+        supervisor = supervisorDepartment.supervisor
+
+        if supervisor is None:
+            continue
+
+        firstName = supervisor.preferred_name or supervisor.legal_name or ""
+        lastName = supervisor.LAST_NAME or ""
+
+        supervisorName = f"{firstName} {lastName}".strip()
+
+        supervisorDisplay = {
+            "name": supervisorName,
+            "email": supervisor.EMAIL
+        }
+
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
+    
+#     ViewAllocations(org, account)
+#     totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+#     usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
+#     studentHours = {}
+#     for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
+#     ):
+#         studentSuperviseeId = form.studentSupervisee_id
+#         if studentSuperviseeId not in studentHours:
+#             studentHours[studentSuperviseeId] = []
+#         studentHours[studentSuperviseeId].append({
+#                 "jobType": form.jobType,
+#                 "weeklyHours": form.weeklyHours
+#             })
+        
+
+#     def count_workers(job_type, hours_bucket):
+#         return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
+    
+#     usedPositions = {
+#     "used_10": count_workers("Primary", "10"),
+#     "used_12": count_workers("Primary", "12"),
+#     "used_15": count_workers("Primary", "15"),
+#     "used_20": count_workers("Primary", "20"),
+#     "used_5_sec": count_workers("Secondary", "5"),
+#     "used_10_sec": count_workers("Secondary", "10"),
+# }
+#     break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+#     sumBreak = sum(form.contractHours or 0 for form in break_allocation)
+
+    totalPositions = getTotalAllocations(202500, dept)["totalAllocations"]
+    usedAllocation = getContractedAllocations(202500, dept)
+    sumBreak = usedAllocation["break_hours"]
+    studentHours = getContractedAllocations(202500, dept)
+    usedPositions = usedAllocation
+    usedAllocation = usedAllocation["usedTotal"]
+    
+    positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
+    positionsList = []
+    posUrl = []
+    if not positions:
+        positionsList = ["No active positions in this department"]
+    else:
+        for i in positions:
+            positionsList.append(i.positionTitle + ": " + "(WLS " + str(i.wls) + ")")
+            posUrl.append(str(i.positionCode))
+            
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
+                           allocation = allocation,
+                           total_allocation = totalPositions,
+                           used_allocation = usedAllocation,
+                           term = g.openTerm.termName,
+                           studentHours = studentHours,
+                           usedPositions = usedPositions,
+                           break_hours = sumBreak,
                            positions = positionsList,
-                           posURL = posURL)
+                           posUrl = posUrl,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=g.currentUser
+                           )
 
-@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
-def addUserToDept():
-    userDeptData = request.form
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
+
+@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
+def managePositions(org, account):
     try:
-        if supervisorDeptRecord:
-            return "False"
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
 
-        else:
-            SupervisorDepartment.create(supervisor=userDeptData['supervisorID'], department=userDeptData['departmentID'])
-            return "True"
-    
-    except Exception as e:
-        print(f'Could not add user to department: {e}')
-        return "", 500
+    positions = Tracy().getPositionsFromDepartment(org, account)
+    print(positions)
+    return render_template('main/managepositions.html',
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
+                           )
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
@@ -140,3 +233,11 @@ def submitToBanner(formHistoryId):
         return "Form successfully submitted to Banner.", 200
     else:
         return "Submitting to Banner failed.", 500
+    
+@main_bp.route('/department/<org>/<account>', methods=['GET'])
+def ViewAllocations(org, account):
+      
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
