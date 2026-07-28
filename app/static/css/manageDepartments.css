@@ -1,13 +1,4 @@
-/*.flasher{
-  margin-top: 100px;
-}
-
-#flash_container {
-  margin-top: 100px;
-  margin-right: 140px;
-  margin-left: 20px;
-}
-*/
+/* Styles for the Manage Departments page */
 
 h1 {
   text-align: center;
@@ -40,4 +31,39 @@ h1 {
 #activeDepartmentsTable td {
   vertical-align: middle;
   text-align: center;
+}
+
+/* Styles for the allocationReview.html file (Allocation Review Modal) */
+
+#breakHours {
+  margin-top: 20px; 
+}
+
+.numericSpinner {
+  width: 60px;
+}
+
+#requestedPositions {
+  margin-top: 20px; 
+  margin-bottom: -10px;
+}
+
+.noBorders {
+  border: none !important;
+}
+
+
+#allocationJustification {
+  margin-top: 10px;
+}
+
+.unresizeable {
+  resize: none;
+}
+
+#allocationReviewNote {
+  max-width:70%; 
+  margin-bottom: -35px; 
+  text-align: right;
+  color: grey;
 }

@@ -1,0 +1,94 @@
+<!-- Modal for the Manage Departments page -->
+<!-- ALL THE CUSTOM STYLES USED IN THIS FILE ARE LOCATED IN THE manageDepartments.css FILE! -->
+<div class="modal fade allocationReviewModal" id="allocationReviewModal" tabindex="-1" role="dialog" aria-labelledby="allocationReviewModalLabel" aria-describedby="allocationReviewModalBody">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="allocationReviewModalLabel" align="center"><strong>Allocation Review</strong></h2>
+                <p align="center"><strong>Review to Confirm an Allocation Request</strong></p>
+                <button type="button" class="close" data-dismiss="modal" onclick="" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="allocationReviewModalBody">
+
+                <p>
+                    <label for="requestingDepartment">Requesting Department: </label> Computer Science Department <!--Note that it's HARD_CODED-->
+                </p>
+
+                <p>
+                    <label for="academicYear"">Academic Year: </label> 2026 – 2027 <!--Note that it's HARD_CODED-->
+                </p>
+
+                <p>
+                    <label for="breakHours" id="breakHours">Number of Break Hours: </label>
+                    requesting 
+                    <input type="number" name="breakHours" min="0" step="1" value="10" class="numericSpinner">
+                     (currently: 120)
+                </p>
+
+                <p>
+                    <label for="requestedPositions" id="requestedPositions">Requested Positions: </label>            
+                </p>
+
+                <table class="table col-md-12" class="noBorders">
+                    <thead>
+                        <th class="noBorders"><small><b>Primary</b></small></th>
+                        <th class="noBorders"><small><b>Secondary</b></small></th>
+                    </thead>
+                    <tbody>
+                        <tr class="noBorders">
+                            <td class="noBorders">
+                                10 hours:&nbsp;
+                                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                                &nbsp;(currently: 120)  <!--Note that it's HARD_CODED-->
+                            </td>
+                            <td class="noBorders">
+                                5 hours&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                                &nbsp;(currently: 120)  <!--Note that it's HARD_CODED-->
+                            </td>
+                        </tr>
+                        <tr class="noBorders">
+                            <td class="noBorders">
+                                12 hours:&nbsp;
+                                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                                &nbsp;(currently: 120)  <!--Note that it's HARD_CODED-->
+                            </td>
+                            <td class="noBorders">
+                                10 hours:&nbsp;
+                                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                                &nbsp;(currently: 120)  <!--Note that it's HARD_CODED-->
+                            </td>
+                        </tr>
+                        <tr class="noBorders">
+                            <td class="noBorders">
+                                15 hours:&nbsp;
+                                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                                &nbsp;(currently: 120)  <!--Note that it's HARD_CODED-->
+                            </td>
+                            <td class="noBorders">
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>
+                    <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
+                </p>
+                <textarea class="unresizeable" name="allocationJustification" rows="2" cols="70"> </textarea>
+            </div>
+
+            <div class="modal-footer">
+                <div id="allocationReviewNote">
+                    <small>
+                        *To submit the form, you must either specify the number of extra break hours or fill in one of the files in the Requested Poisitons section.  
+                    </small>
+                </div>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="">Approve</button>
+            </div>
+        </div>
+    </div>
+</div>

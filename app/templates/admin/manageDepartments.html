@@ -11,7 +11,6 @@
 <div align="center">
   <a class="skipContent" href="#manageDep" tabindex="1">Click to Skip</a>
 </div>
-<!-- <form action="/admin/complianceStatus" method="POST"> -->
 <div class="container-fluid">
   <div class="row">
     <a class="skipContent" href="#departmentsTable_length" tabindex="1">Click to Skip</a>
@@ -50,8 +49,6 @@
       <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Upload Allocations </button>
       <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Download Allocation History </button>
     </div>
-        <!-- A new dropdown for the Fall, Spring, Summer, and Academic Year terms for the current academic year should be added
-        alongside this one. -->
     <div class="col-md-4" align="center" style="margin-bottom: 1px">
         <div class="btn-group">
           <button class="form-control btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
@@ -73,35 +70,6 @@
             <li>
               <a href="/admin/manageDepartments/{{ nextAY.termCode }}">
                 Future AY: {{ nextAY.termName.split(" ")[1] }}
-              </a>
-            </li>
-      </div>
-    
-        <div class="btn-group">
-          <button class="form-control btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="true" style="width: 200px; margin-bottom: 5px;">
-            All Terms
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" style="width: 200px; text-align: center;">
-            <li>
-              <a>
-                All Terms
-              </a>
-            </li>
-            <li>
-              <a>
-                Fall Term
-              </a>
-            </li>
-            <li>
-              <a>
-                Spring Term
-              </a>
-            </li>
-            <li>
-              <a>
-                Summer Term
               </a>
             </li>
       </div>
@@ -154,7 +122,7 @@
 
 
 
-
+{% include "snips/allocationReview.html" %}
 
   <div style="height: 10px"></div>
   <div class="row">
@@ -179,10 +147,10 @@
             <tr>
               <th>Department</th>
               <th>Status</th>
-              <th>Positions</th>
+              <th class="noSorting">Positions</th>
               <th>Allocation Status <br>({{ academicYear }})</th>
-              <th>Break Hours <br> Used/Given</th>
-              <th>Actions</th>
+              <th class="noSorting">Break Hours <br> (Used/Given)</th>
+              <th class="noSorting">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -225,10 +193,6 @@
 
               </td>
 
-              <!-- <button type="button"
-               
-
-              </button> -->
               <td scope="row">
                 {{ breakHoursByDepartment.get(department.departmentID, 0) }} / {{ department.allocation.breakHours }}
               </td>
@@ -244,8 +208,8 @@
                   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
                     <li><a href="#">Allocation History</a></li>
                     <li><a href="#">Position Review</a></li>
-                    <li><a href="#">Edit Dept Member</a></li>
-                    <li><a href="#">Allocation Review</a></li>
+                    <li><a href="#">Edit Dept Members</a></li>
+                    <li><a data-toggle="modal" data-target="#allocationReviewModal">Allocation Review</a></li>
                   </ul>
                 </div>
       </div>

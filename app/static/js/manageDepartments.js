@@ -4,13 +4,23 @@ $("#admin").collapse("show");
 $(document).ready( function(){
     activeDepartmentsTable = $('#activeDepartmentsTable');
     activeDepartmentsTable.DataTable({
-        pageLength: 25
+        columnDefs: [{
+            targets: '.noSorting',
+            orderable: false  // hiding the sort icon only on the third, fifth and sixth columns 
+        }], 
+      pageLength: 25,
+      language: {
+        lengthMenu: " _MENU_ entries per page"
+      }
     });
 
     
     inactiveDepartmentsTable = $('#inactiveDepartmentsTable');
     inactiveDepartmentsTable.DataTable({
-      pageLength: 25
+      pageLength: 25,
+      language: {
+        lengthMenu: " _MENU_ entries per page"
+      }
     });
     $("#inactiveTable").hide();
 
@@ -35,6 +45,11 @@ $(document).ready( function(){
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
       clearDropdowns()
     })
+
+    // not allowing users to type anything in a numeric spinner
+    $("input[type='number'].numericSpinner").keypress(function (evt) {
+      evt.preventDefault();
+    });
 });
 
 
