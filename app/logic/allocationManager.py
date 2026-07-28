@@ -2,11 +2,12 @@ from app.models.allocation import Allocation
 from app.models.laborStatusForm import * 
 from app.models.department import *
 from app.models.term import *
+from app.models.formHistory import FormHistory
 
 
 def getAllocation(termCode, dept):
     allocationObject = Allocation.select().where(
-        Allocation.termCode == 202500, 
+        Allocation.termCode == 202500,
         Allocation.department == 3, 
         Allocation.isFinal == True).dicts().get() #FIXME
     return allocationObject
@@ -25,6 +26,15 @@ def getTotalAllocations(termCode, dept):
     return allocationDict
  
 def countContracts(jobType, contractHours):
+    return FormHistory.select().join(LaborStatusForm).where(
+                                                            (FormHistory.status == "Pending" or 
+                                                            FormHistory.status == "Approved" or 
+                                                            FormHistory.status == "Pre-Student-Approval"),
+                                                            LaborStatusForm.department == 1,
+                                                            LaborStatusForm.termCode == 202500, #FIXME
+                                                            LaborStatusForm.jobType == jobType,
+                                                            LaborStatusForm.weeklyHours == contractHours,
+                                                            LaborStatusForm.contractHours.is_null(True)).count()
     return LaborStatusForm.select().where(
         LaborStatusForm.department == 1,
         LaborStatusForm.termCode == 202500, #FIXME
