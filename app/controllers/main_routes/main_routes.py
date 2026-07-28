@@ -16,8 +16,8 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.logic.tracy import Tracy
-from app.logic.userInsertFunctions import createSupervisorFromTracy
+from app.models.positionHistory import PositionHistory
+from app.logic.getPositions import getActivePositions
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -64,17 +64,20 @@ def departmentPortal(org=None,account=None):
     
 
 
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
+    positionsList, posURL = getActivePositions(dept)
+
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            currentUser=g.currentUser,
-                        )
+                           positions = positionsList,
+                           posURL = posURL)
+
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
