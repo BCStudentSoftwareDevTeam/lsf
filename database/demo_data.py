@@ -757,6 +757,7 @@ positionhistory = [
         "status": "Active",
         "wls": 1,
         "revisionDate": f"2026-07-01",
+        "revisedBy": "John Doe",
         "description": "",
         "department": 1
     },
@@ -766,6 +767,7 @@ positionhistory = [
         "status": "Active",
         "wls": 2,
         "revisionDate": f"2026-09-01",
+        "revisedBy": "Jane Smith",
         "description": "",
         "department": 1
     },
@@ -775,6 +777,7 @@ positionhistory = [
         "status": "Active",
         "wls": 3,
         "revisionDate": f"2026-07-01",
+        "revisedBy": "Alice Johnson",
         "description": "",
         "department": 1
     },
@@ -784,6 +787,7 @@ positionhistory = [
         "status": "Active",
         "wls":3,
         "revisionDate" : f"2026-01-01",
+        "revisedBy": "Bob Wilson",
         "description": "",
         "department" : 1
 
@@ -794,6 +798,7 @@ positionhistory = [
         "status": "Inactive",
         "wls":2,
         "revisionDate" : f"2026-01-01",
+        "revisedBy": "Charlie Brown",
         "description": "",
         "department" : 3
     },
@@ -803,6 +808,7 @@ positionhistory = [
         "status": "Active",
         "wls":2,
         "revisionDate" : f"2026-03-29",
+        "revisedBy": "David Davis",
         "description": "",
         "department" : 3
     },
@@ -812,6 +818,7 @@ positionhistory = [
         "status": "Active",
         "wls":3,
         "revisionDate" : f"2026-01-23",
+        "revisedBy": "Eve Thompson",
         "description": "",
         "department" : 1
     },
@@ -821,6 +828,7 @@ positionhistory = [
         "status": "Active",
         "wls":4,
         "revisionDate" : f"2026-01-31",
+        "revisedBy": "Frank Miller",
         "description": "",
         "department" : 1
     },
@@ -830,6 +838,7 @@ positionhistory = [
         "status": "Active",
         "wls":5,
         "revisionDate" : f"2026-04-01",
+        "revisedBy": "Grace Lee",
         "description": "",
         "department" : 1
     },
@@ -839,6 +848,7 @@ positionhistory = [
         "status": "Active",
         "wls":6,
         "revisionDate" : f"2026-05-03",
+        "revisedBy": "Henry Adams",
         "description": "",
         "department" : 1
     },
@@ -848,6 +858,7 @@ positionhistory = [
         "status": "Active",
         "wls":1,
         "revisionDate" : f"2026-05-03",
+        "revisedBy": "Ivy Johnson",
         "description": "",
         "department" : 1
     },
@@ -857,7 +868,8 @@ positionhistory = [
         "status": "Active",
         "wls":6,
         "revisionDate" : f"2026-05-03",
-        "description": "",
+        "revisedBy": "Jack Smith",
+        "description": "This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work- Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.",
         "department" : 1
     }
     

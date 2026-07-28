@@ -8,6 +8,7 @@ class PositionHistory(baseModel):
     status             = CharField()
     wls                = IntegerField()
     revisionDate       = DateField()
+    revisedBy          = CharField()
     description        = TextField(default=None)
 
     class Meta:
