@@ -2,6 +2,7 @@ from flask import render_template, request, json, redirect, url_for, send_file, 
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -9,14 +10,19 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
+from app.models.positionHistory import PositionHistory
+
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
+
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
 from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
+from app.logic.getPositions import getActivePositions
+
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -65,13 +71,17 @@ def departmentPortal(org=None,account=None):
     
     supervisors, laborCoordinators = getSupervisors(dept)
 
+    positionsList, posURL = getActivePositions(dept)
+
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,
-                           )
+                           positions = positionsList,
+                           posURL = posURL)
+
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
