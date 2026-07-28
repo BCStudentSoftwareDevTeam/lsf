@@ -788,10 +788,6 @@ positionHistory = [
         "revisionDate" : f"2026-01-01",
         "description": "",
         "department" : 1
-
-    },
-    {
-        "positionTitle": "Teaching Associate",
     },
     {
         "positionTitle": "Teaching Associate",

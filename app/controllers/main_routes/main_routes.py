@@ -59,25 +59,23 @@ def departmentPortal(org=None,account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+
+    positionsList, posURL = getActivePositions(dept)
 
     if dept and dept.departmentID not in [d.departmentID for d in departments]:
         return render_template('errors/403.html'), 403
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                        department = dept,
-                        )
-
+                           department = dept,
+                           positions = positionsList,
+                           posURL = posURL)
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
-    if not g.currentUser or not g.currentUser.supervisor: 
-        return render_template('errors/403.html'), 403
-
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
