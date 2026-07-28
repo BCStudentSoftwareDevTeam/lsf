@@ -695,7 +695,7 @@ LaborStatusForm.insert([{
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
-            "POSN_CODE": "S61407",
+            "POSN_CODE": "S61407", 
             "weeklyHours": 10,
             "startDate": f"2027-04-01",
             "endDate": f"2029-09-01",
@@ -739,7 +739,7 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61419",
-            "weeklyHours": 10,
+            "weeklyHours": 5,
             "startDate": f"2027-04-01",
             "endDate": "2027-09-01"
         }]).on_conflict_replace().execute()  
@@ -820,6 +820,14 @@ LaborStatusForm.insert([{
             "endDate": "2025-09-01"
         
         }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 9,
+            "formID_id": "9",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute() 
 LaborStatusForm.insert([{
     
             "laborStatusFormID": 60,
@@ -837,6 +845,14 @@ LaborStatusForm.insert([{
             "endDate": "2025-09-01"
         
         }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 60,
+            "formID_id": "60",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute() 
 
 
 
@@ -1146,84 +1162,84 @@ positionHistory = [
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 
-dummy_lsf = [
-    {
-        "laborStatusFormID": 4,
-            "termCode_id": f"202500",
-            "studentName": "Chris Georgiev",
-            "studentSupervisee_id": "B00811617",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 4,
-            "POSN_TITLE": "guy who does stuff",
-            "POSN_CODE": "S61415",
-            "weeklyHours": 12,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-    },
-    {
+# dummy_lsf = [
+#     {
+#         "laborStatusFormID": 4,
+#             "termCode_id": f"202500",
+#             "studentName": "Chris Georgiev",
+#             "studentSupervisee_id": "B00811617",
+#             "supervisor_id": "B12361006",
+#             "department_id": 1,
+#             "jobType": "Primary",
+#             "WLS": 4,
+#             "POSN_TITLE": "guy who does stuff",
+#             "POSN_CODE": "S61415",
+#             "weeklyHours": 12,
+#             "startDate": f"2025-04-01",
+#             "endDate": "2025-09-01"
+#     },
+#     {
         
-        "laborStatusFormID": 5,
-            "termCode_id": f"202500",
-            "studentName": "Julius Fritz",
-            "studentSupervisee_id": "B00815474",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 2,
-            "POSN_TITLE": "guy who sits in chair",
-            "POSN_CODE": "S61416",
-            "weeklyHours": 15,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-    },
-    {
-        "laborStatusFormID": 6,
-            "termCode_id": f"202500",
-            "studentName": "Subaru Natsuki",
-            "studentSupervisee_id": "B12345223",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 1,
-            "POSN_TITLE": "Aura Monster",
-            "POSN_CODE": "S61417",
-            "weeklyHours": 20,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-    },
-    {
-        "laborStatusFormID": 7,
-            "termCode_id": f"202500",
-            "studentName": "Hatsune Miku",
-            "studentSupervisee_id": "B12345003",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 6,
-            "POSN_TITLE": "Singer",
-            "POSN_CODE": "S61409",
-            "weeklyHours": 20,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
+#         "laborStatusFormID": 5,
+#             "termCode_id": f"202500",
+#             "studentName": "Julius Fritz",
+#             "studentSupervisee_id": "B00815474",
+#             "supervisor_id": "B12361006",
+#             "department_id": 1,
+#             "jobType": "Primary",
+#             "WLS": 2,
+#             "POSN_TITLE": "guy who sits in chair",
+#             "POSN_CODE": "S61416",
+#             "weeklyHours": 15,
+#             "startDate": f"2025-04-01",
+#             "endDate": "2025-09-01"
+#     },
+#     {
+#         "laborStatusFormID": 6,
+#             "termCode_id": f"202500",
+#             "studentName": "Subaru Natsuki",
+#             "studentSupervisee_id": "B12345223",
+#             "supervisor_id": "B12361006",
+#             "department_id": 1,
+#             "jobType": "Primary",
+#             "WLS": 1,
+#             "POSN_TITLE": "Aura Monster",
+#             "POSN_CODE": "S61417",
+#             "weeklyHours": 20,
+#             "startDate": f"2025-04-01",
+#             "endDate": "2025-09-01"
+#     },
+#     {
+#         "laborStatusFormID": 7,
+#             "termCode_id": f"202500",
+#             "studentName": "Hatsune Miku",
+#             "studentSupervisee_id": "B12345003",
+#             "supervisor_id": "B12361006",
+#             "department_id": 1,
+#             "jobType": "Primary",
+#             "WLS": 6,
+#             "POSN_TITLE": "Singer",
+#             "POSN_CODE": "S61409",
+#             "weeklyHours": 20,
+#             "startDate": f"2025-04-01",
+#             "endDate": "2025-09-01"
 
-        },
-        {
-        "laborStatusFormID": 8,
-            "termCode_id": f"202500",
-            "studentName": "Michael Jackson",
-            "studentSupervisee_id": "B12345772",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Secondary",
-            "WLS": 6,
-            "POSN_TITLE": "Famous singer",
-            "POSN_CODE": "S61410",
-            "weeklyHours": 5,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-        }
-]
-LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()
+#         },
+#         {
+#         "laborStatusFormID": 8,
+#             "termCode_id": f"202500",
+#             "studentName": "Michael Jackson",
+#             "studentSupervisee_id": "B12345772",
+#             "supervisor_id": "B12361006",
+#             "department_id": 1,
+#             "jobType": "Secondary",
+#             "WLS": 6,
+#             "POSN_TITLE": "Famous singer",
+#             "POSN_CODE": "S61410",
+#             "weeklyHours": 5,
+#             "startDate": f"2025-04-01",
+#             "endDate": "2025-09-01"
+#         }
+# ]
+# LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()
 print(" * position history added")

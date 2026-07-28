@@ -20,6 +20,7 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import createSupervisorFromTracy
+from app.logic.allocationManager import *
 from app.models.positionHistory import PositionHistory
 
 
@@ -102,34 +103,42 @@ def departmentPortal(org=None,account=None):
         else:
             supervisors.append(supervisorDisplay)
     
-    ViewAllocations(org, account)
-    totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
-    usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
-    studentHours = {}
-    for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
-    ):
-        studentSuperviseeId = form.studentSupervisee_id
-        if studentSuperviseeId not in studentHours:
-            studentHours[studentSuperviseeId] = []
-        studentHours[studentSuperviseeId].append({
-                "jobType": form.jobType,
-                "weeklyHours": form.weeklyHours
-            })
+#     ViewAllocations(org, account)
+#     totalPositions = Allocation.select(fn.SUM(Allocation.primary_10) + fn.SUM(Allocation.primary_12) + fn.SUM(Allocation.primary_15) + fn.SUM(Allocation.primary_20) + fn.sum(Allocation.secondary_5) + fn.SUM(Allocation.secondary_10)).where(Allocation.department == dept, Allocation.termCode == 202500).scalar()
+#     usedAllocation = len([hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True))])
+#     studentHours = {}
+#     for form in LaborStatusForm.select().where(LaborStatusForm.department == dept,LaborStatusForm.termCode_id == 202500,LaborStatusForm.contractHours.is_null(True)
+#     ):
+#         studentSuperviseeId = form.studentSupervisee_id
+#         if studentSuperviseeId not in studentHours:
+#             studentHours[studentSuperviseeId] = []
+#         studentHours[studentSuperviseeId].append({
+#                 "jobType": form.jobType,
+#                 "weeklyHours": form.weeklyHours
+#             })
         
 
-    def count_workers(job_type, hours_bucket):
-        return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
+#     def count_workers(job_type, hours_bucket):
+#         return LaborStatusForm.select().where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.jobType == job_type, LaborStatusForm.weeklyHours == hours_bucket, LaborStatusForm.contractHours.is_null(True)).count()
     
-    usedPositions = {
-    "used_10": count_workers("Primary", "10"),
-    "used_12": count_workers("Primary", "12"),
-    "used_15": count_workers("Primary", "15"),
-    "used_20": count_workers("Primary", "20"),
-    "used_5_sec": count_workers("Secondary", "5"),
-    "used_10_sec": count_workers("Secondary", "10"),
-}
-    break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
-    sumBreak = sum(form.contractHours or 0 for form in break_allocation)
+#     usedPositions = {
+#     "used_10": count_workers("Primary", "10"),
+#     "used_12": count_workers("Primary", "12"),
+#     "used_15": count_workers("Primary", "15"),
+#     "used_20": count_workers("Primary", "20"),
+#     "used_5_sec": count_workers("Secondary", "5"),
+#     "used_10_sec": count_workers("Secondary", "10"),
+# }
+#     break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
+#     sumBreak = sum(form.contractHours or 0 for form in break_allocation)
+
+    totalPositions = getTotalAllocations(202500, dept)["totalAllocations"]
+    usedAllocation = getContractedAllocations(202500, dept)
+    sumBreak = usedAllocation["break_hours"]
+    studentHours = getContractedAllocations(202500, dept)
+    usedPositions = usedAllocation
+    usedAllocation = usedAllocation["usedTotal"]
+    
     positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []
     posUrl = []
