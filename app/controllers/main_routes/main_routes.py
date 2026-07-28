@@ -12,7 +12,7 @@ from app.models.term import Term
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor, isDepartmentAllowed, searchPerson, searchSupervisorPortal
+from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
@@ -82,8 +82,10 @@ def managePositions(org, account):
     except DoesNotExist:
         return render_template('errors/404.html'), 404
 
-    if not isDepartmentAllowed(g.currentUser, dept):
-        return render_template('errors/403.html'), 403
+    if not g.currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
 
     positions = (PositionHistory.select()
                                 .where((PositionHistory.department == dept) &

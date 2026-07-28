@@ -47,20 +47,12 @@ def studentDbToDict(student):
                 'type': 'Student'}
     return dbToDict
 
-def getAssignedDepartments(currentUser):
-    """
-    Given currentUser, return only the departments the user is directly assigned to
-    supervise (per the SupervisorDepartment table). Unlike getDepartmentsForSupervisor,
-    this does not include departments the user has merely interacted with via forms, so
-    it's the correct set to use for authorization checks.
-    """
-    return Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
-
 def getDepartmentsForSupervisor(currentUser):
     """
     Given currentUser, find and return all departments that the user is associated with.
     """
-    supervisorDepts = getAssignedDepartments(currentUser)
+    # query the SupervisorDepartment table to see if any entries exist for the currentUser
+    supervisorDepts = Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor)
 
     # queries all forms to see what departments the user has interacted with
     departments = (Department.select(Department)
@@ -72,16 +64,6 @@ def getDepartmentsForSupervisor(currentUser):
                     )
     alldepts = departments.union(supervisorDepts)
     return alldepts
-
-def isDepartmentAllowed(currentUser, department):
-    """
-    Given currentUser and a department, return True if the user is allowed to access it
-    (labor admins are always allowed; supervisors only for departments they're directly
-    assigned to, not merely departments they've interacted with via forms).
-    """
-    if currentUser.isLaborAdmin:
-        return True
-    return department in getAssignedDepartments(currentUser)
 
 def getSupervisorsForDepartment(departmentId):
     departmentSupervisors = Supervisor.select().join(SupervisorDepartment).where(SupervisorDepartment.department == departmentId).order_by(Supervisor.LAST_NAME).execute()
