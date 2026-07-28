@@ -39,3 +39,13 @@ export FLASK_APP=app.py         # app entry point
 export APP_ENV=development    # default
 export FLASK_RUN_PORT=8080      # For consistency (python app.py vs flask run)
 export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application
+
+# Fix symbolic link inside database directory
+if ! [ -L "database/app" ]; then
+	echo "Fixing symlink to app in database directory"
+	cd database
+	rm app
+	ln -s ../app
+	cd ..
+fi
+
