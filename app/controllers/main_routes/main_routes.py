@@ -19,6 +19,7 @@ from app.logic.banner import Banner
 from app.logic.allocationUtilization import getDepartmentAllocationSummary
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
+from app.logic.getPositions import getActivePositions
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -74,6 +75,8 @@ def departmentPortal(org=None,account=None):
     else:
         allocation = None
 
+    positionsList, posURL = getActivePositions(dept)
+
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
@@ -83,6 +86,8 @@ def departmentPortal(org=None,account=None):
                            term = recentTerm,
                            usedPositions = allocation_summary["used_positions"],
                            break_hours = allocation_summary["break_hours"],
+                           positions = positionsList,
+                           posURL = posURL,
                            )
 @main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
 def managePositions(org, account):
