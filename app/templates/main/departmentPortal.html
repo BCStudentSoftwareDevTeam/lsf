@@ -3,11 +3,11 @@
 {% block scripts %}
 {{super()}}
     <script type="text/javascript" src="{{url_for('static', filename='js/departmentPortal.js') }}?u={{lastStaticUpdate}}"></script>
-    <link rel="stylesheet" type="text/css"
+    <link rel="stylesheet" type="text/css" href="/static/css/departmentPortal.css?u={{lastStaticUpdate}}"/>
 {% endblock %}
+
 {% block app_content %}
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
-
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -23,129 +23,137 @@
         "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
       {% endfor %}
     </select>
+
   </div>
 
 {% if department %}
-<div class="card-group" style="display:inline-flex; gap: 1rem;">
-     
-<section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="current_allocation-title">
-    <div class="card-body">
-      <div class="media">
-        <div class="header-container" style="padding-top: 12px;">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i> 
-            <h1 style="display: inline; margin: 0;" >Allocations</h1>
-          </span>
-        </div>
+    <div class="card-row g-3">
+      <div class="col-12 col-lg-4 ">
+        <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="current_allocation-title">
+            <div class="card-body">
+              <div class="media">
+                <div class="header-container" style="padding-top: 12px;">
+                  <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                    <i class="bi bi-clock" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
+                    <h1 style="display: inline; margin: 0;" >Allocations</h1>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
+                  <h3>{{ currentTerm.termName.replace("AY", "Term") if currentTerm else "No open term" }}</h3>
+                  <h3>{{ totalPositionsUsed if allocation else "No allocation" }}{% if allocation %}/{{ totalPositionsAllocated }}{% endif %} Positions</h3>
+                </div>
+                {% if allocation %}
+                <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: flex-start; padding-left: 10px; padding-right: 10px;">
+                <div style="padding-left: 75px;">
+                  <h4 style="margin: 0 0 4px 0;">Primary</h4>
+                  <ul style="font-size: 1.2em; margin: 0; padding-left: 20px;">
+                    <li>10 Hour - {{ allocationBands.primary_10.used }}/{{ allocationBands.primary_10.allocated }}</li>
+                    <li>12 Hour - {{ allocationBands.primary_12.used }}/{{ allocationBands.primary_12.allocated }}</li>
+                    <li>15 Hour - {{ allocationBands.primary_15.used }}/{{ allocationBands.primary_15.allocated }}</li>
+                    <li>20 Hour - {{ allocationBands.primary_20.used }}/{{ allocationBands.primary_20.allocated }}</li>
+                  </ul>
+                </div>
+                <div style="padding-right: 75px;">
+                  <h4 style="margin: 0 0 4px 0;">Secondary</h4>
+                  <ul style="font-size: 1.2em; margin: 0; padding-left: 20px;">
+                    <li>5 Hour - {{ allocationBands.secondary_5.used }}/{{ allocationBands.secondary_5.allocated }}</li>
+                    <li>10 Hour - {{ allocationBands.secondary_10.used }}/{{ allocationBands.secondary_10.allocated }}</li>
+                  </ul>
+                </div>
+                </div>
+                {% endif %}
+              </div>
+              <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
+                <h3>Break Hours</h3>
+                <h3>{{ breakHoursUsed if allocation else "No allocation" }}{% if allocation %}/{{ allocation.breakHours }}{% endif %} Hours</h3>
+              </div>
+            </div>
+            <div class="card-footer text-center">
+              <a href="#" class="btn btn-primary btn-m">
+                Manage Allocations <span class="glyphicon glyphicon-chevron-right"></span>
+              </a>
+            </div>
+        </section>
       </div>
-      <div>
-        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-          <h3>{{ currentTerm.termName.replace("AY", "Term") if currentTerm else "No open term" }}</h3>
-          <h3>{{ totalPositionsUsed if allocation else "No allocation" }}{% if allocation %}/{{ totalPositionsAllocated }}{% endif %} Positions</h3>
-        </div>
-        {% if allocation %}
-        <div class ="allocation-list" style="display: flex; justify-content: space-between; align-items: flex-start; padding-left: 10px; padding-right: 10px;">
-        <div style="padding-left: 75px;">
-          <h4 style="margin: 0 0 4px 0;">Primary</h4>
-          <ul style="font-size: 1.2em; margin: 0; padding-left: 20px;">
-            <li>10 Hour - {{ allocationBands.primary_10.used }}/{{ allocationBands.primary_10.allocated }}</li>
-            <li>12 Hour - {{ allocationBands.primary_12.used }}/{{ allocationBands.primary_12.allocated }}</li>
-            <li>15 Hour - {{ allocationBands.primary_15.used }}/{{ allocationBands.primary_15.allocated }}</li>
-            <li>20 Hour - {{ allocationBands.primary_20.used }}/{{ allocationBands.primary_20.allocated }}</li>
-          </ul>
-        </div>
-        <div style="padding-right: 75px;">
-          <h4 style="margin: 0 0 4px 0;">Secondary</h4>
-          <ul style="font-size: 1.2em; margin: 0; padding-left: 20px;">
-            <li>5 Hour - {{ allocationBands.secondary_5.used }}/{{ allocationBands.secondary_5.allocated }}</li>
-            <li>10 Hour - {{ allocationBands.secondary_10.used }}/{{ allocationBands.secondary_10.allocated }}</li>
-          </ul>
-        </div>
-        </div>
-        {% endif %}
+
+      <div class="col-12 col-lg-4">
+        <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
+          <div class="card-body">
+            <div class="media">
+               <div class="media-left media-middle">
+                <span aria-hidden="true" style="color: #000; font-size: 24px;">
+                  <i class="bi bi-people-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
+                </span>
+              </div>
+
+              <div class="media-body media-middle">
+                <h1>
+                  Members
+                </h1>
+              </div>
+            </div>
+            <h4>Labor Coordinator(s)</h4>
+            <p>Dr. Jones</p>
+
+            <h2>Supervisors</h2>
+            {% for s in supervisors %}
+            {% if 3 > loop.index0 %}
+              <p>{{ s }}</p>
+            {% elif 4 > loop.index0 %}
+              <p>and {{ supervisors | length}} more...</p>
+            {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="card-footer text-center">
+            <a href="#" class="btn btn-primary">View Details
+               <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+          </div>
+        </section>
       </div>
-      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-        <h3>Break Hours</h3>
-        <h3>{{ breakHoursUsed if allocation else "No allocation" }}{% if allocation %}/{{ allocation.breakHours }}{% endif %} Hours</h3>
+
+        <div class=" col-12 col-lg-4">
+        <section class="card" aria-labelledby="positions-title">
+          <div class="card-body">
+              <div class="media">
+                <div class="media-left media-middle">
+                  <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                    <i class="bi bi-suitcase-lg-fill"></i>
+                  </span>
+                </div>
+              <div class="media-body media-middle">
+                <h3>Positions</h3>
+              </div>
+
+            </div>
+            <ul style="line-height:2;">
+            {% if positions == [] %}
+                <li class="card-text">
+                  <p> No active positions in this department </p>
+                </li>
+              {% else %}
+                {% for p in positions[:7] %}
+                    <li class="card-text">
+                      <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posURL[loop.index0]}}">{{ p }}</a>
+                    </li>
+                {% endfor %}
+                {% if (positions | length) > 7 %}
+                  </ul><p class="card-text">and {{ (positions | length) - 7}} more ...</p>
+                {% endif %}
+              {% endif %}
+            </ul>
+
+          </div>
+              <div class="card-footer text-center">
+                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/main/managePositions.html" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+              </div>
+        </section>
       </div>
-    </div>
-        <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary btn-m">
-        Manage Allocations <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-    </section>
-
-  <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
-    <div class="card-body">
-      <div class="media">
-         <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #000; font-size: 24px;">
-            <i class="bi bi-people-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
-          </span>
-        </div>
-
-        <div class="media-body media-middle">
-          <h1>
-            Members
-          </h1>
-        </div>
-      </div>
-      <h4>Labor Coordinator(s)</h4>
-      <p>Dr. Jones</p>
-
-      <h2>Supervisors</h2>
-      {% for s in supervisors %}
-      {% if 3 > loop.index0 %}
-        <p>{{ s }}</p>
-      {% elif 4 > loop.index0 %}
-        <p>and {{ supervisors | length}} more...</p>
-      {% endif %}
-      {% endfor %}
-    </div>
-
-    <div class="card-footer text-center">
-      <a href="#" class="btn btn-primary">View Details
-         <span class="glyphicon glyphicon-chevron-right"></span>
-      </a>
-    </div>
-  </section>
-
-  <div class="card" style="width:50rem; border-radius: 1rem;">
-    <div class="card-body">
-       <div class="media">
-        <div class="media-left media-middle">
-          <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-            <i class="bi bi-suitcase-lg-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
-          </span>
-        </div>
-        <div class="media-body media-middle">
-          <h1>Positions</h1>
-        </div>
-
-      </div>
-      <ul style="line-height:2;">
-      {% for p in positions %}
-        {% if 7 > loop.index0 %}
-          <li class="card-text">{{ p }}</li>
-        {% elif 8 == loop.index0 %}
-          </ul><p class="card-text">and {{ positions | length}} more...</p>
-        {% endif %}
-      {% endfor %}
-      </ul>
-      
-    </div>
-       <div class="card-footer text-center" >
-          <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-primary">View Details <span class="glyphicon glyphicon-chevron-right"></span></a>
-       </div>
-    </div>
-</div>
+  </div>
 
 {% endif %}
 
-
 {% endblock %}
-
-
-
-

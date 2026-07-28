@@ -207,7 +207,6 @@ a {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
-  overflow: hidden;
 }
 
 .card-body {
@@ -251,9 +250,7 @@ a {
   padding: 0.5rem 1rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  
+  margin-top: auto;
 }
 
 .card-footer:last-child {
@@ -268,7 +265,6 @@ a {
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px);
 }
-
 .site-footer {
   position: fixed;
   left: 280px;

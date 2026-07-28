@@ -16,6 +16,8 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.tracy import Tracy
 from app.logic.allocation import getAllocationSummary
+from app.models.positionHistory import PositionHistory
+from app.logic.getPositions import getActivePositions
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -51,26 +53,16 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
-    if org and account:
-        try:
-            dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-        except (NameError, DoesNotExist):
-            dept = None
-    else:
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
         dept = None
-    
+
+
     if g.currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
-    
-    pos = Tracy().getPositionsFromDepartment(org, account)
-    positions = []
-    if pos == []:
-        positions = ["No Positions for this Department"]
-    else:
-        for i in pos:
-            positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
 
     staff = Tracy().getSupervisors()
     supervisors = []
@@ -80,11 +72,13 @@ def departmentPortal(org=None,account=None):
             supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
 
     allocationSummary = getAllocationSummary(dept, g.openTerm)
+    positionsList, posURL = getActivePositions(dept)
 
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
-                           positions = positions,
+                           positions = positionsList,
+                           posURL = posURL,
                            supervisors = supervisors,
                            allocation = allocationSummary['allocation'],
                            allocationBands = allocationSummary['allocationBands'],
@@ -92,21 +86,6 @@ def departmentPortal(org=None,account=None):
                            totalPositionsUsed = allocationSummary['totalPositionsUsed'],
                            breakHoursUsed = allocationSummary['breakHoursUsed'],
                            currentTerm = g.openTerm)
-
-@main_bp.route('/department/<org>/<account>/managepositions', methods=['GET'])
-def managePositions(org, account):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
-
-    positions = Tracy().getPositionsFromDepartment(org, account)
-    print(positions)
-    return render_template('main/managepositions.html',
-                           department = dept,
-                           department_name = dept.DEPT_NAME,
-                           positions = positions
-                           )
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
@@ -175,4 +154,3 @@ def submitToBanner(formHistoryId):
         return "Form successfully submitted to Banner.", 200
     else:
         return "Submitting to Banner failed.", 500
-
