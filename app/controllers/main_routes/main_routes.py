@@ -67,11 +67,11 @@ def departmentPortal(org=None,account=None):
     if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
-        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     
     supervisors, laborCoordinators = getSupervisors(dept)
 
-    positionsList, posURL = getActivePositions(dept)
+    positionsList, posURL = getActivePositions(dept) 
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
