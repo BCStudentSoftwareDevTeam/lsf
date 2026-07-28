@@ -5,7 +5,10 @@ from app.models.term import *
 
 
 def getAllocation(termCode, dept):
-    allocationObject = Allocation.select().where(Allocation.termCode == 202500, Allocation.department == 3, Allocation.isFinal == True).dicts().get() #FIXME
+    allocationObject = Allocation.select().where(
+        Allocation.termCode == 202500, 
+        Allocation.department == 3, 
+        Allocation.isFinal == True).dicts().get() #FIXME
     return allocationObject
 
 def getTotalAllocations(termCode, dept):
