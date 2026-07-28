@@ -1,3 +1,6 @@
+from flask import g, abort
+from peewee import fn
+
 from app.controllers.admin_routes.termManagement import createTerms
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
@@ -6,8 +9,6 @@ from app.models.department import *
 from app.models.term import *
 from app.login_manager import require_login
 from app.controllers.main_routes import departmentPortal
-from flask import g, abort
-from peewee import fn
 
 
 def checkAdmistratorRights():

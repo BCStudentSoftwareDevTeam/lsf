@@ -1,3 +1,9 @@
+from datetime import date
+
+from flask import g, request, redirect, jsonify
+from flask_bootstrap import bootstrap_find_resource
+from playhouse.shortcuts import model_to_dict
+
 from app.controllers.admin_routes import *
 from app.models import term
 from app.models.formHistory import FormHistory
@@ -8,23 +14,18 @@ from app.logic.search import getSupervisorsForDepartment
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
 from app.models.term import *
-from flask_bootstrap import bootstrap_find_resource
 from app.models.department import *
 from app.models.allocation import *
-from app.models.laborStatusForm import * #Do we need to import all?
-from flask import request, redirect
-from flask import jsonify
-from playhouse.shortcuts import model_to_dict
+from app.models.laborStatusForm import *
 from app.logic.tracy import Tracy
-from datetime import date
-from flask import g
 from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
 from app.controllers.admin_routes.termManagement import createTerms
 
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) # FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
+# FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
 
 # @login_required
 def manage_departments(academicYear = None):
@@ -44,29 +45,6 @@ def manage_departments(academicYear = None):
 
         previousAYTerms, currentAYTerms, nextAYTerms = generateTermsForAdjacentYears(academicYear)
         chosenAY = Term.get(Term.termCode == academicYear)
-
-        
-        # Works. Should work without production data now.
-        # We've also thought about having a drop down menu to select the term once the academic year is selected. This should also include the ability to view the entire academic year.
-        # Given the new implementation of the term management page, we can now use the term management page to create terms for the academic year and then use this page to view the 
-        # departments for that academic year.  This will be a much more efficient way to manage the terms and departments.
-        # A concept of Currently Selected Term does not exist, yet. Implementing it here will make it so that the user can select a term and then view the departments for that term.  
-        # This will be a much more efficient way to manage the terms and departments.
-        
-
-        # For Testing Purposes.  This will be removed once the term management page is fully implemented and the terms are created for the academic year.
-        # totalBreakSum = getUsedBreakHours(currentAY)
-        # for row in totalBreakSum:
-        #     print(row['department'],int(row['totalHours']),row['termCode'])
-        #     print(totalBreakSum)
-
-
-        # fallTerm = createdTerms[1]
-        # springTerm = createdTerms[4]
-        # summerTerm = createdTerms[6]
-        #
-        # print("******************",fallTerm.termName, springTerm.termName, summerTerm.termName, "**********************")
-        # print("******************",previousAY.termName, nextAY.termName, currentAY.termName, "**********************")
 
 
         breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(chosenAY)} 
