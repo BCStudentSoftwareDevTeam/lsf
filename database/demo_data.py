@@ -825,7 +825,7 @@ print(" * allocation added")
 # Position History
 #############################
 
-positionhistory = [
+positionHistory = [
     {
         "positionTitle": "Student Programmer",
         "positionCode": "S61407",
@@ -939,5 +939,5 @@ positionhistory = [
     
 
 ]
-PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")
