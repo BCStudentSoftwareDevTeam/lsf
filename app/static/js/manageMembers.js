@@ -91,7 +91,6 @@ $(document).ready(function() {
         let departmentID = redButton.data("department");
 
         let confirmed = confirm( "Are you sure you want to remove " + memberName + " from this department?" );
-
     // Stop here if the user clicks Cancel
     if (!confirmed) {
         return;
