@@ -28,27 +28,20 @@ def getTotalAllocations(termCode, dept):
     return allocationDict
  
 def countContracts(jobType, contractHours, termCode, dept):
-    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where((FormHistory.status == "Approved" |
-                                                                                          FormHistory.status == "Pending" |
-                                                                                          FormHistory.status == "Pre-Student Approval"),
-                                                                                          LaborStatusForm.termCode == termCode,
-                                                                                          LaborStatusForm.jobType == jobType,
-                                                                                          FormHistory.formID.weeklyHours == contractHours,
-                                                                                          Department.departmentID == dept).count()
+    lsfCountPrimaries = FormHistory.select(
+                                    ).join(LaborStatusForm
+                                    ).join(Department
+                                    ).where((FormHistory.status == "Approved" |
+                                             FormHistory.status == "Pending" |
+                                             FormHistory.status == "Pre-Student Approval"),
+                                             LaborStatusForm.termCode == termCode,
+                                             LaborStatusForm.jobType == jobType,
+                                             FormHistory.formID.weeklyHours == contractHours,
+                                             Department.departmentID == dept).count()
     return lsfCountPrimaries
-    return LaborStatusForm.select().where(
-        LaborStatusForm.department == 1,
-        LaborStatusForm.termCode == 202500, #FIXME
-        LaborStatusForm.jobType == jobType,
-        LaborStatusForm.weeklyHours == contractHours,
-        LaborStatusForm.contractHours.is_null(True)).count()
-
 
 def getContractedAllocations(termCode, dept):
     allocationObject = getAllocation(termCode, dept)
-    # usedPrimariesAllocation = [hours for hours in LaborStatusForm.select(LaborStatusForm.weeklyHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(True), LaborStatusForm.jobType == "Primary")]
-    # break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
-
     break_allocation = FormHistory.select(
         LaborStatusForm.department,
         LaborStatusForm.termCode.termCode,
@@ -62,22 +55,17 @@ def getContractedAllocations(termCode, dept):
     ).where(
         (FormHistory.historyType == "Labor Status Form") &
         (FormHistory.status == "Approved") &
-        (LaborStatusForm.termCode == "202500")
+        (LaborStatusForm.termCode == termCode)
     ).group_by(
         LaborStatusForm.department, 
         LaborStatusForm.termCode).dicts()
     
-    print("\n\n\n\n\n\n\n\n\nasdf")
-    print(type(break_allocation[0]))
-    # breakSum = int(sum(form.contractHours or 0 for form in break_allocation))
-    # print(breakSum)
     breakSum = {"totalHours": 0}
     for row in break_allocation:
         if row["department"] == dept.departmentID:
             breakSum = row
             break
 
-    print("\n\n\n\n\n\n" + str(list(break_allocation)))
     usedPositions = {
     "used_10": countContracts("Primary", "10", termCode, dept),
     "used_12": countContracts("Primary", "12", termCode, dept),
@@ -88,6 +76,5 @@ def getContractedAllocations(termCode, dept):
     "usedTotal": 0,
     "break_hours": breakSum["totalHours"]
     }
-    print(f" faahhh \n\n\n\n\n {list(usedPositions.values())[:7]}")
     usedPositions["usedTotal"] = sum(list(usedPositions.values())[:7])
     return usedPositions
