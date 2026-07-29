@@ -5,8 +5,6 @@ from app.login_manager import require_login
 import os
 
 main_bp = Blueprint('main', __name__)
-
-
 @main_bp.context_processor
 def injectGlobalData():
     currentUser = require_login()
@@ -14,7 +12,7 @@ def injectGlobalData():
                    for root_path, dirs, files in os.walk('app/static')
                    for f in files))
     return {'currentUser': currentUser,
-            'lastStaticUpdate': lastStaticUpdate,}
+            'lastStaticUpdate': lastStaticUpdate}
 
 from app.controllers.main_routes import main_routes
 from app.controllers.main_routes import departmentPortal
