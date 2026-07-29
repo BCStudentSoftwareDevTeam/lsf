@@ -74,15 +74,17 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            positions = positionsList,
                            posURL = posURL)
+
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-
+    
     if not g.currentUser.isLaborAdmin:
-        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(g.currentUser)]
+        supervisorDepts = SupervisorDepartment.select().where(SupervisorDepartment.supervisor == g.currentUser.supervisor)
+        allowedDepartmentIds = [sd.department_id for sd in supervisorDepts]
         if dept.departmentID not in allowedDepartmentIds:
             return render_template('errors/403.html'), 403
 
@@ -96,6 +98,7 @@ def managePositions(org, account):
                            department_name = dept.DEPT_NAME,
                            positions = positions
                            )
+
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
