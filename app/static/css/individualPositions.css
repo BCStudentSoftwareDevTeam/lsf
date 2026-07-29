@@ -25,6 +25,11 @@
     font-weight: 700;
 }
 
+/* Review and improve this later. (Also move it to a more appropriate location) */
+.position-container {
+    margin-top: 2rem;
+}
+
 /* Description section card */
 .position-description {
     background: #fff;
@@ -36,15 +41,11 @@
     margin-top: 0;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
+    white-space: pre-line;
 }
 
 /* Utility float class used across the app */
 .floatright {
     float: right;
     margin-left: 0.5rem;
-}
-
-/* Review and improve this later. (Also move it to a more appropriate location) */
-.position-container {
-    margin-top: 2rem;
 }

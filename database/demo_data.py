@@ -768,7 +768,7 @@ positionhistory = [
         "wls": 2,
         "revisionDate": f"2026-09-01",
         "revisedBy": "Jane Smith",
-        "description": "-WLS Level Justification\n- Description of Duties\n- Learning Opportunities\n- Required Qualifications",
+        "description": "WLS Level Justification:\nThis position is assigned WLS 2 because it supports key research work with moderate technical complexity.\n\nDescription of Duties:\nProvide research assistance, coordinate data collection, and help prepare reports.\n\nLearning Opportunities:\nGain experience with research practices, data management, and academic collaboration.\n\nRequired Qualifications:\nStrong communication skills, attention to detail, and ability to work independently.",
         "department": 1
     },
     {
@@ -869,7 +869,7 @@ positionhistory = [
         "wls":6,
         "revisionDate" : f"2026-05-03",
         "revisedBy": "Jack Smith",
-        "description": "This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work- Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.",
+        "description": "",
         "department" : 1
     }
     
