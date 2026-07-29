@@ -21,9 +21,6 @@
 <br></br>
 <div class = "alert alert-danger" role="alert"> Your account is currently ineligible to add new students or create new status forms. Please contact the Labor Office for more information.
  </div> 
- <script>
-setTimeout(() => document.querySelector('.alert-danger').style.display = 'none', 5000);
-</script>
 {%endif%}
 <br></br>
 
@@ -120,15 +117,13 @@ setTimeout(() => document.querySelector('.alert-danger').style.display = 'none',
                         {% endif %}
                     </form>
                 </td>
-                <td class="text-center centered-cell remove-member" 
-                    data-supervisor="{{member.supervisor.ID }}"
+                <td class="text-center centered-cell remove-member"
+                    data-supervisor="{{ member.supervisor.ID }}"
                     data-department="{{ department.departmentID }}"
                     data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}">
-                    
-                        <button type ="button" class="btn btn-danger" align="center">     
-                            <span class="bi bi-trash"></span>
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-danger" align="center">
+                        <span class="bi bi-trash"></span>
+                    </button>
                 </td>
                 {% endif %}
 

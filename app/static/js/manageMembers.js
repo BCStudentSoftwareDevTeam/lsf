@@ -16,6 +16,7 @@ $(document).ready(function() {
         //dom: '<"top"l>rt<"bottom"p><"clear">' 
     });
     $('[data-toggle="popover"]').popover();
+    setTimeout(function() { $(".alert-danger").fadeOut();}, 5000);
     $(document).on("click", ".assign-coordinator", function() {
 
         let memberName = $(this).data("member-name");
@@ -46,7 +47,7 @@ $(document).ready(function() {
     $(document).on("click", ".member-status-btn", function() {
 
         let button = $(this);
-        let ban_badge = $(this).closest("tr").find(".isbanned-badge");
+        let banBadge = $(this).closest("tr").find(".isbanned-badge");
 
         let memberName = button.data("member-name");
         let supervisorID = button.data("supervisor");

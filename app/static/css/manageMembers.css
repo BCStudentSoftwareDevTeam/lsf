@@ -1,4 +1,3 @@
-/*styles for column alignment in the data table*/
 .centered-header {
   text-align: center !important;
 }
@@ -7,12 +6,10 @@
   vertical-align: middle !important;
 }
 
-/*The Supervisor Eligibility button*/
 .member-status-btn {
   width: 80px;
 }
 
-/* The add-member search bar*/
 #add-member {
   display: flex; 
   justify-content: center; 
@@ -34,8 +31,6 @@
   }
 }
 
-
-/* The switch container */
 .switch {
   position: relative;
   display: inline-block;
@@ -44,14 +39,12 @@
   vertical-align: middle;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider track */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -60,7 +53,6 @@
   transition: .4s;
 }
 
-/* The slider knob */
 .slider:before {
   position: absolute;
   content: "";
@@ -72,17 +64,14 @@
   transition: .4s;
 }
 
-/* Checked state track color */
 input:checked + .slider {
-  background-color: #337ab7 !important; /* Bootstrap 3 Primary Color */
+  background-color: #337ab7 !important; 
 }
 
-/* Checked state knob movement */
 input:checked + .slider:before {
   transform: translateX(15px) !important;
 }
 
-/* Rounded slider track and knob */
 .slider.round {
   border-radius: 21.25px;
 }
@@ -90,14 +79,12 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-/* Optional label spacing */
 .switch-label {
   margin-left: 6.25px;
   vertical-align: middle;
   font-weight: bold;
 }
 
-/* hover indicator */
 a.hover-indicator {
   text-decoration: none !important;
   position: relative;
@@ -141,7 +128,6 @@ a.hover-indicator:active {
   color: #000000;
 }
 
-/*a "banned" badge displayed under the name of a banned department member*/
 .isbanned-badge {
   position: relative;
   display: inline-block;
@@ -156,7 +142,6 @@ a.hover-indicator:active {
   line-height: 1.2;
 }
 
-/* switches inside the data table */
 .table-switch {
   top: 10px;
 }

@@ -1,19 +1,12 @@
 from flask import g, jsonify, redirect, render_template, request, url_for
 
 from app.controllers.main_routes import main_bp
-from app.logic.manageMembers import (
-    attachPositionCounts,
-    canManageMembers,
-    currentAcademicYear,
-    getCurrentDepartment,
-    getDepartmentMembers,
-    getStudentCounts,
-    supervisorsDbToDict,
-)
-from app.logic.search import searchPerson
-from app.logic.userInsertFunctions import createSupervisorFromTracy
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
+from app.logic.manageMembers import *
+from app.logic.search import searchPerson
+from app.logic.userInsertFunctions import createSupervisorFromTracy
+
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageMembers(org=None, account=None):
@@ -22,9 +15,11 @@ def manageMembers(org=None, account=None):
     
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
+    
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+        return render_template('errors/403.html'), 403
 
-    dept = getCurrentDepartment(org, account)
-    members = getDepartmentMembers(dept)
+    dept, members = getCurrentDeptMembers(org, account)
     counts = getStudentCounts(dept)
     members = attachPositionCounts(members, counts)
 
@@ -32,7 +27,6 @@ def manageMembers(org=None, account=None):
         'main/manageMembers.html',
         members=members,
         department=dept,
-        currentAcademicYear=currentAcademicYear()
     )
 
 
@@ -44,7 +38,7 @@ def searchMember(query=None):
     """
     currentUser = g.currentUser
 
-    if not canManageMembers(currentUser):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403
 
     supervisors = (
@@ -64,7 +58,7 @@ def updateCoordinator():
     """
     currentUser = g.currentUser
 
-    if not canManageMembers(currentUser):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -92,7 +86,7 @@ def updateEligibility():
     """
     currentUser = g.currentUser
 
-    if not canManageMembers(currentUser):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -114,7 +108,7 @@ def removeMember():
     """
     currentUser = g.currentUser
 
-    if not canManageMembers(currentUser):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -141,7 +135,7 @@ def addUserToDept():
     """
     currentUser = g.currentUser
 
-    if not canManageMembers(currentUser):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
