@@ -1,10 +1,5 @@
-h3 {
-    font-weight: 700;
-}
-
 /* Individual Positions page styles */
 /* Header */
-.mb-4 h1,
 .department-header {
     text-align: center;
     font-weight: 700;
@@ -12,13 +7,13 @@ h3 {
 }
 
 /* Metadata list (dt / dd spacing) */
-.mb-5 dl.row dt {
+.position-information dl.row dt {
     font-weight: 600;
     color: #333;
     text-align: left;
     font-size: 2rem;
 }
-.mb-5 dl.row dd {
+.position-information dl.row dd {
     margin-bottom: 0.75rem;
     color: #444;
     text-align: left;
@@ -26,8 +21,12 @@ h3 {
 
 }
 
+.description-header {
+    font-weight: 700;
+}
+
 /* Description section card */
-.container-fluid section.mb-5{
+.position-description {
     background: #fff;
     border: 1px solid #e6e6e6;
     padding: 1.25rem;
@@ -43,4 +42,9 @@ h3 {
 .floatright {
     float: right;
     margin-left: 0.5rem;
+}
+
+/* Review and improve this later. (Also move it to a more appropriate location) */
+.position-container {
+    margin-top: 2rem;
 }

@@ -768,7 +768,7 @@ positionhistory = [
         "wls": 2,
         "revisionDate": f"2026-09-01",
         "revisedBy": "Jane Smith",
-        "description": "",
+        "description": "-WLS Level Justification\n- Description of Duties\n- Learning Opportunities\n- Required Qualifications",
         "department": 1
     },
     {

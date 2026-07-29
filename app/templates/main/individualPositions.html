@@ -8,15 +8,15 @@
 
 {% block app_content %}
 
-  <div class="mb-4 text-left">
-      <h1 class="department-header" >{{ department.DEPT_NAME }}</h1>
+  <div class="department-header-container">
+      <h1 class="department-header">{{ department.DEPT_NAME }}</h1>
   </div>
 
-  <div class="container-fluid mt-4">
+  <div class="container-fluid position-container">
     <div class="row">
       <div class="col-12">
 
-        <div class="mb-5">
+        <div class="position-information">
           <dl class="row">
         
             <dt class="col-sm-3">Position Title:</dt>
@@ -38,8 +38,8 @@
             <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
           </dl>
         </div>
-        <h3>Description</h3>
-        <section class="mb-5">
+        <h3 class="description-header">Description</h3>
+        <section class="position-description">
           {% if position.description %}
             <p>{{ position.description }}</p>
           {% else %}
@@ -50,7 +50,7 @@
 <div class="row">
     <div class="col-xs-6 text-left">
         <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}"
-           class="btn btn-secondary">
+           class="btn btn-default">
             Back to Department
         </a>
     </div>
@@ -63,7 +63,7 @@
         </a>
     </div>
       </div>
-      </div>
     </div>
   </div>
+</div>
 {% endblock %}
