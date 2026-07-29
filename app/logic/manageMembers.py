@@ -11,25 +11,29 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 
+
 def supervisorsDbToDict(supervisor):
     """
     Given a supervisor object it will return a mapped Dict with supervisor data.
     """
-    dbToDict =  {'username': usernameFromEmail(supervisor.EMAIL.strip()),
-                'firstName': supervisor.FIRST_NAME.strip(),
-                'lastName': supervisor.LAST_NAME.strip(),
-                'bnumber': supervisor.ID.strip(),
-                'department': supervisor.DEPT_NAME.strip(),
-                'type': 'Supervisor'}
+    dbToDict = {
+        'username': usernameFromEmail(supervisor.EMAIL.strip()),
+        'firstName': supervisor.FIRST_NAME.strip(),
+        'lastName': supervisor.LAST_NAME.strip(),
+        'bnumber': supervisor.ID.strip(),
+        'department': supervisor.DEPT_NAME.strip(),
+        'type': 'Supervisor'
+    }
     return dbToDict
+
 
 def getCurrentDeptMembers(org, account):
     """Return the current department and its supervisor-department rows."""
     try:
-        return Department.get( Department.ORG == org, Department.ACCOUNT == account)
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         abort(404)
-        
+
     members = list(
         SupervisorDepartment
         .select(SupervisorDepartment, Supervisor)
@@ -42,7 +46,7 @@ def getCurrentDeptMembers(org, account):
 
 def getStudentCounts(dept):
     """Active/pending primary/secondary position counts, keyed by (dept, supervisor)."""
-        today = date.today()
+    today = date.today()
 
     releasedFormIds = (
         FormHistory
@@ -109,4 +113,3 @@ def attachPositionCounts(members, counts):
             setattr(member, field, row.get(field, 0))
 
     return members
-

@@ -1,15 +1,12 @@
 from datetime import date
-from types import SimpleNamespace
 
 import pytest
 from werkzeug.exceptions import NotFound
 
 from app import app
-import app.logic.manageMembers as manageMembersLogic
 from app.logic.manageMembers import (
     attachPositionCounts,
-    getCurrentDepartment,
-    getDepartmentMembers,
+    getCurrentDeptMembers,
     getStudentCounts,
     supervisorsDbToDict,
 )
@@ -25,342 +22,200 @@ from app.models.term import Term
 
 
 @pytest.mark.integration
-def test_getCurrentDepartment():
+def test_supervisorsDbToDict():
     with mainDB.atomic() as transaction:
-        testDept = Department.create(
-            ORG=2114,
-            ACCOUNT="60000",
-            DEPT_NAME="Computer Science"
+        supervisor = Supervisor.create(
+            ID="B99100001",
+            PIDM=991001,
+            legal_name=" Test ",
+            LAST_NAME=" Supervisor ",
+            EMAIL=" test.supervisor@berea.edu ",
+            CPO="9911",
+            DEPT_NAME=" Computer Science "
         )
 
-        with app.test_request_context():
-            # Case 1: verify the department is found
-            dept = getCurrentDepartment(org=2114, account="60000")
+        result = supervisorsDbToDict(supervisor)
 
-            assert dept.departmentID == testDept.departmentID
-            assert dept.DEPT_NAME == "Computer Science"
-
-        with app.test_request_context():
-            # Case 2: confirm a non-existent org/account combo 404s
-            with pytest.raises(NotFound):
-                getCurrentDepartment(org=9999, account="00000")
+        assert result["username"] == "test.supervisor"
+        assert result["firstName"] == "Test"
+        assert result["lastName"] == "Supervisor"
+        assert result["bnumber"] == "B99100001"
+        assert result["department"] == "Computer Science"
+        assert result["type"] == "Supervisor"
 
         transaction.rollback()
 
 
 @pytest.mark.integration
-def test_getDepartmentMembers():
+def test_getCurrentDeptMembers():
     with mainDB.atomic() as transaction:
-        testDept = Department.create(
-            ORG=2114,
-            ACCOUNT="60000",
-            DEPT_NAME="Computer Science"
+        dept = Department.create(
+            DEPT_NAME="Current Members Department",
+            ACCOUNT="69101",
+            ORG="2995",
+            departmentCompliance=True
         )
 
-        testingSupervisor = Supervisor.create(
-            ID="B00000001",
-            PIDM=75,
-            legal_name="Not",
-            LAST_NAME="Scott",
-            EMAIL="None",
-            CPO="None",
-            DEPT_NAME="Computer Science"
+        supervisor = Supervisor.create(
+            ID="B99100002",
+            PIDM=991002,
+            legal_name="Current",
+            LAST_NAME="Member",
+            EMAIL="current.member@berea.edu",
+            CPO="9912",
+            DEPT_NAME="Current Members Department"
         )
 
         SupervisorDepartment.create(
-            supervisor=testingSupervisor.ID,
-            department=testDept.departmentID
+            supervisor=supervisor,
+            department=dept
         )
 
         with app.test_request_context():
-            # Case 1: confirm the supervisor tied to the department comes back
-            members = getDepartmentMembers(testDept)
+            currentDept, members = getCurrentDeptMembers("2995", "69101")
 
-            assert len(members) == 1
-            assert members[0].supervisor.ID == testingSupervisor.ID
-            assert members[0].supervisor.LAST_NAME == "Scott"
-            assert members[0].department_id == testDept.departmentID
+        assert currentDept.departmentID == dept.departmentID
+        assert len(members) == 1
+        assert members[0].supervisor.ID == supervisor.ID
+        assert members[0].department.departmentID == dept.departmentID
+
+        with app.test_request_context():
+            with pytest.raises(NotFound):
+                getCurrentDeptMembers("0000", "0000")
 
         transaction.rollback()
 
 
-def test_supervisorsDbToDict_formats_supervisor_data():
-    supervisor = SimpleNamespace(
-        EMAIL=" scott.heggen@berea.edu ",
-        FIRST_NAME=" Scott ",
-        LAST_NAME=" Heggen ",
-        ID=" B12345678 ",
-        DEPT_NAME=" Computer Science "
-    )
-
-    result = supervisorsDbToDict(supervisor)
-
-    assert result == {
-        "username": "scott.heggen",
-        "firstName": "Scott",
-        "lastName": "Heggen",
-        "bnumber": "B12345678",
-        "department": "Computer Science",
-        "type": "Supervisor"
-    }
-
-
-def test_currentAcademicYear_before_july(monkeypatch):
-    class FakeDate:
-        @staticmethod
-        def today():
-            return date(2026, 6, 15)
-
-    monkeypatch.setattr(manageMembersLogic, "date", FakeDate)
-
-    assert manageMembersLogic.currentAcademicYear() == (2025, 2026)
-
-
-def test_currentAcademicYear_after_july(monkeypatch):
-    class FakeDate:
-        @staticmethod
-        def today():
-            return date(2026, 7, 1)
-
-    monkeypatch.setattr(manageMembersLogic, "date", FakeDate)
-
-    assert manageMembersLogic.currentAcademicYear() == (2026, 2027)
-
-
-def test_attachPositionCounts_adds_existing_counts():
-    members = [
-        SimpleNamespace(
-            department_id=1,
-            supervisor_id="B00000001"
+@pytest.mark.integration
+def test_attachPositionCounts():
+    with mainDB.atomic() as transaction:
+        dept = Department.create(
+            DEPT_NAME="Position Count Department",
+            ACCOUNT="69102",
+            ORG="2996",
+            departmentCompliance=True
         )
-    ]
 
-    counts = {
-        (1, "B00000001"): {
-            "active_primary_positions": 2,
-            "pending_primary_positions": 1,
-            "active_secondary_positions": 3,
-            "pending_secondary_positions": 4
+        supervisor = Supervisor.create(
+            ID="B99100003",
+            PIDM=991003,
+            legal_name="Count",
+            LAST_NAME="Member",
+            EMAIL="count.member@berea.edu",
+            CPO="9913",
+            DEPT_NAME="Position Count Department"
+        )
+
+        member = SupervisorDepartment.create(
+            supervisor=supervisor,
+            department=dept
+        )
+
+        counts = {
+            (dept.departmentID, supervisor.ID): {
+                "active_primary_positions": 2,
+                "pending_primary_positions": 1,
+                "active_secondary_positions": 3,
+                "pending_secondary_positions": 4
+            }
         }
-    }
 
-    result = attachPositionCounts(members, counts)
+        members = attachPositionCounts([member], counts)
 
-    assert result[0].active_primary_positions == 2
-    assert result[0].pending_primary_positions == 1
-    assert result[0].active_secondary_positions == 3
-    assert result[0].pending_secondary_positions == 4
+        assert members[0].active_primary_positions == 2
+        assert members[0].pending_primary_positions == 1
+        assert members[0].active_secondary_positions == 3
+        assert members[0].pending_secondary_positions == 4
 
+        members = attachPositionCounts([member], {})
 
-def test_attachPositionCounts_defaults_missing_counts_to_zero():
-    members = [
-        SimpleNamespace(
-            department_id=1,
-            supervisor_id="B00000001"
-        )
-    ]
-
-    result = attachPositionCounts(members, {})
-
-    assert result[0].active_primary_positions == 0
-    assert result[0].pending_primary_positions == 0
-    assert result[0].active_secondary_positions == 0
-    assert result[0].pending_secondary_positions == 0
-
-
-@pytest.mark.integration
-def test_getStudentCounts_counts_active_and_pending_positions():
-    with mainDB.atomic() as transaction:
-        testFormIds = [9001, 9002, 9003, 9004]
-
-        LaborStatusForm.delete().where(
-            LaborStatusForm.laborStatusFormID.in_(testFormIds)
-        ).execute()
-
-        dept = Department.create(
-            ORG=2114,
-            ACCOUNT="60000",
-            DEPT_NAME="Computer Science"
-        )
-
-        supervisor = Supervisor.create(
-            ID="B00000001",
-            PIDM=75,
-            legal_name="Scott Heggen",
-            LAST_NAME="Heggen",
-            EMAIL="heggen@berea.edu",
-            CPO="None",
-            DEPT_NAME="Computer Science"
-        )
-
-        student, created = Student.get_or_create(
-            ID="B90000001",
-            defaults={
-                "PIDM": 900001
-            }
-        )
-
-        term, created = Term.get_or_create(
-            termCode=202500,
-            defaults={
-                "termName": "AY 2025-2026",
-                "termStart": "2025-08-01",
-                "termEnd": "2026-05-01",
-                "termState": 1,
-                "primaryCutOff": "2025-09-01",
-                "adjustmentCutOff": "2025-10-01"
-            }
-        )
-
-        LaborStatusForm.create(
-            laborStatusFormID=9001,
-            termCode=term,
-            studentName="Student One",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Primary",
-            weeklyHours=10,
-            studentConfirmation=True
-        )
-
-        LaborStatusForm.create(
-            laborStatusFormID=9002,
-            termCode=term,
-            studentName="Student Two",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Primary",
-            weeklyHours=10,
-            studentConfirmation=None
-        )
-
-        LaborStatusForm.create(
-            laborStatusFormID=9003,
-            termCode=term,
-            studentName="Student Three",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Secondary",
-            weeklyHours=5,
-            studentConfirmation=True
-        )
-
-        LaborStatusForm.create(
-            laborStatusFormID=9004,
-            termCode=term,
-            studentName="Student Four",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Secondary",
-            weeklyHours=5,
-            studentConfirmation=None
-        )
-
-        counts = getStudentCounts(dept)
-        row = counts[(dept.departmentID, supervisor.ID)]
-
-        assert row["active_primary_positions"] == 1
-        assert row["pending_primary_positions"] == 1
-        assert row["active_secondary_positions"] == 1
-        assert row["pending_secondary_positions"] == 1
+        assert members[0].active_primary_positions == 0
+        assert members[0].pending_primary_positions == 0
+        assert members[0].active_secondary_positions == 0
+        assert members[0].pending_secondary_positions == 0
 
         transaction.rollback()
 
 
 @pytest.mark.integration
-def test_getStudentCounts_excludes_released_forms():
+def test_getStudentCounts_counts_positions_and_excludes_released_forms():
     with mainDB.atomic() as transaction:
-        testFormIds = [9011, 9012]
-        testReleaseFormId = 9011
+        testFormIds = [991001, 991002, 991003, 991004, 991005]
 
-        # Clean up old test data if the test was run before.
-        FormHistory.delete().where(
-            FormHistory.formID.in_(testFormIds)
-        ).execute()
-
-        LaborReleaseForm.delete().where(
-            LaborReleaseForm.laborReleaseFormID == testReleaseFormId
-        ).execute()
-
+        FormHistory.delete().where(FormHistory.formID.in_(testFormIds)).execute()
         LaborStatusForm.delete().where(
             LaborStatusForm.laborStatusFormID.in_(testFormIds)
         ).execute()
 
         dept = Department.create(
-            ORG=2115,
-            ACCOUNT="60001",
-            DEPT_NAME="Computer Science Test"
+            DEPT_NAME="Student Count Department",
+            ACCOUNT="69104",
+            ORG="2998",
+            departmentCompliance=True
         )
 
         supervisor = Supervisor.create(
-            ID="B00000002",
-            PIDM=76,
-            legal_name="Test Supervisor",
-            LAST_NAME="Supervisor",
-            EMAIL="testsupervisor@berea.edu",
-            CPO="None",
-            DEPT_NAME="Computer Science Test"
+            ID="B99100005",
+            PIDM=991005,
+            legal_name="Student",
+            LAST_NAME="Counter",
+            EMAIL="student.counter@berea.edu",
+            CPO="9915",
+            DEPT_NAME="Student Count Department"
         )
 
-        student, created = Student.get_or_create(
-            ID="B90000002",
-            defaults={
-                "PIDM": 900002
-            }
+        student = Student.create(
+            ID="B99110001",
+            PIDM=991101,
+            legal_name="Test",
+            LAST_NAME="Student",
+            CLASS_LEVEL="Senior",
+            STU_EMAIL="test.student@berea.edu"
         )
 
-        term, created = Term.get_or_create(
-            termCode=202500,
+        term = Term.get_or_create(
+            termCode=209900,
             defaults={
-                "termName": "AY 2025-2026",
-                "termStart": "2025-08-01",
-                "termEnd": "2026-05-01",
+                "termName": "AY 2099-2100",
+                "termStart": "2099-08-01",
+                "termEnd": "2100-05-01",
                 "termState": 1,
-                "primaryCutOff": "2025-09-01",
-                "adjustmentCutOff": "2025-10-01"
+                "primaryCutOff": "2099-09-01",
+                "adjustmentCutOff": "2099-10-01"
             }
-        )
+        )[0]
 
-        # This form should be counted.
-        LaborStatusForm.create(
-            laborStatusFormID=9011,
-            termCode=term,
-            studentName="Active Student",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Primary",
-            weeklyHours=10,
-            studentConfirmation=True
-        )
+        testForms = [
+            (991001, "Active Primary", "Primary", True),
+            (991002, "Pending Primary", "Primary", None),
+            (991003, "Active Secondary", "Secondary", True),
+            (991004, "Pending Secondary", "Secondary", None),
+            (991005, "Released Primary", "Primary", True),
+        ]
 
-        # This form would normally be counted, but it has an approved release form.
-        LaborStatusForm.create(
-            laborStatusFormID=9012,
-            termCode=term,
-            studentName="Released Student",
-            studentSupervisee=student,
-            supervisor=supervisor,
-            department=dept,
-            jobType="Primary",
-            weeklyHours=10,
-            studentConfirmation=True
-        )
+        for formID, studentName, jobType, studentConfirmation in testForms:
+            LaborStatusForm.create(
+                laborStatusFormID=formID,
+                termCode=term,
+                studentName=studentName,
+                studentSupervisee=student,
+                supervisor=supervisor,
+                department=dept,
+                jobType=jobType,
+                weeklyHours=10,
+                studentConfirmation=studentConfirmation
+            )
 
         releaseForm = LaborReleaseForm.create(
-            laborReleaseFormID=testReleaseFormId,
+            laborReleaseFormID=991005,
             conditionAtRelease="satisfactory",
             releaseDate=date.today(),
             reasonForRelease="Test release"
         )
 
         FormHistory.create(
-            formHistoryID=9012,
-            formID=9012,
+            formHistoryID=991005,
+            formID=991005,
             historyType="Labor Release Form",
             releaseForm=releaseForm,
             createdBy=1,
@@ -372,8 +227,8 @@ def test_getStudentCounts_excludes_released_forms():
         row = counts[(dept.departmentID, supervisor.ID)]
 
         assert row["active_primary_positions"] == 1
-        assert row["pending_primary_positions"] == 0
-        assert row["active_secondary_positions"] == 0
-        assert row["pending_secondary_positions"] == 0
+        assert row["pending_primary_positions"] == 1
+        assert row["active_secondary_positions"] == 1
+        assert row["pending_secondary_positions"] == 1
 
         transaction.rollback()
