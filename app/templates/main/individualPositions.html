@@ -41,7 +41,7 @@
         <h3 class="description-header">Description</h3>
         <section class="position-description">
           {% if position.description %}
-            <p>{{ position.description }}</p>
+            <div class="description-content">{{ position.description }}</div>
           {% else %}
             <p class="text-muted">No description available.</p>
           {% endif %}
