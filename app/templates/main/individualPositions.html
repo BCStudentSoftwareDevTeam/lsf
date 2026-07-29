@@ -47,14 +47,22 @@
           {% endif %}
         </section>
 
-        <div class="mb-3 d-flex justify-content-between">
-          <div>
-            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="btn btn-secondary">Back to Department</a>
-          </div>
-          <div>
-            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download" class="btn btn-success" id="downloadDescription">Download Description</a>
-          </div>
-        </div>
+<div class="row">
+    <div class="col-xs-6 text-left">
+        <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}"
+           class="btn btn-secondary">
+            Back to Department
+        </a>
+    </div>
+
+    <div class="col-xs-6 text-right">
+        <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download"
+           class="btn btn-success"
+           id="downloadDescription">
+            Download Description
+        </a>
+    </div>
+      </div>
       </div>
     </div>
   </div>
