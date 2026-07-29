@@ -5,7 +5,6 @@ from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.logic.manageMembers import *
 from app.logic.search import searchPerson
-from app.logic.userInsertFunctions import createSupervisorFromTracy
 
 
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
@@ -145,21 +144,15 @@ def addUserToDept():
         return "", 400
 
     try:
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(
-            supervisor=supervisorID,
-            department=departmentID
-        )
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=supervisorID, department=departmentID)
 
         if supervisorDeptRecord:
             return "False"
 
         if not Supervisor.get_or_none(Supervisor.ID == supervisorID):
-            createSupervisorFromTracy(bnumber=supervisorID)
+            return "", 400
 
-        SupervisorDepartment.create(
-            supervisor=supervisorID,
-            department=departmentID
-        )
+        SupervisorDepartment.create(supervisor=supervisorID, department=departmentID)
 
         return "True"
 

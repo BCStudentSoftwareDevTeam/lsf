@@ -936,7 +936,6 @@ allocations = [
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
-print("Data insertion complete :)")
 allocation =[
                 {
                     "termCode":f"{2025}00",
@@ -970,9 +969,6 @@ allocation =[
                 }
             ]
 Allocation.insert_many(allocation).on_conflict_replace().execute()
-print(" * allocation added")
-print(PositionHistory())
-print(" * allocation added")
 
 
 #############################
