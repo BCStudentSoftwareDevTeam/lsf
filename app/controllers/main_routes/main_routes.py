@@ -83,9 +83,10 @@ def managePositions(org, account):
         return render_template('errors/404.html'), 404
     
     if not g.currentUser.isLaborAdmin:
-        supervisorDepts = SupervisorDepartment.select().where(SupervisorDepartment.supervisor == g.currentUser.supervisor)
-        allowedDepartmentIds = [sd.department_id for sd in supervisorDepts]
-        if dept.departmentID not in allowedDepartmentIds:
+        if not SupervisorDepartment.select().where(
+            (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
+            (SupervisorDepartment.department == dept.departmentID)
+        ).exists():
             return render_template('errors/403.html'), 403
 
     positions = (PositionHistory.select()
