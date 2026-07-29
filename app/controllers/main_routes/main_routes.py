@@ -54,6 +54,7 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    currentUser = g.currentUser
     if org and account:
         try:
             dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
@@ -64,17 +65,17 @@ def departmentPortal(org=None,account=None):
     
 
 
-    if g.currentUser.isLaborAdmin:
+    if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
-        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+        departments = list(getDepartmentsForSupervisor(currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     positionsList, posURL = getActivePositions(dept)
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
-                           currentUser=g.currentUser,
+                           currentUser=currentUser,
                            positions = positionsList,
                            posURL = posURL)
 
