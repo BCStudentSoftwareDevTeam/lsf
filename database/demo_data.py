@@ -360,6 +360,56 @@ staffs = [
             "CPO":"420",
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00939230",
+            "PIDM":99,
+            "FIRST_NAME":"Wario",
+            "LAST_NAME" : "Nakazawa",
+            "EMAIL"  :"nakazawaw@berea.edu",
+            "CPO":"666",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00222888",
+            "PIDM":97,
+            "FIRST_NAME":"Test",
+            "LAST_NAME" : "Professor",
+            "EMAIL"  :"professort@berea.edu",
+            "CPO":"500",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00888222",
+            "PIDM":98,
+            "FIRST_NAME":"Demo",
+            "LAST_NAME" : "Z",
+            "EMAIL"  :"demoz@berea.edu",
+            "CPO":"999",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00123112",
+            "PIDM":92,
+            "FIRST_NAME":"Supervisor",
+            "LAST_NAME" : "Test",
+            "EMAIL"  :"tests@berea.edu",
+            "CPO":"888",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00012213",
+            "PIDM":91,
+            "FIRST_NAME":"Sib",
+            "LAST_NAME" : "Ztest",
+            "EMAIL"  :"ztests@berea.edu",
+            "CPO":"222",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
             }
         ]
 
@@ -846,6 +896,31 @@ supervisorDepartmentMembers = [
         "supervisor": "B00841417",
         "department": 1,
         "isCoordinator": True
+    },
+    {
+        "supervisor": "B00939230",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00888222",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00222888",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00123112",
+        "department": 1,
+        "isCoordinator": True
+    },
+    {
+        "supervisor": "B00012213",
+        "department": 1,
+        "isCoordinator": True
     }
 ]
 
@@ -975,7 +1050,7 @@ Allocation.insert_many(allocation).on_conflict_replace().execute()
 # Position History
 #############################
 
-positionhistory = [
+positionHistory = [
     {
         "positionTitle": "Student Programmer",
         "positionCode": "S61407",
@@ -1089,5 +1164,5 @@ positionhistory = [
     
 
 ]
-PositionHistory.insert_many(positionhistory).on_conflict_replace().execute()
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")
