@@ -6,14 +6,6 @@ import os
 
 main_bp = Blueprint('main', __name__)
 
-def currentAcademicYear():
-    today = date.today()
-    currentYear = today.year
-
-    if today.month < 7:
-        return currentYear - 1, currentYear
-
-    return currentYear, currentYear + 1
 
 @main_bp.context_processor
 def injectGlobalData():
@@ -22,8 +14,7 @@ def injectGlobalData():
                    for root_path, dirs, files in os.walk('app/static')
                    for f in files))
     return {'currentUser': currentUser,
-            'lastStaticUpdate': lastStaticUpdate,
-            'currentAcademicYear': currentAcademicYear()}
+            'lastStaticUpdate': lastStaticUpdate,}
 
 from app.controllers.main_routes import main_routes
 from app.controllers.main_routes import departmentPortal

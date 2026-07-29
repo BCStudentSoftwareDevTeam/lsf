@@ -1,5 +1,5 @@
 import os
-
+from datetime import date
 from flask import Flask
 from flask_restful import Api
 from flask_bootstrap import Bootstrap
@@ -79,9 +79,21 @@ def load_openTerm():
             session['openTerm'] = model_to_dict(term)
         g.openTerm = term
         
+def currentYear():
+    today = date.today()
+    year = today.year
+
+    if today.month < 7:
+        return year - 1, year
+
+    return year, year + 1
+        
 @app.context_processor
 def inject_environment():
-    return dict(env=app.config['ENV'])
+    return dict(
+        env=app.config['ENV'],
+        currentYear=currentYear()
+    )
 
 @app.before_request
 def queryCount():
