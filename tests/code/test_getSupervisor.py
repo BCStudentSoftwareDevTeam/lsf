@@ -6,6 +6,41 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.department import Department
 
 @pytest.mark.integration
+def test_buildSupervisorDisplay():
+    with mainDB.atomic() as transaction:
+        #creating test data
+        staff = Supervisor.create(ID = "B0000000",
+                                  PIDM = 10000,
+                                  LAST_NAME = "Subject",
+                                  legal_name = "Test",
+                                  EMAIL = "test@berea.edu",
+                                  CPO = "9000",
+                                  ORG = "1",
+                                  DEPT_NAME = "Test Computer Science")
+
+        dept = Department.create(departmentID = 10000,
+                                 DEPT_NAME = "Test Computer Science",
+                                 ACCOUNT = "4",
+                                 ORG = "1",
+                                 departmentCoimpliance = 1,
+                                 isActive = 1)
+        
+        fella = buildSupervisorDisplay(staff)
+        assert fella["name"] == "Test Subject" 
+        assert fella["email"] == "test@berea.edu"
+        
+        staff.EMAIL = None
+        fella = buildSupervisorDisplay(staff)
+        assert fella["email"] == None
+
+        staff.legal_name = None
+        fella = buildSupervisorDisplay(staff)
+        assert fella == None
+
+        transaction.rollback()
+
+
+@pytest.mark.integration
 def test_getSupervisors():
     with mainDB.atomic() as transaction:
         dept = Department.create(departmentID = 10000,
