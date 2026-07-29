@@ -8,12 +8,13 @@
 
 {% block app_content %}
 
-  <div class="container mt-4">
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-10">
-        <div class="mb-4">
-          <h1 class="text-center">{{ department.DEPT_NAME }}</h1>
-        </div>
+  <div class="mb-4 text-left">
+      <h1 class="department-header" >{{ department.DEPT_NAME }}</h1>
+  </div>
+
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
 
         <div class="mb-5">
           <dl class="row">
@@ -33,7 +34,7 @@
             <dt class="col-sm-3">Last Revision Date:</dt>
             <dd class="col-sm-9">{{ position.revisionDate }}</dd>
 
-            <dt class="col-sm-3">Revised By</dt>
+            <dt class="col-sm-3">Revised By:</dt>
             <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
           </dl>
         </div>
