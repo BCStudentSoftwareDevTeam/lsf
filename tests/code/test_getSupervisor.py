@@ -25,15 +25,32 @@ def test_buildSupervisorDisplay():
                                  departmentCoimpliance = 1,
                                  isActive = 1)
         
+        # has legal_name but no preferred_name
         fella = buildSupervisorDisplay(staff)
         assert fella["name"] == "Test Subject" 
         assert fella["email"] == "test@berea.edu"
+        assert staff.preferred_name == None
         
         staff.EMAIL = None
         fella = buildSupervisorDisplay(staff)
         assert fella["email"] == None
 
+        # no legal_name nor preferred_name
         staff.legal_name = None
+        fella = buildSupervisorDisplay(staff)
+        assert fella == None
+
+        # no legal_name but has preferred_name
+        staff.preferred_name = "Joey"
+        fella = buildSupervisorDisplay(staff)
+        assert fella["name"] == "Joey Subject"
+
+        # has both legal_name and preferred_name
+        staff.legal_name = "Test"
+        fella = buildSupervisorDisplay(staff)
+        assert fella["name"] == "Joey Subject"
+
+        staff.LAST_NAME = None
         fella = buildSupervisorDisplay(staff)
         assert fella == None
 
