@@ -334,10 +334,10 @@ staffs = [
             {
             "ID": "B00939230",
             "PIDM":99,
-            "FIRST_NAME":"Mario",
+            "FIRST_NAME":"Wario",
             "LAST_NAME" : "Nakazawa",
-            "EMAIL"  :"nakazawam@berea.edu",
-            "CPO":"400",
+            "EMAIL"  :"nakazawaw@berea.edu",
+            "CPO":"666",
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
             },
