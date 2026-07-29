@@ -14,11 +14,21 @@ def manageMembers(org=None, account=None):
     
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
-    
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
-        return render_template('errors/403.html'), 403
 
     dept, members = getCurrentDeptMembers(org, account)
+
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(
+        supervisor=currentUser.supervisor,
+        department=dept
+    )
+
+    if not (
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        supervisorDeptRecord
+    ):
+        return render_template('errors/403.html'), 403
+
     counts = getStudentCounts(dept)
     members = attachPositionCounts(members, counts)
 
@@ -27,7 +37,6 @@ def manageMembers(org=None, account=None):
         members=members,
         department=dept,
     )
-
 
 
 @main_bp.route('/members/search/<query>',  methods=['GET'])
