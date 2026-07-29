@@ -138,33 +138,40 @@ def removeMember():
 
 @main_bp.route('/members/add', methods=['POST'])
 def addUserToDept():
-    """
+   """
     Adds a user to a department.
     """
     currentUser = g.currentUser
-
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
-        return render_template('errors/403.html'), 403
-
     supervisorID = request.form.get("supervisorID")
     departmentID = request.form.get("departmentID")
 
     if not supervisorID or not departmentID:
-        return "", 400
+        return jsonify(success=False, message="Missing supervisor or department."), 400
+
+    if not canManageDepartmentMembers(currentUser, departmentID):
+        return render_template('errors/403.html'), 403
 
     try:
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=supervisorID, department=departmentID)
+        supervisor = Supervisor.get_or_none(Supervisor.ID == supervisorID)
+
+        if not supervisor:
+            return jsonify(success=False, message="Supervisor not found."), 404
+
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(
+            supervisor=supervisor,
+            department=departmentID
+        )
 
         if supervisorDeptRecord:
-            return "False"
+            return jsonify(success=False, message="Supervisor already exists in this department."), 409
 
-        if not Supervisor.get_or_none(Supervisor.ID == supervisorID):
-            return "", 400
+        SupervisorDepartment.create(
+            supervisor=supervisor,
+            department=departmentID
+        )
 
-        SupervisorDepartment.create(supervisor=supervisorID, department=departmentID)
-
-        return "True"
+        return jsonify(success=True, message="Supervisor added to department."), 200
 
     except Exception as e:
         print(f'Could not add user to department: {e}')
-        return "", 500
+        return jsonify(success=False, message="Could not add supervisor to department."), 500
