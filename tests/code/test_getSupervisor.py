@@ -35,7 +35,7 @@ def test_buildSupervisorDisplay():
         builtSupervisor = buildSupervisorDisplay(staff)
         assert builtSupervisor["email"] == None
 
-        # no legal_name nor preferred_name
+        # no legal_name nor preferred_name, should error and return None
         staff.legal_name = None
         builtSupervisor = buildSupervisorDisplay(staff)
         assert builtSupervisor == None
@@ -50,6 +50,7 @@ def test_buildSupervisorDisplay():
         builtSupervisor = buildSupervisorDisplay(staff)
         assert builtSupervisor["name"] == "Joey Subject"
 
+        # test that it errors and returns None
         staff.LAST_NAME = None
         builtSupervisor = buildSupervisorDisplay(staff)
         assert builtSupervisor == None
