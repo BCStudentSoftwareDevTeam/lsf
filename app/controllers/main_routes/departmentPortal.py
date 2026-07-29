@@ -163,7 +163,7 @@ def addUserToDept():
         )
 
         if supervisorDeptRecord:
-            return jsonify(success=False, message="Supervisor already exists in this department."), 409
+            return jsonify(success=False, message="Supervisor already exists in this department."), 200
 
         SupervisorDepartment.create(
             supervisor=supervisor,
