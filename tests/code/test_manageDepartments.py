@@ -16,7 +16,7 @@ from app.models.term import Term
 from app.models.formHistory import FormHistory
 from app.models.allocation import Allocation
 
-from app.controllers.admin_routes import manage_departments
+from app.controllers.admin_routes import manageDepartments
 
 from app.logic.manageDepartments import *
 
