@@ -9,6 +9,8 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
@@ -16,9 +18,8 @@ from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSu
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.logic.allocationUtilization import getDepartmentAllocationSummary
-from app.models.allocation import Allocation
-from app.models.positionHistory import PositionHistory
+from app.logic.getAllocation import getDepartmentAllocationSummary
+
 from app.logic.getPositions import getActivePositions
 
 @main_bp.route('/logout', methods=['GET'])
