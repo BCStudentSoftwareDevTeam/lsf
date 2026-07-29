@@ -1,7 +1,8 @@
-from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify, make_response
-from peewee import JOIN, DoesNotExist
+from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -9,14 +10,17 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
+from app.models.positionHistory import PositionHistory
+
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
+
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
 from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
-from app.models.positionHistory import PositionHistory
+from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 
 
@@ -54,22 +58,27 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    currentUser = g.currentUser
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         dept = None
 
-
-    if g.currentUser.isLaborAdmin:
+    if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
-        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    
+    supervisors, laborCoordinators = getSupervisors(dept)
 
-    positionsList, posURL = getActivePositions(dept)
+    positionsList, posURL = getActivePositions(dept) 
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=currentUser,
                            positions = positionsList,
                            posURL = posURL)
 
