@@ -94,3 +94,9 @@ def complianceStatusCheck():
     except Exception as e:
         print(e)
         return jsonify({"Success": False})
+
+
+
+@admin.route('/admin/AR', methods=['GET'])
+def allocationReview():
+    return render_template('admin/AR.html')
