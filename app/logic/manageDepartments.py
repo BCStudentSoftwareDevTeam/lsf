@@ -1,28 +1,55 @@
 from flask import g, abort
 from peewee import fn
 
+from app.controllers.main_routes import departmentPortal
 from app.controllers.admin_routes.termManagement import createTerms
+
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.allocation import *
 from app.models.department import *
 from app.models.term import *
+
 from app.login_manager import require_login
-from app.controllers.main_routes import departmentPortal
 
 
-def checkAdmistratorRights():
+
+def generateAdjacentYears(academicYearTermCode): 
     """
-    Checks whether the current user has administrator rights to view the page.  
+    Generates the current, the previous, and the following academic years. 
     """
-    currentUser = require_login()
-    if not currentUser:                    # If the current user is not logged in
-        return render_template('errors/403.html')
-    if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
-        if currentUser.student: # If the currrent user is logged in as a student
-            return redirect('/laborHistory/' + currentUser.student.ID)
-        elif currentUser.supervisor:
-            return render_template('errors/403.html'), 403
+
+    currentYear      = g.openTerm.termCode // 100
+    previousYear     = currentYear - 1
+    nextYear         = currentYear + 1
+
+
+    currentAYCode    = currentYear * 100
+    previousAYCode   = previousYear * 100
+    nextAYCode       = nextYear * 100
+
+
+    # Admins cannot view allocations for the years that are beyond the current, the previous, or the following academic year 
+    if (academicYearTermCode != currentAYCode) and (academicYearTermCode != previousAYCode) and (academicYearTermCode != nextAYCode):
+        abort(400)
+
+
+    currentAY, _  = Term.get_or_create(
+        termCode=currentAYCode,
+        defaults={"termName": "AY {}-{}".format(currentYear, currentYear + 1), "isAcademicYear": True}
+        )
+
+    previousAY, _ = Term.get_or_create(
+        termCode=previousAYCode,
+        defaults={"termName": "AY {}-{}".format(previousYear, previousYear + 1), "isAcademicYear": True}
+    )
+    
+    nextAY, _     = Term.get_or_create(
+        termCode=nextAYCode,
+        defaults={"termName": "AY {}-{}".format(nextYear, nextYear + 1), "isAcademicYear": True}
+    )
+
+    return (currentAY, previousAY, nextAY)
 
 
 
@@ -30,6 +57,8 @@ def getUsedBreakHours(term):
     """
     Returns the total number of break hours used by each department for a given term.
     """
+    
+    # THE PREVIOUS IMPLEMENTATION OF THIS FUNCTION (CAN BE USED IN CASE THE CURRENT IMPLEMENTATION DOESN'T WORK PROPERLY)
     # totalBreakSum = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)).where( (FormHistory.historyType_id == "Labor Status Form ") & (FormHistory.status_id == "Approved"))
 
     totalBreakSum = (
@@ -57,12 +86,28 @@ def getUsedBreakHours(term):
 )
     
     print(list(totalBreakSum))
-    
-    # correctLSF = LaborStatusForm.select().where(LaborStatusForm.termCode == term)
-
-    # print("Something2\n\n\n\n",list(correctLSF))
 
     return totalBreakSum
+
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountPrimaries(currentTerm, department):
+    """
+    Returns the count of primary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
+    return lsfCountPrimaries
+
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountSecondaries(currentTerm, department):
+    """
+    Returns the count of secondary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
+    return lsfCountSecondaries
 
 
 
@@ -91,11 +136,6 @@ def getActiveDepartmentsWithAllocation(term):
         dept.lsfCountPrimaries = getLSFCountPrimaries(term, dept)
         dept.lsfCountSecondaries = getLSFCountSecondaries(term, dept)
 
-        # # print("######################")
-        # print(f"COUNTS: {lsfCountSecondaries} ")
-        # print([lsf.formID for lsf in lsfCountPrimaries])
-        # print([lsf.formID for lsf in lsfCountSecondaries])
-
     return activeDepartments
 
 
@@ -112,63 +152,39 @@ def getAllocationStatus(term, department):
 
 
 
-def getLSFCountPrimaries(currentTerm, department):
-    """
-    Returns the count of primary LSFs for a given department during a given term. (WIP)
-    """
-    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
-    return lsfCountPrimaries
 
 
 
-def getLSFCountSecondaries(currentTerm, department):
-    """
-    Returns the count of secondary LSFs for a given department during a given term. (WIP)
-    """
-    lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
-    return lsfCountSecondaries
+# THE FUNCTIONS BELOW ARE NO LONGER USED IN THE CODE (BECAUSE WE CAN ONLY CHOOSE AN ACADEMIC YEAR IN THE CODE). 
+# IF SOMETHING CHANGES,YOU CAN USE THE CODE BELOW
 
+# # USED IN THE generateTermsForAdjacentYears() FUNCTION
+# def generateTerms(termCode):
+#     """
+#     Generates all the terms in an academic year. 
+#     """
 
-
-# def getTotalPositionHours
-
-
-
-# def getCurrentSelectedTerm(currentTerm):
-    #'''
-    #Returns the current term code based on a the selected term from a dropdown menu in the manage departments page.
-    #Should only contain the current term, the next term, and the previous term.
-    #'''
-
-
-
-def generateTerms(termCode):
-    """
-    Generates all the terms in an academic year. 
-    """
-
-    # Truncating term codes to hundreds. That's how we get the academic year. 
-    academicYearCode = (termCode // 100)
+#     # Truncating term codes to hundreds. That's how we get the academic year. 
+#     academicYearCode = (termCode // 100)
     
-    return createTerms(academicYearCode)   
+#     return createTerms(academicYearCode)   
 
 
 
-def generateTermsForAdjacentYears(academicYear): 
-    """
-    Generates all ther terms for the current year, the previous year, and the future year. 
-    """
+# def generateTermsForAdjacentYears(academicYear): 
+#     """
+#     Generates all the terms for the current, the previous, and the future academic years. 
+#     """
 
+#     previousAYCode  = g.openTerm.termCode - 100
+#     currentAYCode   = g.openTerm.termCode 
+#     nextATCode      = g.openTerm.termCode + 100
 
-    previousAYCode  = g.openTerm.termCode - 100
-    currentAYCode   = g.openTerm.termCode 
-    nextATCode      = g.openTerm.termCode + 100
+#     if (academicYear != previousAYCode) and (academicYear != currentAYCode) and (academicYear != nextATCode):
+#         abort(400)
 
-    if (academicYear != previousAYCode) and (academicYear != currentAYCode) and (academicYear != nextATCode):
-        abort(400)
+#     PreviousAYTerms    = generateTerms(previousAYCode)
+#     CurrentAYTerms     = generateTerms(currentAYCode) 
+#     NextAYTerms        = generateTerms(nextATCode)
 
-    PreviousAYTerms    = generateTerms(previousAYCode)
-    CurrentAYTerms     = generateTerms(currentAYCode) 
-    NextAYTerms        = generateTerms(nextATCode)
-
-    return (PreviousAYTerms, CurrentAYTerms, NextAYTerms)
+#     return (PreviousAYTerms, CurrentAYTerms, NextAYTerms)

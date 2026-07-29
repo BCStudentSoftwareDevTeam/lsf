@@ -1,125 +1,81 @@
 from datetime import date
 
 from flask import g, request, redirect, jsonify
-from flask_bootstrap import bootstrap_find_resource
-from playhouse.shortcuts import model_to_dict
 
 from app.controllers.admin_routes import *
-from app.models import term
-from app.models.formHistory import FormHistory
-from app.models.user import *
-from app.models.supervisorDepartment import SupervisorDepartment
 from app.login_manager import require_login
-from app.logic.search import getSupervisorsForDepartment
+
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
+
+from app.models.formHistory import FormHistory
+from app.models.user import *
 from app.models.term import *
 from app.models.department import *
 from app.models.allocation import *
 from app.models.laborStatusForm import *
-from app.logic.tracy import Tracy
-from app.logic.manageDepartments import * # Reorganize imports to avoid circular import issues.  This is a temporary fix, but it works for now.
-from app.controllers.admin_routes.termManagement import createTerms
+
+from app.logic.manageDepartments import * 
 
 
 
+# FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
-# FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
-
-# @login_required
-def manage_departments(academicYear = None):
+def manageDepartments(academicYear = None):
     """
     Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
     Returns the departments to be used in the HTML for the manage departments page.
     """
 
-    try:
-
-        checkAdmistratorRights()
-
-        if academicYear == None: 
-            academicYear = g.openTerm.termCode
-        else: 
-            academicYear = int(academicYear)
-
-        previousAYTerms, currentAYTerms, nextAYTerms = generateTermsForAdjacentYears(academicYear)
-        chosenAY = Term.get(Term.termCode == academicYear)
+    currentUser = require_login()
+    if not currentUser:                    # If the current user is not logged in
+        return render_template('errors/403.html')
+    if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
+        if currentUser.student: # If the currrent user is logged in as a student
+            return redirect('/laborHistory/' + currentUser.student.ID)
+        elif currentUser.supervisor:
+            return render_template('errors/403.html'), 403
 
 
-        breakHoursByDepartment = {row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0) for row in getUsedBreakHours(chosenAY)} 
-        # I think Scott wanted this to say NULL not zero, unsure.
+    # The condition below may be deleted if the routing to the Manage Departments page is changed. 
+    if academicYear == None: 
+        academicYear = g.openTerm.termCode
+    else: 
+        academicYear = int(academicYear)
 
 
-        activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
-        inactiveDepartments = Department.select().where(Department.isActive == False)  
-        
-
-        allocationStatus = {
-            department.departmentID: getAllocationStatus(chosenAY, department)
-            for department in activeDepartments
-        }
-
-        allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
-
-        return render_template( 'admin/manageDepartments.html',
-                                activeDepartments = activeDepartments,
-                                inactiveDepartments = inactiveDepartments,
-                                allSupervisors = allSupervisors,
-                                currentAY = currentAYTerms[0],
-                                previousAY = previousAYTerms[0],
-                                nextAY = nextAYTerms[0],
-                                academicYear = chosenAY.termName,
-                                breakHoursByDepartment = breakHoursByDepartment,
-                                allocationStatus = allocationStatus
-                                )
-    except Exception as e:
-        print("Error Loading all Departments", e)
-        return render_template('errors/500.html'), 500
+    currentAY, previousAY, nextAY = generateAdjacentYears(academicYear)
+    chosenAY = Term.get(Term.termCode == academicYear)
 
 
+    # FIXME: REPLACE str(row["totalHours"] if row["totalHours"] is not None else 0) WITH SOMETHING BETTER, LIKE str(row["totalHours"] or 0)
+    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)} 
+    # I think Scott wanted this to say NULL not zero, unsure.
 
-@admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
-def getSupervisorsInDepartment(departmentID):
-        currentUser = require_login()
-        if not currentUser:                    # Not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
-        
-        supervisors = getSupervisorsForDepartment(departmentID)
-        supervisors = [model_to_dict(supervisor) for supervisor in supervisors]
-        return jsonify(supervisors)
+
+    activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
+    inactiveDepartments = Department.select().where(Department.isActive == False)  
     
 
+    allocationStatus = {
+        department.departmentID: getAllocationStatus(chosenAY, department)
+        for department in activeDepartments
+    }
 
-@admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
-def removeSupervisorFromDepartment():
-    try:
-        currentUser = require_login()
-        if not currentUser:                    # Not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
-        
-        formData = request.form
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = formData['supervisorID'], department = formData['departmentID'])
-    
-        if supervisorDeptRecord:
-            supervisorDeptRecord.delete_instance()
-            return "True"
-        else:
-            return "False"
-    
-    except Exception as e:
-        print(f'Could not remove user from department: {e}')
-        return "", 500
+    allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
+
+    return render_template( 'admin/manageDepartments.html',
+                            activeDepartments = activeDepartments,
+                            inactiveDepartments = inactiveDepartments,
+                            allSupervisors = allSupervisors,
+                            currentAY = currentAY,
+                            previousAY = previousAY,
+                            nextAY = nextAY,
+                            academicYear = chosenAY.termName,
+                            breakHoursByDepartment = breakHoursByDepartment,
+                            allocationStatus = allocationStatus
+                            )
 
 
 
@@ -129,7 +85,7 @@ def complianceStatusCheck():
     This function changes the compliance status in the database for labor status forms.  It works in collaboration with the ajax call in manageDepartments.js
     """
     try:
-        rsp = request.get_json() # This fixes byte indices must be intergers or slices error
+        rsp = request.get_json()
         if rsp:
             department = Department.get(int(rsp['deptName']))
             department.departmentCompliance = not department.departmentCompliance
