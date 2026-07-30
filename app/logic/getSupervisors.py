@@ -1,22 +1,28 @@
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from peewee import fn
+from app.logic.search import usernameFromEmail
 
 
 
 def buildSupervisorDisplay(supervisor):
-    try:
-        firstName = supervisor.FIRST_NAME 
-        lastName = supervisor.LAST_NAME
-        if not (firstName and lastName):
-            raise NameError("First name and last name are required")
+    """Build supervisor data used by portal displays and search results."""
+    firstName = (supervisor.FIRST_NAME or "").strip()
+    lastName = (supervisor.LAST_NAME or "").strip()
+    email = (supervisor.EMAIL or "").strip()
 
-    except NameError as e:
+    if not firstName or not lastName:
         return None
 
     return {
-        "name": f"{firstName} {lastName}".strip(),
-        "email": supervisor.EMAIL
+        "name": f"{firstName} {lastName}",
+        "email": email,
+        "username": usernameFromEmail(email) if email else "",
+        "firstName": firstName,
+        "lastName": lastName,
+        "bnumber": supervisor.ID.strip(),
+        "department": (supervisor.DEPT_NAME or "").strip(),
+        "type": "Supervisor"
     }
 def getSupervisors(dept):    
     laborCoordinators = []

@@ -8,8 +8,9 @@ from app.logic.manageMembers import (
     attachPositionCounts,
     getCurrentDeptMembers,
     getStudentCounts,
-    supervisorsDbToDict,
 )
+from app.logic.getSupervisors import buildSupervisorDisplay
+
 from app.models import mainDB
 from app.models.department import Department
 from app.models.formHistory import FormHistory
@@ -22,7 +23,7 @@ from app.models.term import Term
 
 
 @pytest.mark.integration
-def test_supervisorsDbToDict():
+def test_buildSupervisorDisplay_returns_portal_and_search_fields():
     with mainDB.atomic() as transaction:
         supervisor = Supervisor.create(
             ID="B99100001",
@@ -34,7 +35,7 @@ def test_supervisorsDbToDict():
             DEPT_NAME=" Computer Science "
         )
 
-        result = supervisorsDbToDict(supervisor)
+        result = buildSupervisorDisplay(supervisor)
 
         assert result["username"] == "test.supervisor"
         assert result["firstName"] == "Test"
@@ -42,6 +43,8 @@ def test_supervisorsDbToDict():
         assert result["bnumber"] == "B99100001"
         assert result["department"] == "Computer Science"
         assert result["type"] == "Supervisor"
+        assert result["name"] == "Test Supervisor"
+        assert result["email"] == "test.supervisor@berea.edu"
 
         transaction.rollback()
 

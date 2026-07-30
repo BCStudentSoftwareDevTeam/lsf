@@ -3,7 +3,6 @@ from datetime import date
 from flask import abort
 from peewee import Case, DoesNotExist, fn
 
-from app.logic.search import usernameFromEmail
 from app.models.department import Department
 from app.models.formHistory import FormHistory
 from app.models.laborReleaseForm import LaborReleaseForm
@@ -11,20 +10,6 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 
-
-def supervisorsDbToDict(supervisor):
-    """
-    Given a supervisor object it will return a mapped Dict with supervisor data.
-    """
-    dbToDict = {
-        'username': usernameFromEmail(supervisor.EMAIL.strip()),
-        'firstName': supervisor.FIRST_NAME.strip(),
-        'lastName': supervisor.LAST_NAME.strip(),
-        'bnumber': supervisor.ID.strip(),
-        'department': supervisor.DEPT_NAME.strip(),
-        'type': 'Supervisor'
-    }
-    return dbToDict
 
 
 def getCurrentDeptMembers(org, account):
