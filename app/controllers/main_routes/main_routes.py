@@ -15,7 +15,7 @@ from app.models.positionHistory import PositionHistory
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 
-from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
+from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult, makePositionDescriptionPDF
 from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
@@ -98,14 +98,32 @@ def individualPosition(org, account, positionCode):
     if not position:
         return render_template('errors/404.html'), 404
 
-    revision_author = position.revisedBy if getattr(position, 'revisedBy', None) else None
-
     return render_template(
         'main/individualPositions.html',
         department=dept,
-        position=position,
-        revision_author=revision_author
+        position=position
     )
+
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>/download', methods=['GET'])
+def downloadPositionDescription(org, account, positionCode):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    position = PositionHistory.get_or_none(
+        PositionHistory.department == dept,
+        PositionHistory.positionCode == positionCode,
+        PositionHistory.status == "Active"
+    )
+
+    if not position:
+        return render_template('errors/404.html'), 404
+
+    pdfBuffer = makePositionDescriptionPDF(dept, position, position.revisedBy)
+
+    filename = f'{position.positionCode}_position_description.pdf'
+    return send_file(pdfBuffer, mimetype='application/pdf', as_attachment=True, download_name=filename)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

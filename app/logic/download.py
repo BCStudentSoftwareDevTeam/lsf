@@ -1,7 +1,9 @@
 import csv
+import io
 import json
 
 from flask import g
+from fpdf import FPDF
 from peewee import ModelSelect
 
 from app.models.formHistory import *
@@ -27,6 +29,43 @@ def retrieveFormSearchResult(formSearchResultId):
         return result
 
     return None
+
+def makePositionDescriptionPDF(department, position, revisionAuthor):
+    '''
+    Builds a PDF of a position's description for the download button on the individual position page
+    '''
+    pdf = FPDF()
+    pdf.add_page()
+
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, department.DEPT_NAME, ln=True)
+    pdf.ln(2)
+
+    fields = [
+        ('Position Title', position.positionTitle),
+        ('Position Code', position.positionCode),
+        ('WLS Level', position.wls),
+        ('Status', position.status),
+        ('Last Revision Date', position.revisionDate),
+        ('Revised By', position.revisedBy or 'Unknown'),
+    ]
+    labelWidth = 45
+    for label, value in fields:
+        pdf.set_font('Arial', 'B', 11)
+        pdf.cell(labelWidth, 8, f'{label}:', ln=False)
+        pdf.set_font('Arial', '', 11)
+        pdf.cell(0, 8, f' {value}', ln=True)
+
+    pdf.ln(4)
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Description', ln=True)
+    pdf.set_font('Arial', '', 11)
+    description = position.description or 'No description available.'
+    pdf.multi_cell(0, 7, description.encode('latin-1', 'replace').decode('latin-1'))
+
+    pdfBytes = pdf.output(dest='S').encode('latin-1', 'replace')
+    return io.BytesIO(pdfBytes)
+
 
 class CSVMaker:
     '''
