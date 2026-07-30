@@ -1,4 +1,5 @@
-from flask import render_template, send_file
+from datetime import datetime
+from flask import render_template, send_file, request
 from peewee import DoesNotExist
 
 from app.models.department import Department
@@ -6,7 +7,7 @@ from app.models.positionHistory import PositionHistory
 
 from app.controllers.main_routes import main_bp
 from app.logic.download import makePositionDescriptionPDF
-
+from app.logic.getPositions import getPositionRevision
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
 def postionDescription(org, account, positionCode):
@@ -15,11 +16,15 @@ def postionDescription(org, account, positionCode):
     except (NameError, DoesNotExist):
         return render_template('errors/404.html'), 404
 
-    position = PositionHistory.get_or_none(
-        PositionHistory.department == dept,
-        PositionHistory.positionCode == positionCode,
-        PositionHistory.status == "Active"
-    )
+    revisionDateParam = request.args.get('revisionDate')
+    revisionDate = None
+    if revisionDateParam:
+        try:
+            revisionDate = datetime.strptime(revisionDateParam, '%Y-%m-%d').date()
+        except ValueError:
+            return render_template('errors/404.html'), 404
+
+    position = getPositionRevision(dept, positionCode, revisionDate)
 
     if not position:
         return render_template('errors/404.html'), 404
@@ -38,16 +43,20 @@ def downloadPositionDescription(org, account, positionCode):
     except (NameError, DoesNotExist):
         return render_template('errors/404.html'), 404
 
-    position = PositionHistory.get_or_none(
-        PositionHistory.department == dept,
-        PositionHistory.positionCode == positionCode,
-        PositionHistory.status == "Active"
-    )
+    revisionDateParam = request.args.get('revisionDate')
+    revisionDate = None
+    if revisionDateParam:
+        try:
+            revisionDate = datetime.strptime(revisionDateParam, '%Y-%m-%d').date()
+        except ValueError:
+            return render_template('errors/404.html'), 404
+
+    position = getPositionRevision(dept, positionCode, revisionDate)
 
     if not position:
         return render_template('errors/404.html'), 404
 
-    pdfBuffer = makePositionDescriptionPDF(dept, position, position.revisedBy)
+    pdfBuffer = makePositionDescriptionPDF(dept, position)
 
     filename = f'{position.positionCode}_position_description.pdf'
     return send_file(pdfBuffer, mimetype='application/pdf', as_attachment=True, download_name=filename)

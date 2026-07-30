@@ -30,7 +30,7 @@ def retrieveFormSearchResult(formSearchResultId):
 
     return None
 
-def makePositionDescriptionPDF(department, position, revisionAuthor):
+def makePositionDescriptionPDF(department, position):
     '''
     Builds a PDF of a position's description for the download button on the individual position page
     '''
