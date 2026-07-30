@@ -175,7 +175,8 @@ class emailHandler():
         self.checkRecipient(
             studentEmailPurpose=studentTemplate.purpose,
             emailPurpose=supervisorTemplate.purpose,
-            secondaryEmailPurpose=None
+            secondaryEmailPurpose=None,
+            advisorEmailPurpose=None
         )
 
     def laborStatusFormApproved(self):
