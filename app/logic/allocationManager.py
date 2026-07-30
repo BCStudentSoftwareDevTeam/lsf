@@ -61,10 +61,11 @@ def getContractedAllocations(termCode, dept):
         LaborStatusForm.termCode).dicts()
     
     breakSum = {"totalHours": 0}
-    for row in break_allocation:
-        if row["department"] == dept.departmentID:
-            breakSum = row
-            break
+    if dept:
+        for row in break_allocation:
+            if row["department"] == dept.departmentID:
+                breakSum = row
+                break
 
     usedPositions = {
     "used_10": countContracts("Primary", "10", termCode, dept),
