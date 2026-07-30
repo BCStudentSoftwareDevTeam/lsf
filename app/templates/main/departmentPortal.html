@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/departmentPortal.css') }}?u={{ lastStaticUpdate }}">
+{% endblock %}
 
 {% block scripts %}
 {{super()}}
@@ -7,7 +11,8 @@
 {% endblock %}
 
 {% block app_content %}
-<h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+  <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Portal {% else %} Choose a Department: {% endif %} </h2>
+
 
   <!--selectpicker for department-->
   <div class="form-group">
@@ -23,7 +28,6 @@
         "<span>{{d.DEPT_NAME}}</span><small class='text-muted'> ({{d.ORG}}-{{d.ACCOUNT}}) </small>">{{d.DEPT_NAME}}</option>
       {% endfor %}
     </select>
-
   </div>
 
 {% if department %}
@@ -79,46 +83,83 @@
       </div>
 
       <div class="col-12 col-lg-4">
-        <section class="card "style="width:50rem; border-radius: 1rem;" aria-labelledby="members-title">
+        <section class="card">
           <div class="card-body">
             <div class="media">
-               <div class="media-left media-middle">
-                <span aria-hidden="true" style="color: #000; font-size: 24px;">
-                  <i class="bi bi-people-fill" style="border: 1px solid #c0c0c0; border-radius: 12px; padding: 3px 3.5px 1.5px 3.5px; font-size: 1.5em; color: #6e6e6e"></i>
+              <div class="media-left media-middle">
+                <span class="members-icon">
+                  <i class="bi bi-people-fill"></i>
                 </span>
               </div>
 
               <div class="media-body media-middle">
-                <h1>
+                <h3>
                   Members
-                </h1>
+                </h3>
               </div>
             </div>
-            <h4>Labor Coordinator(s)</h4>
-            <p>Dr. Jones</p>
+            <h4> <b>{% if laborCoordinators|length <= 1 %} Labor Coordinator {% else %} Labor Coordinators{% endif %}</b></h4>
+            {% if laborCoordinators %}
+              {% for coordinator in laborCoordinators[:3] %}
+                <p>
+                  {{ coordinator.name }}
 
-            <h2>Supervisors</h2>
-            {% for s in supervisors %}
-            {% if 3 > loop.index0 %}
-              <p>{{ s }}</p>
-            {% elif 4 > loop.index0 %}
-              <p>and {{ supervisors | length}} more...</p>
+                  {% if coordinator.email %}
+                    <a href="mailto:{{ coordinator.email }}"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="{{ coordinator.email }}">
+                        <i class="bi bi-envelope-fill"></i>
+                    </a>
+                  {% endif %}
+                </p>
+              {% endfor %}
+              {% if laborCoordinators|length > 3 %}
+                    <p>and {{ laborCoordinators|length - 3 }} more...</p>
+              {% endif %}
+
+            {% else %}
+              <p>None assigned. <a href="#" >Add one?</a> </p> 
+
             {% endif %}
-            {% endfor %}
-          </div>
+              
+            <h4> <b>{% if supervisors|length <= 1 %} Supervisor{% else %} Supervisors{% endif %}</b></h4>
 
+            {% if supervisors %}
+              {% for s in supervisors[:5] %}
+                  <p>
+                    {{ s.name }}
+
+                    {% if s.email %}
+                      <a href="mailto:{{ s.email }}"
+                          data-toggle="tooltip"
+                          data-placement="bottom"
+                          title="{{ s.email }}">
+                          <i class="bi bi-envelope-fill"></i>
+                      </a>
+                    {% endif %}
+                  </p>
+                  {% endfor %}
+
+                  {% if supervisors|length > 5 %}
+                    <p>and {{ supervisors|length - 5 }} more...</p>
+                  {% endif %}
+
+            {% else  %}
+              <p> None assigned. {% if currentUser.isLaborAdmin %} <a href="#">Add one?</a> {% endif %}</p>
+            {% endif %}
+          </div>
           <div class="card-footer text-center">
-            <a href="#" class="btn btn-primary">View Details
-               <span class="glyphicon glyphicon-chevron-right"></span>
+            <a href="#" class="btn btn-primary">View Members
+              <span class="glyphicon glyphicon-chevron-right"></span>
             </a>
           </div>
         </section>
       </div>
-
-        <div class=" col-12 col-lg-4">
+      <div class=" col-12 col-lg-4">
         <section class="card" aria-labelledby="positions-title">
           <div class="card-body">
-              <div class="media">
+            <div class="media">
                 <div class="media-left media-middle">
                   <span aria-hidden="true" style="color: #424242; font-size: 24px;">
                     <i class="bi bi-suitcase-lg-fill"></i>
@@ -127,10 +168,9 @@
               <div class="media-body media-middle">
                 <h3>Positions</h3>
               </div>
-
             </div>
             <ul style="line-height:2;">
-            {% if positions == [] %}
+              {% if positions == [] %}
                 <li class="card-text">
                   <p> No active positions in this department </p>
                 </li>
@@ -140,20 +180,18 @@
                       <a href= "/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{posURL[loop.index0]}}">{{ p }}</a>
                     </li>
                 {% endfor %}
-                {% if (positions | length) > 7 %}
-                  </ul><p class="card-text">and {{ (positions | length) - 7}} more ...</p>
-                {% endif %}
               {% endif %}
+            {% if (positions | length) > 7 %}
+            </ul><p class="card-text">and {{ (positions | length) - 7}} more ...</p>
+            {% else %}
             </ul>
-
+            {% endif %}
           </div>
-              <div class="card-footer text-center">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/main/managePositions.html" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
-              </div>
+          <div class="card-footer text-center">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/main/managePositions.html" class="btn btn-primary">View All Positions<span class="glyphicon glyphicon-chevron-right"></span></a>
+          </div>
         </section>
       </div>
-  </div>
-
-{% endif %}
-
+    </div>
+  {% endif %}
 {% endblock %}

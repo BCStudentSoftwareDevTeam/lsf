@@ -207,6 +207,7 @@ a {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
+  overflow: hidden;
 }
 
 .card-body {
@@ -250,6 +251,7 @@ a {
   padding: 0.5rem 1rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
   margin-top: auto;
 }
 
