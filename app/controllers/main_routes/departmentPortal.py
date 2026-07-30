@@ -148,7 +148,10 @@ def addUserToDept():
     if not supervisorID or not departmentID:
         return jsonify(success=False, message="Missing supervisor or department."), 400
 
-    if not canManageDepartmentMembers(currentUser, departmentID):
+    if not (
+    currentUser.isLaborAdmin or
+    currentUser.isLaborDepartmentStudent
+):
         return render_template('errors/403.html'), 403
 
     try:

@@ -143,7 +143,14 @@ def test_manage_member_actions():
             g.currentUser = admin
             response = addUserToDept()
 
-        assert response == "False"
+        response_body, status_code = response
+
+        assert status_code == 200
+        assert response_body.get_json()["success"] is False
+        assert (
+            response_body.get_json()["message"]
+            == "Supervisor already exists in this department."
+        )
 
         with app.test_request_context(
             "/members/remove",
@@ -222,7 +229,14 @@ def test_addUserToDept_adds_existing_supervisor():
             department=dept.departmentID
         )
 
-        assert response == "True"
+        response_body, status_code = response
+
+        assert status_code == 200
+        assert response_body.get_json()["success"] is True
+        assert (
+            response_body.get_json()["message"]
+            == "Supervisor added to department."
+        )
         assert member is not None
 
         transaction.rollback()
