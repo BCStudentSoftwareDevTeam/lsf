@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-{{super()}}
-    <!-- <script type="text/javascript" src="{{url_for('static', filename='js/individualPositions.js') }}?u={{lastStaticUpdate}}"></script> -->
-    <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{lastStaticUpdate}}"/>
+  {{ super() }}
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/individualPositions.js') }}?u={{ lastStaticUpdate }}"></script> -->
+  <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{ lastStaticUpdate }}" />
 {% endblock %}
 
 {% block app_content %}
-
   <div class="department-header-container">
-      <h1 class="department-header">{{ department.DEPT_NAME }}</h1>
+    <h1 class="department-header">{{ department.DEPT_NAME }}</h1>
   </div>
 
   <div class="container-fluid position-container">
@@ -18,7 +17,6 @@
 
         <div class="position-information">
           <dl class="row">
-        
             <dt class="col-sm-3">Position Title:</dt>
             <dd class="col-sm-9">{{ position.positionTitle }}</dd>
 
@@ -38,6 +36,7 @@
             <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
           </dl>
         </div>
+
         <h3 class="description-header">Description</h3>
         <section class="position-description">
           {% if position.description %}
@@ -48,21 +47,21 @@
         </section>
 
         <div class="row">
-            <div class="col-xs-6 text-left">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}"
-                  class="btn btn-default">
-                    Back
-                </a>
-            </div>
+          <div class="col-xs-6 text-left">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="btn btn-default">
+              Back
+            </a>
+          </div>
 
-            <div class="col-xs-6 text-right">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download"
-                  class="btn btn-success"
-                  id="downloadDescription">
-                    Download Description
-                </a>
-            </div>
+          <div class="col-xs-6 text-right">
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download"
+               class="btn btn-success"
+               id="downloadDescription">
+              Download Description
+            </a>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
