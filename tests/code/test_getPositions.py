@@ -119,30 +119,34 @@ def test_supervisorsPositions():
                                             revisionDate="2023-01-01",
                                             description="")
 
-        test1 = supervisorsPositions(dept1)
-        test2 = supervisorsPositions(dept2)
-        test3 = supervisorsPositions(None)
+        test1 = list(supervisorsPositions(dept1))
+        test2 = list(supervisorsPositions(dept2))
+        test3 = list(supervisorsPositions(None))
 
+        # Check that only active positions are returned
         assert len(test1) == 3
 
-        assert test1[0] == "Intern: (WLS 1)"
-        assert test1[1] == "Lab Assistant: (WLS 2)"
-        assert test1[2] == "Teaching Assistant: (WLS 4)"
+        # Check if positions are returned in alphabetical order with the correct fields
+        assert test1[0].positionTitle == "Intern"
+        assert test1[0].positionCode == "S34515"
+        assert test1[0].wls == 1
 
-        assert "Research Assistant: (WLS 3)" not in test1
+        assert test1[1].positionTitle == "Lab Assistant"
+        assert test1[1].positionCode == "S34514"
+        assert test1[1].wls == 2
 
-        assert test1[0] == "S34515"  # Intern
-        assert test1[1] == "S34514"  # Lab Assistant
-        assert test1[2] == "S34512"  # Teaching Assistant
+        assert test1[2].positionTitle == "Teaching Assistant"
+        assert test1[2].positionCode == "S34512"
+        assert test1[2].wls == 4
 
-        assert "S34513" not in posURL1
+        # Check if the inactive position is not included in the results
+        assert "Research Assistant" not in [p.positionTitle for p in test1]
+        assert "S34513" not in [p.positionCode for p in test1]
 
-
-        assert len(test2) == 0
+        # Check that no positions are returned for a department with no positions
         assert len(test2) == 0
 
         # Check that no positions are returned when department is None
-        assert len(test3) == 0
         assert len(test3) == 0
 
         transaction.rollback()
