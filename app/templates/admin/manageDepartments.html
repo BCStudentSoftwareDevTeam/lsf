@@ -23,6 +23,8 @@
         across campus.
       </p>
 
+      <br>
+
       <p class="text-center">
         <button class="btn btn-success btn-xs" id="exampleButton1" disabled>
           In Compliance
@@ -33,7 +35,7 @@
         <button class="btn btn-danger btn-xs" id="exampleButton2" disabled>
           Not in Compliance
         </button>
-        Position descriptions are not up to date
+        Position descriptions are not up to date.
       </p>
 
       <br />
@@ -44,10 +46,13 @@
   <br />
   <div class="row mb-2" style="display: flex; justify-content: space-between;">
     <div class="col-md-4" align="left" style="margin-bottom: 1px">
-      {% include "snips/annualAllocationReview.html" %}
-      {% include "snips/annualPositionReview.html" %}
-      <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Upload Allocations </button>
-      <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;"> Download Allocation History </button>
+      {% include "snips/uploadAllocations.html" %}
+      <button class="btn btn-success me-2" type="button" data-toggle="modal" data-target="#uploadAllocationsModal" style="width: 200px; margin-bottom: 5px;">
+        Upload Allocations
+      </button>
+      <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;">
+        Download Allocation History
+      </button>
     </div>
     <div class="col-md-4" align="center" style="margin-bottom: 1px">
         <div class="btn-group">
@@ -75,11 +80,13 @@
       </div>
     </div>
 
-
+    
     <div class="col-md-4" align="right" style="margin-bottom: 1px;">
+      {% include "snips/annualAllocationReview.html" %}
       <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal" style="width: 200px; margin-bottom: 5px;">
         Annual Allocation Review
       </button>
+      {% include "snips/annualPositionReview.html" %}
       <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal" style="width: 200px; margin-bottom: 5px;">
         Annual Position Review
       </button>
