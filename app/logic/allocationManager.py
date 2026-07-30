@@ -9,7 +9,7 @@ from peewee import JOIN
 def getAllocation(termCode, dept):
         allocationObject = Allocation.select().where(
             Allocation.termCode == termCode,
-            Allocation.department == dept.departmentID, 
+            Allocation.department == dept, 
             Allocation.isFinal == True).dicts().get()
         return allocationObject
 
@@ -17,7 +17,7 @@ def getAllocation(termCode, dept):
 def getAllocationNonFinal(termCode, dept):
         allocationObject = Allocation.select().where(
             Allocation.termCode == termCode,
-            Allocation.department == dept.departmentID, 
+            Allocation.department == dept, 
             Allocation.isFinal == False).dicts().get()
         return allocationObject
 

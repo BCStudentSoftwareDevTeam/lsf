@@ -171,13 +171,16 @@ def test_getTotalAllocations(testDepartment, testTerm, testAllocation):
     assert totalAllocation['totalAllocations'] == 19
   
 
-
-
 @pytest.mark.integration
 def test_countContracts(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
     contractsCounts = countContracts(testLaborStatusForm.jobType,testLaborStatusForm.weeklyHours,testTerm.termCode,testDepartment.departmentID)
     assert contractsCounts == 1
 
+
+# @pytest.mark.integration
+# def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
+#     contractedAllocation = getContractedAllocations(testTerm.termCode,testDepartment.departmentID)
+#     print(contractedAllocation)
 
 
 
