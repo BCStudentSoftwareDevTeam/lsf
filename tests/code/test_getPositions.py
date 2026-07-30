@@ -2,7 +2,7 @@ import pytest
 from app.models import mainDB
 from app.models.department import Department
 from app.models.positionHistory import PositionHistory
-from app.logic.getPositions import getActivePositions
+from app.logic.getPositions import *
 
 @pytest.mark.integration
 def test_getActivePositions():
@@ -78,5 +78,71 @@ def test_getActivePositions():
         # Check that no positions are returned when department is None
         assert len(positionsList3) == 0
         assert len(posURL3) == 0
+
+        transaction.rollback()
+    
+@pytest.mark.integration
+def test_supervisorsPositions():
+    with mainDB.atomic() as transaction:
+        dept1 = Department.create(departmentID=100, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
+        dept2 = Department.create(departmentID=101, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
+
+        position1 = PositionHistory.create(positionTitle="Teaching Assistant", 
+                                            positionCode="S34512", 
+                                            department=dept1, 
+                                            status="Active", 
+                                            wls=4,
+                                            revisionDate="2023-01-01", 
+                                            description="")
+        
+        position2 = PositionHistory.create(positionTitle="Research Assistant",
+                                            positionCode="S34513",
+                                            department=dept1,
+                                            status="Inactive",
+                                            wls=3,
+                                            revisionDate="2023-01-01",
+                                            description="")
+
+        position3 = PositionHistory.create(positionTitle="Lab Assistant",
+                                            positionCode="S34514",
+                                            department=dept1,
+                                            status="Active",
+                                            wls=2,
+                                            revisionDate="2026-01-01",
+                                            description="") 
+
+        position4 = PositionHistory.create(positionTitle="Intern",
+                                            positionCode="S34515",
+                                            department=dept1,
+                                            status="Active",
+                                            wls=1,
+                                            revisionDate="2023-01-01",
+                                            description="")
+
+        test1 = supervisorsPositions(dept1)
+        test2 = supervisorsPositions(dept2)
+        test3 = supervisorsPositions(None)
+
+        assert len(test1) == 3
+
+        assert test1[0] == "Intern: (WLS 1)"
+        assert test1[1] == "Lab Assistant: (WLS 2)"
+        assert test1[2] == "Teaching Assistant: (WLS 4)"
+
+        assert "Research Assistant: (WLS 3)" not in test1
+
+        assert test1[0] == "S34515"  # Intern
+        assert test1[1] == "S34514"  # Lab Assistant
+        assert test1[2] == "S34512"  # Teaching Assistant
+
+        assert "S34513" not in posURL1
+
+
+        assert len(test2) == 0
+        assert len(test2) == 0
+
+        # Check that no positions are returned when department is None
+        assert len(test3) == 0
+        assert len(test3) == 0
 
         transaction.rollback()
