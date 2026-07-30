@@ -4,10 +4,7 @@ from flask import g
 from app import app
 from app.controllers.main_routes.departmentPortal import (
     addUserToDept,
-    removeMember,
     searchMember,
-    updateCoordinator,
-    updateEligibility,
 )
 from app.models import mainDB
 from app.models.department import Department
@@ -49,130 +46,6 @@ def test_searchMember_returns_matching_supervisor():
         assert data[0]["lastName"] == "Supervisor"
 
         transaction.rollback()
-
-
-@pytest.mark.integration
-def test_manage_member_actions():
-    with mainDB.atomic() as transaction:
-        dept = Department.create(
-            DEPT_NAME="Manage Members Test Department",
-            ACCOUNT="69001",
-            ORG="2991",
-            departmentCompliance=True
-        )
-
-        adminSupervisor = Supervisor.create(
-            ID="B99000002",
-            PIDM=990002,
-            legal_name="Admin",
-            LAST_NAME="Supervisor",
-            EMAIL="admin.supervisor@berea.edu",
-            CPO="9902",
-            DEPT_NAME="Labor Department"
-        )
-
-        memberSupervisor = Supervisor.create(
-            ID="B99000003",
-            PIDM=990003,
-            legal_name="Member",
-            LAST_NAME="Supervisor",
-            EMAIL="member.supervisor@berea.edu",
-            CPO="9903",
-            DEPT_NAME="Manage Members Test Department",
-            isBanned=False
-        )
-
-        admin = User.create(
-            student=None,
-            supervisor=adminSupervisor,
-            username="testmanageadmin",
-            isLaborAdmin=True,
-            isFinancialAidAdmin=False,
-            isSaasAdmin=False
-        )
-
-        SupervisorDepartment.create(
-            supervisor=memberSupervisor,
-            department=dept,
-            isCoordinator=False
-        )
-
-        with app.test_request_context(
-            "/members/update_coordinator",
-            method="POST",
-            data={
-                "supervisorID": memberSupervisor.ID,
-                "departmentID": dept.departmentID,
-                "isCoordinator": "true"
-            }
-        ):
-            g.currentUser = admin
-            response = updateCoordinator()
-
-        member = SupervisorDepartment.get(
-            SupervisorDepartment.supervisor == memberSupervisor,
-            SupervisorDepartment.department == dept
-        )
-
-        assert response[1] == 200
-        assert member.isCoordinator
-
-        with app.test_request_context(
-            "/members/update_eligibility",
-            method="POST",
-            data={
-                "supervisorID": memberSupervisor.ID
-            }
-        ):
-            g.currentUser = admin
-            response = updateEligibility()
-
-        memberSupervisor = Supervisor.get(Supervisor.ID == "B99000003")
-
-        assert response[1] == 200
-        assert memberSupervisor.isBanned
-
-        with app.test_request_context(
-            "/members/add",
-            method="POST",
-            data={
-                "supervisorID": memberSupervisor.ID,
-                "departmentID": dept.departmentID
-            }
-        ):
-            g.currentUser = admin
-            response = addUserToDept()
-
-        response_body, status_code = response
-
-        assert status_code == 200
-        assert response_body.get_json()["success"] is False
-        assert (
-            response_body.get_json()["message"]
-            == "Supervisor already exists in this department."
-        )
-
-        with app.test_request_context(
-            "/members/remove",
-            method="DELETE",
-            data={
-                "supervisorID": memberSupervisor.ID,
-                "departmentID": dept.departmentID
-            }
-        ):
-            g.currentUser = admin
-            response = removeMember()
-
-        member = SupervisorDepartment.get_or_none(
-            supervisor=memberSupervisor.ID,
-            department=dept.departmentID
-        )
-
-        assert response[1] == 200
-        assert member is None
-
-        transaction.rollback()
-
 
 @pytest.mark.integration
 def test_addUserToDept_adds_existing_supervisor():

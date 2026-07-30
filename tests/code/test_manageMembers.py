@@ -138,7 +138,8 @@ def test_attachPositionCounts():
 
 
 @pytest.mark.integration
-def test_getStudentCounts_counts_positions_and_excludes_released_forms():
+@pytest.mark.integration
+def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_form():
     with mainDB.atomic() as transaction:
         testFormIds = [991001, 991002, 991003, 991004, 991005]
 
@@ -147,6 +148,7 @@ def test_getStudentCounts_counts_positions_and_excludes_released_forms():
             LaborStatusForm.laborStatusFormID.in_(testFormIds)
         ).execute()
 
+        # Given one department with one supervisor and one student
         dept = Department.create(
             DEPT_NAME="Student Count Department",
             ACCOUNT="69104",
@@ -185,6 +187,7 @@ def test_getStudentCounts_counts_positions_and_excludes_released_forms():
             }
         )[0]
 
+        # And the student has active and pending primary/secondary positions
         testForms = [
             (991001, "Active Primary", "Primary", True),
             (991002, "Pending Primary", "Primary", None),
@@ -206,6 +209,7 @@ def test_getStudentCounts_counts_positions_and_excludes_released_forms():
                 studentConfirmation=studentConfirmation
             )
 
+        # And one approved primary position has been released
         releaseForm = LaborReleaseForm.create(
             laborReleaseFormID=991005,
             conditionAtRelease="satisfactory",
@@ -223,9 +227,11 @@ def test_getStudentCounts_counts_positions_and_excludes_released_forms():
             status="Approved"
         )
 
+        # When getStudentCounts runs
         counts = getStudentCounts(dept)
         row = counts[(dept.departmentID, supervisor.ID)]
 
+        # Then it counts each active/pending position type and ignores the released form
         assert row["active_primary_positions"] == 1
         assert row["pending_primary_positions"] == 1
         assert row["active_secondary_positions"] == 1
