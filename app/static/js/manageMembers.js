@@ -66,14 +66,14 @@ $(document).ready(function() {
                     button.text("Ineligible");
                     button.val("Ineligible");
                     banBadge.css("visibility", "visible");
-                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName +  " is no longer an eligible coordinator, so they cannot add students or create labor status forms .</div>");
+                    $("#flash_container").html("<div class=\"alert alert-danger\"alert\" id=\"flasher\">" + memberName +  " is no longer an eligible coordinator, so they cannot add students or create labor status forms .</div>");
                     $("#flasher").delay(3000).fadeOut();
                 } else {
                     button.removeClass("btn-danger").addClass("btn-success");
                     button.html("Eligible");
                     button.val("Eligible");
                     banBadge.css("visibility", "hidden");
-                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\"> " + memberName +  " is an eligible coordinator now; they can create labor status forms and add new students.</div>");
+                    $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\"> " + memberName +  " is an eligible coordinator now; they can create labor status forms and add new students.</div>");
                     $("#flasher").delay(3000).fadeOut();
                 }
         
