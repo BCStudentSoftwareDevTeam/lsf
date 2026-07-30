@@ -24,26 +24,32 @@ def buildSupervisorDisplay(supervisor):
         "department": (supervisor.DEPT_NAME or "").strip(),
         "type": "Supervisor"
     }
-def getSupervisors(dept):    
+def getSupervisorDepartments(dept):
+    """Return supervisor-department records for a department."""
+    if dept is None:
+        return []
+
+    return list(
+        SupervisorDepartment
+        .select(SupervisorDepartment, Supervisor)
+        .join(Supervisor)
+        .where(SupervisorDepartment.department == dept)
+        .order_by(Supervisor.LAST_NAME.asc())
+    )
+def getSupervisors(dept):
     laborCoordinators = []
     supervisors = []
-    
-    # Avoid querying department members unless the selected department exists.
-    if dept is not None:
-        supervisorDepartments = (SupervisorDepartment.select().join(Supervisor).where(SupervisorDepartment.department == dept)
-            .order_by(Supervisor.LAST_NAME.asc()))
-        for supervisorDepartment in supervisorDepartments:
-            supervisor = supervisorDepartment.supervisor
-            if supervisor is None:
-                continue
 
-            supervisorDisplay = buildSupervisorDisplay(supervisor)
-            if not supervisorDisplay:
-                continue
-
-            if supervisorDepartment.isCoordinator:
-                laborCoordinators.append(supervisorDisplay)
-            else:
-                supervisors.append(supervisorDisplay)
-
+    for supervisorDepartment in getSupervisorDepartments(dept):
+        supervisor = supervisorDepartment.supervisor
+        if supervisor is None:
+            continue
+        supervisorDisplay = buildSupervisorDisplay(supervisor)
+        if not supervisorDisplay:
+            continue
+        if supervisorDepartment.isCoordinator:
+            laborCoordinators.append(supervisorDisplay)
+        else:
+            supervisors.append(supervisorDisplay)
+            
     return supervisors, laborCoordinators

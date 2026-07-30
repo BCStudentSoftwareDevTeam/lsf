@@ -1,10 +1,14 @@
 from flask import g, jsonify, redirect, render_template, request, url_for
+from flask import abort
 
 from app.controllers.main_routes import main_bp
 from app.models.supervisor import Supervisor
+from app.models.department import Department
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.logic.manageMembers import *
 from app.logic.search import searchPerson
+from app.logic.getSupervisors import buildSupervisorDisplay
+from app.logic.getSupervisors import (buildSupervisorDisplay,getSupervisorDepartments,)
 
 def canManageDepartment(currentUser, departmentID):
     """Return whether the user can manage members in this department."""
@@ -28,7 +32,15 @@ def manageMembers(org=None, account=None):
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
 
-    dept, members = getCurrentDeptMembers(org, account)
+    dept = Department.get_or_none(
+    Department.ORG == org,
+    Department.ACCOUNT == account
+    )
+
+    if not dept:
+        abort(404)
+
+    members = getSupervisorDepartments(dept)
 
     supervisorDeptRecord = SupervisorDepartment.get_or_none(
         supervisor=currentUser.supervisor,
@@ -68,7 +80,8 @@ def searchMember(query=None):
         .limit(10)
     )
 
-    supervisors = list(map(supervisorsDbToDict, supervisors))
+    supervisors = [buildSupervisorDisplay(supervisor) for supervisor in supervisors]
+    supervisors = [ supervisor for supervisor in supervisors if supervisor is not None]
 
     return jsonify(supervisors)
 

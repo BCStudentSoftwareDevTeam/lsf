@@ -1,6 +1,5 @@
 from datetime import date
 
-from flask import abort
 from peewee import Case, DoesNotExist, fn
 
 from app.models.department import Department
@@ -8,25 +7,8 @@ from app.models.formHistory import FormHistory
 from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
 
 
-
-def getCurrentDeptMembers(org, account):
-    """Return the current department and its supervisor-department rows."""
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
-        abort(404)
-
-    members = list(
-        SupervisorDepartment
-        .select(SupervisorDepartment, Supervisor)
-        .join(Supervisor)
-        .where(SupervisorDepartment.department == dept)
-    )
-
-    return dept, members
 
 
 def getStudentCounts(dept):
