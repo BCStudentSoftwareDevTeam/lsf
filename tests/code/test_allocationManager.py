@@ -177,10 +177,17 @@ def test_countContracts(testLaborStatusForm, testTerm, testDepartment, testFormH
     assert contractsCounts == 1
 
 
-# @pytest.mark.integration
-# def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
-#     contractedAllocation = getContractedAllocations(testTerm.termCode,testDepartment.departmentID)
-#     print(contractedAllocation)
+@pytest.mark.integration
+def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment, testFormHistory,testAllocation):
+    contractedAllocation = getContractedAllocations(testTerm.termCode,testDepartment.departmentID)
+    assert contractedAllocation['used_10'] == 0
+    assert contractedAllocation['used_12'] == 0
+    assert contractedAllocation['used_15'] == 1
+    assert contractedAllocation['used_20'] == 0
+    assert contractedAllocation['used_5_sec'] == 0
+    assert contractedAllocation['used_10_sec'] == 0
+    assert contractedAllocation['used_total'] == 1
+    assert contractedAllocation['break_hours'] == 0
 
 
 
