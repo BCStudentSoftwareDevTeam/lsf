@@ -7,7 +7,7 @@ from app.models.positionHistory import PositionHistory
 
 from app.controllers.main_routes import main_bp
 from app.logic.download import makePositionDescriptionPDF
-from app.logic.getPositions import getPositionRevision
+from app.logic.getPositions import getPosition
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
 def postionDescription(org, account, positionCode):
@@ -24,7 +24,7 @@ def postionDescription(org, account, positionCode):
         except ValueError:
             return render_template('errors/404.html'), 404
 
-    position = getPositionRevision(dept, positionCode, revisionDate)
+    position = getPosition(dept, positionCode, revisionDate)
 
     if not position:
         return render_template('errors/404.html'), 404
@@ -51,7 +51,7 @@ def downloadPositionDescription(org, account, positionCode):
         except ValueError:
             return render_template('errors/404.html'), 404
 
-    position = getPositionRevision(dept, positionCode, revisionDate)
+    position = getPosition(dept, positionCode, revisionDate)
 
     if not position:
         return render_template('errors/404.html'), 404

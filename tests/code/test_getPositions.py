@@ -80,9 +80,9 @@ def test_getActivePositions():
 
         transaction.rollback()
 
-def test_getPositionRevision():
+def test_getPosition():
     """
-    Test to check if the getPositionRevision function in getPositions.py correctly retrieves a single position for a given department, position code, and optional revision date.
+    Test to check if the getPosition function in getPositions.py correctly retrieves a single position for a given department, position code, and optional revision date.
     """
     with mainDB.atomic() as transaction:
         dept = Department.create(departmentID=200, DEPT_NAME="Physics", ACCOUNT="6742", ORG="2116", departmentCompliance=True, isActive=True)
@@ -112,24 +112,24 @@ def test_getPositionRevision():
                                             description="")
 
         # Test retrieving the most recent revision - should return regardless of status
-        retrieved_position = getPositionRevision(dept, "S34516")
+        retrieved_position = getPosition(dept, "S34516")
         assert retrieved_position.revisionDate == "2025-01-01"
 
         # Test retrieving a specific revision - should return regardless of status
-        retrieved_position_specific = getPositionRevision(dept, "S34516", "2023-01-01")
+        retrieved_position_specific = getPosition(dept, "S34516", "2023-01-01")
         assert retrieved_position_specific.revisionDate == "2023-01-01"
         assert retrieved_position_specific.status == "Active"
 
-        retrieved_position = getPositionRevision(dept, "S34516", "2024-01-01")
+        retrieved_position = getPosition(dept, "S34516", "2024-01-01")
         assert retrieved_position.revisionDate == "2024-01-01"
         assert retrieved_position.status == "Inactive"
 
-        retrieved_position_specific = getPositionRevision(dept, "S34516", "2025-01-01")
+        retrieved_position_specific = getPosition(dept, "S34516", "2025-01-01")
         assert retrieved_position_specific.revisionDate == "2025-01-01"
         assert retrieved_position_specific.status == "Requested"
 
         # Test retrieving a non-existent revision date
-        retrieved_position_non_existent = getPositionRevision(dept, "S34516", "2099-01-01")
+        retrieved_position_non_existent = getPosition(dept, "S34516", "2099-01-01")
         assert retrieved_position_non_existent is None
 
         transaction.rollback()
