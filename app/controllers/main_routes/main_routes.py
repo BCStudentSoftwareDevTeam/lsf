@@ -82,6 +82,16 @@ def departmentPortal(org=None,account=None):
                            positions = positionsList,
                            posURL = posURL)
 
+@main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
+def allocationTable(org=None, account=None):
+    currentUser = g.currentUser
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        dept = None
+
+    return render_template('main/allocationTable.html')
+
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
