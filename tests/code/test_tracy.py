@@ -57,8 +57,8 @@ class Test_Tracy:
             supervisors = tracy.getSupervisors()
 
             for s in supervisors:
-                assert s.FIRST_NAME in ['Alex','Brian','Jan','Jasmine','Mario','Megan','Scott','Madina']
-                assert s.CPO in ['420','6305','6301','6301','6302','6303','6300']
+                assert s.FIRST_NAME in ['Alex','Brian','Jan','Jasmine','Mario','Wario','Megan','Scott','Madina','Demo','Sib','Supervisor','Test']
+                assert s.CPO in ['666','999','420','6305','6301','6301','6302','6303','6300','222','888','500']
 
     @pytest.mark.integration
     def test_getSupervisorFromID(self, tracy):
