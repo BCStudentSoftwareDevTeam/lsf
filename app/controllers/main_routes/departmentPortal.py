@@ -6,7 +6,20 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.logic.manageMembers import *
 from app.logic.search import searchPerson
 
+def canManageDepartment(currentUser, departmentID):
+    """Return whether the user can manage members in this department."""
+    if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
+        return True
 
+    if not currentUser.supervisor:
+        return False
+
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(
+        supervisor=currentUser.supervisor,
+        department=departmentID
+    )
+
+    return supervisorDeptRecord is not None
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageMembers(org=None, account=None):
     """Generates the Manage Members page."""
@@ -66,15 +79,14 @@ def updateCoordinator():
     """
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
-        return render_template('errors/403.html'), 403
-
     supervisorID = request.form.get("supervisorID")
     departmentID = request.form.get("departmentID")
     isCoordinator = request.form.get("isCoordinator") == "true"
 
     if not supervisorID or not departmentID:
         return "", 400
+    if not canManageDepartment(currentUser, departmentID):
+    return render_template('errors/403.html'), 403    
 
     member = SupervisorDepartment.get(
         (SupervisorDepartment.supervisor == supervisorID) &
