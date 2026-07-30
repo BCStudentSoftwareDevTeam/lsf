@@ -87,43 +87,6 @@
 
   </div>
 
-
- 
-
-  <!-- 
-  <div class="row mb-2" style="display: flex; justify-content: space-between;">
-    <div class="col-md-1"></div>
-    <div class = "col-md-3" style="margin-left: 2px;">
-      <button class="btn btn-success me-2" type="button"> Upload Allocations </button>
-      <button class="btn btn-success me-2" type="button"> Download Allocation History </button>
-    </div>
-
-
-
-    <div class="col-md-3" align="center">
-
-      
-    </div>
-
-    <div class="col-md-2" align="right">
-      <button class="btn btn-primary me-2" type="button">
-        Annual Allocation Review
-      </button>
-      <button class="btn btn-primary" type="button">
-        Annual Position Review
-      </button>
-    </div>
-  <div class="col-md-1"></div>
-  </div>
-  
-</div>
-
- -->
-
-
-
-{% include "snips/allocationReview.html" %}
-
   <div style="height: 10px"></div>
   <div class="row">
     <div class="col-md-2"></div>
@@ -209,7 +172,7 @@
                     <li><a href="#">Allocation History</a></li>
                     <li><a href="#">Position Review</a></li>
                     <li><a href="#">Edit Dept Members</a></li>
-                    <li><a data-toggle="modal" data-target="#allocationReviewModal">Allocation Review</a></li>
+                    <li><a href="alloc/{{department.ORG}}/{{department.ACCOUNT}}">Allocation Review</a></li>
                   </ul>
                 </div>
       </div>

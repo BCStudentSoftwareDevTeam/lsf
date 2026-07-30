@@ -1,6 +1,6 @@
 from datetime import date
 
-from flask import g, request, redirect, jsonify
+from flask import g, request, redirect, jsonify, abort
 
 from app.controllers.admin_routes import *
 from app.login_manager import require_login
@@ -19,20 +19,20 @@ from app.logic.manageDepartments import *
 
 
 
-# FIXME: The default value year should be the current academic year (Rather than waiting to be clicked it should be on the current year by default).
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
 def manageDepartments(academicYear = None):
     """
-    Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
-    Returns the departments to be used in the HTML for the manage departments page.
+    Returns the Manage Departments page, which allows the admin to view all the departments
+    and their allocations.  
     """
 
+    # Checking Admin Rights
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not currentUser.isLaborAdmin:       # If the currrent user is not an admin
-        if currentUser.student: # If the currrent user is logged in as a student
+    if not currentUser.isLaborAdmin:   
+        if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
@@ -48,16 +48,11 @@ def manageDepartments(academicYear = None):
     currentAY, previousAY, nextAY = generateAdjacentYears(academicYear)
     chosenAY = Term.get(Term.termCode == academicYear)
 
-
-    # FIXME: REPLACE str(row["totalHours"] if row["totalHours"] is not None else 0) WITH SOMETHING BETTER, LIKE str(row["totalHours"] or 0)
-    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)} 
-    # I think Scott wanted this to say NULL not zero, unsure.
-
+    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
 
     activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
     inactiveDepartments = Department.select().where(Department.isActive == False)  
     
-
     allocationStatus = {
         department.departmentID: getAllocationStatus(chosenAY, department)
         for department in activeDepartments
@@ -82,7 +77,8 @@ def manageDepartments(academicYear = None):
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
     """
-    This function changes the compliance status in the database for labor status forms.  It works in collaboration with the ajax call in manageDepartments.js
+    This function changes the compliance status in the database for labor status forms.  
+    It works in collaboration with the ajax call in manageDepartments.js
     """
     try:
         rsp = request.get_json()
@@ -97,6 +93,32 @@ def complianceStatusCheck():
 
 
 
-@admin.route('/admin/AR', methods=['GET'])
-def allocationReview():
-    return render_template('admin/AR.html')
+@admin.route('/admin/manageDepartments/alloc/<org>/<account>', methods=['GET'])
+def allocationReview(org=None, account=None):
+    """
+    Returns the Allocation Review page/form, which can only be accessed through
+    the Manage Departments page.  
+    """
+
+    # Retrieving the departments based on the org and account numbers 
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        abort(404)
+    
+    # Checking admin rights
+    currentUser = require_login()
+    if not currentUser:                    # If the current user is not logged in
+        return render_template('errors/403.html')
+    if not currentUser.isLaborAdmin: 
+        if currentUser.student:
+            return redirect('/laborHistory/' + currentUser.student.ID)
+        elif currentUser.supervisor:
+            return render_template('errors/403.html'), 403
+
+    # Retrieving the next year 
+    # DON'T DELETE THE UNDERSCORES
+    _, _, nextAY = generateAdjacentYears()
+    # The generateAdjacentYears() function returns a tuple of three elements, and we only need the third value
+
+    return render_template('admin/allocationReview.html', department = dept, nextAY = nextAY)

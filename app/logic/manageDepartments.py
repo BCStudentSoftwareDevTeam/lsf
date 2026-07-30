@@ -14,7 +14,7 @@ from app.login_manager import require_login
 
 
 
-def generateAdjacentYears(academicYearTermCode): 
+def generateAdjacentYears(academicYearTermCode=None): 
     """
     Generates the current, the previous, and the following academic years. 
     """
@@ -28,9 +28,8 @@ def generateAdjacentYears(academicYearTermCode):
     previousAYCode   = previousYear * 100
     nextAYCode       = nextYear * 100
 
-
     # Admins cannot view allocations for the years that are beyond the current, the previous, or the following academic year 
-    if (academicYearTermCode != currentAYCode) and (academicYearTermCode != previousAYCode) and (academicYearTermCode != nextAYCode):
+    if academicYearTermCode not in (None, currentAYCode, previousAYCode, nextAYCode):
         abort(400)
 
 
@@ -50,6 +49,14 @@ def generateAdjacentYears(academicYearTermCode):
     )
 
     return (currentAY, previousAY, nextAY)
+
+
+
+
+####################################################################################################################################
+# Everything below this line will eventually be deleted  
+
+
 
 
 
