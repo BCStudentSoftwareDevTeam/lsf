@@ -5,7 +5,7 @@ class PositionHistory(baseModel):
     positionTitle      = CharField()
     positionCode       = CharField()
     department         = ForeignKeyField(Department)
-    status             = CharField()
+    status             = CharField() # Active, Inactive, Requested
     wls                = IntegerField()
     revisionDate       = DateField()
     revisedBy          = CharField()
