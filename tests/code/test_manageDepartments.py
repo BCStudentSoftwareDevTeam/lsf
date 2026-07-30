@@ -1,21 +1,13 @@
 import pytest
 import json
-
 from werkzeug.exceptions import BadRequest
-from unittest.mock import patch
 
 from flask import g 
 from flask_wtf.csrf import CSRFProtect
 
 from app import app
-
 from app.models import mainDB
-from app.models.laborStatusForm import LaborStatusForm
-from app.models.department import Department
 from app.models.term import Term
-from app.models.formHistory import FormHistory
-from app.models.allocation import Allocation
-
 from app.controllers.admin_routes import manageDepartments
 
 from app.logic.manageDepartments import *

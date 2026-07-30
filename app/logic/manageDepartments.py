@@ -91,8 +91,6 @@ def getUsedBreakHours(term):
     )
     .group_by(LaborStatusForm.department, LaborStatusForm.termCode).dicts()
 )
-    
-    print(list(totalBreakSum))
 
     return totalBreakSum
 
