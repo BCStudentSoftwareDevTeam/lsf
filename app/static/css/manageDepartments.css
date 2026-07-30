@@ -1,5 +1,3 @@
-/* Styles for the Manage Departments page */
-
 h1 {
   text-align: center;
   padding-bottom: 5px;
@@ -31,59 +29,4 @@ h1 {
 #activeDepartmentsTable td {
   vertical-align: middle;
   text-align: center;
-}
-
-/* Styles for the allocationReview.html file (Allocation Review Modal) */
-
-@media(min-width:970px) and (max-width:1240px) {
-  .container {
-    width: 80%;
-    }
-}
-
-@media(min-width:1240px) and (max-width:1800px) {
-  .container {
-    width: 55%;
-    }
-}
-
-@media(min-width:1800px) {
-  .container {
-    width: 40%;
-    }
-}
-
-#allocationReviewSubtitle{
-  margin-bottom: 30px;
-}
-
-#breakHours {
-  margin-top: 0px; 
-}
-
-.numericSpinner {
-  width: 55px;
-}
-
-#requestedPositions {
-  margin-top: 30px; 
-  margin-bottom: -10px;
-}
-
-.noBorders {
-  border: none !important;
-}
-
-
-#allocationJustification {
-  margin-top: 30px;
-}
-
-.unresizeable {
-  resize: none;
-}
-
-#allocationReviewNote {
-  max-width:70%; 
-  color: grey;
 }
