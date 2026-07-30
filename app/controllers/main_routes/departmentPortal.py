@@ -138,7 +138,7 @@ def removeMember():
 
 @main_bp.route('/members/add', methods=['POST'])
 def addUserToDept():
-   """
+    """
     Adds a user to a department.
     """
     currentUser = g.currentUser
