@@ -33,17 +33,17 @@
             <dd class="col-sm-9">{{ position.revisionDate }}</dd>
 
             <dt class="col-sm-3">Revised By:</dt>
-            <dd class="col-sm-9">{{ revision_author or "Unknown" }}</dd>
+            <dd class="col-sm-9">{{ position.revisedBy or "Unknown" }}</dd>
           </dl>
         </div>
 
         <h3 class="description-header">Description</h3>
         <section class="position-description">
-          {% if position.description %}
+          {%- if position.description %}
             <div class="description-content">{{ position.description }}</div>
-          {% else %}
+          {%- else %}
             <p class="text-muted">No description available.</p>
-          {% endif %}
+          {%- endif %}
         </section>
 
         <div class="row">
