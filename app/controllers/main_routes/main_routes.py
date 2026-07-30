@@ -11,6 +11,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
 from app.models.positionHistory import PositionHistory
+from app.models.allocation import Allocation
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
@@ -90,7 +91,37 @@ def allocationTable(org=None, account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    return render_template('main/allocationTable.html')
+    returnTerms = []
+    terms = Term.select().order_by(Term.termCode.desc())
+
+    testAllocationDict = {"primary_10": 1,
+                    "primary_12": 2,
+                    "primary_15": 3,
+                    "primary_20": 4,
+                    "secondary_5": 5,
+                    "secondary_10": 6,
+                    "breakHours": 500,
+                    "totalPrimaries": 10,
+                    "totalSecondaries": 11,
+                    "totalAllocations": 21 }
+    allocationDict = {}
+    for term in terms:
+        if str(term.termCode).endswith("00"):
+            returnTerms.append(term.termName)
+
+            try:
+                allocationObject = allocationObject = Allocation.select().where(
+                    Allocation.termCode == term.termCode,
+                    Allocation.department == 3,).dicts().get()
+                allocationDict[term.termName] = testAllocationDict
+
+            except Exception as e:
+                allocationDict[term.termName] = {}
+
+    return render_template('main/allocationTable.html',
+                           department = dept,
+                           terms = returnTerms,
+                           allocations = allocationDict)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

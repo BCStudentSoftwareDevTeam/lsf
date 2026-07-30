@@ -16,3 +16,4 @@ def allocationTable(org=None, account=None):
     except (NameError, DoesNotExist):
         dept = None
 
+    return render_template('main/')
