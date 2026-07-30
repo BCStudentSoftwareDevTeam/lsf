@@ -1,15 +1,14 @@
 from datetime import date
 
 import pytest
-from werkzeug.exceptions import NotFound
 
 from app import app
 from app.logic.manageMembers import (
     attachPositionCounts,
-    getCurrentDeptMembers,
     getStudentCounts,
 )
 from app.logic.getSupervisors import buildSupervisorDisplay
+from app.logic.getSupervisors import getSupervisorDepartments
 
 from app.models import mainDB
 from app.models.department import Department
@@ -21,7 +20,39 @@ from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.term import Term
 
+@pytest.mark.integration
+def test_getSupervisorDepartments():
+    with mainDB.atomic() as transaction:
+        department = Department.create(
+            DEPT_NAME="Current Members Department",
+            ACCOUNT="69101",
+            ORG="2995",
+            departmentCompliance=True
+        )
 
+        supervisor = Supervisor.create(
+            ID="B99100002",
+            PIDM=991002,
+            legal_name="Current",
+            LAST_NAME="Member",
+            EMAIL="current.member@berea.edu",
+            CPO="9912",
+            DEPT_NAME="Current Members Department"
+        )
+
+        SupervisorDepartment.create(
+            supervisor=supervisor,
+            department=department
+        )
+
+        members = getSupervisorDepartments(department)
+
+        assert len(members) == 1
+        assert members[0].supervisor.ID == supervisor.ID
+        assert members[0].department.departmentID == department.departmentID
+
+        transaction.rollback()
+        
 @pytest.mark.integration
 def test_buildSupervisorDisplay_returns_portal_and_search_fields():
     with mainDB.atomic() as transaction:
@@ -45,46 +76,6 @@ def test_buildSupervisorDisplay_returns_portal_and_search_fields():
         assert result["type"] == "Supervisor"
         assert result["name"] == "Test Supervisor"
         assert result["email"] == "test.supervisor@berea.edu"
-
-        transaction.rollback()
-
-
-@pytest.mark.integration
-def test_getCurrentDeptMembers():
-    with mainDB.atomic() as transaction:
-        dept = Department.create(
-            DEPT_NAME="Current Members Department",
-            ACCOUNT="69101",
-            ORG="2995",
-            departmentCompliance=True
-        )
-
-        supervisor = Supervisor.create(
-            ID="B99100002",
-            PIDM=991002,
-            legal_name="Current",
-            LAST_NAME="Member",
-            EMAIL="current.member@berea.edu",
-            CPO="9912",
-            DEPT_NAME="Current Members Department"
-        )
-
-        SupervisorDepartment.create(
-            supervisor=supervisor,
-            department=dept
-        )
-
-        with app.test_request_context():
-            currentDept, members = getCurrentDeptMembers("2995", "69101")
-
-        assert currentDept.departmentID == dept.departmentID
-        assert len(members) == 1
-        assert members[0].supervisor.ID == supervisor.ID
-        assert members[0].department.departmentID == dept.departmentID
-
-        with app.test_request_context():
-            with pytest.raises(NotFound):
-                getCurrentDeptMembers("0000", "0000")
 
         transaction.rollback()
 

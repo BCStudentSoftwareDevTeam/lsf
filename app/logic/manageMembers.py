@@ -1,5 +1,6 @@
 from datetime import date
 
+from flask import abort
 from peewee import Case, DoesNotExist, fn
 
 from app.models.department import Department
@@ -7,6 +8,7 @@ from app.models.formHistory import FormHistory
 from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 
 
 

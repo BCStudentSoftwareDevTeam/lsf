@@ -99,7 +99,7 @@ def updateCoordinator():
     if not supervisorID or not departmentID:
         return "", 400
     if not canManageDepartment(currentUser, departmentID):
-    return render_template('errors/403.html'), 403    
+        return render_template('errors/403.html'), 403    
 
     member = SupervisorDepartment.get(
         (SupervisorDepartment.supervisor == supervisorID) &
