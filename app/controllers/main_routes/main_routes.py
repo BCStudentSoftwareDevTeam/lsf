@@ -131,13 +131,29 @@ def departmentPortal(org=None,account=None):
 # }
 #     break_allocation = LaborStatusForm.select(LaborStatusForm.contractHours).where(LaborStatusForm.department == dept, LaborStatusForm.termCode == 202500, LaborStatusForm.contractHours.is_null(False))
 #     sumBreak = sum(form.contractHours or 0 for form in break_allocation)
-
-    totalPositions = getTotalAllocations(202500, dept)["totalAllocations"]
-    usedAllocation = getContractedAllocations(202500, dept)
-    sumBreak = usedAllocation["break_hours"]
-    studentHours = getContractedAllocations(202500, dept)
-    usedPositions = usedAllocation
-    usedAllocation = usedAllocation["usedTotal"]
+    
+    if dept:
+        try:
+            totalPositions = getTotalAllocations(202500, dept)["totalAllocations"]
+            usedAllocation = getContractedAllocations(202500, dept)
+            sumBreak = usedAllocation["break_hours"]
+            studentHours = getContractedAllocations(202500, dept)
+            usedPositions = usedAllocation
+            usedAllocation = usedAllocation["usedTotal"]
+        except:
+            totalPositions = {}
+            usedAllocation = {}
+            sumBreak = 0
+            studentHours = {}
+            usedPositions = {}
+            usedAllocation = 0
+    else: 
+        totalPositions = {}
+        usedAllocation = {}
+        sumBreak = 0
+        studentHours = {}
+        usedPositions = {}
+        usedAllocation = 0
     
     positions = list(PositionHistory.select().where(PositionHistory.department == dept, PositionHistory.status == "Active").order_by(PositionHistory.positionTitle.asc())) if dept else []
     positionsList = []

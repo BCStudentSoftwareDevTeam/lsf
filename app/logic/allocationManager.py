@@ -7,11 +7,21 @@ from peewee import JOIN
 
 
 def getAllocation(termCode, dept):
-    allocationObject = Allocation.select().where(
-        Allocation.termCode == 202500,
-        Allocation.department == 3, 
-        Allocation.isFinal == True).dicts().get() #FIXME
-    return allocationObject
+        allocationObject = Allocation.select().where(
+            Allocation.termCode == termCode,
+            Allocation.department == dept.departmentID, 
+            Allocation.isFinal == True).dicts().get()
+        return allocationObject
+
+
+def getAllocationNonFinal(termCode, dept):
+        allocationObject = Allocation.select().where(
+            Allocation.termCode == termCode,
+            Allocation.department == dept.departmentID, 
+            Allocation.isFinal == False).dicts().get()
+        return allocationObject
+
+
 
 def getTotalAllocations(termCode, dept):
     allocationObject = getAllocation(termCode, dept)
@@ -27,17 +37,17 @@ def getTotalAllocations(termCode, dept):
                     "totalAllocations": (allocationObject["primary_10"] + allocationObject["primary_12"] + allocationObject["primary_15"] + allocationObject["primary_20"] + allocationObject["secondary_5"] + allocationObject["secondary_10"] )}
     return allocationDict
  
-def countContracts(jobType, contractHours, termCode, dept):
+def countContracts(jobType, weeklyContractHours, termCode, dept):
     lsfCountPrimaries = FormHistory.select(
-                                    ).join(LaborStatusForm
-                                    ).join(Department
-                                    ).where((FormHistory.status == "Approved" |
-                                             FormHistory.status == "Pending" |
-                                             FormHistory.status == "Pre-Student Approval"),
-                                             LaborStatusForm.termCode == termCode,
-                                             LaborStatusForm.jobType == jobType,
-                                             FormHistory.formID.weeklyHours == contractHours,
-                                             Department.departmentID == dept).count()
+                            ).join(LaborStatusForm
+                            ).join(Department
+                            ).where(
+                                FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
+                                LaborStatusForm.termCode == termCode,
+                                LaborStatusForm.jobType == jobType,
+                                LaborStatusForm.weeklyHours == weeklyContractHours,
+                                Department.departmentID == dept,
+                            ).count()
     return lsfCountPrimaries
 
 def getContractedAllocations(termCode, dept):
