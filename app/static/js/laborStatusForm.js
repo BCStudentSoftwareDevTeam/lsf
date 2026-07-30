@@ -353,9 +353,14 @@ function checkAllocation() {
     return;
   }
 
-  var url = "/laborstatusform/checkallocation/" + departmentOrg + "/" + departmentAcct + "/" + jobType + "/" + hours;
   $.ajax({
-    url: url,
+    url: "/laborstatusform/checkallocation",
+    data: {
+      departmentOrg: departmentOrg,
+      departmentAcct: departmentAcct,
+      jobType: jobType,
+      hours: hours
+    },
     dataType: "json",
     success: function (response){
       if (!response) {
@@ -367,6 +372,9 @@ function checkAllocation() {
         $("#allocation-warning-text").html("This department is already over its allocation for " + response.label + " positions (" + response.used + "/" + response.allocated + "). You may still submit this form, but please contact the Labor Office.");
         $("#allocation-warning").show();
       }
+    },
+    error: function () {
+      // Informational only - if the check fails, just leave the allocation panels hidden.
     }
   });
 }

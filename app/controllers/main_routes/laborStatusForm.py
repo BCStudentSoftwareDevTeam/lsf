@@ -171,13 +171,22 @@ def checkTotalHours(termCode, student, hours):
     totalHours = totalHours + int(hours)
     return json.dumps(totalHours)
 
-@main_bp.route("/laborstatusform/checkallocation/<departmentOrg>/<departmentAcct>/<jobType>/<hours>", methods=["GET"])
-def checkAllocation(departmentOrg, departmentAcct, jobType, hours):
+@main_bp.route("/laborstatusform/checkallocation", methods=["GET"])
+def checkAllocation():
     """ Checks the department's allocation status for the hour-band being submitted. """
+    departmentOrg = request.args.get("departmentOrg")
+    departmentAcct = request.args.get("departmentAcct")
+    jobType = request.args.get("jobType")
+    hours = request.args.get("hours")
+
     dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
     if not dept:
-        return jsonify(None)
+        return jsonify({"error": "Department not found"}), 404
+
     status = getBandAllocationStatus(dept, g.openTerm, jobType, int(hours))
+    if status is None:
+        return jsonify({"error": "No allocation data for this job type/hours band"}), 404
+
     return jsonify(status)
 
 @main_bp.route("/laborStatusForm/modal/releaseAndRehire", methods=['POST'])

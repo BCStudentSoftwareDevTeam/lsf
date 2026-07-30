@@ -122,10 +122,10 @@ function updateAllocationWarnings(allocationWarnings) {
     var w = allocationWarnings[i];
     var boxClass = w.isOverAllocated ? 'alert-warning' : 'alert-info';
     var overStyle = 'color:#a94442; font-weight:bold;';
-    var positionsStyle = w.isPositionsOverAllocated ? overStyle : '';
-    var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : '';
-    var positionsFlag = w.isPositionsOverAllocated ? ' &#9888; Over allocation' : '';
-    var breakHoursFlag = w.isBreakHoursOverAllocated ? ' &#9888; Over allocation' : '';
+    var normalStyle = 'color:#000000;';
+    var positionsStyle = w.isPositionsOverAllocated ? overStyle : normalStyle;
+    var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : normalStyle;
+    var title = w.isOverAllocated ? (w.departmentName + ' Over Allocation Warning') : (w.departmentName + ' Allocation');
     // A department can look fine in total while one specific hour-band is over,
     // so call those bands out by name instead of only showing the aggregate.
     var bandDetail = '';
@@ -136,11 +136,11 @@ function updateAllocationWarnings(allocationWarnings) {
       bandDetail = '<br><span style="' + overStyle + '">Over on: ' + bandStrings.join(', ') + '</span>';
     }
     var html = '<div class="alert ' + boxClass + '" role="alert">' +
-      '<strong>' + w.departmentName + ' Allocation</strong><br>' +
+      '<strong>' + title + '</strong><br>' +
       '<span style="' + positionsStyle + '">Total Positions (all bands): ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
-      ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span>' + bandDetail + '<br>' +
+      ' allocated (' + w.positionsRemaining + ' remaining)</span>' + bandDetail + '<br>' +
       '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
-      ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +
+      ' allocated (' + w.breakHoursRemaining + ' remaining)</span>' +
       '</div>';
     $('#allocationWarnings').append(html);
   }
