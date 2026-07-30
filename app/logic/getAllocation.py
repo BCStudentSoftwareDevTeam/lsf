@@ -3,31 +3,65 @@ from peewee import fn
 from app.models.allocation import Allocation
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
+from app.models.formHistory import FormHistory
+
+
+def countWorkers(department, term_code, job_type, hours_bucket):
+    workerCount = (
+        LaborStatusForm.select()
+        .where(
+            LaborStatusForm.department == department,
+            LaborStatusForm.termCode == term_code,
+            LaborStatusForm.jobType == job_type,
+            LaborStatusForm.weeklyHours == hours_bucket,
+            LaborStatusForm.contractHours.is_null(True),
+        )
+        .count()
+    )
+    return workerCount
+
+
+def getBreakHours(department, term_code):
+    breakHoursTotal = (
+        LaborStatusForm.select(fn.SUM(LaborStatusForm.contractHours))
+        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .where(
+            LaborStatusForm.department == department,
+            LaborStatusForm.termCode == term_code,
+            FormHistory.historyType == "Labor Status Form",
+            FormHistory.status == "Approved",
+        )
+        .scalar()
+    ) or 0
+    return breakHoursTotal
 
 
 def getDepartmentAllocationSummary(department):
     """Return allocation-utilization values for a department's most recent term."""
+    result = {
+        "term": None,
+        "allocated": 0,
+        "used": 0,
+        "used_positions": {
+            "used_10": 0,
+            "used_12": 0,
+            "used_15": 0,
+            "used_20": 0,
+            "used_5_sec": 0,
+            "used_10_sec": 0,
+        },
+        "break_hours": 0,
+    }
+
     departmentAllocations = list(
         Allocation.select(Allocation, Term).join(Term).where(Allocation.department == department)
     )
     if not departmentAllocations:
-        return {
-            "term": None,
-            "allocated": 0,
-            "used": 0,
-            "used_positions": {
-                "used_10": 0,
-                "used_12": 0,
-                "used_15": 0,
-                "used_20": 0,
-                "used_5_sec": 0,
-                "used_10_sec": 0,
-            },
-            "break_hours": 0,
-        }
+        return result
 
     recentTerm = Term.order_by_term([a.termCode for a in departmentAllocations], reverse=True)[0]
     term_code = recentTerm.termCode
+    result["term"] = recentTerm
 
     total_positions = (
         Allocation.select(
@@ -44,6 +78,7 @@ def getDepartmentAllocationSummary(department):
         )
         .scalar()
     )
+    result["allocated"] = total_positions or 0
 
     used_allocation = (
         LaborStatusForm.select()
@@ -54,42 +89,17 @@ def getDepartmentAllocationSummary(department):
         )
         .count()
     )
+    result["used"] = used_allocation
 
-    def count_workers(job_type, hours_bucket):
-        return (
-            LaborStatusForm.select()
-            .where(
-                LaborStatusForm.department == department,
-                LaborStatusForm.termCode == term_code,
-                LaborStatusForm.jobType == job_type,
-                LaborStatusForm.weeklyHours == hours_bucket,
-                LaborStatusForm.contractHours.is_null(True),
-            )
-            .count()
-        )
-
-    used_positions = {
-        "used_10": count_workers("Primary", 10),
-        "used_12": count_workers("Primary", 12),
-        "used_15": count_workers("Primary", 15),
-        "used_20": count_workers("Primary", 20),
-        "used_5_sec": count_workers("Secondary", 5),
-        "used_10_sec": count_workers("Secondary", 10),
+    result["used_positions"] = {
+        "used_10": countWorkers(department, term_code, "Primary", 10),
+        "used_12": countWorkers(department, term_code, "Primary", 12),
+        "used_15": countWorkers(department, term_code, "Primary", 15),
+        "used_20": countWorkers(department, term_code, "Primary", 20),
+        "used_5_sec": countWorkers(department, term_code, "Secondary", 5),
+        "used_10_sec": countWorkers(department, term_code, "Secondary", 10),
     }
 
-    break_hours = sum(
-        form.contractHours or 0
-        for form in LaborStatusForm.select(LaborStatusForm.contractHours).where(
-            LaborStatusForm.department == department,
-            LaborStatusForm.termCode == term_code,
-            LaborStatusForm.contractHours.is_null(False),
-        )
-    )
+    result["break_hours"] = getBreakHours(department, term_code)
 
-    return {
-        "term": recentTerm,
-        "allocated": total_positions or 0,
-        "used": used_allocation,
-        "used_positions": used_positions,
-        "break_hours": break_hours,
-    }
+    return result

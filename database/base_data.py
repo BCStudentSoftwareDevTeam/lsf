@@ -1,8 +1,3 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-
 from app.models.status import Status
 from app.models.historyType import HistoryType
 from app.models.emailTemplate import EmailTemplate

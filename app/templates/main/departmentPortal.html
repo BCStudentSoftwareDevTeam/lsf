@@ -40,7 +40,7 @@
               <h3>Allocations</h3>
             </div>
             <div class="header-container">
-              <h3>AY 2025-2026 <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Used/Given"></i></h3> <h3>{{used}}/{{allocated or 0}} Positions</h3>
+              <h3>{{ term.termName if term else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Used/Given"></i></h3> <h3>{{used}}/{{allocated or 0}} Positions</h3>
             </div>
             <div class="allocation-list">
               <ul class="primary-chart">

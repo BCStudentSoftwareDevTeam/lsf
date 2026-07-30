@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from app.models import mainDB
 from app.models.department import Department
@@ -6,7 +8,26 @@ from app.models.allocation import Allocation
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.student import Student
 from app.models.supervisor import Supervisor
-from app.logic.getAllocation import getDepartmentAllocationSummary
+from app.models.formHistory import FormHistory
+from app.models.historyType import HistoryType
+from app.models.status import Status
+from app.models.user import User
+from app.logic.getAllocation import getDepartmentAllocationSummary, countWorkers, getBreakHours
+
+
+def _createFormHistory(form, statusName):
+    """Attach a FormHistory row to a LaborStatusForm, since getBreakHours now
+    only counts forms with an approved "Labor Status Form" history entry."""
+    user = User.create(username=f"testuser_{form.laborStatusFormID}")
+    historyType = HistoryType.get(HistoryType.historyTypeName == "Labor Status Form")
+    status = Status.get(Status.statusName == statusName)
+    return FormHistory.create(
+        formID=form,
+        historyType=historyType,
+        createdBy=user,
+        createdDate=date.today(),
+        status=status,
+    )
 
 
 @pytest.mark.integration
@@ -89,8 +110,9 @@ def test_getDepartmentAllocationSummary_uses_most_recent_term():
 @pytest.mark.integration
 def test_getDepartmentAllocationSummary_break_hours():
     """
-    Test that break_hours only sums forms with contractHours set (break-term
-    contracts), and that those forms are excluded from the weekly "used" count.
+    Test that break_hours only sums approved forms with contractHours set
+    (break-term contracts), and that those forms are excluded from the
+    weekly "used" count.
     """
     with mainDB.atomic() as transaction:
         dept = Department.create(departmentID=202, DEPT_NAME="Biology", ACCOUNT="6752", ORG="2122", isActive=True)
@@ -105,11 +127,12 @@ def test_getDepartmentAllocationSummary_break_hours():
         supervisor = Supervisor.create(ID="SUP002", isActive=True)
         student = Student.create(ID="STU002", isActive=True)
 
-        LaborStatusForm.create(
+        breakForm = LaborStatusForm.create(
             termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Primary", WLS="10", POSN_TITLE="Break Worker", POSN_CODE="S003",
             weeklyHours=None, contractHours=40,
         )
+        _createFormHistory(breakForm, "Approved")
 
         summary = getDepartmentAllocationSummary(dept)
 
@@ -204,5 +227,115 @@ def test_getDepartmentAllocationSummary_allocation_no_labor_status_forms():
             "used_5_sec": 0,
             "used_10_sec": 0,
         }
+
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def test_countWorkers():
+    """
+    Test that countWorkers only counts LaborStatusForm rows matching the
+    given department, term, job type, and weekly-hours bucket, and excludes
+    forms with a different job type/hours bucket or a break-term contract
+    (contractHours set instead of weeklyHours).
+    """
+    with mainDB.atomic() as transaction:
+        dept = Department.create(departmentID=205, DEPT_NAME="English", ACCOUNT="6755", ORG="2125", isActive=True)
+        term = Term.create(termCode=900500, termName="AY Test Workers")
+
+        supervisor = Supervisor.create(ID="SUP003", isActive=True)
+        student = Student.create(ID="STU003", isActive=True)
+
+        # Matches department, term, job type, and hours bucket - should count
+        LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Match", POSN_CODE="S010",
+            weeklyHours=10, contractHours=None,
+        )
+        # Different job type - should not count toward ("Primary", 10)
+        LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Secondary", WLS="10", POSN_TITLE="Wrong Job Type", POSN_CODE="S011",
+            weeklyHours=10, contractHours=None,
+        )
+        # Different hours bucket - should not count toward ("Primary", 10)
+        LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="12", POSN_TITLE="Wrong Hours", POSN_CODE="S012",
+            weeklyHours=12, contractHours=None,
+        )
+        # Break-term contract (contractHours set) - should not count even though
+        # job type and weeklyHours otherwise match
+        LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Break Contract", POSN_CODE="S013",
+            weeklyHours=10, contractHours=40,
+        )
+
+        assert countWorkers(dept, term.termCode, "Primary", 10) == 1
+        assert countWorkers(dept, term.termCode, "Secondary", 10) == 1
+        assert countWorkers(dept, term.termCode, "Primary", 12) == 1
+        assert countWorkers(dept, term.termCode, "Primary", 15) == 0
+
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def test_getBreakHours():
+    """
+    Test that getBreakHours sums only APPROVED forms with contractHours set
+    (break-term contracts) for the given department and term, excludes
+    weekly-hours forms, excludes forms under a different term, and excludes
+    forms that are not approved (e.g. still pending).
+    """
+    with mainDB.atomic() as transaction:
+        dept = Department.create(departmentID=206, DEPT_NAME="Philosophy", ACCOUNT="6756", ORG="2126", isActive=True)
+        term = Term.create(termCode=900600, termName="AY Test Break Hours")
+        otherTerm = Term.create(termCode=900601, termName="AY Test Other Term")
+
+        supervisor = Supervisor.create(ID="SUP004", isActive=True)
+        student = Student.create(ID="STU004", isActive=True)
+
+        # Approved break-term contracts under the target term - should be summed
+        formA = LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Break A", POSN_CODE="S020",
+            weeklyHours=None, contractHours=40,
+        )
+        _createFormHistory(formA, "Approved")
+
+        formB = LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Secondary", WLS="5", POSN_TITLE="Break B", POSN_CODE="S021",
+            weeklyHours=None, contractHours=60,
+        )
+        _createFormHistory(formB, "Approved")
+
+        # Weekly-hours form (contractHours=None) - should be excluded regardless
+        formC = LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Weekly Job", POSN_CODE="S022",
+            weeklyHours=10, contractHours=None,
+        )
+        _createFormHistory(formC, "Approved")
+
+        # Break-term contract under a DIFFERENT term - should be excluded
+        formD = LaborStatusForm.create(
+            termCode=otherTerm, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Break Other Term", POSN_CODE="S023",
+            weeklyHours=None, contractHours=100,
+        )
+        _createFormHistory(formD, "Approved")
+
+        # Break-term contract that is still PENDING - should be excluded
+        formE = LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Break Pending", POSN_CODE="S024",
+            weeklyHours=None, contractHours=999,
+        )
+        _createFormHistory(formE, "Pending")
+
+        assert getBreakHours(dept, term.termCode) == 100  # 40 + 60, excludes the pending form
+        assert getBreakHours(dept, otherTerm.termCode) == 100
 
         transaction.rollback()
