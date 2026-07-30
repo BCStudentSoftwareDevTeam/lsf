@@ -82,49 +82,6 @@ def departmentPortal(org=None,account=None):
                            positions = positionsList,
                            posURL = posURL)
 
-@main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
-def individualPosition(org, account, positionCode):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
-        return render_template('errors/404.html'), 404
-
-    position = PositionHistory.get_or_none(
-        PositionHistory.department == dept,
-        PositionHistory.positionCode == positionCode,
-        PositionHistory.status == "Active"
-    )
-
-    if not position:
-        return render_template('errors/404.html'), 404
-
-    return render_template(
-        'main/individualPositions.html',
-        department=dept,
-        position=position
-    )
-
-@main_bp.route('/department/<org>/<account>/positions/<positionCode>/download', methods=['GET'])
-def downloadPositionDescription(org, account, positionCode):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except (NameError, DoesNotExist):
-        return render_template('errors/404.html'), 404
-
-    position = PositionHistory.get_or_none(
-        PositionHistory.department == dept,
-        PositionHistory.positionCode == positionCode,
-        PositionHistory.status == "Active"
-    )
-
-    if not position:
-        return render_template('errors/404.html'), 404
-
-    pdfBuffer = makePositionDescriptionPDF(dept, position, position.revisedBy)
-
-    filename = f'{position.positionCode}_position_description.pdf'
-    return send_file(pdfBuffer, mimetype='application/pdf', as_attachment=True, download_name=filename)
-
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
