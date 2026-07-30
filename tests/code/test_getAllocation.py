@@ -90,11 +90,12 @@ def test_getDepartmentAllocationSummary_uses_most_recent_term():
             weeklyHours=10, contractHours=None,
         )
         # Under the NEW (most recent) term - should be counted
-        LaborStatusForm.create(
+        newForm = LaborStatusForm.create(
             termCode=newTerm, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Primary", WLS="10", POSN_TITLE="New Job", POSN_CODE="S002",
             weeklyHours=10, contractHours=None,
         )
+        _createFormHistory(newForm, "Approved")
 
         summary = getDepartmentAllocationSummary(dept)
 
@@ -236,8 +237,8 @@ def test_countWorkers():
     """
     Test that countWorkers only counts LaborStatusForm rows matching the
     given department, term, job type, and weekly-hours bucket, and excludes
-    forms with a different job type/hours bucket or a break-term contract
-    (contractHours set instead of weeklyHours).
+    forms with a different job type/hours bucket, a break-term contract
+    (contractHours set instead of weeklyHours), or a denied history status.
     """
     with mainDB.atomic() as transaction:
         dept = Department.create(departmentID=205, DEPT_NAME="English", ACCOUNT="6755", ORG="2125", isActive=True)
@@ -247,30 +248,45 @@ def test_countWorkers():
         student = Student.create(ID="STU003", isActive=True)
 
         # Matches department, term, job type, and hours bucket - should count
-        LaborStatusForm.create(
+        matchForm = LaborStatusForm.create(
             termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Primary", WLS="10", POSN_TITLE="Match", POSN_CODE="S010",
             weeklyHours=10, contractHours=None,
         )
+        _createFormHistory(matchForm, "Approved")
+
         # Different job type - should not count toward ("Primary", 10)
-        LaborStatusForm.create(
+        wrongJobTypeForm = LaborStatusForm.create(
             termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Secondary", WLS="10", POSN_TITLE="Wrong Job Type", POSN_CODE="S011",
             weeklyHours=10, contractHours=None,
         )
+        _createFormHistory(wrongJobTypeForm, "Approved")
+
         # Different hours bucket - should not count toward ("Primary", 10)
-        LaborStatusForm.create(
+        wrongHoursForm = LaborStatusForm.create(
             termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Primary", WLS="12", POSN_TITLE="Wrong Hours", POSN_CODE="S012",
             weeklyHours=12, contractHours=None,
         )
+        _createFormHistory(wrongHoursForm, "Approved")
+
         # Break-term contract (contractHours set) - should not count even though
         # job type and weeklyHours otherwise match
-        LaborStatusForm.create(
+        breakContractForm = LaborStatusForm.create(
             termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
             jobType="Primary", WLS="10", POSN_TITLE="Break Contract", POSN_CODE="S013",
             weeklyHours=10, contractHours=40,
         )
+        _createFormHistory(breakContractForm, "Approved")
+
+        # Matches everything but was DENIED - should not count
+        deniedForm = LaborStatusForm.create(
+            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
+            jobType="Primary", WLS="10", POSN_TITLE="Denied Match", POSN_CODE="S014",
+            weeklyHours=10, contractHours=None,
+        )
+        _createFormHistory(deniedForm, "Denied by Admin")
 
         assert countWorkers(dept, term.termCode, "Primary", 10) == 1
         assert countWorkers(dept, term.termCode, "Secondary", 10) == 1

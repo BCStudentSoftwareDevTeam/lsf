@@ -9,12 +9,15 @@ from app.models.formHistory import FormHistory
 def countWorkers(department, term_code, job_type, hours_bucket):
     workerCount = (
         LaborStatusForm.select()
+        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
         .where(
             LaborStatusForm.department == department,
             LaborStatusForm.termCode == term_code,
             LaborStatusForm.jobType == job_type,
             LaborStatusForm.weeklyHours == hours_bucket,
             LaborStatusForm.contractHours.is_null(True),
+            FormHistory.historyType == "Labor Status Form",
+            ~(FormHistory.status % "Denied%"),
         )
         .count()
     )
@@ -82,10 +85,13 @@ def getDepartmentAllocationSummary(department):
 
     used_allocation = (
         LaborStatusForm.select()
+        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
         .where(
             LaborStatusForm.department == department,
             LaborStatusForm.termCode == term_code,
             LaborStatusForm.contractHours.is_null(True),
+            FormHistory.historyType == "Labor Status Form",
+            ~(FormHistory.status % "Denied%"),
         )
         .count()
     )
