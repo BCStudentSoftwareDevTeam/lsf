@@ -1,0 +1,11 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;    
+}
+.btn-success{
+    justify-self:end;
+    align-self: center;
+    margin-left:8rem;
+    width:fit-content;
+    height:fit-content
+}
