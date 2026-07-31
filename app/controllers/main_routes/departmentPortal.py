@@ -119,7 +119,7 @@ def updateEligibility():
     """
     currentUser = g.currentUser
 
-    if not (bcurrentUser.isLaborAdmin orbcurrentUser.isLaborDepartmentStudent or currentUser.supervisor):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
