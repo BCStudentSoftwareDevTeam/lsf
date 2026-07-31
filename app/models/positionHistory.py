@@ -9,7 +9,6 @@ class PositionHistory(baseModel):
     wls                = IntegerField()
     revisionDate       = DateField()
     revisedBy          = CharField()
-    description        = TextField(default=None)
 
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
