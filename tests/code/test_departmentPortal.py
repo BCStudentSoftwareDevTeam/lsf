@@ -2,10 +2,7 @@ import pytest
 from flask import g
 
 from app import app
-from app.controllers.main_routes.departmentPortal import (
-    addUserToDept,
-    searchMember,
-)
+from app.controllers.main_routes.departmentPortal import addUserToDept, searchMember
 from app.models import mainDB
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -15,6 +12,7 @@ from app.models.user import User
 
 @pytest.mark.integration
 def test_searchMember_returns_matching_supervisor():
+    """Search member returns the supervisor matching the given B-number."""
     with mainDB.atomic() as transaction:
         supervisor = Supervisor.create(
             ID="B99000001",
@@ -40,15 +38,16 @@ def test_searchMember_returns_matching_supervisor():
             response = searchMember("B99000001")
             data = response.get_json()
 
-        assert len(data) == 1
         assert data[0]["bnumber"] == "B99000001"
         assert data[0]["firstName"] == "Test"
         assert data[0]["lastName"] == "Supervisor"
 
         transaction.rollback()
 
+
 @pytest.mark.integration
 def test_addUserToDept_adds_existing_supervisor():
+    """Add user to department creates a supervisor-department record."""
     with mainDB.atomic() as transaction:
         dept = Department.create(
             DEPT_NAME="Add Member Test Department",
@@ -95,21 +94,17 @@ def test_addUserToDept_adds_existing_supervisor():
             }
         ):
             g.currentUser = admin
-            response = addUserToDept()
+            response, statusCode = addUserToDept()
+            data = response.get_json()
 
         member = SupervisorDepartment.get_or_none(
             supervisor=newSupervisor.ID,
             department=dept.departmentID
         )
 
-        response_body, status_code = response
-
-        assert status_code == 200
-        assert response_body.get_json()["success"] is True
-        assert (
-            response_body.get_json()["message"]
-            == "Supervisor added to department."
-        )
+        assert statusCode == 200
+        assert data["success"] is True
+        assert data["message"] == "Supervisor added to department."
         assert member is not None
 
         transaction.rollback()

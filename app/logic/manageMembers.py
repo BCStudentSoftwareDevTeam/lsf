@@ -14,8 +14,17 @@ from app.models.supervisorDepartment import SupervisorDepartment
 
 
 def getStudentCounts(dept):
-    """Active/pending primary/secondary position counts, keyed by (dept, supervisor)."""
+    """Active/pending primary/secondary position counts, keyed by department and supervisor."""
     today = date.today()
+
+    validFormIds = (
+        FormHistory
+        .select(FormHistory.formID)
+        .where(
+            (FormHistory.historyType == "Labor Status Form") &
+            (FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]))
+        )
+    )
 
     releasedFormIds = (
         FormHistory
@@ -29,41 +38,51 @@ def getStudentCounts(dept):
     )
 
     activePrimaries = (
-        (LaborStatusForm.jobType == 'Primary') &
+        (LaborStatusForm.jobType == "Primary") &
         (LaborStatusForm.studentConfirmation == True)
     )
+
     pendingPrimaries = (
-        (LaborStatusForm.jobType == 'Primary') &
+        (LaborStatusForm.jobType == "Primary") &
         (LaborStatusForm.studentConfirmation.is_null(True))
     )
+
     activeSecondaries = (
-        (LaborStatusForm.jobType == 'Secondary') &
+        (LaborStatusForm.jobType == "Secondary") &
         (LaborStatusForm.studentConfirmation == True)
     )
+
     pendingSecondaries = (
-        (LaborStatusForm.jobType == 'Secondary') &
+        (LaborStatusForm.jobType == "Secondary") &
         (LaborStatusForm.studentConfirmation.is_null(True))
     )
 
     rows = list(
         LaborStatusForm
         .select(
+            LaborStatusForm.department,
+            LaborStatusForm.supervisor,
             fn.SUM(Case(None, ((activePrimaries, 1),), 0)).alias("active_primary_positions"),
             fn.SUM(Case(None, ((pendingPrimaries, 1),), 0)).alias("pending_primary_positions"),
             fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
             fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
-            LaborStatusForm.department,
-            LaborStatusForm.supervisor
         )
         .where(
             (LaborStatusForm.department == dept) &
+            (LaborStatusForm.laborStatusFormID.in_(validFormIds)) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
         )
-        .group_by(LaborStatusForm.department, LaborStatusForm.supervisor)
+        .group_by(
+            LaborStatusForm.department,
+            LaborStatusForm.supervisor
+        )
         .dicts()
     )
 
-    return {(row["department"], row["supervisor"]): row for row in rows}
+    return {
+        (row["department"], row["supervisor"]): row
+        for row in rows
+    }
 
 
 def attachPositionCounts(members, counts):
