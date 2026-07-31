@@ -6,7 +6,7 @@ class PositionDescriptionSection (baseModel):
     position                        = ForeignKeyField(PositionHistory)
     sectionTitle                    = CharField()
     sectionContent                  = TextField()
-    order                           = IntegerField()
+    order                           = IntegerField() # Order of the sections in the position description
 
 
 

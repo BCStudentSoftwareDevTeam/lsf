@@ -10,6 +10,7 @@ from app.models.formHistory import *
 from app.controllers.main_routes.main_routes import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formSearchResult import FormSearchResult
+from app.logic.getPositions import getPositionDescriptionSections
 
 def saveFormSearchResult(displayName, formList, formType):
     ids = [form.formHistoryID for form in formList]
@@ -37,7 +38,7 @@ def makePositionDescriptionPDF(department, position):
     pdf = FPDF()
     pdf.add_page()
 
-    pdf.set_font('Arial', 'B', 16)
+    pdf.set_font('Times', 'BU', 16)
     pdf.cell(0, 10, position.positionTitle, ln=True)
     pdf.ln(2)
 
@@ -51,17 +52,27 @@ def makePositionDescriptionPDF(department, position):
     ]
     labelWidth = 45
     for label, value in fields:
-        pdf.set_font('Arial', 'B', 11)
+        pdf.set_font('Times', 'B', 11)
         pdf.cell(labelWidth, 8, f'{label}:', ln=False)
-        pdf.set_font('Arial', '', 11)
+        pdf.set_font('Times', '', 11)
         pdf.cell(0, 8, f' {value}', ln=True)
 
+    sections = getPositionDescriptionSections(position)
+
     pdf.ln(4)
-    pdf.set_font('Arial', 'B', 12)
-    pdf.cell(0, 10, 'Description', ln=True)
-    pdf.set_font('Arial', '', 11)
-    description = position.description or 'No description available.'
-    pdf.multi_cell(0, 7, description.encode('latin-1', 'replace').decode('latin-1'))
+    if sections:
+        for section in sections:
+            pdf.set_font('Times', 'B', 12)
+            pdf.cell(0, 10, section.sectionTitle, ln=True)
+            pdf.set_font('Times', '', 11)
+            content = section.sectionContent.encode('latin-1', 'replace').decode('latin-1')
+            pdf.multi_cell(0, 7, content)
+            pdf.ln(2)
+    else:
+        pdf.set_font('Times', 'B', 12)
+        pdf.cell(0, 10, 'Description', ln=True)
+        pdf.set_font('Times', '', 11)
+        pdf.multi_cell(0, 7, 'No description available.')
 
     pdfBytes = pdf.output(dest='S').encode('latin-1', 'replace')
     return io.BytesIO(pdfBytes)

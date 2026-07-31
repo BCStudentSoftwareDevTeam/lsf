@@ -1,4 +1,5 @@
 from app.models.positionHistory import PositionHistory
+from app.models.positionDescriptionSection import PositionDescriptionSection
 
 def getActivePositions(dept):
     """
@@ -34,3 +35,14 @@ def getPosition(dept, positionCode, revisionDate=None):
         positionQuery = positionQuery.where(PositionHistory.revisionDate == revisionDate)
 
     return positionQuery.order_by(PositionHistory.revisionDate.desc()).first()
+
+def getPositionDescriptionSections(position):
+    """
+    Returns the description sections for a given position, ordered for display.
+    """
+    positionDescriptionSections = list(PositionDescriptionSection.select()
+                                       .where(PositionDescriptionSection.position == position)
+                                       .order_by(PositionDescriptionSection.order.asc()))
+    
+    return positionDescriptionSections
+

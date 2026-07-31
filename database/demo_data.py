@@ -19,6 +19,7 @@ from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
+from app.models.positionDescriptionSection import PositionDescriptionSection
  
 print("Inserting data for demo and testing purposes")
 
@@ -833,7 +834,6 @@ positionHistory = [
         "wls": 1,
         "revisionDate": f"2026-07-01",
         "revisedBy": "Mario Nakazawa",
-        "description": "",
         "department": 1
     },
     {
@@ -843,7 +843,6 @@ positionHistory = [
         "wls": 2,
         "revisionDate": f"2026-09-01",
         "revisedBy": "Deanna Wilborne",
-        "description": "WLS Level Justification:\nThis position is assigned WLS 2 because it supports key research work with moderate technical complexity.\n\nDescription of Duties:\nProvide research assistance, coordinate data collection, and help prepare reports.\n\nLearning Opportunities:\nGain experience with research practices, data management, and academic collaboration.\n\nRequired Qualifications:\nStrong communication skills, attention to detail, and ability to work independently.",
         "department": 1
     },
     {
@@ -853,7 +852,6 @@ positionHistory = [
         "wls": 3,
         "revisionDate": f"2026-07-01",
         "revisedBy": "Jasmine Jones",
-        "description": "WLS Level Justification:\nRefer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.\n\nDescription of Duties:\nA. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.\n\nLearning Opportunities:\nList how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)\n\nRequired Qualifications:\nList the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.\n\nA. Ability to function with a little more independence and complete tasks with assistance from team leader(s) and other student colleagues.\nB. Ability to take advice and respond appropriately.\nC. A desire to mentor and work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software and debugging.",
         "department": 1
     },
     {
@@ -863,7 +861,6 @@ positionHistory = [
         "wls":3,
         "revisionDate" : f"2026-01-01",
         "revisedBy": "Scott Heggen",
-        "description":"WLS Level Justification:\nRefer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.\n\nDescription of Duties:\nA. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.\n\nLearning Opportunities:\nList how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)\n\nRequired Qualifications:\nList the baseline skills or attributes a student should have to be successful in this role, while ensuring equity accessibility.\n\nA. Ability to function with a little more independence complete tasks with assistance from team leader(s) other student colleagues.\nB. Ability to take advice respond appropriately.\nC. A desire to mentor work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software debugging.",
         "department": 1
 
     },
@@ -874,7 +871,6 @@ positionHistory = [
         "wls":2,
         "revisionDate" : f"2026-01-01",
         "revisedBy": "Brian Ramsay",
-        "description": "WLS Level Justification:\nRefer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.\n\nDescription of Duties:\nA. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.\n\nLearning Opportunities:\nList how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)\n\nRequired Qualifications:\nList the baseline skills or attributes a student should have to be successful in this role, while ensuring equity accessibility.\n\nA. Ability to function with a little more independence complete tasks with assistance from team leader(s) other student colleagues.\nB. Ability to take advice respond appropriately.\nC. A desire to mentor work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software debugging.",
         "department" : 3
     },
     {
@@ -884,7 +880,6 @@ positionHistory = [
         "wls":2,
         "revisionDate" : f"2026-03-29",
         "revisedBy": "Jan Pearce",
-        "description": "",
         "department" : 3
     },
     {
@@ -894,7 +889,6 @@ positionHistory = [
         "wls":3,
         "revisionDate" : f"2026-01-23",
         "revisedBy": "Scott Heggen",
-        "description": "",
         "department" : 1
     },
     {
@@ -904,7 +898,6 @@ positionHistory = [
         "wls":4,
         "revisionDate" : f"2026-01-31",
         "revisedBy": "Jasmine Jones",
-        "description": "",
         "department" : 1
     },
     {
@@ -914,7 +907,6 @@ positionHistory = [
         "wls":5,
         "revisionDate" : f"2026-04-01",
         "revisedBy": "Deanna Wilborne",
-        "description": "",
         "department" : 1
     },
     {
@@ -924,7 +916,6 @@ positionHistory = [
         "wls":6,
         "revisionDate" : f"2026-05-03",
         "revisedBy": "Jan Pearce",
-        "description": "",
         "department" : 1
     },
     {
@@ -934,7 +925,6 @@ positionHistory = [
         "wls":1,
         "revisionDate" : f"2026-05-03",
         "revisedBy": "Jan Pearce",
-        "description": "",
         "department" : 1
     },
     {
@@ -944,7 +934,6 @@ positionHistory = [
         "wls":6,
         "revisionDate" : f"2026-05-03",
         "revisedBy": "Brian Ramsay",
-        "description": "",
         "department" : 1
     }
     
@@ -953,3 +942,108 @@ positionHistory = [
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")
+
+#############################
+# Position Description Sections
+#############################
+
+positionDescriptionSections = [
+    {
+        "position": 2,
+        "sectionTitle": 'WLS Level Justification',
+        "sectionContent": 'This position is assigned WLS 2 because it supports key research work with moderate technical complexity.',
+        "order": 1,
+    },
+    {
+        "position": 2,
+        "sectionTitle": 'Description of Duties',
+        "sectionContent": 'Provide research assistance, coordinate data collection, and help prepare reports.',
+        "order": 2,
+    },
+    {
+        "position": 2,
+        "sectionTitle": 'Learning Opportunities',
+        "sectionContent": 'Gain experience with research practices, data management, and academic collaboration.',
+        "order": 3,
+    },
+    {
+        "position": 2,
+        "sectionTitle": 'Required Qualifications',
+        "sectionContent": 'Strong communication skills, attention to detail, and ability to work independently.',
+        "order": 4,
+    },
+    {
+        "position": 3,
+        "sectionTitle": 'WLS Level Justification',
+        "sectionContent": 'Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.',
+        "order": 1,
+    },
+    {
+        "position": 3,
+        "sectionTitle": 'Description of Duties',
+        "sectionContent": 'A. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.',
+        "order": 2,
+    },
+    {
+        "position": 3,
+        "sectionTitle": 'Learning Opportunities',
+        "sectionContent": 'List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)',
+        "order": 3,
+    },
+    {
+        "position": 3,
+        "sectionTitle": 'Required Qualifications',
+        "sectionContent": 'List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.\n\nA. Ability to function with a little more independence and complete tasks with assistance from team leader(s) and other student colleagues.\nB. Ability to take advice and respond appropriately.\nC. A desire to mentor and work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software and debugging.',
+        "order": 4,
+    },
+    {
+        "position": 4,
+        "sectionTitle": 'WLS Level Justification',
+        "sectionContent": 'Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.',
+        "order": 1,
+    },
+    {
+        "position": 4,
+        "sectionTitle": 'Description of Duties',
+        "sectionContent": 'A. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.',
+        "order": 2,
+    },
+    {
+        "position": 4,
+        "sectionTitle": 'Learning Opportunities',
+        "sectionContent": 'List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)',
+        "order": 3,
+    },
+    {
+        "position": 4,
+        "sectionTitle": 'Required Qualifications',
+        "sectionContent": 'List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity accessibility.\n\nA. Ability to function with a little more independence complete tasks with assistance from team leader(s) other student colleagues.\nB. Ability to take advice respond appropriately.\nC. A desire to mentor work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software debugging.',
+        "order": 4,
+    },
+    {
+        "position": 5,
+        "sectionTitle": 'WLS Level Justification',
+        "sectionContent": 'Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.',
+        "order": 1,
+    },
+    {
+        "position": 5,
+        "sectionTitle": 'Description of Duties',
+        "sectionContent": 'A. Workplace Responsibility\nFollow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.\n\nB. Communication\nAssist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.\n\nC. Teamwork & Collaboration\nIn collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.\n\nD. Apply Critical Thinking and Problem Solving in Workplace Tasks\nAttend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.\n\nE. Utilize Technology Effectively in the Workplace\nIn collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.\n\nF. Connect Work Experience to Career and Academic Goals\nTrain themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).\n\nG. Foster Creativity and Innovation in the Workplace\nHelp high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.',
+        "order": 2,
+    },
+    {
+        "position": 5,
+        "sectionTitle": 'Learning Opportunities',
+        "sectionContent": 'List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.\n\nA. Peer Instruction and Facilitation - Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)\nB. Inventory and Resource Management - Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)\nC. Problem Solving - Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)\nD. Technical Competency - Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)\nE. Communication - Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)',
+        "order": 3,
+    },
+    {
+        "position": 5,
+        "sectionTitle": 'Required Qualifications',
+        "sectionContent": 'List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity accessibility.\n\nA. Ability to function with a little more independence complete tasks with assistance from team leader(s) other student colleagues.\nB. Ability to take advice respond appropriately.\nC. A desire to mentor work with high school students.\nD. Patience working with unskilled yet energetic high school students.\nE. Some basic understanding of software debugging.',
+        "order": 4,
+    },
+]
+PositionDescriptionSection.insert_many(positionDescriptionSections).on_conflict_replace().execute()
+print(" * position description sections added")

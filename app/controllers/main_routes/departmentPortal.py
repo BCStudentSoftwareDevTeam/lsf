@@ -7,7 +7,7 @@ from app.models.positionHistory import PositionHistory
 
 from app.controllers.main_routes import main_bp
 from app.logic.download import makePositionDescriptionPDF
-from app.logic.getPositions import getPosition
+from app.logic.getPositions import getPosition, getPositionDescriptionSections
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
 def postionDescription(org, account, positionCode):
@@ -29,10 +29,13 @@ def postionDescription(org, account, positionCode):
     if not position:
         return render_template('errors/404.html'), 404
 
+    sections = getPositionDescriptionSections(position)
+
     return render_template(
         'main/individualPositions.html',
         department=dept,
-        position=position
+        position=position,
+        sections=sections
     )
 
 
