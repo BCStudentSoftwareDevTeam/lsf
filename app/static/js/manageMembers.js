@@ -33,7 +33,7 @@ $(document).ready(function() {
                     $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " has been assigned as a coordinator.</div>");
                     $("#flasher").delay(3000).fadeOut();
                 } else {
-                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
+                    $("#flash_container").html("<div class=\"alert alert-danger\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer a coordinator.</div>");
                     $("#flasher").delay(3000).fadeOut();
                 }
         
@@ -89,7 +89,7 @@ $(document).ready(function() {
             data: { supervisorID: supervisorID, departmentID: departmentID },
             type: "DELETE",
             success: function() {
-                $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
+                $("#flash_container").html("<div class=\"alert alert-danger\"alert\" id=\"flasher\">" + memberName + " has been removed from the department.</div>");
                 $("#flasher").delay(3000).fadeOut();
                 row.remove();
             },
