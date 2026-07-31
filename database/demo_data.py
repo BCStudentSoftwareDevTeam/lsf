@@ -2,7 +2,6 @@
 Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
-from datetime import *
 from app import app
 
 from app.models.Tracy import db
@@ -17,7 +16,10 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-
+from app.models.supervisorDepartment import SupervisorDepartment
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
+ 
 print("Inserting data for demo and testing purposes")
 
 #############################
@@ -328,6 +330,56 @@ staffs = [
             "CPO":"420",
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00939230",
+            "PIDM":99,
+            "FIRST_NAME":"Wario",
+            "LAST_NAME" : "Nakazawa",
+            "EMAIL"  :"nakazawaw@berea.edu",
+            "CPO":"666",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00222888",
+            "PIDM":97,
+            "FIRST_NAME":"Test",
+            "LAST_NAME" : "Professor",
+            "EMAIL"  :"professort@berea.edu",
+            "CPO":"500",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00888222",
+            "PIDM":98,
+            "FIRST_NAME":"Demo",
+            "LAST_NAME" : "Z",
+            "EMAIL"  :"demoz@berea.edu",
+            "CPO":"999",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00123112",
+            "PIDM":92,
+            "FIRST_NAME":"Supervisor",
+            "LAST_NAME" : "Test",
+            "EMAIL"  :"tests@berea.edu",
+            "CPO":"888",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00012213",
+            "PIDM":91,
+            "FIRST_NAME":"Sib",
+            "LAST_NAME" : "Ztest",
+            "EMAIL"  :"ztests@berea.edu",
+            "CPO":"222",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
             }
         ]
 
@@ -502,42 +554,49 @@ print(" * departments added")
 #############################
 # Term
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
+
 
 terms = [
     {
-        "termCode": f"{current_year}00",
-        "termName": f"AY {current_year}-{current_year+1}",
-        "termStart": f"{current_year}-08-01",
-        "termEnd": f"{current_year+1}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{current_year}-09-01",
-        "adjustmentCutOff": f"{current_year}-09-01",
+        "termCode": f"202000",
+        "termName": f"AY 2020-2021",
+        "termStart": f"2020-08-01",
+        "termEnd": f"2021-05-01",
+        "termState": 0,
+        "primaryCutOff": f"2020-09-01",
+        "adjustmentCutOff": f"2020-10-01",
     },
     {
-        "termCode": f"{current_year}01",
-        "termName": f"Thanksgiving Break {current_year}",
-        "termStart": f"{current_year}-08-01",
-        "termEnd": f"{current_year+1}-05-01",
+        "termCode": f"202500",
+        "termName": f"AY 2025-2026",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
+        "termState": 1,
+        "primaryCutOff": f"2025-09-01",
+        "adjustmentCutOff": f"2025-09-01",
+    },
+    {
+        "termCode": f"202501",
+        "termName": f"Thanksgiving Break 2025",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
         "termState": 0,
-        "primaryCutOff": f"{current_year}-09-01",
-        "adjustmentCutOff": f"{current_year}-09-01",
+        "primaryCutOff": f"2025-09-01",
+        "adjustmentCutOff": f"2025-09-01",
         "isBreak": 1,
     },
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
-print(f" * terms for {current_year}-{current_year+1} added")
+print(f" * terms for 2025-2026 added")
 
 #############################
 # Create a Pending Labor Status Form
 #############################
-today = datetime.now()
-current_year = today.year - (today.month < 8)
+
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202000",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -547,21 +606,21 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
-            "startDate": f"{current_year}-04-01",
-            "endDate": f"{current_year}-09-01"
+            "startDate": f"2020-04-01",
+            "endDate": f"2020-09-01"
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"{current_year}-04-14",
+            "createdDate": f"2025-04-14",
             "status_id": "Pending"
         }]).on_conflict_replace().execute()
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202500",
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
@@ -571,7 +630,7 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
-            "startDate": f"{current_year}-04-01",
+            "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
 
@@ -580,7 +639,7 @@ FormHistory.insert([{
             "formID_id": "3",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"{current_year}-04-14",
+            "createdDate": f"2025-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()    
 
@@ -609,3 +668,276 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+##############################
+# Departement Members 
+##############################
+
+supervisorDepartmentMembers = [
+    {
+        "supervisor": "B12361006",
+        "department": 1,
+        "isCoordinator": True
+    }, 
+
+    {
+        "supervisor": "B12365892",
+        "department": 1,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B12365893",
+        "department": 1,
+        "isCoordinator": False
+    }, 
+
+    {
+        "supervisor": "B00763721",
+        "department": 1,
+        "isCoordinator": False
+    },
+
+    {
+        "supervisor": "B00841417",
+        "department": 1,
+        "isCoordinator": True
+    },
+    {
+        "supervisor": "B00939230",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00888222",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00222888",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00123112",
+        "department": 1,
+        "isCoordinator": True
+    },
+    {
+        "supervisor": "B00012213",
+        "department": 1,
+        "isCoordinator": True
+    }
+]
+
+SupervisorDepartment.insert_many(supervisorDepartmentMembers).on_conflict_replace().execute()
+print(" * Department members added")
+print(f"termCode_id being used: {202500!r}")
+
+############################
+# Allocation Dummy Data:
+###########################
+allocations = [ 
+    {
+    "termCode":         202500,
+    "department":       3,
+    "isFinal":          False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
+    "primary_10":       2,
+    "primary_12":       2,
+    "primary_15":       1,
+    "primary_20":       0,
+    "secondary_5":      1,
+    "secondary_10":     0,
+    "breakHours":       260,
+    },
+    {
+    "termCode":        202500,
+    "department":       2,
+    "isFinal":          False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Increase in student enrollment due to exodous from CS department",
+    "primary_10":       4,
+    "primary_12":       2,
+    "primary_15":       7,
+    "primary_20":       4,
+    "secondary_5":      2,
+    "secondary_10":     0,
+    "breakHours":       750,
+    },
+    {
+    "termCode":         202500,
+    "department":       1,
+    "isFinal":          False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "We are hiring more students to help with the increased workload in the department",
+    "primary_10":       5,
+    "primary_12":       6,
+    "primary_15":       4,
+    "primary_20":       1,
+    "secondary_5":      7,
+    "secondary_10":     0,
+    "breakHours":       550,
+    },
+    {
+    "termCode":         202500,
+    "department":       4,
+    "isFinal":          False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Downscaling the number of students in the department due to budget cuts",
+    "primary_10":       4,
+    "primary_12":       5,
+    "primary_15":       0,
+    "primary_20":       0,
+    "secondary_5":      1,
+    "secondary_10":     0,
+    "breakHours":       300,
+    },
+    {
+    "termCode":         202500,
+    "department":       5,
+    "isFinal":          False,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
+    "primary_10":       8,
+    "primary_12":       10,
+    "primary_15":       7,
+    "primary_20":       4,
+    "secondary_5":      5,
+    "secondary_10":     1,
+    "breakHours":       900,
+    },
+                
+    ]
+Allocation.insert_many(allocations).on_conflict_replace().execute()
+
+print(" * allocation added")
+
+
+#############################
+# Position History
+#############################
+
+positionHistory = [
+    {
+        "positionTitle": "Student Programmer",
+        "positionCode": "S61407",
+        "status": "Active",
+        "wls": 1,
+        "revisionDate": f"2026-07-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Research Associate",
+        "positionCode": "S61408",
+        "status": "Active",
+        "wls": 2,
+        "revisionDate": f"2026-09-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Labor Workers",
+        "positionCode": "S61409",
+        "status": "Active",
+        "wls": 3,
+        "revisionDate": f"2026-07-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61411",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-01",
+        "description": "",
+        "department" : 1
+
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Inactive",
+        "wls":2,
+        "revisionDate" : f"2026-01-01",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"2026-03-29",
+        "description": "",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-23",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Junior Data Analyst",
+        "positionCode": "S39568",
+        "status": "Active",
+        "wls":4,
+        "revisionDate" : f"2026-01-31",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Student Manager",
+        "positionCode": "S74933",
+        "status": "Active",
+        "wls":5,
+        "revisionDate" : f"2026-04-01",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "IT Technician",
+        "positionCode": "S94932",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Human code generator",
+        "positionCode": "S22222",
+        "status": "Active",
+        "wls":1,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Senior Software Engineer",
+        "positionCode": "S00000",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "description": "",
+        "department" : 1
+    }
+    
+    
+
+]
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
+print(" * position history added")

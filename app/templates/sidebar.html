@@ -49,17 +49,24 @@
       {% if currentUser.supervisor %}
         <div class="container-fluid">
           <div class="panel panel-default">
-            <a class="adminTest" href="/">
+            <a href="/">
                 <div {% if request.path =="/" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5">
                       <h4>Supervisor Portal</h4>
+                  </div>
+              </a>
+          </div>
+          <div class="panel panel-default">
+            <a href="/department">
+                <div {% if "/department" in request.path %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5.5">
+                      <h4>Department Portal</h4>
                   </div>
               </a>
           </div>
       {% endif %}
       {% if currentUser.supervisor or (currentUser.student and currentUser.isLaborAdmin) %}
           <div class="panel panel-default">
-            <a class="adminTest" href="/laborstatusform">
-                <div {% if request.path == "/laborstatusform" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="5">
+            <a href="/laborstatusform">
+                <div {% if request.path == "/laborstatusform" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="6">
                       <h4>New Labor Status Form</h4>
                   </div>
               </a>
@@ -67,7 +74,7 @@
       {% endif %}
       {% if currentUser.supervisor or (currentUser.student and currentUser.isLaborAdmin) %}
           <div class="panel panel-default">
-            <a class="adminTest" href="/main/search">
+            <a href="/main/search">
                 <div {% if request.path =="/main/search" %} class="panel-heading active"{% endif %} class="panel-heading" tabindex="7">
                       <h4>Student Search</h4>
                   </div>
