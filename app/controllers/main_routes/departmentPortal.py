@@ -1,6 +1,6 @@
 from flask import render_template, g
 from app.controllers.main_routes import main_bp
-from app.logic.getPositions import supervisorsPositions
+from app.logic.getPositions import getPositions
 from peewee import DoesNotExist
 from app.models.department import Department
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -19,7 +19,7 @@ def managePositions(org, account):
         ).exists():
             return render_template('errors/403.html'), 403
 
-    positions = supervisorsPositions(dept)
+    positions = getPositions(dept)
 
     return render_template('main/managePositions.html',
                            department = dept,

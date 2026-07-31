@@ -64,7 +64,7 @@ def departmentPortal(org=None,account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    if g.currentUser.isLaborAdmin:
+    if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
         departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
@@ -73,8 +73,8 @@ def departmentPortal(org=None,account=None):
 
     positionsList, posURL = getActivePositions(dept) 
 
-    if dept and dept.departmentID not in [d.departmentID for d in departments]:
-        return render_template('errors/403.html'), 403
+    # if dept and dept.departmentID not in [d.departmentID for d in departments]:
+    #     return render_template('errors/403.html'), 403
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,

@@ -82,7 +82,7 @@ def test_getActivePositions():
         transaction.rollback()
     
 @pytest.mark.integration
-def test_supervisorsPositions():
+def test_getPositions():
     with mainDB.atomic() as transaction:
         dept1 = Department.create(departmentID=100, DEPT_NAME="Computer Science", ACCOUNT="6740", ORG="2114", departmentCompliance=True, isActive=True)
         dept2 = Department.create(departmentID=101, DEPT_NAME="Mathematics", ACCOUNT="6741", ORG="2115", departmentCompliance=True, isActive=True)
@@ -119,9 +119,9 @@ def test_supervisorsPositions():
                                             revisionDate="2023-01-01",
                                             description="")
 
-        test1 = list(supervisorsPositions(dept1))
-        test2 = list(supervisorsPositions(dept2))
-        test3 = list(supervisorsPositions(None))
+        test1 = list(getPositions(dept1))
+        test2 = list(getPositions(dept2))
+        test3 = list(getPositions(None))
 
         # Check that only active positions are returned
         assert len(test1) == 3

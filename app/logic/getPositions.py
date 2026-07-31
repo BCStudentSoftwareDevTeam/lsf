@@ -20,7 +20,7 @@ def getActivePositions(dept):
 
     return positionsList, posURL
 
-def supervisorsPositions(dept):
+def getPositions(dept):
     return((PositionHistory.select()
                                 .where((PositionHistory.department == dept) &
                                        (PositionHistory.status == "Active"))
