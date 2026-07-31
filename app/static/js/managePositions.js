@@ -3,7 +3,7 @@ $(document).ready(function () {
         pageLength: 25,
         columnDefs: [
             { className: 'dt-head-center', targets: '_all' },
-            { orderable: false, targets: [4,4 ] }
+            { orderable: false, targets: [3] }
         ]
     });
 });
