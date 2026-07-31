@@ -44,42 +44,34 @@ $(document).ready(function() {
         
     });
 
-    $(document).on("click", ".member-status-btn", function() {
+    $(document).on("change", ".member-status-toggle", function() {
+        let toggle = $(this);
+        let banBadge = toggle.closest("tr").find(".isbanned-badge");
 
-        let button = $(this);
-        let banBadge = $(this).closest("tr").find(".isbanned-badge");
-
-        let memberName = button.data("member-name");
-        let supervisorID = button.data("supervisor");
-
-        let banStatus = button.val();
-        let isBanned = banStatus === "Ineligible" ;
-
+        let memberName = toggle.data("member-name");
+        let supervisorID = toggle.data("supervisor");
+        let isIneligible = toggle.is(":checked");
 
         $.ajax({
             url: "/members/update_eligibility",
             data: { supervisorID: supervisorID },
             type: "POST",
             success: function() {
-                if (!isBanned) {
-                    button.removeClass("btn-success").addClass("btn-danger");
-                    button.text("Ineligible");
-                    button.val("Ineligible");
+                if (isIneligible) {
                     banBadge.css("visibility", "visible");
-                    $("#flash_container").html("<div class=\"alert alert-danger\"alert\" id=\"flasher\">" + memberName +  " is no longer an eligible coordinator, so they cannot add students or create labor status forms .</div>");
-                    $("#flasher").delay(3000).fadeOut();
+                    $("#flash_container").html("<div class=\"alert alert-danger\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer eligible.</div>");
                 } else {
-                    button.removeClass("btn-danger").addClass("btn-success");
-                    button.html("Eligible");
-                    button.val("Eligible");
                     banBadge.css("visibility", "hidden");
-                    $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\"> " + memberName +  " is an eligible coordinator now; they can create labor status forms and add new students.</div>");
-                    $("#flasher").delay(3000).fadeOut();
+                    $("#flash_container").html("<div class=\"alert alert-info\" role=\"alert\" id=\"flasher\">" + memberName + " is eligible now.</div>");
                 }
-        
+
+                $("#flasher").delay(3000).fadeOut();
             },
-            error: function() {console.log("An error has occured.");}
-        })	
+            error: function() {
+                toggle.prop("checked", !isIneligible);
+                console.log("An error has occurred.");
+            }
+        });
     });
 
     $(document).on("click", ".remove-member", function() {

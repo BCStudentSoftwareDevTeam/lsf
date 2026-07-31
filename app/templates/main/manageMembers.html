@@ -64,7 +64,7 @@
             <tr>
                 <td>
                     <a aria-label="{{ member.supervisor.ID }}" class="hover-indicator"> {{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}</a>
-                    <a href="mailto:{{ member.supervisor.EMAIL }}">✉</a>
+                    <a href="mailto:{{ member.supervisor.EMAIL  }}" data-toggle="tooltip" data-placement="bottom" title="{{ member.supervisor.EMAIL   }}"> <i class="bi bi-envelope-fill"></i> </a>
 
                     <br>
                     <span class="isbanned-badge" data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle " {% if not member.supervisor.isBanned %} style="visibility: hidden;" {% endif %}>Ineligible</span>
@@ -80,42 +80,38 @@
                 </td>
 
                 <td class="text-center centered-cell">
-                    <form action="" method="POST">
-                        <div class="form-group">
-                            <label class="switch table-switch">
-                                <input class="assign-coordinator" name="is_coordinator" type="checkbox" data-supervisor="{{ member.supervisor.ID}}" data-department="{{ department.departmentID }}" data-member-name="{{ member.supervisor.legal_name  + ' ' + member.supervisor.LAST_NAME  }}" {% if member.isCoordinator %} checked {% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                            <span class="switch-label"></span>
-                        </div>
-                    </form>
+                    <div class="form-group switch-form-group">
+                        <label class="switch table-switch">
+                            <input
+                                class="assign-coordinator"
+                                name="is_coordinator"
+                                type="checkbox"
+                                data-supervisor="{{ member.supervisor.ID }}"
+                                data-department="{{ department.departmentID }}"
+                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
+                                aria-label="Toggle coordinator status"
+                                {% if member.isCoordinator %}checked{% endif %}
+                            >
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </td>
 
-                {% if g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent %}
                 <td class="text-center centered-cell">
-                    <form action="" method="POST">
-                        {% if not member.supervisor.isBanned %}
-                            <button
+                    <div class="form-group switch-form-group">
+                        <label class="switch table-switch">
+                            <input
+                                class="member-status-toggle"
                                 name="is_banned"
-                                type="button"
-                                class="btn btn-success member-status-btn"
-                                align="center"
-                                data-supervisor="{{member.supervisor.ID}}"
+                                type="checkbox"
+                                data-supervisor="{{ member.supervisor.ID }}"
                                 data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
-                                value="Eligible"> Eligible
-                            </button>
-                        {% else %}
-                            <button
-                                name="is_banned"
-                                type="button"
-                                class="btn btn-danger member-status-btn"
-                                align="center"
-                                data-supervisor="{{member.supervisor.ID }}"
-                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
-                                value="Ineligible"> Ineligible 
-                            </button>
-                        {% endif %}
-                    </form>
+                                aria-label="Toggle supervisor eligibility"
+                                {% if member.supervisor.isBanned %}checked{% endif %}
+                            >
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </td>
                 <td class="text-center centered-cell remove-member"
                     data-supervisor="{{ member.supervisor.ID }}"
@@ -125,7 +121,7 @@
                         <span class="bi bi-trash"></span>
                     </button>
                 </td>
-                {% endif %}
+                
 
             </tr>
             {% endfor %}
