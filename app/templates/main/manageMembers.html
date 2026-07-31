@@ -48,14 +48,12 @@
                 <th class="no-sorting">Supervisees</th>
                 <th class="no-sorting centered-header">Assign Coordinator</th>
 
-                {% if g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent %}
                 <th class="no-sorting centered-header">
                     Supervisor Eligibility 
                     &nbsp;
                      <span  data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle "></span>
                 </th>
                 <th class="no-sorting centered-header">Remove Member</th>
-                {% endif %}
             </tr>
         </thead>
 

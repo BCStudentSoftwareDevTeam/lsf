@@ -115,11 +115,11 @@ def updateCoordinator():
 @main_bp.route('/members/update_eligibility', methods=['POST'])
 def updateEligibility():
     """
-    Updates a supervisor's eligibility status. 
+    Updates a supervisor's eligibility status.
     """
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+    if not (bcurrentUser.isLaborAdmin orbcurrentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -137,11 +137,11 @@ def updateEligibility():
 @main_bp.route('/members/remove', methods=['DELETE'])
 def removeMember():
     """
-    Removes a staff member from a department. 
+    Removes a staff member from a department.
     """
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
