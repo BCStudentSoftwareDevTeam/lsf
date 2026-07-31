@@ -19,3 +19,11 @@
   font-size: 18px;
   font-weight: 525;
 }
+.collapse{
+  padding-left: 5% ;
+  padding-right: 5%;
+}
+.accordion{
+  padding-left: 5%;
+  padding-right: 5%;
+}
