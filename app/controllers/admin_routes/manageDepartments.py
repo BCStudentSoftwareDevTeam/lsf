@@ -93,7 +93,7 @@ def complianceStatusCheck():
 
 
 
-@admin.route('/admin/manageDepartments/alloc/<org>/<account>', methods=['GET'])
+@admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
     """
     Returns the Allocation Review page/form, which can only be accessed through
