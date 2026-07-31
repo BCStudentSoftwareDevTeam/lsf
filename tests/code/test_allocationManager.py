@@ -96,7 +96,7 @@ def testSupervisor():
 @pytest.fixture
 def testHistoryType():
     History_data = HistoryType.create(
-        historyTypeName = "Labor Modified Form"
+        historyTypeName = "Labor Status Form"
     )
     yield History_data
     #destroy
@@ -175,6 +175,7 @@ def test_getTotalAllocations(testDepartment, testTerm, testAllocation):
 def test_countContracts(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
     contractsCounts = countContracts(testLaborStatusForm.jobType,testLaborStatusForm.weeklyHours,testTerm.termCode,testDepartment.departmentID)
     assert contractsCounts == 1
+
 
 
 @pytest.mark.integration

@@ -7,19 +7,21 @@ from peewee import JOIN
 
 
 def getAllocation(termCode, dept):
-        allocationObject = Allocation.select().where(
-            Allocation.termCode == termCode,
-            Allocation.department == dept, 
-            Allocation.isFinal == True).dicts().get()
-        return allocationObject
+    academicYearCode = int(str(termCode)[:5] + "00")
+    allocationObject = Allocation.select().where(
+        Allocation.termCode.in_([termCode,academicYearCode]),
+        Allocation.department == dept, 
+        Allocation.isFinal == True).dicts().get()
+    return allocationObject
 
 
 def getAllocationNonFinal(termCode, dept):
-        allocationObject = Allocation.select().where(
-            Allocation.termCode == termCode,
-            Allocation.department == dept, 
-            Allocation.isFinal == False).dicts().get()
-        return allocationObject
+    academicYearCode = int(str(termCode)[:5] + "00")
+    allocationObject = Allocation.select().where(
+        Allocation.termCode.in_([termCode,academicYearCode]),
+        Allocation.department == dept, 
+        Allocation.isFinal == False).dicts().get()
+    return allocationObject
 
 
 
@@ -38,12 +40,14 @@ def getTotalAllocations(termCode, dept):
     return allocationDict
  
 def countContracts(jobType, weeklyContractHours, termCode, dept):
+    academicYearCode = int(str(termCode)[:5] + "00")
     lsfCountPrimaries = FormHistory.select(
                             ).join(LaborStatusForm
                             ).join(Department
                             ).where(
+                                FormHistory.historyType == "Labor Status Form",
                                 FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
-                                LaborStatusForm.termCode == termCode,
+                                LaborStatusForm.termCode.in_([termCode,academicYearCode]),
                                 LaborStatusForm.jobType == jobType,
                                 LaborStatusForm.weeklyHours == weeklyContractHours,
                                 Department.departmentID == dept,
@@ -51,21 +55,22 @@ def countContracts(jobType, weeklyContractHours, termCode, dept):
     return lsfCountPrimaries
 
 def getContractedAllocations(termCode, dept):
+    academicYearCode = int(str(termCode)[:5] + "00")
     allocationObject = getAllocation(termCode, dept)
     break_allocation = FormHistory.select(
         LaborStatusForm.department,
-        LaborStatusForm.termCode.termCode,
+        LaborStatusForm.termCode,
         fn.SUM(LaborStatusForm.contractHours).alias('total_hours')
     ).join(
         LaborStatusForm,
         on=(FormHistory.formID == LaborStatusForm.laborStatusFormID),
     ).join(
         Term,
-        on = (LaborStatusForm.termCode == Term.termCode)
+        on = (LaborStatusForm.termCode == Term.termCode )
     ).where(
         (FormHistory.historyType == "Labor Status Form") &
-        (FormHistory.status == "Approved") &
-        (LaborStatusForm.termCode == termCode)
+        (FormHistory.status == "Approved") & 
+        (LaborStatusForm.termCode.in_([termCode,academicYearCode]))
     ).group_by(
         LaborStatusForm.department, 
         LaborStatusForm.termCode).dicts()
@@ -73,7 +78,7 @@ def getContractedAllocations(termCode, dept):
     breakSum = {"total_hours": 0}
     if dept:
         for row in break_allocation:
-            if row["department"] == dept.departmentID:
+            if row["department"] == dept:
                 breakSum = row
                 break
 
