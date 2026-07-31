@@ -139,8 +139,8 @@ def departmentPortal(org=None,account=None):
             sumBreak = usedAllocation["break_hours"]
             studentHours = getContractedAllocations(202500, dept)
             usedPositions = usedAllocation
-            usedAllocation = usedAllocation["usedTotal"]
-        except:
+            usedAllocation = usedAllocation["used_total"]
+        except Exception as e:
             totalPositions = {}
             usedAllocation = {}
             sumBreak = 0

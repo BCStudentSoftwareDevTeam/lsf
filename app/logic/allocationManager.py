@@ -55,7 +55,7 @@ def getContractedAllocations(termCode, dept):
     break_allocation = FormHistory.select(
         LaborStatusForm.department,
         LaborStatusForm.termCode.termCode,
-        fn.SUM(LaborStatusForm.contractHours).alias('totalHours')
+        fn.SUM(LaborStatusForm.contractHours).alias('total_hours')
     ).join(
         LaborStatusForm,
         on=(FormHistory.formID == LaborStatusForm.laborStatusFormID),

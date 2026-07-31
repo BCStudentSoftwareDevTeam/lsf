@@ -1001,6 +1001,22 @@ allocations = [
     "secondary_10":     1,
     "breakHours":       900,
     },
+    {
+    "termCode":         202500,
+    "department":       1,
+    "isFinal":          True,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
+    "primary_10":       2,
+    "primary_12":       2,
+    "primary_15":       1,
+    "primary_20":       0,
+    "secondary_5":      1,
+    "secondary_10":     0,
+    "breakHours":       260,
+    },
+    
                 
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
