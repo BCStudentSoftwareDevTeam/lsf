@@ -1,9 +1,19 @@
 /* Individual Positions page styles */
 /* Header */
+.department-header-container {
+    position: relative;
+}
+
 .department-header {
     text-align: center;
     font-weight: 700;
     margin-bottom: 5rem;
+}
+
+.download-btn {
+    position: absolute;
+    top: 0;
+    right: 5rem;
 }
 
 /* Metadata list (dt / dd spacing) */
@@ -45,7 +55,7 @@
 }
 
 .description-content {
-    margin: 0;
+    margin: 2rem;
     padding: 0;
 }
 

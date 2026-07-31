@@ -38,11 +38,11 @@ def makePositionDescriptionPDF(department, position):
     pdf.add_page()
 
     pdf.set_font('Arial', 'B', 16)
-    pdf.cell(0, 10, department.DEPT_NAME, ln=True)
+    pdf.cell(0, 10, position.positionTitle, ln=True)
     pdf.ln(2)
 
     fields = [
-        ('Position Title', position.positionTitle),
+        ('Department Name', department.DEPT_NAME),
         ('Position Code', position.positionCode),
         ('WLS Level', position.wls),
         ('Status', position.status),
