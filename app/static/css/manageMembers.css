@@ -144,3 +144,11 @@ a.hover-indicator:active {
   letter-spacing: 0.3px;
   line-height: 1.2;
 }
+
+.position-counts {
+  display: inline-grid;
+  grid-template-columns: max-content max-content;
+  column-gap: 6px;
+  row-gap: 2px;
+  white-space: nowrap;
+}

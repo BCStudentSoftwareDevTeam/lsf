@@ -74,8 +74,13 @@
                     {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
                         None
                     {% else %}
-                        <b>Primary:</b> {{member.active_primary_positions}} active, {{member.pending_primary_positions}} pending<br>
-                        <b>Secondary:</b> {{member.active_secondary_positions }} active, {{member.pending_secondary_positions }} pending
+                        <div class="position-counts">
+                            <span><b>Primary:</b></span>
+                            <span>{{ member.active_primary_positions }} active, {{ member.pending_primary_positions }} pending</span>
+
+                            <span><b>Secondary:</b></span>
+                            <span>{{ member.active_secondary_positions }} active, {{ member.pending_secondary_positions }} pending</span>
+                        </div>
                     {% endif %}
                 </td>
 
