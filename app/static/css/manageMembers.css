@@ -24,12 +24,10 @@
   }
 }
 
-/* Bootstrap form-group adjustment for table switches */
 .switch-form-group {
   margin-bottom: 0;
 }
 
-/* Shared switch styling for Assign Coordinator and Supervisor Eligibility */
 .switch {
   position: relative;
   display: inline-block;
@@ -87,7 +85,6 @@
   top: 10px;
 }
 
-/* Hover indicator */
 a.hover-indicator {
   text-decoration: none !important;
   position: relative;
@@ -130,7 +127,6 @@ a.hover-indicator:active {
   color: #000;
 }
 
-/* Ineligible badge */
 .isbanned-badge {
   position: relative;
   display: inline-block;
