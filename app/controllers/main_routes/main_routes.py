@@ -91,10 +91,9 @@ def allocationTable(org=None, account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    returnTerms = []
-    terms = Term.select().order_by(Term.termCode.desc())
+    currentTerm = Term.select().where(Term.termCode == 202500).get() #FIXME
 
-    testAllocationDict = {"primary_10": 1,
+    allocationDict = {"primary_10": 1,
                     "primary_12": 2,
                     "primary_15": 3,
                     "primary_20": 4,
@@ -103,24 +102,12 @@ def allocationTable(org=None, account=None):
                     "breakHours": 500,
                     "totalPrimaries": 10,
                     "totalSecondaries": 11,
-                    "totalAllocations": 21 }
-    allocationDict = {}
-    for term in terms:
-        if str(term.termCode).endswith("00"):
-            returnTerms.append(term.termName)
-
-            try:
-                allocationObject = allocationObject = Allocation.select().where(
-                    Allocation.termCode == term.termCode,
-                    Allocation.department == 3,).dicts().get()
-                allocationDict[term.termName] = testAllocationDict
-
-            except Exception as e:
-                allocationDict[term.termName] = {}
-
+                    "totalAllocations": 21}
+    print("\n\n\n\n\n")
+    print(allocationDict)
     return render_template('main/allocationTable.html',
                            department = dept,
-                           terms = returnTerms,
+                           term = currentTerm,
                            allocations = allocationDict)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])

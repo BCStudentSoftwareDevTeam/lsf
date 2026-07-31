@@ -9,3 +9,13 @@
     width:fit-content;
     height:fit-content
 }
+.card-header {
+  background-color: #efebeb;
+  margin-bottom: 7px;
+}
+.mb-0, .collapsed {
+  outline-color: none;
+  color: black;
+  font-size: 18px;
+  font-weight: 525;
+}
