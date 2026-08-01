@@ -93,7 +93,7 @@ $(document).ready(function() {
                 $("#flasher").delay(3000).fadeOut();
                 row.remove();
             },
-            error: function() {console.log("An error has occured.");}
+            
         })	
     });
 })
