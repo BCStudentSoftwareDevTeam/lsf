@@ -3,6 +3,7 @@ from app.models import mainDB
 from app.models.department import Department
 from app.models.positionHistory import PositionHistory
 from app.logic.getPositions import *
+
 @pytest.mark.integration
 def test_getActivePositions():
     """
