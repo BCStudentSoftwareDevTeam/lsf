@@ -15,7 +15,8 @@ from app.models.department import *
 from app.models.allocation import *
 from app.models.laborStatusForm import *
 
-from app.logic.manageDepartments import * 
+from app.logic.manageDepartments import *
+from app.logic.annualPositionReview import sendAnnualPositionReviewRequests
 
 
 
@@ -67,6 +68,7 @@ def manageDepartments(academicYear = None):
                             currentAY = currentAY,
                             previousAY = previousAY,
                             nextAY = nextAY,
+                            chosenAY = chosenAY,
                             academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
                             allocationStatus = allocationStatus
@@ -87,6 +89,27 @@ def complianceStatusCheck():
             department.departmentCompliance = not department.departmentCompliance
             department.save()
             return jsonify({"Success": True})
+    except Exception as e:
+        print(e)
+        return jsonify({"Success": False})
+
+
+
+@admin.route('/admin/manageDepartments/annualPositionReview', methods=['POST'])
+def annualPositionReviewRequest():
+    """
+    Sends an Annual Position Review request email to every active department's
+    Labor Coordinators and supervisors for the selected academic year, and
+    records the request. Triggered from the Manage Departments page.
+    """
+    currentUser = require_login()
+    if not currentUser or not currentUser.isLaborAdmin:
+        return jsonify({"Success": False}), 403
+
+    try:
+        rsp = request.get_json()
+        result = sendAnnualPositionReviewRequests(int(rsp['academicYear']), currentUser)
+        return jsonify({"Success": True, **result})
     except Exception as e:
         print(e)
         return jsonify({"Success": False})
