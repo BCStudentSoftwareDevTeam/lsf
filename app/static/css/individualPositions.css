@@ -13,7 +13,7 @@
 .download-btn {
     position: absolute;
     top: 0;
-    right: 5rem;
+    right: 15px;
 }
 
 /* Metadata list (dt / dd spacing) */
@@ -28,39 +28,84 @@
     color: #444;
     text-align: left;
     font-size: 2rem;
-
 }
 
 .description-header {
     font-weight: 700;
 }
 
-/* Review and improve this later. (Also move it to a more appropriate location) */
 .position-container {
     margin-top: 2rem;
 }
 
 /* Description section card */
 .position-description {
-    background: #fff;
-    border: 1px solid #e6e6e6;
     padding: 1rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     text-align: left;
     margin-top: 0;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
     white-space: pre-line;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .description-content {
     margin: 0;
     padding: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Individual description sections */
+.section-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.section-title:first-child {
+    margin-top: 0;
 }
 
 /* Utility float class used across the app */
 .floatright {
     float: right;
     margin-left: 0.5rem;
+}
+
+/* Mobile layout */
+@media (max-width: 750px) {
+    .download-btn {
+        position: static;
+        display: table;
+        max-width: 100%;
+        margin: 0 auto 20px;
+        white-space: normal;
+    }
+
+    .department-header {
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+
+    .position-information dl.row dt,
+    .position-information dl.row dd {
+        font-size: 1.6rem;
+    }
+
+    .position-information dl.row dd {
+        margin-bottom: 15px;
+    }
+
+    .position-description {
+        font-size: 1.2rem;
+    }
+
+    .floatright {
+        float: none;
+        margin-left: 0;
+    }
 }

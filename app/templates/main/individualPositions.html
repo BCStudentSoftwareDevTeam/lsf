@@ -18,7 +18,7 @@
 
   <div class="container-fluid position-container">
     <div class="row">
-      <div class="col-12">
+      <div class="col-xs-12">
 
         <div class="position-information">
           <dl class="row">
@@ -46,8 +46,8 @@
         <section class="position-description">
           {%- if sections %}
             {%- for section in sections %}
-              <h4 class="section-title">{{ section.sectionTitle }}</h4>
-              <div class="description-content">{{ section.sectionContent }}</div>
+              <h4 class="section-title">{{ section.sectionTitle |safe }}</h4>
+              <div class="description-content">{{ section.sectionContent |safe }}</div>
             {%- endfor %}
           {%- else %}
             <p class="text-muted">No description available.</p>
