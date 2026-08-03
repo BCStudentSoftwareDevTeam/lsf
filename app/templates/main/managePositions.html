@@ -23,7 +23,7 @@
                     <th class="text-center width-46">Position</th>
                     <th class="text-center width-12">WLS</th>
                     <th class="text-center width-30">Last Revision</th>
-                    <th class="text-center width-33">View / Edit</th>
+                    <th class="text-center width-33">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@
                     <td>{{ position.revisionDate }}</td>
                     <td>
                         <button class="btn btn-success view-btn" data-position-id="{{ position.id }}">View</button>
-                        <button class="btn btn-primary request-btn" data-position-id="{{ position.id }}">Edit Position</button>
+                        <button class="btn btn-primary request-btn" data-position-id="{{ position.id }}">Revise Position</button>
                     </td>
                 </tr>
                 {% endfor %}

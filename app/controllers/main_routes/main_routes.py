@@ -73,9 +73,6 @@ def departmentPortal(org=None,account=None):
 
     positionsList, posURL = getActivePositions(dept) 
 
-    # if dept and dept.departmentID not in [d.departmentID for d in departments]:
-    #     return render_template('errors/403.html'), 403
-
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
