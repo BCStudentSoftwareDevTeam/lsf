@@ -1,40 +1,27 @@
-from flask import g, jsonify, redirect, render_template, request, url_for
-from flask import abort
+from flask import abort, g, jsonify, redirect, render_template, request, url_for
+from peewee import DoesNotExist
 
 from app.controllers.main_routes import main_bp
-from app.models.supervisor import Supervisor
-from app.models.department import Department
-from app.models.supervisorDepartment import SupervisorDepartment
-from app.logic.manageMembers import *
+from app.logic.getPositions import getPositions
+from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
+from app.logic.manageMembers import attachPositionCounts, getStudentCounts
 from app.logic.search import searchPerson
-from app.logic.getSupervisors import buildSupervisorDisplay
-from app.logic.getSupervisors import (buildSupervisorDisplay,getSupervisorDepartments,)
+from app.models.department import Department
+from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
 
-def canManageDepartment(currentUser, departmentID):
-    """Return whether the user can manage members in this department."""
-    if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:
-        return True
 
-    if not currentUser.supervisor:
-        return False
-
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(
-        supervisor=currentUser.supervisor,
-        department=departmentID
-    )
-
-    return supervisorDeptRecord is not None
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageMembers(org=None, account=None):
     """Generates the Manage Members page."""
     currentUser = g.currentUser
-    
+
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
 
     dept = Department.get_or_none(
-    Department.ORG == org,
-    Department.ACCOUNT == account
+        Department.ORG == org,
+        Department.ACCOUNT == account
     )
 
     if not dept:
@@ -64,14 +51,46 @@ def manageMembers(org=None, account=None):
     )
 
 
-@main_bp.route('/members/search/<query>',  methods=['GET'])
+@main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
+def managePositions(org, account):
+    """Generates the Manage Positions page."""
+    try:
+        dept = Department.get(
+            Department.ORG == org,
+            Department.ACCOUNT == account
+        )
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+
+    if not g.currentUser.isLaborAdmin:
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(
+            (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
+            (SupervisorDepartment.department == dept.departmentID)
+        )
+
+        if not supervisorDeptRecord:
+            return render_template('errors/403.html'), 403
+
+    positions = getPositions(dept)
+
+    return render_template(
+        'main/managePositions.html',
+        department=dept,
+        department_name=dept.DEPT_NAME,
+        positions=positions
+    )
+
+
+@main_bp.route('/members/search/<query>', methods=['GET'])
 def searchMember(query=None):
-    """
-    Search supervisors by name or B-number.
-    """
+    """Search supervisors by name or B-number."""
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+    if not (
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        currentUser.supervisor
+    ):
         return render_template('errors/403.html'), 403
 
     supervisors = (
@@ -81,15 +100,14 @@ def searchMember(query=None):
     )
 
     supervisors = [buildSupervisorDisplay(supervisor) for supervisor in supervisors]
-    supervisors = [ supervisor for supervisor in supervisors if supervisor is not None]
+    supervisors = [supervisor for supervisor in supervisors if supervisor is not None]
 
     return jsonify(supervisors)
 
+
 @main_bp.route('/members/update_coordinator', methods=['POST'])
 def updateCoordinator():
-    """
-    Assigns or unassignes a supervisor as a Labor Coordinator. 
-    """
+    """Assigns or unassigns a supervisor as a Labor Coordinator."""
     currentUser = g.currentUser
 
     supervisorID = request.form.get("supervisorID")
@@ -98,8 +116,21 @@ def updateCoordinator():
 
     if not supervisorID or not departmentID:
         return "", 400
-    if not canManageDepartment(currentUser, departmentID):
-        return render_template('errors/403.html'), 403    
+
+    supervisorDeptRecord = None
+
+    if currentUser.supervisor:
+        supervisorDeptRecord = SupervisorDepartment.get_or_none(
+            (SupervisorDepartment.supervisor == currentUser.supervisor) &
+            (SupervisorDepartment.department == departmentID)
+        )
+
+    if not (
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        supervisorDeptRecord
+    ):
+        return render_template('errors/403.html'), 403
 
     member = SupervisorDepartment.get(
         (SupervisorDepartment.supervisor == supervisorID) &
@@ -114,12 +145,14 @@ def updateCoordinator():
 
 @main_bp.route('/members/update_eligibility', methods=['POST'])
 def updateEligibility():
-    """
-    Updates a supervisor's eligibility status.
-    """
+    """Updates a supervisor's eligibility status."""
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
+    if not (
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        currentUser.supervisor
+    ):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -136,12 +169,14 @@ def updateEligibility():
 
 @main_bp.route('/members/remove', methods=['DELETE'])
 def removeMember():
-    """
-    Removes a staff member from a department.
-    """
+    """Removes a staff member from a department."""
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
+    if not (
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        currentUser.supervisor
+    ):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -160,12 +195,9 @@ def removeMember():
     return "", 200
 
 
-
 @main_bp.route('/members/add', methods=['POST'])
 def addUserToDept():
-    """
-    Adds a user to a department.
-    """
+    """Adds a user to a department."""
     currentUser = g.currentUser
     supervisorID = request.form.get("supervisorID")
     departmentID = request.form.get("departmentID")
@@ -174,9 +206,10 @@ def addUserToDept():
         return jsonify(success=False, message="Missing supervisor or department."), 400
 
     if not (
-    currentUser.isLaborAdmin or
-    currentUser.isLaborDepartmentStudent
-):
+        currentUser.isLaborAdmin or
+        currentUser.isLaborDepartmentStudent or
+        currentUser.supervisor
+    ):
         return render_template('errors/403.html'), 403
 
     try:
@@ -191,7 +224,10 @@ def addUserToDept():
         )
 
         if supervisorDeptRecord:
-            return jsonify(success=False, message="Supervisor already exists in this department."), 200
+            return jsonify(
+                success=False,
+                message="Supervisor already exists in this department."
+            ), 200
 
         SupervisorDepartment.create(
             supervisor=supervisor,
@@ -202,4 +238,7 @@ def addUserToDept():
 
     except Exception as e:
         print(f'Could not add user to department: {e}')
-        return jsonify(success=False, message="Could not add supervisor to department."), 500
+        return jsonify(
+            success=False,
+            message="Could not add supervisor to department."
+        ), 500

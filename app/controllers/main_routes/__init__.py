@@ -27,3 +27,4 @@ from app.controllers.main_routes import contributors
 from app.controllers.main_routes import studentLaborEvaluation
 from app.controllers.main_routes import search
 from app.controllers.main_routes import studentResponse
+from app.controllers.main_routes import departmentPortal
