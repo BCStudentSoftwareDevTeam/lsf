@@ -111,7 +111,7 @@ function termStatus(term) {
         $(termBtnID).removeClass("btn-success");
         $(termBtnID).addClass("btn-danger");
         $(termBtnID).text("Closed");
-        category = "danger";
+        category = "success";
         state = "'Closed'.";
         } else {
         $(termBtnID).removeClass("btn-danger");
