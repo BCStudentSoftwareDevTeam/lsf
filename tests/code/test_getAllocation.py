@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 import pytest
 from app.models import mainDB
@@ -12,7 +13,7 @@ from app.models.formHistory import FormHistory
 from app.models.historyType import HistoryType
 from app.models.status import Status
 from app.models.user import User
-from app.logic.getAllocation import getDepartmentAllocationSummary, countWorkers, getBreakHours
+from app.logic.getAllocation import getDepartmentAllocationSummary, countWorkers, getBreakHours, getCurrentSemesterLabel
 
 
 def _createFormHistory(form, statusName):
@@ -28,6 +29,28 @@ def _createFormHistory(form, statusName):
         createdDate=date.today(),
         status=status,
     )
+
+
+def test_getCurrentSemesterLabel_none_term():
+    assert getCurrentSemesterLabel(None) is None
+
+
+def test_getCurrentSemesterLabel_fall():
+    """A term whose termCode's academic year is 2025 should read as Fall 2025
+    when today falls in the Aug-Dec half of the academic year."""
+    term = Term(termCode=202500)
+    with patch("app.logic.getAllocation.date") as mockDate:
+        mockDate.today.return_value = date(2025, 9, 15)
+        assert getCurrentSemesterLabel(term) == "Fall 2025"
+
+
+def test_getCurrentSemesterLabel_spring():
+    """The same academic-year term should read as Spring 2026 when today
+    falls in the Jan-Jul half of the academic year."""
+    term = Term(termCode=202500)
+    with patch("app.logic.getAllocation.date") as mockDate:
+        mockDate.today.return_value = date(2026, 2, 10)
+        assert getCurrentSemesterLabel(term) == "Spring 2026"
 
 
 @pytest.mark.integration

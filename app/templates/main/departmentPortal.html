@@ -42,25 +42,41 @@
               </span>
             </div>
             <div class="media-body media-middle">
-              <h3>Allocations</h3>
+              <h3 id="allocationTitle">Current Allocation</h3>
             </div>
-            <div class="header-container">
-              <h3>{{ term.termName if term else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Used/Given"></i></h3> <h3>{{used}}/{{allocated or 0}} Positions</h3>
-            </div>
-            <div class="allocation-list">
-              <ul class="primary-chart">
-                <li>10 Hour - {{usedPositions.used_10}}/{{allocation.primary_10}}</li>
-                <li>12 Hour - {{usedPositions.used_12}}/{{allocation.primary_12}}</li>
-                <li>15 Hour - {{usedPositions.used_15}}/{{allocation.primary_15}}</li>
-                <li>20 Hour - {{usedPositions.used_20}}/{{allocation.primary_20}}</li>
-              </ul>
-              <ul class="secondary-chart">
-                <li>5 Hour - {{usedPositions.used_5_sec}}/{{allocation.secondary_5}}</li>
-                <li>10 Hour - {{usedPositions.used_10_sec}}/{{allocation.secondary_10}}</li>
-              </ul>
-            </div>
-            <div class="header-container">
-              <h3>Break Hours <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="the values do not reflect actual hours worked, but rather contracts fulfilled."></i></h3><h3>{{break_hours}}/{{allocation.breakHours or 0}} Hours</h3>
+            <div class="allocation-table-wrapper">
+              <table class="allocation-table">
+                <tbody>
+                  <tr class="term-row">
+                    <td><h4>{{ currentSemester if currentSemester else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Used/Given"></i></h4></td>
+                    <td><h4>{{used}} of {{allocated or 0}} Positions</h4></td>
+                  </tr>
+                  <tr class="chart-header-row">
+                    <th>Primary</th>
+                    <th>Secondary</th>
+                  </tr>
+                  <tr>
+                    <td>10 Hour - {{usedPositions.used_10}} of {{allocation.primary_10}}</td>
+                    <td>5 Hour - {{usedPositions.used_5_sec}} of {{allocation.secondary_5}}</td>
+                  </tr>
+                  <tr>
+                    <td>12 Hour - {{usedPositions.used_12}} of {{allocation.primary_12}}</td>
+                    <td>10 Hour - {{usedPositions.used_10_sec}} of {{allocation.secondary_10}}</td>
+                  </tr>
+                  <tr>
+                    <td>15 Hour - {{usedPositions.used_15}} of {{allocation.primary_15}}</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>20 Hour - {{usedPositions.used_20}} of {{allocation.primary_20}}</td>
+                    <td></td>
+                  </tr>
+                  <tr class="break-row">
+                    <td><h4>Break Hours <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="the values do not reflect actual hours worked, but rather contracts fulfilled."></i></h4></td>
+                    <td><h4>{{break_hours}} of {{allocation.breakHours or 0}} Hours</h4></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
           </div>

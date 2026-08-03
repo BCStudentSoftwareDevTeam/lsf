@@ -43,27 +43,31 @@
     vertical-align: middle;
     color:#6e6e6e;
 }
-.header-container {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding-left: 2%; 
+.allocation-table-wrapper {
+    overflow-x: auto;
+    margin: 10px 0;
+}
+.allocation-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.2em;
+}
+.allocation-table th,
+.allocation-table td {
+    text-align: left;
+    white-space: nowrap;
+}
+.allocation-table th:first-child,
+.allocation-table td:first-child {
     padding-right: 10px;
 }
-.allocation-list {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding-left: 10px; 
-    padding-right: 10px;
+.allocation-table th {
+    font-weight: 700;
+    padding-top: 10px;
 }
-.primary-chart {
-    font-size: 1.2em; 
-    padding-left: 7%;
-}
-.secondary-chart {
-    font-size: 1.2em; 
-    padding-right: 7%;
+.allocation-table .term-row h4,
+.allocation-table .break-row h4 {
+    margin: 10px 0;
 }
 
 .bi-people-fill {  /* Bootstrap Icon for Members Card */
@@ -94,5 +98,18 @@
 @media (max-width: 1199px) {
     .card-row {
         flex-direction: column;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1450px), (max-width: 480px) {
+    .allocation-table {
+        font-size: 1em;
+    }
+    .allocation-table td {
+        padding: 2px 5px;
+    }
+    .allocation-table .term-row h4,
+    .allocation-table .break-row h4 {
+        font-size: 0.9rem;
     }
 }

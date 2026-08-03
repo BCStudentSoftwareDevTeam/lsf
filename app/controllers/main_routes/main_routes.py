@@ -91,6 +91,7 @@ def departmentPortal(org=None,account=None):
                            allocated = allocation_summary["allocated"],
                            used = allocation_summary["used"],
                            term = recentTerm,
+                           currentSemester = allocation_summary["current_semester"],
                            usedPositions = allocation_summary["used_positions"],
                            break_hours = allocation_summary["break_hours"],
                            supervisors = supervisors,

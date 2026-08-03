@@ -1,9 +1,26 @@
+from datetime import date
+
 from peewee import fn
 
 from app.models.allocation import Allocation
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 from app.models.formHistory import FormHistory
+
+
+def getCurrentSemesterLabel(term):
+    """Return the current Fall/Spring semester label (e.g. "Fall 2025") for
+    the academic year that the given term belongs to. The season is picked
+    from today's month and the year comes from the term's own termCode,
+    following the AY/Fall/Spring termCode convention in termManagement.py
+    (AY code, code+11 = Fall of that year, code+12 = Spring of the next).
+    """
+    if not term:
+        return None
+    academicYear = int(str(term.termCode)[:4])
+    if date.today().month >= 8:
+        return f"Fall {academicYear}"
+    return f"Spring {academicYear + 1}"
 
 
 def countWorkers(department, term_code, job_type, hours_bucket):
@@ -43,6 +60,7 @@ def getDepartmentAllocationSummary(department):
     """Return allocation-utilization values for a department's most recent term."""
     result = {
         "term": None,
+        "current_semester": None,
         "allocated": 0,
         "used": 0,
         "used_positions": {
@@ -65,6 +83,7 @@ def getDepartmentAllocationSummary(department):
     recentTerm = Term.order_by_term([a.termCode for a in departmentAllocations], reverse=True)[0]
     term_code = recentTerm.termCode
     result["term"] = recentTerm
+    result["current_semester"] = getCurrentSemesterLabel(recentTerm)
 
     total_positions = (
         Allocation.select(
