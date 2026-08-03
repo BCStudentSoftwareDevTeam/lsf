@@ -19,3 +19,9 @@ def getActivePositions(dept):
             posURL.append(str(i.positionCode))
 
     return positionsList, posURL
+
+def getPositions(dept):
+    return((PositionHistory.select()
+                                .where((PositionHistory.department == dept) &
+                                       (PositionHistory.status == "Active"))
+                                .order_by(PositionHistory.positionTitle.asc())))

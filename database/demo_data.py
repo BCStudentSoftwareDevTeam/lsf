@@ -1198,15 +1198,17 @@ positionHistory = [
         "positionCode": "S61407",
         "status": "Active",
         "wls": 1,
-        "revisionDate": f"2026-07-01",
+        "revisionDate": f"2025-07-01",
         "description": "",
         "department": 1
     },
     {
+        
         "positionTitle": "Research Associate",
         "positionCode": "S61408",
         "status": "Active",
         "wls": 2,
+        "revisionDate": f"2025-09-01",
         "revisionDate": f"2026-09-01",
         "description": "",
         "department": 1
@@ -1216,7 +1218,7 @@ positionHistory = [
         "positionCode": "S61409",
         "status": "Active",
         "wls": 3,
-        "revisionDate": f"2026-07-01",
+        "revisionDate": f"2025-07-01",
         "description": "",
         "department": 1
     },
@@ -1228,7 +1230,6 @@ positionHistory = [
         "revisionDate" : f"2026-01-01",
         "description": "",
         "department" : 1
-
     },
     {
         "positionTitle": "Teaching Associate",
@@ -1303,8 +1304,6 @@ positionHistory = [
         "department" : 1
     }
     
-    
-
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")
