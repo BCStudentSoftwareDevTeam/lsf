@@ -28,20 +28,24 @@
     <p>
         <label for="academicYear"">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
     </p>
+
+    <p>
+        <label for="academicYear"">Justification: </label> {{requestedAlloc.justification}}
+    </p>
     
-    <hr style="border: 0; border-top: 1px solid black;">
+    <hr class="separationLine">
 
     <p>
         <label for="breakHours" id="breakHours">Number of Break Hours: </label>
-        <input type="number" name="breakHours" min="0" step="1" value="{{allocation.breakHours}}" class="numericSpinner"> 
-        <small> (requested: {{allocation.breakHours}})</small> 
+        <input type="number" name="breakHours" min="0" step="1" value="{{requestedAlloc.breakHours}}" class="breakHoursNumericSpinner"> 
+        <small> (requested: {{requestedAlloc.breakHours}}; current: {{currentAlloc.breakHours}})</small> 
     </p>
 
     <p>
-        <label for="requestedPositions" id="requestedPositions">Requested Positions: </label>            
+        <label for="requestedPositions" id="requestedPositions">Number of Positions: </label>            
     </p>
 
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <div class="allocationReviewSection">
         <div>
             <p>
                 <small>
@@ -51,20 +55,20 @@
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{allocation.primary_10}}" class="numericSpinner">  
-                <small>&nbsp;(requested: {{allocation.primary_10}})</small>  
+                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_10}}" class="positionNumericSpinner">  
+                <small>&nbsp;(requested: {{requestedAlloc.primary_10}}; current: {{currentAlloc.primary_10}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{allocation.primary_12}}" class="numericSpinner">  
-                <small>&nbsp;(requested: {{allocation.primary_12}})</small>  
+                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_12}}" class="positionNumericSpinner">  
+                <small>&nbsp;(requested: {{requestedAlloc.primary_12}}; current: {{currentAlloc.primary_12}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{allocation.primary_15}}" class="numericSpinner">  
-                <small>&nbsp;(requested: {{allocation.primary_15}})</small>  
+                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_15}}" class="positionNumericSpinner">  
+                <small>&nbsp;(requested: {{requestedAlloc.primary_15}}; current: {{currentAlloc.primary_15}})</small>  
             </p>
         </div>
         <div> 
@@ -76,32 +80,34 @@
 
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
-                <input type="number" min="0" step="1" value="{{allocation.secondary_5}}" class="numericSpinner">  
-                <small>&nbsp;(requested: {{allocation.secondary_5}})</small>  
+                <input type="number" min="0" step="1" value="{{requestedAlloc.secondary_5}}" class="positionNumericSpinner">  
+                <small>&nbsp;(requested: {{requestedAlloc.secondary_5}}; current: {{currentAlloc.secondary_5}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{allocation.secondary_10}}" class="numericSpinner">  
-                <small>&nbsp;(requested: {{allocation.secondary_10}})</small>  
+                <input type="number" min="0" step="1" value="{{requestedAlloc.secondary_10}}" class="positionNumericSpinner">  
+                <small>&nbsp;(requested: {{requestedAlloc.secondary_10}}; current: {{currentAlloc.secondary_10}})</small>  
             </p>
         </div>
     </div>
-
+    
+    <!-- 
     <p>
         <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
     </p>
-    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea>
+    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea> 
+    -->
 
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <div class="allocationReviewSection" id="allocationReviewFooter">
 
         <div align="pull-left" style="width: 70%; margin-top: -5px;">
             <small id="allocationReviewNote">
-                *To submit the form, you must either specify the number of extra break hours or fill in one of the fields in the Requested Positions section.  
+                *After approving the request, you will not be able to approve it again over the next academic year ({{nextAY.termName.split(" ")[1]}}).  
             </small>
         </div>
 
-        <div>
+        <div class="section">
             <button type="button" class="btn btn-danger"  onclick="">Cancel</button>
             <button type="button" class="btn btn-success" onclick="">Approve</button>
         </div>

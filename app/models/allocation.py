@@ -9,7 +9,7 @@ class Allocation(baseModel):
     isFinal        = BooleanField(default=False)
     approvedOn     = DateField(null=True)
     approvedBy     = ForeignKeyField(Supervisor, null=True)
-    justification  = TextField()
+    justification  = TextField(default="", null=False)
     primary_10     = IntegerField()
     primary_12     = IntegerField()
     primary_15     = IntegerField()

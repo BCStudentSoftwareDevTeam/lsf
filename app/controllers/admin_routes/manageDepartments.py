@@ -118,13 +118,14 @@ def allocationReview(org=None, account=None):
 
     # Retrieving the next year 
     # DON'T DELETE THE UNDERSCORES
-    _, _, nextAY = generateAdjacentYears()
-    # The generateAdjacentYears() function returns a tuple of three elements, and we only need the third value
+    currentAY, _, nextAY = generateAdjacentYears()
     
-    testing = Allocation.get(Allocation.department == dept)
+    requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
+    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
 
     return render_template('admin/allocationReview.html',
                             department = dept, 
                             nextAY = nextAY,
-                            allocation = testing
+                            requestedAlloc = requestedAlloc,
+                            currentAlloc = currentAlloc
                             )

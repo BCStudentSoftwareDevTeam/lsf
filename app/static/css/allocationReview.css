@@ -20,16 +20,31 @@
   margin-bottom: 30px;
 }
 
-#breakHours {
-  margin-top: 0px; 
+.separationLine {
+  border: 0; 
+  border-top: 1px solid black;
 }
 
-.numericSpinner {
-  width: 55px;
+#breakHours {
+  margin-top: 0px; 
+  margin-bottom: 30px;
+}
+
+.allocationReviewSection{
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between;
+}
+
+.positionNumericSpinner {
+  width: 45px;
+}
+
+.breakHoursNumericSpinner {
+  width: 65px;
 }
 
 #requestedPositions {
-  margin-top: 30px; 
   margin-bottom: -10px;
 }
 
@@ -38,12 +53,16 @@
 }
 
 
-#allocationJustification {
+/* #allocationJustification {
   margin-top: 30px;
 }
 
 .unresizeable {
   resize: none;
+} */
+
+#allocationReviewFooter{ 
+  margin-top: 30px;
 }
 
 #allocationReviewNote {
