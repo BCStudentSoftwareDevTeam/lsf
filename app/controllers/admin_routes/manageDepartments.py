@@ -1,6 +1,6 @@
 from datetime import date
 
-from flask import g, request, redirect, jsonify, abort
+from flask import g, request, redirect, jsonify, abort, flash
 
 from app.controllers.admin_routes import *
 from app.login_manager import require_login
@@ -100,12 +100,14 @@ def allocationReview(org=None, account=None):
     the Manage Departments page.  
     """
 
+
     # Retrieving the departments based on the org and account numbers 
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         abort(404)
     
+
     # Checking admin rights
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
@@ -116,12 +118,22 @@ def allocationReview(org=None, account=None):
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
+
     # Retrieving the next year 
     # DON'T DELETE THE UNDERSCORES
     currentAY, _, nextAY = generateAdjacentYears()
     
+
     requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
     currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+
+
+    # checking if the allocation has already been approved
+    isApproved = bool(Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == True))
+    if isApproved: 
+        flash("You cannot reapprove an allocation request.", "danger")
+        return redirect('/admin/manageDepartments/')
+
 
     return render_template('admin/allocationReview.html',
                             department = dept, 
