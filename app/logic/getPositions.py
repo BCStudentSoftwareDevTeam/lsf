@@ -36,6 +36,15 @@ def getPosition(dept, positionCode, revisionDate=None):
 
     return positionQuery.order_by(PositionHistory.revisionDate.desc()).first()
 
+def getPositions(dept):
+    """
+    Returns a list of all positions for a given department, ordered by position title.
+    """
+    return((PositionHistory.select()
+                                .where((PositionHistory.department == dept) &
+                                       (PositionHistory.status == "Active"))
+                                .order_by(PositionHistory.positionTitle.asc())))
+
 def getPositionDescriptionSections(position):
     """
     Returns the description sections for a given position, ordered for display.
@@ -45,4 +54,5 @@ def getPositionDescriptionSections(position):
                                        .order_by(PositionDescriptionSection.order.asc()))
     
     return positionDescriptionSections
+
 
