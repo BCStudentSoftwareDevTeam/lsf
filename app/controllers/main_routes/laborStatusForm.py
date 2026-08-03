@@ -22,7 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
-from app.logic.allocation import getBandAllocationStatus
+from app.logic.allocation import getBandAllocationStatus, getAllocationWarning
 
 
 @main_bp.route('/laborstatusform', methods=['GET'])
@@ -188,6 +188,23 @@ def checkAllocation():
         return jsonify({"error": "No allocation data for this job type/hours band"}), 404
 
     return jsonify(status)
+
+@main_bp.route("/laborstatusform/allocationsummary", methods=["GET"])
+def allocationSummary():
+    """ Returns the department's current total-positions and break-hours allocation status, so the
+    labor status form can show a live summary that updates as students are added before submission. """
+    departmentOrg = request.args.get("departmentOrg")
+    departmentAcct = request.args.get("departmentAcct")
+
+    dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
+    if not dept:
+        return jsonify({"error": "Department not found"}), 404
+
+    warning = getAllocationWarning(dept, g.openTerm)
+    if warning is None:
+        return jsonify({"error": "No allocation data for this department"}), 404
+
+    return jsonify(warning)
 
 @main_bp.route("/laborStatusForm/modal/releaseAndRehire", methods=['POST'])
 def releaseAndRehire():

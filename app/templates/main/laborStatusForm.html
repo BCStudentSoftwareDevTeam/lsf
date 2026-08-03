@@ -85,7 +85,7 @@
                 data-live-search='true'
                 title="Department"
                 data-width="100%"
-                onchange = "checkCompliance(this); getDepartment(this); showAccessLevel(); checkAllocation()">
+                onchange = "checkCompliance(this); getDepartment(this); showAccessLevel(); checkAllocation(); loadAllocationSummary()">
           <option value = "" disabled selected>Select a Department</option>
           {% for department in departments %}
             <option value-account="{{department.ACCOUNT}}" value="{{department.ORG}}"{% if forms %}{% if forms.department.DEPT_NAME == department.DEPT_NAME %} selected {% endif %}{% endif %} data-content=
@@ -93,6 +93,29 @@
           {% endfor %}
         </select>
 
+  </div>
+  <div class="col-md-12" id="allocationSummaryTable" hidden>
+    <table class="table table-bordered table-condensed" style="max-width: 500px;">
+      <thead>
+        <tr>
+          <th>Department Allocation Status</th>
+          <th>Allocated</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Total Positions (all bands)</td>
+          <td id="allocationSummaryPositionsAllocated"></td>
+          <td id="allocationSummaryPositionsRemaining"></td>
+        </tr>
+        <tr>
+          <td>Break Hours</td>
+          <td id="allocationSummaryBreakHoursAllocated"></td>
+          <td id="allocationSummaryBreakHoursRemaining"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <div class="form-group {% if forms %} has-error {% endif %}  ">
     <!-- selectpicker for term  -->

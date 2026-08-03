@@ -6,6 +6,7 @@ $(document).ready(function(){
   if($("#selectedDepartment").val()){ // prepopulates position on redirect from rehire button and checks whether department is in compliance.
     checkCompliance($("#selectedDepartment"));
     getDepartment($("#selectedDepartment"));
+    loadAllocationSummary();
   }
   if($("#jobType").val()){ // fills hours per week selectpicker with correct information from laborstatusform. This is triggered on redirect from form history.
     var value = $("#selectedHoursPerWeek").val();
@@ -24,6 +25,7 @@ $(document).ready(function(){
     $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
     $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
     getDepartment($("#selectedDepartment"));
+    loadAllocationSummary();
     preFilledDate($("#selectedTerm"));
     showAccessLevel($("#selectedTerm"));
     disableTermSupervisorDept();
@@ -379,6 +381,79 @@ function checkAllocation() {
   });
 }
 
+// Live department allocation summary (Total Positions / Break Hours). Loaded once per
+// department selection, then bumped locally by +1/-1 as students are added or removed
+// from the table below, so the supervisor sees the effect immediately without waiting
+// on a server round trip for every add/remove.
+var allocationSummaryState = null;
+
+function loadAllocationSummary() {
+  var departmentSelect = $("#selectedDepartment");
+  var departmentOrg = departmentSelect.val();
+  var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+
+  allocationSummaryState = null;
+  $("#allocationSummaryTable").hide();
+
+  if (!departmentOrg) {
+    return;
+  }
+
+  $.ajax({
+    url: "/laborstatusform/allocationsummary",
+    data: {
+      departmentOrg: departmentOrg,
+      departmentAcct: departmentAcct
+    },
+    dataType: "json",
+    success: function (response) {
+      if (!response || response.error) {
+        return;
+      }
+      allocationSummaryState = {
+        positionsAllocated: response.totalPositionsAllocated,
+        positionsUsed: response.totalPositionsUsed,
+        breakHoursAllocated: response.breakHoursAllocated,
+        breakHoursUsed: response.breakHoursUsed
+      };
+      // Students already staged in the table (e.g. restored from a cookie before this
+      // request returned) aren't reflected in the server totals yet, since they haven't
+      // been submitted. Fold them in so the summary matches what's already on screen.
+      for (var i = 0; i < globalArrayOfStudents.length; i++) {
+        bumpAllocationSummary(globalArrayOfStudents[i], 1);
+      }
+      renderAllocationSummary();
+      $("#allocationSummaryTable").show();
+    },
+    error: function () {
+      // Informational only - if the check fails, just leave the summary table hidden.
+    }
+  });
+}
+
+function renderAllocationSummary() {
+  if (!allocationSummaryState) {
+    return;
+  }
+  var s = allocationSummaryState;
+  $("#allocationSummaryPositionsAllocated").text(s.positionsAllocated);
+  $("#allocationSummaryPositionsRemaining").text(s.positionsAllocated - s.positionsUsed);
+  $("#allocationSummaryBreakHoursAllocated").text(s.breakHoursAllocated);
+  $("#allocationSummaryBreakHoursRemaining").text(s.breakHoursAllocated - s.breakHoursUsed);
+}
+
+// delta is +1 when a student is added to the table, -1 when a row is removed.
+function bumpAllocationSummary(studentDict, delta) {
+  if (!allocationSummaryState || !studentDict) {
+    return;
+  }
+  allocationSummaryState.positionsUsed += delta;
+  if (studentDict.isTermBreak) {
+    allocationSummaryState.breakHoursUsed += delta * (parseInt(studentDict.stuContractHours, 10) || 0);
+  }
+  renderAllocationSummary();
+}
+
 // TABLE LABELS
 $("#contractHours").hide();
 $("#hoursPerWeek").hide();
@@ -437,6 +512,7 @@ function deleteRow(glyphicon) {
   for (var i = 0, row; row = table.rows[i]; i++) {
     if (rowParent === table.rows[i]) {
       $(glyphicon).parents("tr").remove();
+      bumpAllocationSummary(globalArrayOfStudents[i], -1);
       globalArrayOfStudents.splice(i, 1);
       if(globalArrayOfStudents.length > 1){
         document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
@@ -614,6 +690,7 @@ function initialLSFInsert(studentDict){ //Add student info to the table if they 
 function createAndFillTable(studentDict) {
   globalArrayOfStudents.push(studentDict);
   document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
+  bumpAllocationSummary(studentDict, 1);
   $("#mytable").show();
   $("#jobTable").show();
   $("#hoursTable").show();
