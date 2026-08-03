@@ -103,12 +103,14 @@ def allocationTable(org=None, account=None):
     print(f"current datae \n\n\n\n\n\n\n{str(currentDate)[:4]} \n\n\n")
     currentAY = currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "00")).get()
 
+    # currentAY = currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "00")).get()
+
     if currentDate.month >= 1 and currentDate.month <= 6:
         pass
-        currentTerm = Term.select().where(Term.termCode == int(str(2025)[:4] + "12")).get() 
+        currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "12")).get() 
     else:
         pass
-        currentTerm = Term.select().where(Term.termCode == int(str(2025)[:4] + "11")).get()
+        currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "11")).get()
     allocationDict = {"primary_10": 1,
                     "primary_12": 2,
                     "primary_15": 3,
@@ -140,18 +142,20 @@ def allocationTable(org=None, account=None):
         "break_hours": "3"
         }
     breakContracts = {
-        "coolContract": getBreakContracts(202500, dept)
-    }
-    print(f"\n\n\n coolcontract {breakContracts}\n\n\n")
-    
-    print("\n\n\n\n\n")
-    print(allocationDict)
+        "thanksgiving":getBreakContracts(202201, dept),#FIXME
+        "winter": getBreakContracts(202202, dept),
+        "spring": getBreakContracts(202203, dept),
+        "fall":getBreakContracts(202204, dept),
+        "summer": getBreakContracts(202213, dept)
+        }
+     
     return render_template('main/allocationTable.html',
                            department = dept,
                            currentAY = currentAY,
                            allocations = allocationDict,
                            fallContracts = fallContracts,
-                           springContracts = springContracts)
+                           springContracts = springContracts,
+                           breakContracts = breakContracts)
                            
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])

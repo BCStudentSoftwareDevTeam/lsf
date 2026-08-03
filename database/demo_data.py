@@ -40,8 +40,37 @@ bothStudents = [
                 "STU_CPO":"700",
                 "LAST_POSN":"Media Technician",
                 "LAST_SUP_PIDM":"7"
+                },          
+                {
+                "ID":"B00741361",
+                "PIDM":"99",
+                "FIRST_NAME":"Antonia",
+                "LAST_NAME":"Schmith",
+                "CLASS_LEVEL":"Freshman",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Scott Heggen",
+                "STU_EMAIL":"schmitha@berea.edu",
+                "STU_CPO":"777",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
                 },
-
+                {
+                "ID":"B00732363",
+                "PIDM":"58",
+                "FIRST_NAME":"Barbara",
+                "LAST_NAME":"Williams",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jasmine Jones",
+                "STU_EMAIL":"williamsb@berea.edu",
+                "STU_CPO":"118",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
                 {
                 "ID":"B00730361",
                 "PIDM":"1",
@@ -104,7 +133,16 @@ localStudents = [
                 "LAST_POSN":"Student Manager",
                 "LAST_SUP_PIDM":"7"
                 },
-        ]
+                {"ID": "B00811617", "legal_name": "Chris Georgiev", "isActive": True, "PIDM": "8", "FIRST_NAME": "Chris", "LAST_NAME": "Georgiev"},
+                {"ID": "B00815474", "legal_name": "Julius Fritz", "isActive": True, "PIDM": "9", "FIRST_NAME": "Julius", "LAST_NAME": "Fritz"},
+                {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
+                {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
+                {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"},
+                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"},
+                {"ID": "B12345759", "legal_name": "Mister Marlowe", "isActive": True, "PIDM": "14", "FIRST_NAME": "Mister", "LAST_NAME": "Marlowe"},
+                {"ID": "B11231123", "legal_name": "Mister Thanksgiving", "isActive": True, "PIDM": "15", "FIRST_NAME": "Mister", "LAST_NAME": "Thanksgiving"}
+
+                ]
 tracyStudents = [
                 {
                 "ID":"B00785329",
@@ -641,7 +679,82 @@ FormHistory.insert([{
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
             "status_id": "Approved"
-        }]).on_conflict_replace().execute()    
+        }]).on_conflict_replace().execute()  
+LaborStatusForm.insert([{
+    
+            "laborStatusFormID": 9,
+            "termCode_id": f"202500",
+            "studentName": "Genji Overwatch",
+            "studentSupervisee_id": "B12345756",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "overwtahc guy",
+            "POSN_CODE": "S61410",
+            "contractHours": 15,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 9,
+            "formID_id": "9",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute() 
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 60,
+            "termCode_id": f"202500",
+            "studentName": "Mister Marlowe",
+            "studentSupervisee_id": "B12345759",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Break Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 400,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 60,
+            "formID_id": "60",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 61,
+            "termCode_id": f"202501",
+            "studentName": "Mister Thanksgiving",
+            "studentSupervisee_id": "B11231123",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Thanksgiving Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 50,
+            "startDate": f"2025-11-23",
+            "endDate": "2025-12-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 61,
+            "formID_id": "61",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-11-01",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()   
 
 
 

@@ -3,7 +3,7 @@ from app.models.laborStatusForm import *
 from app.models.department import *
 from app.models.term import *
 from app.models.formHistory import FormHistory
-from peewee import JOIN
+from peewee import JOIN, fn
 
 
 def getAllocation(termCode, dept):
@@ -97,17 +97,14 @@ def getContractedAllocations(termCode, dept):
 
 def getBreakContracts(termCode, dept):
     academicYearCode = (str(termCode)[:4])
-    break_allocaiton = FormHistory.select(
+    break_allocaiton = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)
     ).join(LaborStatusForm
-    ).join(Department
     ).where(
         FormHistory.historyType == "Labor Status Form",
         FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
-        LaborStatusForm.termCode == [termCode],
-        LaborStatusForm.weeklyHours == None,
-        Department.departmentID == dept.departmentID,
-    ).count()
-
+        LaborStatusForm.termCode == termCode,
+        LaborStatusForm.department == dept,
+        LaborStatusForm.weeklyHours == None).scalar()
 
     # break_allocation = FormHistory.select(
     #         LaborStatusForm.department,
