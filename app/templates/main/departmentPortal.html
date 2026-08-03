@@ -44,6 +44,9 @@
             <div class="media-body media-middle">
               <h3 id="allocationTitle">Current Allocation</h3>
             </div>
+            {% macro allocationCell(hours, used, allocated) -%}
+              <td>{{ hours }} hr: {{ used }} contract{{ 's' if used != 1 else '' }}<br>(out of {{ allocated }} allocation{{ 's' if allocated != 1 else '' }})</td>
+            {%- endmacro %}
             <div class="allocation-table-wrapper">
               <table class="allocation-table">
                 <tbody>
@@ -56,24 +59,20 @@
                     <th>Secondary</th>
                   </tr>
                   <tr>
-                    <td>10 Hour - {{usedPositions.used_10}} of {{allocation.primary_10}}</td>
-                    <td>5 Hour - {{usedPositions.used_5_sec}} of {{allocation.secondary_5}}</td>
+                    {{ allocationCell(10, usedPositions.used_10, allocation.primary_10) }}
+                    {{ allocationCell(5, usedPositions.used_5_sec, allocation.secondary_5) }}
                   </tr>
                   <tr>
-                    <td>12 Hour - {{usedPositions.used_12}} of {{allocation.primary_12}}</td>
-                    <td>10 Hour - {{usedPositions.used_10_sec}} of {{allocation.secondary_10}}</td>
+                    {{ allocationCell(12, usedPositions.used_12, allocation.primary_12) }}
+                    {{ allocationCell(10, usedPositions.used_10_sec, allocation.secondary_10) }}
                   </tr>
                   <tr>
-                    <td>15 Hour - {{usedPositions.used_15}} of {{allocation.primary_15}}</td>
+                    {{ allocationCell(15, usedPositions.used_15, allocation.primary_15) }}
                     <td></td>
                   </tr>
                   <tr>
-                    <td>20 Hour - {{usedPositions.used_20}} of {{allocation.primary_20}}</td>
+                    {{ allocationCell(20, usedPositions.used_20, allocation.primary_20) }}
                     <td></td>
-                  </tr>
-                  <tr class="break-row">
-                    <td><h4>Break Hours <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="the values do not reflect actual hours worked, but rather contracts fulfilled."></i></h4></td>
-                    <td><h4>{{break_hours}} of {{allocation.breakHours or 0}} Hours</h4></td>
                   </tr>
                 </tbody>
               </table>
