@@ -15,7 +15,7 @@
 
 {% block app_content %}
 <h2 class="text-center">{% if department %} Manage {{department.DEPT_NAME}} Members {% else %} Manage Members {% endif %} </h2>
-<h3 class="text-center"> Academic Year: {{currentYear[0]}}–{{currentYear[1]}}</h3>
+<h3 class="text-center"> Academic Year: {{ g.currentYear[0] }}–{{ g.currentYear[1] }}</h3>
 {%if g.currentUser.supervisor.isBanned %}
 
 <br></br>

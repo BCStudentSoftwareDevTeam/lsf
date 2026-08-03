@@ -8,7 +8,7 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 
 
-def getStudentCounts(dept):
+def getActivePendingPositionCounts(dept):
     """Active/pending primary/secondary position counts for the current academic year."""
     today = date.today()
 

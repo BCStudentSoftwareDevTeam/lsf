@@ -4,7 +4,7 @@ from peewee import DoesNotExist
 from app.controllers.main_routes import main_bp
 from app.logic.getPositions import getPositions
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
-from app.logic.manageMembers import attachPositionCounts, getStudentCounts
+from app.logic.manageMembers import attachPositionCounts,  getActivePendingPositionCounts  
 from app.logic.search import searchPerson
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -19,20 +19,14 @@ def manageMembers(org=None, account=None):
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
 
-    dept = Department.get_or_none(
-        Department.ORG == org,
-        Department.ACCOUNT == account
-    )
+    dept = Department.get_or_none( Department.ORG == org, Department.ACCOUNT == account)
 
     if not dept:
         abort(404)
 
     members = getSupervisorDepartments(dept)
 
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(
-        supervisor=currentUser.supervisor,
-        department=dept
-    )
+    supervisorDeptRecord = SupervisorDepartment.get_or_none( supervisor=currentUser.supervisor, department=dept )
 
     if not (
         currentUser.isLaborAdmin or
@@ -41,7 +35,7 @@ def manageMembers(org=None, account=None):
     ):
         return render_template('errors/403.html'), 403
 
-    counts = getStudentCounts(dept)
+    counts =  getActivePendingPositionCounts(dept)
     members = attachPositionCounts(members, counts)
 
     return render_template(
@@ -53,32 +47,25 @@ def manageMembers(org=None, account=None):
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
-    """Generates the Manage Positions page."""
     try:
-        dept = Department.get(
-            Department.ORG == org,
-            Department.ACCOUNT == account
-        )
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
         return render_template('errors/404.html'), 404
-
+    
     if not g.currentUser.isLaborAdmin:
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(
+        if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)
-        )
-
-        if not supervisorDeptRecord:
+        ).exists():
             return render_template('errors/403.html'), 403
 
     positions = getPositions(dept)
 
-    return render_template(
-        'main/managePositions.html',
-        department=dept,
-        department_name=dept.DEPT_NAME,
-        positions=positions
-    )
+    return render_template('main/managePositions.html',
+                           department=dept,
+                           department_name=dept.DEPT_NAME,
+                           positions=positions
+                           )
 
 
 @main_bp.route('/members/search/<query>', methods=['GET'])
@@ -218,10 +205,7 @@ def addUserToDept():
         if not supervisor:
             return jsonify(success=False, message="Supervisor not found."), 404
 
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(
-            supervisor=supervisor,
-            department=departmentID
-        )
+        supervisorDeptRecord = SupervisorDepartment.get_or_none( supervisor=supervisor, department=departmentID )
 
         if supervisorDeptRecord:
             return jsonify(
@@ -229,10 +213,7 @@ def addUserToDept():
                 message="Supervisor already exists in this department."
             ), 200
 
-        SupervisorDepartment.create(
-            supervisor=supervisor,
-            department=departmentID
-        )
+        SupervisorDepartment.create( supervisor=supervisor, department=departmentID)
 
         return jsonify(success=True, message="Supervisor added to department."), 200
 

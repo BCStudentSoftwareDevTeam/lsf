@@ -2,14 +2,11 @@ from datetime import date
 
 import pytest
 
-from app import app
+from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
 from app.logic.manageMembers import (
     attachPositionCounts,
-    getStudentCounts,
+    getActivePendingPositionCounts,
 )
-from app.logic.getSupervisors import buildSupervisorDisplay
-from app.logic.getSupervisors import getSupervisorDepartments
-
 from app.models import mainDB
 from app.models.department import Department
 from app.models.formHistory import FormHistory
@@ -19,6 +16,7 @@ from app.models.student import Student
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.term import Term
+
 
 @pytest.mark.integration
 def test_getSupervisorDepartments():
@@ -40,10 +38,7 @@ def test_getSupervisorDepartments():
             DEPT_NAME="Current Members Department"
         )
 
-        SupervisorDepartment.create(
-            supervisor=supervisor,
-            department=department
-        )
+        SupervisorDepartment.create(supervisor=supervisor, department=department)
 
         members = getSupervisorDepartments(department)
 
@@ -52,9 +47,10 @@ def test_getSupervisorDepartments():
         assert members[0].department.departmentID == department.departmentID
 
         transaction.rollback()
-        
+
+
 @pytest.mark.integration
-def test_buildSupervisorDisplay_returns_portal_and_search_fields():
+def test_buildSupervisorDisplay():
     with mainDB.atomic() as transaction:
         supervisor = Supervisor.create(
             ID="B99100001",
@@ -100,10 +96,7 @@ def test_attachPositionCounts():
             DEPT_NAME="Position Count Department"
         )
 
-        member = SupervisorDepartment.create(
-            supervisor=supervisor,
-            department=dept
-        )
+        member = SupervisorDepartment.create(supervisor=supervisor, department=dept)
 
         counts = {
             (dept.departmentID, supervisor.ID): {
@@ -132,17 +125,18 @@ def test_attachPositionCounts():
 
 
 @pytest.mark.integration
-@pytest.mark.integration
-def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_form():
+def test_getActivePendingPositionCounts():
     with mainDB.atomic() as transaction:
-        testFormIds = [991001, 991002, 991003, 991004, 991005]
+        testFormIds = [991001, 991002, 991003, 991004, 991005, 991006, 991007]
 
         FormHistory.delete().where(FormHistory.formID.in_(testFormIds)).execute()
         LaborStatusForm.delete().where(
             LaborStatusForm.laborStatusFormID.in_(testFormIds)
         ).execute()
+        LaborReleaseForm.delete().where(
+            LaborReleaseForm.laborReleaseFormID == 991005
+        ).execute()
 
-        # Given one department with one supervisor and one student
         dept = Department.create(
             DEPT_NAME="Student Count Department",
             ACCOUNT="69104",
@@ -169,7 +163,7 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
             STU_EMAIL="test.student@berea.edu"
         )
 
-        term = Term.get_or_create(
+        currentTerm = Term.get_or_create(
             termCode=202600,
             defaults={
                 "termName": "AY 2026-2027",
@@ -181,16 +175,29 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
             }
         )[0]
 
-        # And the student has active and pending primary/secondary positions
+        oldTerm = Term.get_or_create(
+            termCode=202500,
+            defaults={
+                "termName": "AY 2025-2026",
+                "termStart": "2025-08-01",
+                "termEnd": "2026-05-01",
+                "termState": 1,
+                "primaryCutOff": "2025-09-01",
+                "adjustmentCutOff": "2025-10-01"
+            }
+        )[0]
+
         testForms = [
-            (991001, "Active Primary", "Primary", True),
-            (991002, "Pending Primary", "Primary", None),
-            (991003, "Active Secondary", "Secondary", True),
-            (991004, "Pending Secondary", "Secondary", None),
-            (991005, "Released Primary", "Primary", True),
+            (991001, currentTerm, "Active Primary", "Primary", "Approved"),
+            (991002, currentTerm, "Pending Primary", "Primary", "Pending"),
+            (991003, currentTerm, "Active Secondary", "Secondary", "Approved"),
+            (991004, currentTerm, "Pending Secondary", "Secondary", "Pre-Student Approval"),
+            (991005, currentTerm, "Released Primary", "Primary", "Approved"),
+            (991006, currentTerm, "Denied Primary", "Primary", "Denied by Admin"),
+            (991007, oldTerm, "Old Year Primary", "Primary", "Approved"),
         ]
 
-        for formID, studentName, jobType, studentConfirmation in testForms:
+        for formID, term, studentName, jobType, formStatus in testForms:
             LaborStatusForm.create(
                 laborStatusFormID=formID,
                 termCode=term,
@@ -200,10 +207,18 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
                 department=dept,
                 jobType=jobType,
                 weeklyHours=10,
-                studentConfirmation=studentConfirmation
+                studentConfirmation=True
             )
 
-        # And one approved primary position has been released
+            FormHistory.create(
+                formHistoryID=formID,
+                formID=formID,
+                historyType="Labor Status Form",
+                createdBy=1,
+                createdDate=date.today(),
+                status=formStatus
+            )
+
         releaseForm = LaborReleaseForm.create(
             laborReleaseFormID=991005,
             conditionAtRelease="satisfactory",
@@ -212,7 +227,7 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
         )
 
         FormHistory.create(
-            formHistoryID=991005,
+            formHistoryID=991105,
             formID=991005,
             historyType="Labor Release Form",
             releaseForm=releaseForm,
@@ -221,11 +236,9 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
             status="Approved"
         )
 
-        # When getStudentCounts runs
-        counts = getStudentCounts(dept)
+        counts = getActivePendingPositionCounts(dept)
         row = counts[(dept.departmentID, supervisor.ID)]
 
-        # Then it counts each active/pending position type and ignores the released form
         assert row["active_primary_positions"] == 1
         assert row["pending_primary_positions"] == 1
         assert row["active_secondary_positions"] == 1

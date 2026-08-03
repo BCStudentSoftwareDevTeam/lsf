@@ -1,4 +1,3 @@
-from datetime import date
 from flask import render_template
 from flask import Blueprint
 from app.login_manager import require_login
