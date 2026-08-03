@@ -137,10 +137,8 @@ function updateAllocationWarnings(allocationWarnings) {
     }
     var html = '<div class="alert ' + boxClass + '" role="alert">' +
       '<strong>' + title + '</strong><br>' +
-      '<span style="' + positionsStyle + '">Total Positions (all bands): ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
-      ' allocated (' + w.positionsRemaining + ' remaining)</span>' + bandDetail + '<br>' +
-      '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
-      ' allocated (' + w.breakHoursRemaining + ' remaining)</span>' +
+      '<span style="' + positionsStyle + '">Total Positions (all bands): ' + w.positionsRemaining + ' remaining</span>' + bandDetail + '<br>' +
+      '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursRemaining + ' remaining</span>' +
       '</div>';
     $('#allocationWarnings').append(html);
   }
