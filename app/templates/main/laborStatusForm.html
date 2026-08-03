@@ -94,29 +94,6 @@
         </select>
 
   </div>
-  <div class="col-md-12" id="allocationSummaryTable" hidden>
-    <table class="table table-bordered table-condensed" style="max-width: 500px;">
-      <thead>
-        <tr>
-          <th>Department Allocation Status</th>
-          <th>Allocated</th>
-          <th>Remaining</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Total Positions (all bands)</td>
-          <td id="allocationSummaryPositionsAllocated"></td>
-          <td id="allocationSummaryPositionsRemaining"></td>
-        </tr>
-        <tr>
-          <td>Break Hours</td>
-          <td id="allocationSummaryBreakHoursAllocated"></td>
-          <td id="allocationSummaryBreakHoursRemaining"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
   <div class="form-group {% if forms %} has-error {% endif %}  ">
     <!-- selectpicker for term  -->
       <label for="selectedTerm" aria-describedby="termInfo"><span class="tooltip-right" data-tooltip="Required">Term <span class="required-mark">*</span> </span>
@@ -166,6 +143,16 @@
         </div>
       </div>​
     </div>
+  <div id="plus" class= "col-md-12">
+    <button type="button"
+            class="btn btn-primary disable"
+            name = "addStudent"
+            id="addMoreStudent"
+            value = "formSubmission"
+            onclick="checkIfFreshman();">Add Student
+    </button>
+   <strong>*Want to add multiple students for this supervisor?</strong>
+  </div>
 </div>
 
 <!-- Everything on the right  -->
@@ -233,6 +220,29 @@
           </select>​
           <small id="allocation-remaining-text" class="text-muted" hidden></small>
     </div>
+    <div id="allocationSummaryTable">
+      <table class="table table-bordered table-condensed" style="max-width: 500px;">
+        <thead>
+          <tr>
+            <th>Department Allocation Status</th>
+            <th>Allocated</th>
+            <th>Contracted</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total Positions (all bands)</td>
+            <td id="allocationSummaryPositionsAllocated"></td>
+            <td id="allocationSummaryPositionsContracted"></td>
+          </tr>
+          <tr>
+            <td>Break Hours</td>
+            <td id="allocationSummaryBreakHoursAllocated"></td>
+            <td id="allocationSummaryBreakHoursContracted"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div id="contractHours" class= "form-group ">
     <!-- Contract hours for breaks -->
        <label for="selectedContractHours"><span class="tooltip-right" data-tooltip="Required">Total Contract Hours<span class="required-mark">*</span></span></label>
@@ -250,18 +260,7 @@
 <div class="col-md-12 alert alert-warning" role="alert" id="allocation-warning" hidden>
   <span id="allocation-warning-text"></span>
 </div>
-<br>
-<div id="plus" class= "col-md-12">
-  <button type="button"
-          class="btn btn-primary disable"
-          name = "addStudent"
-          id="addMoreStudent"
-          value = "formSubmission"
-          onclick="checkIfFreshman();">Add Student
-  </button>
- <strong>*Want to add multiple students for this supervisor? Add them now!</strong>
-</div>
-  <br />
+<br />
 
     <table class="table table-striped" id="mytable">
       <thead>

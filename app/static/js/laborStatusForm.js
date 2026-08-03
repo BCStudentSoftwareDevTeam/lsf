@@ -387,13 +387,20 @@ function checkAllocation() {
 // on a server round trip for every add/remove.
 var allocationSummaryState = null;
 
+function clearAllocationSummary() {
+  allocationSummaryState = null;
+  $("#allocationSummaryPositionsAllocated").text("");
+  $("#allocationSummaryPositionsContracted").text("");
+  $("#allocationSummaryBreakHoursAllocated").text("");
+  $("#allocationSummaryBreakHoursContracted").text("");
+}
+
 function loadAllocationSummary() {
   var departmentSelect = $("#selectedDepartment");
   var departmentOrg = departmentSelect.val();
   var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
 
-  allocationSummaryState = null;
-  $("#allocationSummaryTable").hide();
+  clearAllocationSummary();
 
   if (!departmentOrg) {
     return;
@@ -420,13 +427,12 @@ function loadAllocationSummary() {
       // request returned) aren't reflected in the server totals yet, since they haven't
       // been submitted. Fold them in so the summary matches what's already on screen.
       for (var i = 0; i < globalArrayOfStudents.length; i++) {
-        bumpAllocationSummary(globalArrayOfStudents[i], 1);
+        applyAllocationDelta(globalArrayOfStudents[i], 1);
       }
       renderAllocationSummary();
-      $("#allocationSummaryTable").show();
     },
     error: function () {
-      // Informational only - if the check fails, just leave the summary table hidden.
+      // Informational only - if the check fails, just leave the summary cells blank.
     }
   });
 }
@@ -437,21 +443,56 @@ function renderAllocationSummary() {
   }
   var s = allocationSummaryState;
   $("#allocationSummaryPositionsAllocated").text(s.positionsAllocated);
-  $("#allocationSummaryPositionsRemaining").text(s.positionsAllocated - s.positionsUsed);
+  $("#allocationSummaryPositionsContracted").text(s.positionsUsed);
   $("#allocationSummaryBreakHoursAllocated").text(s.breakHoursAllocated);
-  $("#allocationSummaryBreakHoursRemaining").text(s.breakHoursAllocated - s.breakHoursUsed);
+  $("#allocationSummaryBreakHoursContracted").text(s.breakHoursUsed);
 }
 
-// delta is +1 when a student is added to the table, -1 when a row is removed.
+// Mutates the running totals only, without touching the DOM. Used both by the live
+// add/remove flow below and to silently fold in students already staged in the table
+// (e.g. restored from a cookie) when the baseline first loads. Returns the break-hours
+// delta actually applied, so callers can decide whether to flash that number too.
+function applyAllocationDelta(studentDict, delta) {
+  if (!allocationSummaryState || !studentDict) {
+    return 0;
+  }
+  allocationSummaryState.positionsUsed += delta;
+  var breakHoursDelta = 0;
+  if (studentDict.isTermBreak) {
+    breakHoursDelta = delta * (parseInt(studentDict.stuContractHours, 10) || 0);
+    allocationSummaryState.breakHoursUsed += breakHoursDelta;
+  }
+  return breakHoursDelta;
+}
+
+var allocationFlashTimeoutId = null;
+
+// delta is +1 when a student is added to the table, -1 when a row is removed. On an add,
+// flashes "<count before this click> +1" immediately so the supervisor sees the click
+// register right away, then settles to the plain running total a moment later - ready to
+// show "<new count> +1" on the next add.
 function bumpAllocationSummary(studentDict, delta) {
   if (!allocationSummaryState || !studentDict) {
     return;
   }
-  allocationSummaryState.positionsUsed += delta;
-  if (studentDict.isTermBreak) {
-    allocationSummaryState.breakHoursUsed += delta * (parseInt(studentDict.stuContractHours, 10) || 0);
+  var previousPositionsUsed = allocationSummaryState.positionsUsed;
+  var previousBreakHoursUsed = allocationSummaryState.breakHoursUsed;
+  var breakHoursDelta = applyAllocationDelta(studentDict, delta);
+
+  if (allocationFlashTimeoutId) {
+    clearTimeout(allocationFlashTimeoutId);
+    allocationFlashTimeoutId = null;
   }
-  renderAllocationSummary();
+
+  if (delta > 0) {
+    $("#allocationSummaryPositionsContracted").text(previousPositionsUsed + " +" + delta);
+    if (breakHoursDelta > 0) {
+      $("#allocationSummaryBreakHoursContracted").text(previousBreakHoursUsed + " +" + breakHoursDelta);
+    }
+    allocationFlashTimeoutId = setTimeout(renderAllocationSummary, 1500);
+  } else {
+    renderAllocationSummary();
+  }
 }
 
 // TABLE LABELS

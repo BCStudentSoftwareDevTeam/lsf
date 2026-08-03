@@ -26,7 +26,7 @@ min-height: 310px;
 .floatright {
 float: right;
 width: 47%;
-height: 310px;
+min-height: 310px;
 }
 
 #mytable {
@@ -68,7 +68,7 @@ selectpicker, label {
 }
 
 #plus {
-  text-align: center;
+  text-align: left;
   padding-bottom: 30px;
 }
 
