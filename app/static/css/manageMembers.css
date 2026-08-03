@@ -1,27 +1,60 @@
-.centered-header {
-  text-align: center !important;
+#titleBlock {
+  margin-bottom: 15px;
 }
 
-.centered-cell {
+.manage-members-page {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.table-responsive {
+  border: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#manageMembers_wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#manageMembers {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed;
+}
+
+#manageMembers th,
+#manageMembers td {
   vertical-align: middle !important;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-#add-member {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  z-index: 100;
-  gap: 0;
-  height: 20px;
+#manageMembers th:nth-child(1),
+#manageMembers td:nth-child(1) {
+  width: 16%;
 }
 
-@media (min-width: 767.5px) {
-  #add-member {
-    justify-content: flex-end;
-    position: relative;
-    top: 24px;
-    margin-bottom: 0;
-  }
+#manageMembers th:nth-child(2),
+#manageMembers td:nth-child(2) {
+  width: 28%;
+}
+
+#manageMembers th:nth-child(3),
+#manageMembers td:nth-child(3) {
+  width: 18%;
+}
+
+#manageMembers th:nth-child(4),
+#manageMembers td:nth-child(4) {
+  width: 23%;
+}
+
+#manageMembers th:nth-child(5),
+#manageMembers td:nth-child(5) {
+  width: 15%;
 }
 
 .switch-form-group {
@@ -70,7 +103,11 @@
 }
 
 .switch input:checked + .slider::before {
-  transform: translateX(15px);
+  transform: translate .slider {
+  background-color: #337ab7 !important;
+}
+
+.switch input:checked + .sliderX(15px);
 }
 
 .slider.round {
@@ -143,8 +180,8 @@ a.hover-indicator:active {
 
 .position-counts {
   display: inline-grid;
-  grid-template-columns: max-content max-content;
+  grid-template-columns: max-content 1fr;
   column-gap: 6px;
   row-gap: 2px;
-  white-space: nowrap;
+  white-space: normal;
 }

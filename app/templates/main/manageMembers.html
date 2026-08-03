@@ -24,112 +24,136 @@
 {%endif%}
 <br></br>
 
-<div id="add-member">
-    <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
-    <form id="titleBlock" action="" method="POST">
-        <div class="form-group" id='searchBoxContainer'>
-            <select id="search"
-                      class="form-control selectpicker"
-                      title="Add Members by B# or Name"
-                      data-width="258px"
-                      data-show-subtext="true"
-                      data-live-search="true"
-                      data-department-id="{{ department.departmentID if department else '' }}">
-            </select>
+<div class="container-fluid">
+    <div class="clearfix">
+        <div class="pull-right">
+            <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
+
+            <form id="titleBlock" class="form-inline" action="" method="POST">
+                <div class="form-group">
+                    <select id="search"
+                            class="form-control selectpicker"
+                            title="Add Members by B# or Name"
+                            data-width="258px"
+                            data-show-subtext="true"
+                            data-live-search="true"
+                            data-department-id="{{ department.departmentID if department else '' }}">
+                    </select>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
 
-<div class="tab-pane activecol-lg-12" align="center">
-    <table class="table table-striped table-bordered dataTable" id="manageMembers">
-        <thead class="tableHeaders">
-            <tr>
-                <th>Name</th>
-                <th class="no-sorting">Supervisees</th>
-                <th class="no-sorting centered-header">Assign Coordinator</th>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-condensed dataTable" id="manageMembers">
+            <thead class="tableHeaders">
+                <tr>
+                    <th>Name</th>
+                    <th class="no-sorting">Supervisees</th>
+                    <th class="no-sorting text-center">Assign Coordinator</th>
+                    <th class="no-sorting text-center">
+                        Supervisor Eligibility
+                        &nbsp;
+                        <span
+                            data-trigger="hover"
+                            data-toggle="popover"
+                            data-content="Ineligible Supervisors cannot have new supervisees"
+                            class="bi bi-info-circle">
+                        </span>
+                    </th>
+                    <th class="no-sorting text-center">Remove Member</th>
+                </tr>
+            </thead>
 
-                <th class="no-sorting centered-header">
-                    Supervisor Eligibility 
-                    &nbsp;
-                     <span  data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle "></span>
-                </th>
-                <th class="no-sorting centered-header">Remove Member</th>
-            </tr>
-        </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>
+                        <a aria-label="{{ member.supervisor.ID }}" class="hover-indicator">
+                            {{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}
+                        </a>
 
-        <tbody>
-            {% for member in members %}
-            <tr>
-                <td>
-                    <a aria-label="{{ member.supervisor.ID }}" class="hover-indicator"> {{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}</a>
-                    <a href="mailto:{{ member.supervisor.EMAIL  }}" data-toggle="tooltip" data-placement="bottom" title="{{ member.supervisor.EMAIL   }}"> <i class="bi bi-envelope-fill"></i> </a>
+                        <a href="mailto:{{ member.supervisor.EMAIL }}"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="{{ member.supervisor.EMAIL }}">
+                            <i class="bi bi-envelope-fill"></i>
+                        </a>
 
-                    <br>
-                    <span class="isbanned-badge" data-trigger= "hover" data-toggle="popover" data-content ="Ineligible Supervisors cannot have new supervisees " class="bi bi-info-circle " {% if not member.supervisor.isBanned %} style="visibility: hidden;" {% endif %}>Ineligible</span>
-                </td>
+                        <br>
 
-                <td class="centered-cell">
-                    {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
-                        None
-                    {% else %}
-                        <div class="position-counts">
-                            <span><b>Primary:</b></span>
-                            <span>{{ member.active_primary_positions }} active, {{ member.pending_primary_positions }} pending</span>
+                        <span
+                            class="isbanned-badge"
+                            data-trigger="hover"
+                            data-toggle="popover"
+                            data-content="Ineligible Supervisors cannot have new supervisees"
+                            {% if not member.supervisor.isBanned %}style="visibility: hidden;"{% endif %}>
+                            Ineligible
+                        </span>
+                    </td>
 
-                            <span><b>Secondary:</b></span>
-                            <span>{{ member.active_secondary_positions }} active, {{ member.pending_secondary_positions }} pending</span>
+                    <td>
+                        {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
+                            None
+                        {% else %}
+                            <div class="position-counts">
+                                <span><b>Primary:</b></span>
+                                <span>{{ member.active_primary_positions }} active, {{ member.pending_primary_positions }} pending</span>
+
+                                <span><b>Secondary:</b></span>
+                                <span>{{ member.active_secondary_positions }} active, {{ member.pending_secondary_positions }} pending</span>
+                            </div>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-center">
+                        <div class="form-group switch-form-group">
+                            <label class="switch table-switch">
+                                <input
+                                    class="assign-coordinator"
+                                    name="is_coordinator"
+                                    type="checkbox"
+                                    data-supervisor="{{ member.supervisor.ID }}"
+                                    data-department="{{ department.departmentID }}"
+                                    data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
+                                    aria-label="Toggle coordinator status"
+                                    {% if member.isCoordinator %}checked{% endif %}
+                                >
+                                <span class="slider round"></span>
+                            </label>
                         </div>
-                    {% endif %}
-                </td>
+                    </td>
 
-                <td class="text-center centered-cell">
-                    <div class="form-group switch-form-group">
-                        <label class="switch table-switch">
-                            <input
-                                class="assign-coordinator"
-                                name="is_coordinator"
-                                type="checkbox"
-                                data-supervisor="{{ member.supervisor.ID }}"
-                                data-department="{{ department.departmentID }}"
-                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
-                                aria-label="Toggle coordinator status"
-                                {% if member.isCoordinator %}checked{% endif %}
-                            >
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </td>
+                    <td class="text-center">
+                        <div class="form-group switch-form-group">
+                            <label class="switch table-switch">
+                                <input
+                                    class="member-status-toggle"
+                                    name="is_banned"
+                                    type="checkbox"
+                                    data-supervisor="{{ member.supervisor.ID }}"
+                                    data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
+                                    aria-label="Toggle supervisor eligibility"
+                                    {% if member.supervisor.isBanned %}checked{% endif %}
+                                >
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </td>
 
-                <td class="text-center centered-cell">
-                    <div class="form-group switch-form-group">
-                        <label class="switch table-switch">
-                            <input
-                                class="member-status-toggle"
-                                name="is_banned"
-                                type="checkbox"
-                                data-supervisor="{{ member.supervisor.ID }}"
-                                data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}"
-                                aria-label="Toggle supervisor eligibility"
-                                {% if member.supervisor.isBanned %}checked{% endif %}
-                            >
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </td>
-                <td class="text-center centered-cell remove-member"
-                    data-supervisor="{{ member.supervisor.ID }}"
-                    data-department="{{ department.departmentID }}"
-                    data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}">
-                    <button type="submit" class="btn btn-danger" align="center">
-                        <span class="bi bi-trash"></span>
-                    </button>
-                </td>
-                
-
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <td class="text-center remove-member"
+                        data-supervisor="{{ member.supervisor.ID }}"
+                        data-department="{{ department.departmentID }}"
+                        data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}">
+                        <button type="button" class="btn btn-danger btn-sm">
+                            <span class="bi bi-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}
