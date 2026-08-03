@@ -19,18 +19,20 @@
     </strong>
 </p>
 
-<div class="container">
+<form action="/admin/allocationReview/approve" method="POST" class="container">
     <p>
         <!-- Requester = Requesting Department -->
         <label for="requestingDepartment">Requester: </label> {{department.DEPT_NAME}} Department
+        <input type="hidden" name="requester" value="{{department.departmentID}}">
     </p>
 
     <p>
-        <label for="academicYear"">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        <label for="academicYear">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        
     </p>
 
     <p>
-        <label for="academicYear"">Justification: </label> {{requestedAlloc.justification}}
+        <label for="academicYear">Justification: </label> {{requestedAlloc.justification}}
     </p>
     
     <hr class="separationLine">
@@ -55,20 +57,26 @@
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_10}}" class="positionNumericSpinner">  
+                <input name="primary_10" type="number" min="0" step="1" value="{{requestedAlloc.primary_10}}" class="positionNumericSpinner">  
                 <small class="currentAndAllocated" data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_10}}; current: {{currentAlloc.primary_10}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_12}}" class="positionNumericSpinner">  
+                <input name="primary_12" type="number" min="0" step="1" value="{{requestedAlloc.primary_12}}" class="positionNumericSpinner">  
                 <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_12}}; current: {{currentAlloc.primary_12}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{requestedAlloc.primary_15}}" class="positionNumericSpinner">  
+                <input name="primary_15" type="number" min="0" step="1" value="{{requestedAlloc.primary_15}}" class="positionNumericSpinner">  
                 <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_15}}; current: {{currentAlloc.primary_15}})</small>  
+            </p>
+
+            <p>
+                20 hours:&nbsp;
+                <input name="primary_20" type="number" min="0" step="1" value="{{requestedAlloc.primary_20}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_20}}; current: {{currentAlloc.primary_20}})</small>  
             </p>
         </div>
         <div> 
@@ -80,13 +88,13 @@
 
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
-                <input type="number" min="0" step="1" value="{{requestedAlloc.secondary_5}}" class="positionNumericSpinner">  
+                <input name="secondary_5" type="number" min="0" step="1" value="{{requestedAlloc.secondary_5}}" class="positionNumericSpinner">  
                 <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_5}}; current: {{currentAlloc.secondary_5}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="{{requestedAlloc.secondary_10}}" class="positionNumericSpinner">  
+                <input name="secondary_10" type="number" min="0" step="1" value="{{requestedAlloc.secondary_10}}" class="positionNumericSpinner">  
                 <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_10}}; current: {{currentAlloc.secondary_10}})</small>  
             </p>
         </div>
@@ -108,11 +116,11 @@
         </div>
 
         <div class="section">
-            <button type="button" class="btn btn-danger"  onclick="">Cancel</button>
-            <button type="button" class="btn btn-success" onclick="">Approve</button>
+            <button type="button" class="btn btn-danger"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
+            <button type="submit" class="btn btn-success">Approve</button>
         </div>
 
     </div>
-</div>
+</form>
 
 {% endblock %}

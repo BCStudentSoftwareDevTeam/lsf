@@ -141,3 +141,38 @@ def allocationReview(org=None, account=None):
                             requestedAlloc = requestedAlloc,
                             currentAlloc = currentAlloc
                             )
+
+
+
+@admin.route('/admin/allocationReview/approve', methods=['POST'])
+def approveAllocationReview():
+    
+    # Retrieving the next year 
+    # DON'T DELETE THE UNDERSCORES
+    currentAY, _, nextAY = generateAdjacentYears()
+
+
+    currentAlloc = Allocation.get(
+                                Allocation.termCode     == currentAY.termCode, 
+                                Allocation.department   == request.form.get("requester", type=int, default=None), 
+                                Allocation.isFinal      == True
+                                )
+
+
+    newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
+                                        department      = request.form.get("requester", type=int, default=None), 
+                                        isFinal         = True,
+                                        primary_10      = request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
+                                        primary_12      = request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
+                                        primary_15      = request.form.get("primary_15", type=int, default=currentAlloc.primary_15),
+                                        primary_20      = request.form.get("primary_20", type=int, default=currentAlloc.primary_20),
+                                        secondary_5     = request.form.get("secondary_5", type=int, default=currentAlloc.secondary_5),
+                                        secondary_10    = request.form.get("secondary_10", type=int, default=currentAlloc.secondary_10),
+                                        breakHours      = request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
+    )
+
+
+    newApprovedAlloc.save()
+
+
+    return redirect("/admin/manageDepartments")
