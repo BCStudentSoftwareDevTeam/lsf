@@ -7,6 +7,8 @@
   src="{{url_for('static', filename='js/manageDepartments.js') }}?u={{lastStaticUpdate}}"></script>
 <script type="text/javascript"
   src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/annualPositionReview.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %} {% block app_content %}
 <div align="center">
   <a class="skipContent" href="#manageDep" tabindex="1">Click to Skip</a>
@@ -87,7 +89,7 @@
         Annual Allocation Review
       </button>
       {% include "snips/annualPositionReview.html" %}
-      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal" style="width: 200px; margin-bottom: 5px;">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal" data-academic-year="{{ chosenAY.termCode }}" style="width: 200px; margin-bottom: 5px;">
         Annual Position Review
       </button>
     </div>

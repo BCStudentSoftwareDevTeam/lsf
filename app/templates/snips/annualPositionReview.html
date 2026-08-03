@@ -5,7 +5,7 @@
             <div class="modal-header">
                 <h2 class="modal-title" id="annualPositionModalLabel" align="center"><strong>Annual Position Review</strong></h2>
                 <p align="center"><strong>Request a Position Review from All Departments</strong></p>
-                <button type="button" class="close" data-dismiss="modal" onclick="" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -13,9 +13,9 @@
                 <p align="left">Submitting this request will send an email to all departments. The email will ask them to review their positions for the current academic year.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="">Cancel</button>
-                <button type="button" class="btn btn-info" onclick="">Edit Email Template</button>
-                <button type="button" class="btn btn-primary" onclick="">Submit Request</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-info" href="/admin/emailTemplates?audience=Department&formType=Position%20Review&action=Annual%20Request">Edit Email Template</a>
+                <button type="button" class="btn btn-primary" onclick="submitAnnualPositionReview()">Submit Request</button>
             </div>
         </div>
     </div>
