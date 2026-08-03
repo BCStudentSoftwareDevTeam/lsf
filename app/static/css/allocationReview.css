@@ -1,10 +1,10 @@
-@media(min-width:970px) and (max-width:1240px) {
+@media(min-width:970px) and (max-width:1340px) {
   .container {
     width: 80%;
     }
 }
 
-@media(min-width:1240px) and (max-width:1800px) {
+@media(min-width:1340px) and (max-width:1800px) {
   .container {
     width: 55%;
     }
@@ -48,8 +48,12 @@
   margin-bottom: -10px;
 }
 
-.noBorders {
-  border: none !important;
+.currentAndAllocated {
+  transition-duration: 150ms;
+}
+
+.currentAndAllocated:hover {
+  color: grey;
 }
 
 
