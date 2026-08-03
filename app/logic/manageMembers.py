@@ -1,30 +1,24 @@
 from datetime import date
 
-from flask import abort
-from peewee import Case, DoesNotExist, fn
+from peewee import Case, fn
 
-from app.models.department import Department
 from app.models.formHistory import FormHistory
 from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.laborStatusForm import LaborStatusForm
-from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
-
-
+from app.models.term import Term
 
 
 def getStudentCounts(dept):
-    """Active/pending primary/secondary position counts, keyed by department and supervisor."""
+    """Active/pending primary/secondary position counts for the current academic year."""
     today = date.today()
 
-    validFormIds = (
-        FormHistory
-        .select(FormHistory.formID)
-        .where(
-            (FormHistory.historyType == "Labor Status Form") &
-            (FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]))
-        )
-    )
+    if today.month < 7:
+        startYear = today.year - 1
+    else:
+        startYear = today.year
+
+    academicYearName = f"AY {startYear}-{startYear + 1}"
+    pendingStatuses = ["Pending", "Pre-Student Approval"]
 
     releasedFormIds = (
         FormHistory
@@ -39,22 +33,22 @@ def getStudentCounts(dept):
 
     activePrimaries = (
         (LaborStatusForm.jobType == "Primary") &
-        (LaborStatusForm.studentConfirmation == True)
+        (FormHistory.status == "Approved")
     )
 
     pendingPrimaries = (
         (LaborStatusForm.jobType == "Primary") &
-        (LaborStatusForm.studentConfirmation.is_null(True))
+        (FormHistory.status.in_(pendingStatuses))
     )
 
     activeSecondaries = (
         (LaborStatusForm.jobType == "Secondary") &
-        (LaborStatusForm.studentConfirmation == True)
+        (FormHistory.status == "Approved")
     )
 
     pendingSecondaries = (
         (LaborStatusForm.jobType == "Secondary") &
-        (LaborStatusForm.studentConfirmation.is_null(True))
+        (FormHistory.status.in_(pendingStatuses))
     )
 
     rows = list(
@@ -67,9 +61,14 @@ def getStudentCounts(dept):
             fn.SUM(Case(None, ((activeSecondaries, 1),), 0)).alias("active_secondary_positions"),
             fn.SUM(Case(None, ((pendingSecondaries, 1),), 0)).alias("pending_secondary_positions"),
         )
+        .join(Term, on=(LaborStatusForm.termCode == Term.termCode))
+        .switch(LaborStatusForm)
+        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
         .where(
             (LaborStatusForm.department == dept) &
-            (LaborStatusForm.laborStatusFormID.in_(validFormIds)) &
+            (Term.termName == academicYearName) &
+            (FormHistory.historyType == "Labor Status Form") &
+            (FormHistory.status.in_(["Approved"] + pendingStatuses)) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
         )
         .group_by(
@@ -83,7 +82,6 @@ def getStudentCounts(dept):
         (row["department"], row["supervisor"]): row
         for row in rows
     }
-
 
 def attachPositionCounts(members, counts):
     """Attach position counts to each supervisor-department row."""

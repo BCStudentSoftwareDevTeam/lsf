@@ -170,14 +170,14 @@ def test_getStudentCounts_counts_active_pending_positions_and_ignores_released_f
         )
 
         term = Term.get_or_create(
-            termCode=209900,
+            termCode=202600,
             defaults={
-                "termName": "AY 2099-2100",
-                "termStart": "2099-08-01",
-                "termEnd": "2100-05-01",
+                "termName": "AY 2026-2027",
+                "termStart": "2026-08-01",
+                "termEnd": "2027-05-01",
                 "termState": 1,
-                "primaryCutOff": "2099-09-01",
-                "adjustmentCutOff": "2099-10-01"
+                "primaryCutOff": "2026-09-01",
+                "adjustmentCutOff": "2026-10-01"
             }
         )[0]
 
