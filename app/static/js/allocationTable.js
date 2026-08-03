@@ -5,7 +5,8 @@ $(document).ready( function(){
         info: false,
         lengthChange: false,
         searching: false,
-        paging: false
+        paging: false,
+        "order": []
     });
 
     springTermTable = $('#springTermTable');
@@ -14,7 +15,8 @@ $(document).ready( function(){
         info: false,
         lengthChange: false,
         searching: false,
-        paging: false
+        paging: false,
+        "order": []
     });
     breakTable = $('#breakTable');
     breakTable.DataTable({
@@ -22,6 +24,7 @@ $(document).ready( function(){
         info: false,
         lengthChange: false,
         searching: false,
-        paging: false
+        paging: false,
+        "order": []
     });
 });

@@ -1,6 +1,7 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
+from datetime import datetime, date
 import operator
 
 from app.models.department import Department
@@ -23,6 +24,8 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
+from app.logic.allocationManager import *
+
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -91,8 +94,21 @@ def allocationTable(org=None, account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    currentTerm = Term.select().where(Term.termCode == 202500).get() #FIXME
+    if currentUser.isLaborAdmin:
+        pass
+    else:
+        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
+    currentDate = date.today()
+    print(f"current datae \n\n\n\n\n\n\n{str(currentDate)[:4]} \n\n\n")
+    currentAY = currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "00")).get()
+
+    if currentDate.month >= 1 and currentDate.month <= 6:
+        pass
+        currentTerm = Term.select().where(Term.termCode == int(str(2025)[:4] + "12")).get() 
+    else:
+        pass
+        currentTerm = Term.select().where(Term.termCode == int(str(2025)[:4] + "11")).get()
     allocationDict = {"primary_10": 1,
                     "primary_12": 2,
                     "primary_15": 3,
@@ -103,12 +119,40 @@ def allocationTable(org=None, account=None):
                     "totalPrimaries": 10,
                     "totalSecondaries": 11,
                     "totalAllocations": 21}
+    fallContracts = {
+        "used_10": 4,
+        "used_12": 4,
+        "used_15": 4,
+        "used_20": 4,
+        "used_5_sec": 4,
+        "used_10_sec": 4,
+        "used_total": 0,
+        "break_hours": "3"
+        }
+    springContracts = {
+        "used_10": 4,
+        "used_12": 4,
+        "used_15": 4,
+        "used_20": 4,
+        "used_5_sec": 4,
+        "used_10_sec": 4,
+        "used_total": 0,
+        "break_hours": "3"
+        }
+    breakContracts = {
+        "coolContract": getBreakContracts(202500, dept)
+    }
+    print(f"\n\n\n coolcontract {breakContracts}\n\n\n")
+    
     print("\n\n\n\n\n")
     print(allocationDict)
     return render_template('main/allocationTable.html',
                            department = dept,
-                           term = currentTerm,
-                           allocations = allocationDict)
+                           currentAY = currentAY,
+                           allocations = allocationDict,
+                           fallContracts = fallContracts,
+                           springContracts = springContracts)
+                           
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():

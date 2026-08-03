@@ -23,8 +23,7 @@
   
 <br>
 <div>
-  <h4>Current Term: {{term.termName}}</h4>
-  <h4>Total AY Positions: {{allocations['totalAllocations']}}</h4>
+  <h4>Current Term: {{currentAY.termName}}</h4>
 </div>  
  
 
@@ -36,7 +35,7 @@
       
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
           <h2 class="mb-0">
-            Fall Term ({{term.termName[3:7]}})
+            Fall Term ({{currentAY.termName[3:7]}})
           </h2>
         </button>
     </div>
@@ -52,26 +51,26 @@
           <tbody>
               <tr>
                 <td style="text-align: center">Total Primaries</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{fallContracts["used_total"]}}</td>
                 <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
               </tr>
                 <tr>
                 <td style="text-align: center">10 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{fallContracts["used_10"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_10"]}}</td>
               </tr>
                 <tr>
                 <td style="text-align: center">12 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{fallContracts["used_12"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_12"]}}</td>
               </tr>
                 <tr>
                 <td style="text-align: center">15 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{fallContracts["used_15"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_15"]}}</td>
                   <tr>
                 <td style="text-align: center">20 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{fallContracts["used_20"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_20"]}}</td>
               </tr>
         </tbody>
@@ -85,7 +84,7 @@
       
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
           <h2 class="mb-0">
-            Spring Term ({{term.termName[8:]}})
+            Spring Term ({{currentAY.termName[8:]}})
           </h2>
         </button>
     </div>
@@ -101,26 +100,26 @@
           <tbody>
               <tr>
                 <td style="text-align: center">Total Primaries</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{springContracts["used_total"]}}</td>
                 <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
               </tr>
                 <tr>
                 <td style="text-align: center">10 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{springContracts["used_10"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_10"]}}</td>
               </tr>
                 <tr>
                 <td style="text-align: center">12 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">{{springContracts["used_12"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_12"]}}</td>
               </tr>
                 <tr>
-                <td style="text-align: center">15 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">15 Hour</td> 
+                <td style="text-align: center">{{springContracts["used_15"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_15"]}}</td>
                   <tr>
-                <td style="text-align: center">20 Hour</td>
-                <td style="text-align: center">not implemented</td>
+                <td style="text-align: center">20 Hour</td> 
+                <td style="text-align: center">{{springContracts["used_20"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_20"]}}</td>
               </tr>
         </tbody>
@@ -134,7 +133,7 @@
       
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           <h2 class="mb-0">
-            Break Allocations ({{term.termName[3:]}})
+            Break Allocations ({{currentAY.termName[3:]}})
           </h2>
         </button>
     </div>
