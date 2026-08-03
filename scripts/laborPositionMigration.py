@@ -1,52 +1,103 @@
 from io import BytesIO
 import mammoth
 from boxsdk import OAuth2, Client
+from peewee import DoesNotExist
+from app.models.positionHistory import PositionHistory
 
 auth = OAuth2(
-    client_id="YOUR_CLIENT_ID",
-    client_secret="YOUR_CLIENT_SECRET",
-    access_token="YOUR_ACCESS_TOKEN",
+    client_id="",
+    client_secret="",
+    access_token="",
 )
 
 client = Client(auth)
+folder_id = ""
 
-folder_id = "YOUR_FOLDER_ID"
 
 def getBoxFolder(folderID):
+    """
+    Get a Box folder using its folder ID.
+    """
     return client.folder(folderID).get()
 
 
 def getBoxFiles(folder):
-    return folder.get_items()
+    """
+    Return the items contained directly inside a Box folder.
+    """
+    return folder.get_items(limit=1000)
 
 
-def parseDocument(box_file):
-    memory_file = BytesIO()
+def parseDocument(boxFile):
+    """
+    Download a Word document into memory and extract its plain text.
+    """
+    memoryFile = BytesIO()
+    boxFile.download_to(memoryFile)
+    memoryFile.seek(0)
+    result = mammoth.convert_to_html(memoryFile)
+    if result.messages:
+        for message in result.messages:
+            print(f"Mammoth warning: {message}")
+    return result.value.strip()
 
-    box_file.download_to(memory_file)
-    memory_file.seek(0)
-    result = mammoth.extract_raw_text(memory_file)
-    return result.value
 
-def checkDocumentExist(documentName):
-    # TODO: Check if the document already exists in your database
-    return False
+def saveDocument(boxFile, documentText):
+    """
+    Save the Box document information and extracted text to the database.
+    """
+    return PositionHistory.create()
+
 
 def migrateDocument():
+    """
+    Download each DOCX file from the Box folder, extract its text,
+    and insert it into the database.
+    """
     folder = getBoxFolder(folder_id)
+
     for item in getBoxFiles(folder):
         if item.type != "file":
             continue
-        if not item.name.endswith(".docx"):
+
+        if not item.name.lower().endswith(".docx"):
             continue
+
         print(f"Processing: {item.name}")
-        if checkDocumentExist(item.name):
-            print("Already exists.")
-            continue
-        text = parseDocument(item)
-        print(text)
 
-        # TODO:
-        # Save text to database here
+        try:
+            # Get the complete Box file object, including metadata.
+            boxFile = client.file(item.id).get()
 
-migrateDocument()
+            documentText = parseDocument(boxFile)
+
+            if not documentText:
+                print(f"No text found in: {boxFile.name}")
+                continue
+
+            savedDocument = saveDocument(boxFile, documentText)
+
+            print(
+                f"Saved: {savedDocument.documentName} "
+                f"with database ID {savedDocument.id}"
+            )
+
+        except Exception as error:
+            print(f"Failed to migrate {item.name}: {error}")
+
+
+def testBoxConnection():
+    currentUser = client.user().get()
+    print(f"Connected to Box as: {currentUser.name}")
+
+    folder = client.folder(folder_id).get()
+    print(f"Folder found: {folder.name}")
+
+    print("Folder items:")
+    for item in client.folder(folder_id).get_items(limit=100):
+        print(f"- {item.name} ({item.type})")
+
+
+if __name__ == "__main__":
+    testBoxConnection()
+    migrateDocument()
