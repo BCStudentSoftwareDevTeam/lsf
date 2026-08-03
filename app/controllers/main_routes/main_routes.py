@@ -99,18 +99,15 @@ def allocationTable(org=None, account=None):
     else:
         departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-    currentDate = date.today()
-    print(f"current datae \n\n\n\n\n\n\n{str(currentDate)[:4]} \n\n\n")
-    currentAY = currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "00")).get()
+    currentDate = str(date.today())
 
-    # currentAY = currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "00")).get()
-
-    if currentDate.month >= 1 and currentDate.month <= 6:
-        pass
-        currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "12")).get() 
+    if currentDate.month <= 6:
+        currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "12").get()
+        currentAY = currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
     else:
-        pass
-        currentTerm = Term.select().where(Term.termCode == int(str(currentDate)[:4] + "11")).get()
+        currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "11").get()
+        currentAY = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
+
     allocationDict = {"primary_10": 1,
                     "primary_12": 2,
                     "primary_15": 3,
@@ -121,6 +118,7 @@ def allocationTable(org=None, account=None):
                     "totalPrimaries": 10,
                     "totalSecondaries": 11,
                     "totalAllocations": 21}
+    # fallContracts = getContractedAllocations(currentTerm, dept)
     fallContracts = {
         "used_10": 4,
         "used_12": 4,
@@ -142,11 +140,11 @@ def allocationTable(org=None, account=None):
         "break_hours": "3"
         }
     breakContracts = {
-        "thanksgiving":getBreakContracts(202201, dept),#FIXME
-        "winter": getBreakContracts(202202, dept),
-        "spring": getBreakContracts(202203, dept),
-        "fall":getBreakContracts(202204, dept),
-        "summer": getBreakContracts(202213, dept)
+        "thanksgiving":getBreakContracts(202401, dept),#FIXME
+        "winter": getBreakContracts(202402, dept),
+        "spring": getBreakContracts(202403, dept),
+        "fall":getBreakContracts(202404, dept),
+        "summer": getBreakContracts(202413, dept)
         }
      
     return render_template('main/allocationTable.html',
