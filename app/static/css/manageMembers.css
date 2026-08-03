@@ -57,10 +57,6 @@
   width: 15%;
 }
 
-.switch-form-group {
-  margin-bottom: 0;
-}
-
 .switch {
   position: relative;
   display: inline-block;
@@ -119,9 +115,8 @@
 }
 
 .table-switch {
-  top: 10px;
+  top: 0;
 }
-
 a.hover-indicator {
   text-decoration: none !important;
   position: relative;

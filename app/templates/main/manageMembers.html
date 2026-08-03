@@ -107,8 +107,7 @@
                     </td>
 
                     <td class="text-center">
-                        <div class="form-group switch-form-group">
-                            <label class="switch table-switch">
+                        <label class="switch table-switch">
                                 <input
                                     class="assign-coordinator"
                                     name="is_coordinator"
@@ -121,12 +120,10 @@
                                 >
                                 <span class="slider round"></span>
                             </label>
-                        </div>
                     </td>
 
                     <td class="text-center">
-                        <div class="form-group switch-form-group">
-                            <label class="switch table-switch">
+                        <label class="switch table-switch">
                                 <input
                                     class="member-status-toggle"
                                     name="is_banned"
@@ -138,14 +135,13 @@
                                 >
                                 <span class="slider round"></span>
                             </label>
-                        </div>
                     </td>
 
                     <td class="text-center remove-member"
                         data-supervisor="{{ member.supervisor.ID }}"
                         data-department="{{ department.departmentID }}"
                         data-member-name="{{ member.supervisor.legal_name }} {{ member.supervisor.LAST_NAME }}">
-                        <button type="button" class="btn btn-danger btn-sm">
+                        <button type="button" class="btn btn-danger btn-xs">
                             <span class="bi bi-trash"></span>
                         </button>
                     </td>
