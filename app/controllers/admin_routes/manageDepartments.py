@@ -120,5 +120,11 @@ def allocationReview(org=None, account=None):
     # DON'T DELETE THE UNDERSCORES
     _, _, nextAY = generateAdjacentYears()
     # The generateAdjacentYears() function returns a tuple of three elements, and we only need the third value
+    
+    testing = Allocation.get(Allocation.department == dept)
 
-    return render_template('admin/allocationReview.html', department = dept, nextAY = nextAY)
+    return render_template('admin/allocationReview.html',
+                            department = dept, 
+                            nextAY = nextAY,
+                            allocation = testing
+                            )

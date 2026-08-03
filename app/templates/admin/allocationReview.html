@@ -33,8 +33,8 @@
 
     <p>
         <label for="breakHours" id="breakHours">Number of Break Hours: </label>
-        <input type="number" name="breakHours" min="0" step="1" value="10" class="numericSpinner"> <!--Note that it's HARD_CODED-->
-        <small> (requested: 120)</small> <!--Note that it's HARD_CODED-->
+        <input type="number" name="breakHours" min="0" step="1" value="{{allocation.breakHours}}" class="numericSpinner"> 
+        <small> (requested: {{allocation.breakHours}})</small> 
     </p>
 
     <p>
@@ -51,20 +51,20 @@
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input type="number" min="0" step="1" value="{{allocation.primary_10}}" class="numericSpinner">  
+                <small>&nbsp;(requested: {{allocation.primary_10}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input type="number" min="0" step="1" value="{{allocation.primary_12}}" class="numericSpinner">  
+                <small>&nbsp;(requested: {{allocation.primary_12}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input type="number" min="0" step="1" value="{{allocation.primary_15}}" class="numericSpinner">  
+                <small>&nbsp;(requested: {{allocation.primary_15}})</small>  
             </p>
         </div>
         <div> 
@@ -76,14 +76,14 @@
 
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input type="number" min="0" step="1" value="{{allocation.secondary_5}}" class="numericSpinner">  
+                <small>&nbsp;(requested: {{allocation.secondary_5}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input type="number" min="0" step="1" value="{{allocation.secondary_10}}" class="numericSpinner">  
+                <small>&nbsp;(requested: {{allocation.secondary_10}})</small>  
             </p>
         </div>
     </div>
