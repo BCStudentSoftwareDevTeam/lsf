@@ -86,10 +86,6 @@ def departmentPortal(org=None,account=None):
                            positions = positionsList,
                            posURL = posURL)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/department-portal-base
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
     '''
