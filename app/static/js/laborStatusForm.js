@@ -393,6 +393,7 @@ function clearAllocationSummary() {
   $("#allocationSummaryPositionsContracted").text("");
   $("#allocationSummaryBreakHoursAllocated").text("");
   $("#allocationSummaryBreakHoursContracted").text("");
+  $("#allocation-warning").hide();
 }
 
 function loadAllocationSummary() {
@@ -430,6 +431,7 @@ function loadAllocationSummary() {
         applyAllocationDelta(globalArrayOfStudents[i], 1);
       }
       renderAllocationSummary();
+      checkLiveAllocationWarning();
     },
     error: function () {
       // Informational only - if the check fails, just leave the summary cells blank.
@@ -465,6 +467,35 @@ function applyAllocationDelta(studentDict, delta) {
   return breakHoursDelta;
 }
 
+// Warns as soon as the students staged in the table (not just what's already saved to the
+// database) would push the department over its allocation. checkAllocation() above only
+// ever sees committed/approved forms, so it never fires for a batch being built up right
+// now in this session - this covers that gap using the live running totals instead.
+function checkLiveAllocationWarning() {
+  if (!allocationSummaryState) {
+    return;
+  }
+  var s = allocationSummaryState;
+  var overPositions = s.positionsUsed > s.positionsAllocated;
+  var overBreakHours = s.breakHoursUsed > s.breakHoursAllocated;
+
+  if (!overPositions && !overBreakHours) {
+    $("#allocation-warning").hide();
+    return;
+  }
+
+  var messages = [];
+  if (overPositions) {
+    messages.push("Total Positions (" + s.positionsUsed + "/" + s.positionsAllocated + ")");
+  }
+  if (overBreakHours) {
+    messages.push("Break Hours (" + s.breakHoursUsed + "/" + s.breakHoursAllocated + ")");
+  }
+  $("#allocation-warning-text").html("The students added so far put this department over its allocation for " +
+    messages.join(" and ") + ". You may still continue, but please contact the Labor Office.");
+  $("#allocation-warning").show();
+}
+
 var allocationFlashTimeoutId = null;
 
 // delta is +1 when a student is added to the table, -1 when a row is removed. On an add,
@@ -493,6 +524,7 @@ function bumpAllocationSummary(studentDict, delta) {
   } else {
     renderAllocationSummary();
   }
+  checkLiveAllocationWarning();
 }
 
 // TABLE LABELS
