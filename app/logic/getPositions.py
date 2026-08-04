@@ -1,5 +1,6 @@
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
+from datetime import date
 
 def getActivePositions(dept):
     """
@@ -52,7 +53,32 @@ def getPositionDescriptionSections(position):
     positionDescriptionSections = list(PositionDescriptionSection.select()
                                        .where(PositionDescriptionSection.position == position)
                                        .order_by(PositionDescriptionSection.order.asc()))
-    
+
     return positionDescriptionSections
 
+def createPositionRevision(position, revisedBy, positionTitle, wls, sectionTitles, sectionContents):
+    """
+    Creates a new pending (Requested) revision of a position, copying forward its
+    department and position code, and replaces its description sections with the
+    given titles/contents. Returns the newly created PositionHistory row.
+    """
+    newPosition = PositionHistory.create(
+        positionTitle=positionTitle,
+        positionCode=position.positionCode,
+        department=position.department,
+        status="Requested",
+        wls=wls,
+        revisionDate=date.today(),
+        revisedBy=revisedBy
+    )
+
+    for order, (sectionTitle, sectionContent) in enumerate(zip(sectionTitles, sectionContents)):
+        PositionDescriptionSection.create(
+            position=newPosition,
+            sectionTitle=sectionTitle,
+            sectionContent=sectionContent,
+            order=order
+        )
+
+    return newPosition
 

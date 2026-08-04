@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from flask import g, render_template, request, send_file
+from flask import flash, g, redirect, render_template, request, send_file, url_for
 from peewee import DoesNotExist
 
 from app.controllers.main_routes import main_bp
 from app.logic.download import makePositionDescriptionPDF
-from app.logic.getPositions import getPosition, getPositions, getPositionDescriptionSections
+from app.logic.getPositions import createPositionRevision, getPosition, getPositions, getPositionDescriptionSections
 from app.models.department import Department
 from app.models.positionHistory import PositionHistory
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -65,6 +65,40 @@ def downloadPositionDescription(org, account, positionCode):
     filename = f'{position.positionCode}_position_description.pdf'
     return send_file(pdfBuffer, mimetype='application/pdf', as_attachment=True, download_name=filename)
 
+
+
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>/revise', methods=['GET', 'POST'])
+def revisePosition(org, account, positionCode):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    position = getPosition(dept, positionCode)
+
+    if not position:
+        return render_template('errors/404.html'), 404
+
+    if request.method == 'POST':
+        createPositionRevision(
+            position,
+            g.currentUser.fullName,
+            request.form.get('positionTitle'),
+            request.form.get('wls'),
+            request.form.getlist('sectionTitle[]'),
+            request.form.getlist('sectionContent[]')
+        )
+        flash('Position revision saved.', 'success')
+        return redirect(url_for('main.managePositions', org=org, account=account))
+
+    sections = getPositionDescriptionSections(position)
+
+    return render_template(
+        'main/revisepositionpage.html',
+        department=dept,
+        position=position,
+        sections=sections
+    )
 
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
