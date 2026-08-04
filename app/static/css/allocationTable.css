@@ -36,3 +36,13 @@
     justify-self:end;
     align-self: center;
 }
+.accordion-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease-in-out;
+}
+.btn.collapsed .accordion-arrow {
+  transform: rotate(-90deg);
+}
+.btn:not(.collapsed) .accordion-arrow {
+  transform: rotate(0deg);
+}
