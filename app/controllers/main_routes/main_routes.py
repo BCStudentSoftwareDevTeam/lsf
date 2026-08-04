@@ -116,12 +116,14 @@ def allocationTable(org=None, account=None):
     springContracts = getContractedAllocations(springTerm, dept)
 
     breakContracts = {
+        "total": 0,
         "thanksgiving":getBreakContracts(currentAY.termCode + 1, dept),
         "winter": getBreakContracts(currentAY.termCode + 2, dept),
         "spring": getBreakContracts(currentAY.termCode + 3, dept),
         "fall":getBreakContracts(currentAY.termCode + 4, dept),
         "summer": getBreakContracts(currentAY.termCode + 13, dept)
         }
+    breakContracts["total"] = sum(breakContracts.values())
      
     return render_template('main/allocationTable.html',
                            department = dept,
