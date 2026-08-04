@@ -127,6 +127,7 @@ a {
   left: 280px;
   right: 0px;
   margin-right: 280px;
+  width: calc(100vw - 300px);
 }
 
 

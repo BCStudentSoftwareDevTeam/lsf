@@ -31,7 +31,7 @@
             <dt class="col-sm-3">WLS Level:</dt>
             <dd class="col-sm-9">{{ position.wls }}</dd>
 
-            <dt class="col-sm-3">Status:</dt>
+            <dt class="col-sm-3"><div>Status:</div></dt>
             <dd class="col-sm-9">{{ position.status }}</dd>
 
             <dt class="col-sm-3">Last Revision Date:</dt>
@@ -42,16 +42,16 @@
           </dl>
         </div>
 
-        <h3 class="description-header">Description</h3>
+        <div class="description-header">Description</div>
         <section class="position-description">
           {%- if sections %}
             {%- for section in sections %}
-              <h4 class="section-title">{{ section.sectionTitle |safe }}</h4>
+              <div class="section-title">{{ section.sectionTitle |safe }}</div>
               <div class="description-content">{{ section.sectionContent |safe }}</div>
             {%- endfor %}
           {%- else %}
             <p class="text-muted">No description available.</p>
-          {%- endif %}
+          {%- endif %}side
         </section>
 
         <div class="row">
