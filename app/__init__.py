@@ -1,9 +1,9 @@
 import os
 from datetime import date
-from flask import Flask
-from flask_restful import Api
+from flask import Flask, g, request, session
 from flask_bootstrap import Bootstrap
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from flask_restful import Api
+from playhouse.shortcuts import dict_to_model, model_to_dict
 
 
 app = Flask(__name__)
@@ -60,12 +60,23 @@ from app.models.user import User
 from app.login_manager import require_login
 @app.before_request
 def load_user():
-    try: 
-        g.currentUser = dict_to_model(User, session['currentUser'])
+    requestUsername = getUsernameFromEnv(request.environ)
+    try:
+        cachedUser = session['currentUser']
+
+        if cachedUser.get('username') == requestUsername:
+            g.currentUser = dict_to_model(User, cachedUser)
+            return
+        
+        session.pop('currentUser', None)
+        session.pop('username', None)
+
     except Exception as e:
-        user = require_login()
-        session['currentUser'] = model_to_dict(user)
-        g.currentUser = user
+        pass
+
+    user = require_login()
+    session['currentUser'] = model_to_dict(user)
+    g.currentUser = user
 
 from app.models.term import Term
 from app.login_manager import getOpenTerm
