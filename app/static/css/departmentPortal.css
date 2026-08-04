@@ -47,8 +47,24 @@
     overflow-x: auto;
     margin: 10px 0;
 }
+.allocation-summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0 1rem;
+}
+.allocation-summary h4 {
+    margin: 10px 0;
+}
+.allocation-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2rem;
+}
 .allocation-table {
-    width: 100%;
+    /* wraps onto its own line when the card is too narrow, instead of shrinking */
+    flex: 1 1 180px;
     border-collapse: collapse;
     font-size: 1.2em;
 }
@@ -62,9 +78,6 @@
 .allocation-table th {
     font-weight: 700;
     padding-top: 10px;
-}
-.allocation-table .term-row h4 {
-    margin: 10px 0;
 }
 
 .bi-people-fill {  /* Bootstrap Icon for Members Card */
@@ -98,14 +111,14 @@
     }
 }
 
+/* Narrow card: stack Secondary below Primary, and the position count below the
+   term, rather than shrinking the text to keep them side by side. */
 @media (min-width: 1200px) and (max-width: 1450px), (max-width: 480px) {
-    .allocation-table {
-        font-size: 0.85em;
+    .allocation-summary {
+        flex-direction: column;
+        gap: 0;
     }
-    .allocation-table td {
-        padding: 2px 5px 2px 0;
-    }
-    .allocation-table .term-row h4 {
-        font-size: 0.9rem;
+    .allocation-columns .allocation-table {
+        flex-basis: 100%;
     }
 }

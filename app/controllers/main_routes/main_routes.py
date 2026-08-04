@@ -12,6 +12,7 @@ from app.models.formHistory import FormHistory
 from app.models.term import Term
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
+
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 
@@ -23,6 +24,7 @@ from app.logic.banner import Banner
 from app.logic.getAllocation import getDepartmentAllocationSummary
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
+
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -71,8 +73,8 @@ def departmentPortal(org=None,account=None):
     
     supervisors, laborCoordinators = getSupervisors(dept)
 
-    allocation_summary = getDepartmentAllocationSummary(dept)
-    recentTerm = allocation_summary["term"]
+    allocationSummary = getDepartmentAllocationSummary(dept)
+    recentTerm = allocationSummary["term"]
 
     if recentTerm:
         try:
@@ -82,24 +84,24 @@ def departmentPortal(org=None,account=None):
     else:
         allocation = None
 
-    positionsList, posURL = getActivePositions(dept)
+    positionsList, posURL = getActivePositions(dept) 
 
-    return render_template('main/departmentPortal.html',
+    return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
                            allocation = allocation,
-                           allocated = allocation_summary["allocated"],
-                           used = allocation_summary["used"],
+                           allocated = allocationSummary["allocated"],
+                           used = allocationSummary["used"],
                            term = recentTerm,
-                           currentSemester = allocation_summary["current_semester"],
-                           usedPositions = allocation_summary["used_positions"],
-                           break_hours = allocation_summary["break_hours"],
+                           currentSemester = allocationSummary["currentSemester"],
+                           usedPositions = allocationSummary["usedPositions"],
+                           breakHours = allocationSummary["breakHours"],
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,
                            positions = positionsList,
-                           posURL = posURL,
-                           )
+                           posURL = posURL)
+
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
     userDeptData = request.form
