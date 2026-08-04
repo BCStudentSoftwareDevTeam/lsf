@@ -29,7 +29,8 @@ class emailHandler():
         self.studentEmail = self.student.STU_EMAIL
         self.creatorEmail = self.formHistory.createdBy.email
         self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
-        self.advisorEmail = self.student.ADVISOR
+        self.advisorEmail =  self.student.ADVISOR
+        print ("self.advisorEmail: ", self.advisorEmail)
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
@@ -96,7 +97,8 @@ class emailHandler():
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
-
+            print("LOOKING AT MESSAGE")
+            print(message.html)
             # If we have set an override address
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
