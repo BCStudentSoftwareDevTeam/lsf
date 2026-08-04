@@ -7,21 +7,18 @@ from app.models.term import *
 from app.models.formHistory import FormHistory
 
 
-def getAllocation(termCode: int, dept: int):
-    academicYearCode = int(str(termCode)[:5] + "00")
+def getAllocation(termCode: int, dept: int, isFinal = True):
+    '''
+    This function returns a peewee object containing the selected allocation for given 
+    department and term. If you want the pending allocation, pass in False for isFinal.
+    '''
+    academicYearCode = int(str(termCode)[:4] + "00")
     allocationObject = Allocation.select().where(
         Allocation.termCode.in_([termCode,academicYearCode]),
         Allocation.department == dept, 
-        Allocation.isFinal == True).dicts().get()
-    return allocationObject # returns peewee object containing the current allocation for given department
+        Allocation.isFinal == isFinal).dicts().get()
+    return allocationObject 
 
-def getAllocationNonFinal(termCode: int, dept: int):
-    academicYearCode = int(str(termCode)[:5] + "00")
-    allocationObject = Allocation.select().where(
-        Allocation.termCode.in_([termCode,academicYearCode]),
-        Allocation.department == dept, 
-        Allocation.isFinal == False).dicts().get()
-    return allocationObject # returns peewee object containing the pending allocation for given department (I think?)
 
 def getTotalAllocations(termCode: int, dept: int):
     allocationObject = getAllocation(termCode, dept)
@@ -43,7 +40,7 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
     For example, countContracts('secondary', 5, 202511, 1) returns the number of secondary 
     5-hour positions in the CS department for the 2025 Fall term.
     '''
-    academicYearCode = int(str(termCode)[:5] + "00") 
+    academicYearCode = int(str(termCode)[:4] + "00") 
     lsfCountPositions = FormHistory.select(
                             ).join(LaborStatusForm
                             ).join(Department
@@ -62,9 +59,9 @@ def getContractedAllocations(termCode: int, dept: int):
     This function returns a dictionary with a breakdown of all types of contracts 
     for the given department and term in the form of a dictionary.
     '''
-    academicYearCode = int(str(termCode)[:5] + "00")
+    academicYearCode = int(str(termCode)[:4] + "00")
     allocationObject = getAllocation(termCode, dept)
-    break_allocation = FormHistory.select(
+    breakAllocation = FormHistory.select(
         LaborStatusForm.department,
         LaborStatusForm.termCode,
         fn.SUM(LaborStatusForm.contractHours).alias('total_hours')
@@ -84,7 +81,7 @@ def getContractedAllocations(termCode: int, dept: int):
     
     breakSum = {"total_hours": 0}
     if dept:
-        for row in break_allocation:
+        for row in breakAllocation:
             if row["department"] == dept:
                 breakSum = row
                 break
@@ -97,8 +94,9 @@ def getContractedAllocations(termCode: int, dept: int):
     "used_20": countContracts("Primary", "20", termCode, dept),
     "used_5_sec": countContracts("Secondary", "5", termCode, dept),
     "used_10_sec": countContracts("Secondary", "10", termCode, dept),
-    "used_total": 0,  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
+    "used_primaries": sum(list(usedPositions.values())[:4]),
+    "used_secondaries": sum(list(usedPositions.values())[4:6]),
+    "used_total": sum(list(usedPositions.values())[:6]),  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
     "break_hours": breakSum["total_hours"]  # all break hours contracted (but not necessarily worked)
     }
-    usedPositions["used_total"] = sum(list(usedPositions.values())[:7])
     return usedPositions
