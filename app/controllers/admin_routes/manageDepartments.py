@@ -167,7 +167,6 @@ def approveAllocationReview():
                                 )
 
 
-
     # getting the name of the user who approves the request
     supervisorID = require_login().supervisor
 
@@ -219,6 +218,13 @@ def managePositions(org, account):
     # Retrieving the next year 
     # DON'T DELETE THE UNDERSCORES
     currentAY, _, nextAY = generateAdjacentYears()
+
+
+    # checking if the allocation has already been approved
+    isApproved = bool(Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == True))
+    if isApproved: 
+        flash(f"The allocation for the {nextAY.termName} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
+        return redirect('/admin/manageDepartments/')
     
 
     # getting the current allocation
@@ -232,3 +238,50 @@ def managePositions(org, account):
                             )
 
 
+@admin.route('/allocationRequest/submit', methods=['POST'])
+def submitAllocationRequest():
+    
+    # Retrieving the next year 
+    # DON'T DELETE THE UNDERSCORES
+    currentAY, _, nextAY = generateAdjacentYears()
+
+
+    currentAlloc = Allocation.get(
+                                Allocation.termCode     == currentAY.termCode, 
+                                Allocation.department   == request.form.get("submitter", type=int, default=None), 
+                                Allocation.isFinal      == True
+                                )                 
+
+
+    # getting the name of the user who approves the request
+    supervisorID = require_login().supervisor
+
+    updatedFields = {
+        "termCode": nextAY.termCode, 
+        "department": request.form.get("submitter", type=int, default=None), 
+        "isFinal": False,
+        "justification": request.form.get("justification", default=""),
+        "primary_10": request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
+        "primary_12": request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
+        "primary_15": request.form.get("primary_15", type=int, default=currentAlloc.primary_15),
+        "primary_20": request.form.get("primary_20", type=int, default=currentAlloc.primary_20),
+        "secondary_5": request.form.get("secondary_5", type=int, default=currentAlloc.secondary_5),
+        "secondary_10": request.form.get("secondary_10", type=int, default=currentAlloc.secondary_10),
+        "breakHours": request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
+    }
+
+
+    # saving the newly approved allocation
+    requestedAlloc, wasCreated = Allocation.get_or_create(termCode=nextAY.termCode, 
+                                                department=request.form.get("submitter", type=int, default=None), 
+                                                isFinal=False, 
+                                                defaults={**updatedFields})
+    
+    if not wasCreated:
+        for key, value in updatedFields.items():
+            setattr(requestedAlloc, key, value)
+    
+    requestedAlloc.save()
+
+
+    return redirect("/admin/manageDepartments")

@@ -19,9 +19,8 @@
     </strong>
 </p>
 
-<form action="/admin/allocationReview/approve" method="POST" class="container">
+<form action="/allocationRequest/submit" method="POST" class="container">
     <p>
-        <!-- Requester = Requesting Department -->
         <label for="requestingDepartment">Submitter: </label> {{department.DEPT_NAME}} Department
         <input type="hidden" name="submitter" value="{{department.departmentID}}">
     </p>
@@ -97,10 +96,10 @@
     </div>
     
     <p>
-        <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
+        <label for="justification" id="allocationJustification">Justification / Notes: </label>
     </p>
 
-    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea> 
+    <textarea name="justification" class="unresizeable" rows="3" style="width: 100%; margin-bottom: 40px;"></textarea> 
 
     <div class="allocationReviewSection">
 
