@@ -1,0 +1,13 @@
+    {% extends "base.html" %} {% block styles %} {{super()}}
+<link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/manageDepartments.css?u={{lastStaticUpdate}}" />
+{% endblock %} {% block scripts %} {{super()}}
+<script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/manageDepartments.js') }}?u={{lastStaticUpdate}}"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %} {% block app_content %}
+
+
+{% endblock %}

@@ -122,3 +122,13 @@ def allocationReview(org=None, account=None):
     # The generateAdjacentYears() function returns a tuple of three elements, and we only need the third value
 
     return render_template('admin/allocationReview.html', department = dept, nextAY = nextAY)
+
+
+@admin.route('/admin/manageDepartments/<org>/<account>/positionreview', methods=['GET'])
+def positionreview(org=None, account=None):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        abort(404)
+    
+    return render_template('admin/positionreview.html')
