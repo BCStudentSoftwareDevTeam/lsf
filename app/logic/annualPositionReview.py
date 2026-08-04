@@ -69,5 +69,7 @@ def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
             )
 
         sentCount += 1
-
+        print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
+        print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, term.termName))
     return {"sentCount": sentCount, "departmentCount": departments.count()}
+
