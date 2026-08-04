@@ -26,11 +26,8 @@ def getActivePendingPositionCounts(dept, currentYear):
     )
 
     activePrimaries = ((LaborStatusForm.jobType == "Primary") & (FormHistory.status == "Approved"))
-
     pendingPrimaries = ((LaborStatusForm.jobType == "Primary") & (FormHistory.status.in_(pendingStatuses)))
-
     activeSecondaries = ((LaborStatusForm.jobType == "Secondary") & (FormHistory.status == "Approved"))
-
     pendingSecondaries = ((LaborStatusForm.jobType == "Secondary") & (FormHistory.status.in_(pendingStatuses)))
 
     rows = list(
