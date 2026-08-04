@@ -2,21 +2,57 @@ import io
 
 import pytest
 
-from app.logic.download import makePositionDescriptionPDF
+from app.logic.download import makePositionDescriptionPDF, removeHTML
 from app.models import mainDB
 from app.models.department import Department
-from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
+from app.models.positionHistory import PositionHistory
+
 
 @pytest.mark.integration
 def test_makePositionDescriptionPDF():
     """
-    Tests that makePositionDescriptionPDF generates valid PDF buffers
-    for positions with and without description sections.
+    Tests both HTML stripping and PDF generation using the makePositionDescriptionPDF() function.
     """
     with mainDB.atomic() as transaction:
+        headingResult = removeHTML(
+            "<h3>Learning Opportunities</h3>"
+        )
 
-        # Create the department used by all positions in the test.
+        # Confirm that the heading text remains.
+        assert "Learning Opportunities" in headingResult
+
+        # Confirm that the HTML tags were removed.
+        assert "<h3>" not in headingResult
+        assert "</h3>" not in headingResult
+
+        sectionResult = removeHTML(
+            """
+            <h4>A. Equipment Management</h4>
+            <p>Maintains laboratory equipment &amp; supplies.</p>
+
+            <h4>B. Experiment Support</h4>
+            <p>Supports experiments and records results.</p>
+            """
+        )
+
+        # Normalize whitespace so the test does not depend on the exact number of newlines produced by removeHTML().
+        normalizedSectionResult = " ".join(sectionResult.split())
+
+        # Confirm that all readable content remains after stripping HTML.
+        assert "A. Equipment Management" in normalizedSectionResult
+        assert "Maintains laboratory equipment & supplies." in normalizedSectionResult
+        assert "B. Experiment Support" in normalizedSectionResult
+        assert "Supports experiments and records results." in normalizedSectionResult
+
+        # Confirm that HTML tags and encoded entities were removed.
+        assert "<h4>" not in normalizedSectionResult
+        assert "</h4>" not in normalizedSectionResult
+        assert "<p>" not in normalizedSectionResult
+        assert "</p>" not in normalizedSectionResult
+        assert "&amp;" not in normalizedSectionResult
+
+        # Create the department shared by both test positions.
         department = Department.create(
             departmentID=200,
             DEPT_NAME="Physics",
@@ -26,9 +62,9 @@ def test_makePositionDescriptionPDF():
             isActive=True,
         )
 
-        # Create a position that will have description sections.
+        # Create a position with HTML-formatted description sections.
         positionWithSections = PositionHistory.create(
-            positionTitle="Lab Technician",
+            positionTitle="<strong>Lab Technician</strong>",
             positionCode="S34516",
             department=department,
             status="Active",
@@ -37,7 +73,7 @@ def test_makePositionDescriptionPDF():
             revisedBy="Jane Doe",
         )
 
-        # Create a position that will not have description sections.
+        # Create a position without description sections to test for "No description available." output.
         positionWithoutSections = PositionHistory.create(
             positionTitle="Research Assistant",
             positionCode="S34517",
@@ -48,53 +84,68 @@ def test_makePositionDescriptionPDF():
             revisedBy="Sarah Smith",
         )
 
-        # Create sections for the first position. Insertion is out of order in order to test the section query's ordering logic is applied when the PDF is generated.
+        # Insert this section first even though its order is 2. Tests section-ordering logic used by getPositionDescriptionSections().
         PositionDescriptionSection.create(
             position=positionWithSections,
-            sectionTitle="Responsibilities",
-            sectionContent="Supports experiments and records results.",
+            sectionTitle="<h3>Responsibilities</h3>",
+            sectionContent="""
+                <h4>A. Equipment Management</h4>
+                <p>Maintains laboratory equipment &amp; supplies.</p>
+
+                <h4>B. Experiment Support</h4>
+                <p>Supports experiments and records results.</p>
+            """,
             order=2,
         )
 
+        # Insert the order-1 section second.
         PositionDescriptionSection.create(
             position=positionWithSections,
-            sectionTitle="Position Summary",
-            sectionContent="Maintains laboratory equipment.",
+            sectionTitle="<h3>Position Summary</h3>",
+            sectionContent="""
+                <p>Provides support for laboratory research.</p>
+                <p>Works with faculty and student researchers.</p>
+            """,
             order=1,
         )
 
-        # Generate a PDF for the position that has description sections.
         pdfBufferWithSections = makePositionDescriptionPDF(
             department,
             positionWithSections,
         )
 
-        # Verify that the result is a nonempty BytesIO containing a PDF.
+        # Confirm that the function returns an in-memory byte buffer.
         assert isinstance(pdfBufferWithSections, io.BytesIO)
 
         pdfBytesWithSections = pdfBufferWithSections.getvalue()
 
+        # Confirm that the generated PDF is not empty.
         assert len(pdfBytesWithSections) > 0
+
+        # Confirm that the output begins with the standard PDF header.
         assert pdfBytesWithSections.startswith(b"%PDF-")
+
+        # Confirm that the output ends with the standard PDF marker.
         assert pdfBytesWithSections.rstrip().endswith(b"%%EOF")
 
-        # Generate a PDF for the position without description sections. This exercises the "No description available." branch.
         pdfBufferWithoutSections = makePositionDescriptionPDF(
             department,
             positionWithoutSections,
         )
 
-        # Verify that the second result is also a valid PDF buffer.
+        # Confirm that the fallback branch also returns a BytesIO object.
         assert isinstance(pdfBufferWithoutSections, io.BytesIO)
 
         pdfBytesWithoutSections = pdfBufferWithoutSections.getvalue()
 
+        # Confirm that the fallback PDF is not empty.
         assert len(pdfBytesWithoutSections) > 0
+
+        # Confirm that the fallback output is also a valid PDF.
         assert pdfBytesWithoutSections.startswith(b"%PDF-")
         assert pdfBytesWithoutSections.rstrip().endswith(b"%%EOF")
 
-        # Verify that the two different positions produce different PDFs.
+        # Confirm that the two positions did not produce identical PDFs.
         assert pdfBytesWithSections != pdfBytesWithoutSections
 
-        # Roll back all database records created by this test.
         transaction.rollback()

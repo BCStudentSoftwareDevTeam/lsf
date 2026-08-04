@@ -31,51 +31,138 @@ def retrieveFormSearchResult(formSearchResultId):
 
     return None
 
+import html
+import io
+
+from html.parser import HTMLParser
+from fpdf import FPDF
+
+
+class PDFHTMLTextExtractor(HTMLParser):
+    """
+    Converts simple stored HTML into plain text suitable for FPDF.
+    """
+
+    blockTags = {
+        'p','div','section','article','header','footer','h1','h2','h3','h4','h5','h6','li','ul','ol','br',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+
+        if tag == 'br':
+            self.parts.append('\n')
+        elif tag == 'li':
+            self.parts.append('\n• ')
+
+    def handle_endtag(self, tag):
+        if tag.lower() in self.blockTags:
+            self.parts.append('\n')
+
+    def handle_data(self, data):
+        self.parts.append(data)
+
+    def getText(self):
+        text = ''.join(self.parts)
+        text = html.unescape(text)
+
+        lines = []
+        for line in text.splitlines():
+            cleanedLine = ' '.join(line.split())
+
+            if cleanedLine:
+                lines.append(cleanedLine)
+            elif lines and lines[-1] != '':
+                lines.append('')
+
+        return '\n'.join(lines).strip()
+
+
+def removeHTML(value):
+    if value is None:
+        return ''
+
+    parser = PDFHTMLTextExtractor()
+    parser.feed(str(value))
+    parser.close()
+
+    return parser.getText()
+
+
 def makePositionDescriptionPDF(department, position):
-    '''
-    Builds a PDF of a position's description for the download button on the individual position page
-    '''
+    """
+    Builds a PDF of a position's description for the download button
+    on the individual position page.
+    """
     pdf = FPDF()
     pdf.add_page()
 
-    pdf.set_font('Times', 'BU', 16)
-    pdf.cell(0, 10, position.positionTitle, ln=True)
+    # Position title
+    pdf.set_font('Times', 'B', 16)
+    pdf.cell(0,10,removeHTML(position.positionTitle).encode('latin-1', 'replace').decode('latin-1'),ln=True)
     pdf.ln(2)
 
+    # Position metadata
     fields = [
         ('Department Name', department.DEPT_NAME),
         ('Position Code', position.positionCode),
         ('WLS Level', position.wls),
         ('Status', position.status),
         ('Last Revision Date', position.revisionDate),
-        ('Revised By', position.revisedBy or 'Unknown'),
+        ('Revised By', position.revisedBy),
     ]
-    labelWidth = 45
+
+    label_width = 45
+
     for label, value in fields:
         pdf.set_font('Times', 'B', 11)
-        pdf.cell(labelWidth, 8, f'{label}:', ln=False)
+        pdf.cell(label_width, 8, f'{label}:', ln=False)
+
+        plain_value = removeHTML(value).encode('latin-1', 'replace').decode('latin-1')
+
         pdf.set_font('Times', '', 11)
-        pdf.cell(0, 8, f' {value}', ln=True)
+        pdf.cell(0, 8, f' {plain_value}', ln=True)
 
     sections = getPositionDescriptionSections(position)
 
     pdf.ln(4)
+
     if sections:
-        for section in sections:
+        for index, section in enumerate(sections):
+            title = removeHTML(section.sectionTitle).encode('latin-1', 'replace').decode('latin-1')
+            content = removeHTML(section.sectionContent).encode('latin-1', 'replace').decode('latin-1')
+
+            # Horizontal rule before the description sections
+            if index == 0:
+                pdf.set_draw_color(180, 180, 180)
+                pdf.set_line_width(0.3)
+                y = pdf.get_y()
+                pdf.line(pdf.l_margin, y, pdf.w - pdf.r_margin, y)
+                pdf.ln(3)
+
+            # Section heading
             pdf.set_font('Times', 'B', 12)
-            pdf.cell(0, 10, section.sectionTitle, ln=True)
+            pdf.multi_cell(0, 8, title)
+
+            # Section content
             pdf.set_font('Times', '', 11)
-            content = section.sectionContent.encode('latin-1', 'replace').decode('latin-1')
-            pdf.multi_cell(0, 7, content)
+            pdf.multi_cell(0, 5, content)
+
             pdf.ln(2)
+
     else:
         pdf.set_font('Times', 'B', 12)
         pdf.cell(0, 10, 'Description', ln=True)
-        pdf.set_font('Times', '', 11)
-        pdf.multi_cell(0, 7, 'No description available.')
 
-    pdfBytes = pdf.output(dest='S').encode('latin-1', 'replace')
-    return io.BytesIO(pdfBytes)
+        pdf.set_font('Times', '', 11)
+        pdf.multi_cell(0, 5, 'No description available.')
+
+    pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+    return io.BytesIO(pdf_bytes)
 
 
 class CSVMaker:
