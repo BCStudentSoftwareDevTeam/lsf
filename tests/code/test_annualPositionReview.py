@@ -10,7 +10,7 @@ from app.models.user import User
 from app.models.positionReview import PositionReview
 
 
-from app.logic.annualPositionReview import sendAnnualPositionReviewRequests
+from app.logic.emailHandler import sendAnnualPositionReviewRequests
 
 
 

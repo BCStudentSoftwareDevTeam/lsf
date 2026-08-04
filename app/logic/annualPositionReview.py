@@ -43,7 +43,7 @@ def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
         # A review is considered "requested" for every active department as soon
         # as this runs, whether or not there's currently anyone to email - a
         # department with no supervisors/coordinators assigned is itself worth
-        # surfacing, not silently skipping.
+        # surfacing, not skipping the department.
         existingReview = PositionReview.get_or_none(
             PositionReview.academicYear == term,
             PositionReview.department == department
@@ -73,6 +73,6 @@ def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
         sendMail(mail, message)
 
         sentCount += 1
-        
+
     return {"sentCount": sentCount, "departmentCount": departments.count()}
 

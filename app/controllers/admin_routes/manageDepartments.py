@@ -16,7 +16,7 @@ from app.models.allocation import *
 from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import *
-from app.logic.annualPositionReview import sendAnnualPositionReviewRequests
+from app.logic.emailHandler import sendAnnualPositionReviewRequests
 
 
 

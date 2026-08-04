@@ -16,6 +16,79 @@ import string
 from app import app
 import os
 from datetime import datetime, date
+from app.models.department import Department
+from app.models.term import Term
+from app.models.positionReview import PositionReview
+from app.logic.getSupervisors import getSupervisors
+
+
+def send(mail, message: Message):
+    if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
+
+        # If we have set an override address
+        if app.config['MAIL_OVERRIDE_ALL']:
+            message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
+            message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+
+        message.reply_to = app.config["REPLY_TO_ADDRESS"]
+        mail.send(message)
+
+    elif app.config['ENV'] == 'testing':
+        # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
+        pass
+    else:
+        print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
+
+
+def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
+    """
+    Sends an Annual Position Review request email to every active department's
+    Labor Coordinators and supervisors, and records that the request was made
+    for the given academic year.
+    """
+    mail = Mail(app)
+    term = Term.get(Term.termCode == academicYearTermCode)
+    template = EmailTemplate.get(EmailTemplate.purpose == "Annual Position Review Request")
+    departments = Department.select().where(Department.isActive == True)
+
+    sentCount = 0
+    for department in departments:
+        # A review is considered "requested" for every active department as soon
+        # as this runs, whether or not there's currently anyone to email - a
+        # department with no supervisors/coordinators assigned is itself worth
+        # surfacing, not silently skipping.
+        existingReview = PositionReview.get_or_none(
+            PositionReview.academicYear == term,
+            PositionReview.department == department
+        )
+        if existingReview:
+            existingReview.requestedOn = datetime.now()
+            existingReview.requestedBy = requestingUser
+            existingReview.save()
+        else:
+            PositionReview.create(
+                academicYear=term,
+                department=department,
+                requestedOn=datetime.now(),
+                requestedBy=requestingUser
+            )
+
+        supervisors, laborCoordinators = getSupervisors(department)
+        recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
+        if not recipients:
+            continue
+
+        subject = template.subject.replace("@@AcademicYear@@", term.termName)
+        body = template.body.replace("@@Department@@", department.DEPT_NAME).replace("@@AcademicYear@@", term.termName)
+
+        message = Message(subject, recipients=list(recipients))
+        message.html = body
+        send(mail, message)
+
+        sentCount += 1
+        print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
+        print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, term.termName))
+    return {"sentCount": sentCount, "departmentCount": departments.count()}
 
 
 class emailHandler():
@@ -92,25 +165,6 @@ class emailHandler():
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
                 print (e)
-
-    def send(self, message: Message):
-        if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
-
-            # If we have set an override address
-            if app.config['MAIL_OVERRIDE_ALL']:
-                message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
-                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            self.mail.send(message)
-
-        elif app.config['ENV'] == 'testing':
-            # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
-            pass
-        else:
-            print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
-
-
 
     # The methods of this class each handle a different email situation. Some of the methods need to handle
     # "primary" and "secondary" forms differently, but a majority do not need to differentiate between the two.
@@ -298,7 +352,7 @@ class emailHandler():
                         )
         message.html = self.replaceText(emailTemplateID.body)
 
-        self.send(message)
+        send(self.mail, message)
 
     # The function below was commented out becasuse there is no email template with the purpose "Labor Admin Notification"
     # Since an admin can still see the decision from SAAS or Financial Aid in the pending Overload Form Modal,
@@ -387,7 +441,7 @@ class emailHandler():
                         subject = template.subject
                         )
 
-        self.send(message)
+        send(self.mail, message)
 
     # This method is responsible for replacing the keyword form the templates in the database with the data in the laborStatusForm
     def replaceText(self, form):
