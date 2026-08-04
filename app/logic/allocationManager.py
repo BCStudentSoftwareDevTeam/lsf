@@ -40,7 +40,7 @@ def getTotalAllocations(termCode, dept):
     return allocationDict
 
 def countContracts(jobType, weeklyContractHours, termCode, dept):
-    academicYearCode = int(str(termCode)[:4] + "999")
+    academicYearCode = int(str(termCode)[:5] + "00")
     lsfCountPrimaries = FormHistory.select(
                             ).join(LaborStatusForm
                             ).join(Department
@@ -94,9 +94,9 @@ def getContractedAllocations(termCode, dept):
     "used_total": 0,
     "break_hours": breakSum["total_hours"]
     }
-    usedPositions["used_primaries"] = sum(list(usedPositions.values())[:5])
-    usedPositions["used_secondaries"] = sum(list(usedPositions.values())[5:7])
-    usedPositions["used_total"] = sum(list(usedPositions.values())[:7])
+    usedPositions["used_primaries"] = sum(list(usedPositions.values())[:4])
+    usedPositions["used_secondaries"] = sum(list(usedPositions.values())[4:6])
+    usedPositions["used_total"] = sum(list(usedPositions.values())[:6])
     return usedPositions
 
 def getBreakContracts(termCode, dept):
