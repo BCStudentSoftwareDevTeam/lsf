@@ -40,18 +40,10 @@ def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
 
     sentCount = 0
     for department in departments:
-        supervisors, laborCoordinators = getSupervisors(department)
-        recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
-        if not recipients:
-            continue
-
-        subject = template.subject.replace("@@AcademicYear@@", term.termName)
-        body = template.body.replace("@@Department@@", department.DEPT_NAME).replace("@@AcademicYear@@", term.termName)
-
-        message = Message(subject, recipients=list(recipients))
-        message.html = body
-        sendMail(mail, message)
-
+        # A review is considered "requested" for every active department as soon
+        # as this runs, whether or not there's currently anyone to email - a
+        # department with no supervisors/coordinators assigned is itself worth
+        # surfacing, not silently skipping.
         existingReview = PositionReview.get_or_none(
             PositionReview.academicYear == term,
             PositionReview.department == department
@@ -68,8 +60,19 @@ def sendAnnualPositionReviewRequests(academicYearTermCode, requestingUser):
                 requestedBy=requestingUser
             )
 
+        supervisors, laborCoordinators = getSupervisors(department)
+        recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
+        if not recipients:
+            continue
+
+        subject = template.subject.replace("@@AcademicYear@@", term.termName)
+        body = template.body.replace("@@Department@@", department.DEPT_NAME).replace("@@AcademicYear@@", term.termName)
+
+        message = Message(subject, recipients=list(recipients))
+        message.html = body
+        sendMail(mail, message)
+
         sentCount += 1
-        print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
-        print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, term.termName))
+        
     return {"sentCount": sentCount, "departmentCount": departments.count()}
 

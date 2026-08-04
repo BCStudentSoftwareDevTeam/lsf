@@ -82,10 +82,13 @@ def test_sendAnnualPositionReviewRequests():
             firstRequestedOn = review.requestedOn
 
 
-            assert not (PositionReview
-                        .select()
-                        .where(PositionReview.department == emptyDepartment)
-                        .exists())
+            # A record is still made for Empty Department (the request was made),
+            # it just doesn't count toward sentCount since no email went out.
+            emptyReview = PositionReview.get(
+                PositionReview.academicYear == term,
+                PositionReview.department == emptyDepartment
+            )
+            assert emptyReview.requestedBy.userID == admin.userID
 
 
             ################ RE-SENDING SHOULD UPDATE, NOT DUPLICATE ################
