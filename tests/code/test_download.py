@@ -15,11 +15,6 @@ def test_makePositionDescriptionPDF():
     Tests both HTML stripping and PDF generation using the makePositionDescriptionPDF() function.
     """
     with mainDB.atomic() as transaction:
-
-        # ---------------------------------------------------------
-        # Test the HTML-stripping functionality directly.
-        # ---------------------------------------------------------
-
         headingResult = removeHTML(
             "<h3>Learning Opportunities</h3>"
         )
@@ -56,10 +51,6 @@ def test_makePositionDescriptionPDF():
         assert "<p>" not in normalizedSectionResult
         assert "</p>" not in normalizedSectionResult
         assert "&amp;" not in normalizedSectionResult
-
-        # ---------------------------------------------------------
-        # Create fake database records needed for PDF generation.
-         # ---------------------------------------------------------
 
         # Create the department shared by both test positions.
         department = Department.create(
@@ -118,10 +109,6 @@ def test_makePositionDescriptionPDF():
             order=1,
         )
 
-        # ---------------------------------------------------------
-        # Test PDF generation for a position with sections.
-        # ---------------------------------------------------------
-
         pdfBufferWithSections = makePositionDescriptionPDF(
             department,
             positionWithSections,
@@ -140,10 +127,6 @@ def test_makePositionDescriptionPDF():
 
         # Confirm that the output ends with the standard PDF marker.
         assert pdfBytesWithSections.rstrip().endswith(b"%%EOF")
-
-        # ---------------------------------------------------------
-        # Test PDF generation for a position without sections.
-        # ---------------------------------------------------------
 
         pdfBufferWithoutSections = makePositionDescriptionPDF(
             department,
