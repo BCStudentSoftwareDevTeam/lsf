@@ -15,10 +15,13 @@
 {% block app_content %}
 
 
- <div class="grid-container">
- <h1>View {{department.DEPT_NAME}} Allocations</h1>
-<button id="download" class="btn btn-success">Download Allocation History</button>
-<h5 style="color:slategrey;">*Position allocations are placed (contracted/allocated) in the table</h5>
+ <div style="display: flex; justify-content: space-between;">
+   <h1>View {{department.DEPT_NAME}} Allocations</h1>
+    <div>
+      <button id="download" class="btn btn-success">Download Allocation History</button>
+      <a id="request" class="btn btn-info" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/request">Request Allocation Modifications</a>
+    </div>
+ 
 </div>
   
 <br>
@@ -131,7 +134,7 @@
   <div class="card">
     <div class="card-header" id="headingThree">
       
-        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+      <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           <h2 class="mb-0">
             Break Allocations ({{currentAY.termName[3:]}})
           </h2>
