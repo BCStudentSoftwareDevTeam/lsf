@@ -72,6 +72,29 @@ def testAllocation(testDepartment,testTerm):
     allocation.delete_instance()
 
 @pytest.fixture
+def testPendingAllocation(testDepartment,testTerm):
+    #create
+    allocation = Allocation.create(
+        termCode       = testTerm.termCode,
+        department     = testDepartment.departmentID,
+        isFinal        = False,
+        approvedOn     = None,
+        approvedBy     = None,
+        justification  = "pending broski",
+        primary_10     = 4,
+        primary_12     = 8,
+        primary_15     = 7,
+        primary_20     = 2,
+        secondary_5    = 3,
+        secondary_10   = 1,
+        breakHours     = 557)
+
+    yield allocation
+
+    #destroy
+    allocation.delete_instance()
+
+@pytest.fixture
 def testStudent():
     student_data = Student.create(
     ID              = "B12323435"		        # B-number
@@ -89,15 +112,6 @@ def testSupervisor():
     yield supervisor_data
     #destroy
     supervisor_data.delete_instance()
-
-@pytest.fixture
-def testHistoryType():
-    History_data = HistoryType.create(
-        historyTypeName = "Labor Status Form"
-    )
-    yield History_data
-    #destroy
-    History_data.delete_instance()
 
 @pytest.fixture
 def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
@@ -142,9 +156,10 @@ def testFormHistory(testLaborStatusForm,testUser):
     formHistory.delete_instance()
 
 @pytest.mark.integration
-def test_getAllocation(testDepartment, testTerm, testAllocation):
+def test_getAllocation(testDepartment, testTerm, testAllocation, testPendingAllocation):
     
     allocation = getAllocation(testTerm.termCode, testDepartment)
+    assert allocation["justification"] == "broski"
     assert allocation["primary_10"] == 3
     assert allocation["primary_12"] == 7
     assert allocation["primary_15"] == 6
@@ -152,6 +167,16 @@ def test_getAllocation(testDepartment, testTerm, testAllocation):
     assert allocation["secondary_5"] == 2
     assert allocation["secondary_10"] == 0
     assert allocation["breakHours"] == 556
+
+    allocation = getAllocation(testTerm.termCode, testDepartment, False)
+    assert allocation["justification"] == "pending broski"
+    assert allocation["primary_10"] == 4
+    assert allocation["primary_12"] == 8
+    assert allocation["primary_15"] == 7
+    assert allocation["primary_20"] == 2
+    assert allocation["secondary_5"] == 3
+    assert allocation["secondary_10"] == 1
+    assert allocation["breakHours"] == 557
 
 @pytest.mark.integration
 def test_getTotalAllocations(testDepartment, testTerm, testAllocation):
@@ -162,7 +187,7 @@ def test_getTotalAllocations(testDepartment, testTerm, testAllocation):
 
 @pytest.mark.integration
 def test_countContracts(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
-    contractsCounts = countContracts(testLaborStatusForm.jobType,testLaborStatusForm.weeklyHours,testTerm.termCode,testDepartment.departmentID)
+    contractsCounts = countContracts(testLaborStatusForm.jobType, testLaborStatusForm.weeklyHours, testTerm.termCode, testDepartment.departmentID)
     assert contractsCounts == 1
 
 @pytest.mark.integration
@@ -174,5 +199,9 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['used_20'] == 0
     assert contractedAllocation['used_5_sec'] == 0
     assert contractedAllocation['used_10_sec'] == 0
+
+    assert contractedAllocation['used_primaries'] == 1
+    assert contractedAllocation['used_secondaries'] == 0
     assert contractedAllocation['used_total'] == 1
+
     assert contractedAllocation['break_hours'] == 500
