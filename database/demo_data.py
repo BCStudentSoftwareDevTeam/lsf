@@ -1055,6 +1055,51 @@ LaborStatusForm.insert([{
     "endDate": "2027-08-01"
 }]).on_conflict_replace().execute()
 
+FormHistory.insert([{
+    "formHistoryID": 67,
+    "formID_id": "67",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-11-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 68,
+    "formID_id": "68",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-12-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 69,
+    "formID_id": "69",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-02-20",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 70,
+    "formID_id": "70",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-10-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 71,
+    "formID_id": "71",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-04-15",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
 #############################
 # admin Notes
 #############################
@@ -1227,7 +1272,7 @@ allocations = [
     {
     "termCode":         202600,
     "department":       1,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Maintaining current staffing levels while allowing for moderate growth in student employment opportunities.",

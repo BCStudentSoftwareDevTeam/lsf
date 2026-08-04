@@ -100,13 +100,17 @@ def allocationTable(org=None, account=None):
         departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
     currentDate = str(date.today())
+    if int(currentDate[5:7]) <= 6:
+        # If it is the spring semester, then the term code is 1 year behind. e.g. 2025-2026 term code is 202500.
+        springTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "12") - 100).get()
+        currentAY = currentTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "00") - 100).get()
+        fallTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "11") - 100).get()
 
-    if currentDate.month <= 6:
-        currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "12").get()
-        currentAY = currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
     else:
-        currentTerm = Term.select().where(Term.termCode == currentDate[:4] + "11").get()
+        fallTerm = Term.select().where(Term.termCode == currentDate[:4] + "11").get()
         currentAY = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
+        springTerm = Term.select().where(Term.termCode == currentDate[:4] + "12").get()
+
 
     allocationDict = {"primary_10": 1,
                     "primary_12": 2,
@@ -118,33 +122,35 @@ def allocationTable(org=None, account=None):
                     "totalPrimaries": 10,
                     "totalSecondaries": 11,
                     "totalAllocations": 21}
-    # fallContracts = getContractedAllocations(currentTerm, dept)
-    fallContracts = {
-        "used_10": 4,
-        "used_12": 4,
-        "used_15": 4,
-        "used_20": 4,
-        "used_5_sec": 4,
-        "used_10_sec": 4,
-        "used_total": 0,
-        "break_hours": "3"
-        }
-    springContracts = {
-        "used_10": 4,
-        "used_12": 4,
-        "used_15": 4,
-        "used_20": 4,
-        "used_5_sec": 4,
-        "used_10_sec": 4,
-        "used_total": 0,
-        "break_hours": "3"
-        }
+    fallContracts = getContractedAllocations(fallTerm, dept)
+    # fallContracts = {
+    #     "used_10": 4,
+    #     "used_12": 4,
+    #     "used_15": 4,
+    #     "used_20": 4,
+    #     "used_5_sec": 4,
+    #     "used_10_sec": 4,
+    #     "used_total": 0,
+    #     "break_hours": "3"
+    #     }
+    springContracts = getContractedAllocations(springTerm, dept)
+
+    # springContracts = {
+    #     "used_10": 4,
+    #     "used_12": 4,
+    #     "used_15": 4,
+    #     "used_20": 4,
+    #     "used_5_sec": 4,
+    #     "used_10_sec": 4,
+    #     "used_total": 0,
+    #     "break_hours": "3"
+    #     }
     breakContracts = {
-        "thanksgiving":getBreakContracts(202401, dept),#FIXME
-        "winter": getBreakContracts(202402, dept),
-        "spring": getBreakContracts(202403, dept),
-        "fall":getBreakContracts(202404, dept),
-        "summer": getBreakContracts(202413, dept)
+        "thanksgiving":getBreakContracts(currentAY.termCode + 1, dept),
+        "winter": getBreakContracts(currentAY.termCode + 2, dept),
+        "spring": getBreakContracts(currentAY.termCode + 3, dept),
+        "fall":getBreakContracts(currentAY.termCode + 4, dept),
+        "summer": getBreakContracts(currentAY.termCode + 13, dept)
         }
      
     return render_template('main/allocationTable.html',

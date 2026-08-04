@@ -7,9 +7,9 @@ from peewee import JOIN, fn
 
 
 def getAllocation(termCode, dept):
-    academicYearCode = int(str(termCode)[:5] + "00")
+    academicYearCode = int(str(termCode)[:4] + "00")
     allocationObject = Allocation.select().where(
-        Allocation.termCode.in_([termCode,academicYearCode]),
+         ((Allocation.termCode == termCode) | (Allocation.termCode == academicYearCode)),
         Allocation.department == dept, 
         Allocation.isFinal == True).dicts().get()
     return allocationObject
@@ -40,14 +40,14 @@ def getTotalAllocations(termCode, dept):
     return allocationDict
 
 def countContracts(jobType, weeklyContractHours, termCode, dept):
-    academicYearCode = int(str(termCode)[:5] + "00")
+    academicYearCode = int(str(termCode)[:4] + "999")
     lsfCountPrimaries = FormHistory.select(
                             ).join(LaborStatusForm
                             ).join(Department
                             ).where(
                                 FormHistory.historyType == "Labor Status Form",
                                 FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
-                                LaborStatusForm.termCode.in_([termCode,academicYearCode]),
+                                (LaborStatusForm.termCode == termCode) | (LaborStatusForm.termCode == academicYearCode),
                                 LaborStatusForm.jobType == jobType,
                                 LaborStatusForm.weeklyHours == weeklyContractHours,
                                 Department.departmentID == dept,
@@ -96,7 +96,6 @@ def getContractedAllocations(termCode, dept):
     return usedPositions
 
 def getBreakContracts(termCode, dept):
-    academicYearCode = (str(termCode)[:4])
     break_allocaiton = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)
     ).join(LaborStatusForm
     ).where(
@@ -104,7 +103,7 @@ def getBreakContracts(termCode, dept):
         FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
         LaborStatusForm.termCode == termCode,
         LaborStatusForm.department == dept,
-        LaborStatusForm.weeklyHours == None).scalar()
+        LaborStatusForm.contractHours != None).scalar()
 
     # break_allocation = FormHistory.select(
     #         LaborStatusForm.department,
