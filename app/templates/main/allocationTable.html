@@ -17,10 +17,8 @@
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Allocations {% else %} Choose a Department: {% endif %} </h2>
 
  <div class ="button-container" style="display: flex; justify-content: space-between;">
-    <div>
       <a id="download" class="btn btn-success" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/download">Download Allocation History</a>
       <a id="request" class="btn btn-info" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/request">Request Allocation</a>
-    </div>
 </div>
   
 <div>

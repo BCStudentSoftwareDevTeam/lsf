@@ -4,10 +4,12 @@
 }
 .btn-success{
     align-self: center;
+    justify-self: end;
 }
 .card-header {
   background-color: #efebeb;
   margin-bottom: 7px;
+  height: 6rem;
 }
 .mb-0, .collapsed {
   outline-color: none;
@@ -45,6 +47,13 @@
   transform: rotate(0deg);
 }
 .button-container {
-  display:flex;
-  justify-content:flex-end;
+  display:grid;
+  justify-content:end;
+}
+.btn-block{
+  align-items: center;
+  align-self: center;
+  text-align: center;
+  justify-content: center;
+  height: 100%
 }
