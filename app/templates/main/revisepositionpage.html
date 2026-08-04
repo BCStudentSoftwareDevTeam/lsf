@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/revisepositionpage.js') }}?u={{ lastStaticUpdate }}"></script>
+  <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{ lastStaticUpdate }}" />
+  <link rel="stylesheet" type="text/css" href="/static/css/revisepositionpage.css?u={{ lastStaticUpdate }}" />
+{% endblock %}
+
+{% block app_content %}
+  <div class="department-header-container">
+    <h1 class="department-header">Revise {{ position.positionTitle }}</h1>
+  </div>
+
+  <div class="container-fluid position-container">
+    <div class="row">
+      <div class="col-12">
+
+        <form method="POST" action="{{ url_for('main.revisePosition', org=department.ORG, account=department.ACCOUNT, positionCode=position.positionCode) }}">
+
+          <div class="position-information">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label" for="positionTitle">Position Title:</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="positionTitle" name="positionTitle" value="{{ position.positionTitle }}" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Position Code:</label>
+              <div class="col-sm-9">
+                <p class="form-control-static">{{ position.positionCode }}</p>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label" for="wls">WLS Level:</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" id="wls" name="wls" min="0" value="{{ position.wls }}" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Last Revision Date:</label>
+              <div class="col-sm-9">
+                <p class="form-control-static">{{ position.revisionDate }}</p>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Revised By:</label>
+              <div class="col-sm-9">
+                <p class="form-control-static">{{ position.revisedBy }}</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="description-header">Description</h3>
+          <section id="sectionsContainer">
+            {%- for section in sections %}
+              <div class="description-section-row">
+                <div class="form-group">
+                  <label>Section Title</label>
+                  <input type="text" class="form-control" name="sectionTitle[]" value="{{ section.sectionTitle }}">
+                </div>
+                <div class="form-group">
+                  <label>Section Content</label>
+                  <textarea class="form-control" name="sectionContent[]" rows="4">{{ section.sectionContent }}</textarea>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-section-btn">Remove Section</button>
+              </div>
+            {%- endfor %}
+          </section>
+
+          <button type="button" id="addSectionBtn" class="btn btn-default">Add Section</button>
+
+          <div class="row revise-actions">
+            <div class="col-xs-12 text-left">
+              <a href="{{ url_for('main.managePositions', org=department.ORG, account=department.ACCOUNT) }}" class="btn btn-default">
+                Cancel
+              </a>
+              <button type="submit" class="btn btn-primary">Save Revision</button>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <template id="sectionRowTemplate">
+    <div class="description-section-row">
+      <div class="form-group">
+        <label>Section Title</label>
+        <input type="text" class="form-control" name="sectionTitle[]" value="">
+      </div>
+      <div class="form-group">
+        <label>Section Content</label>
+        <textarea class="form-control" name="sectionContent[]" rows="4"></textarea>
+      </div>
+      <button type="button" class="btn btn-danger btn-sm remove-section-btn">Remove Section</button>
+    </div>
+  </template>
+{% endblock %}
