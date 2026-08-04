@@ -102,10 +102,7 @@ def updateCoordinator():
     if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord ):
         return render_template('errors/403.html'), 403
 
-    member = SupervisorDepartment.get(
-        (SupervisorDepartment.supervisor == supervisorID) &
-        (SupervisorDepartment.department == departmentID)
-    )
+    member = SupervisorDepartment.get((SupervisorDepartment.supervisor == supervisorID) & (SupervisorDepartment.department == departmentID))
 
     member.isCoordinator = isCoordinator
     member.save()
