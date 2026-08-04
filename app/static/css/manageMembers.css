@@ -60,8 +60,8 @@
 .switch {
   position: relative;
   display: inline-block;
-  width: 31.25px;
-  height: 16.25px;
+  width: 34px;
+  height: 18px;
   vertical-align: middle;
   margin: 0;
 }
@@ -75,23 +75,20 @@
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: #ccc !important;
-  transition: 0.4s;
+  transition: 0.3s ease;
 }
 
 .slider::before {
   position: absolute;
   content: "";
-  height: 11.25px;
-  width: 11.25px;
-  left: 2.5px;
-  bottom: 2.5px;
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  top: 2px;
   background-color: #fff !important;
-  transition: 0.4s;
+  transition: 0.3s ease;
 }
 
 .switch input:checked + .slider {
@@ -99,15 +96,11 @@
 }
 
 .switch input:checked + .slider::before {
-  transform: translate .slider {
-  background-color: #337ab7 !important;
-}
-
-.switch input:checked + .sliderX(15px);
+  transform: translateX(16px);
 }
 
 .slider.round {
-  border-radius: 21.25px;
+  border-radius: 18px;
 }
 
 .slider.round::before {
@@ -117,6 +110,7 @@
 .table-switch {
   top: 0;
 }
+
 a.hover-indicator {
   text-decoration: none !important;
   position: relative;
