@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import flash, g, redirect, render_template, request, send_file, url_for
+from flask import flash, g, render_template, request, send_file
 from peewee import DoesNotExist
 
 from app.controllers.main_routes import main_bp
@@ -80,7 +80,7 @@ def revisePosition(org, account, positionCode):
         return render_template('errors/404.html'), 404
 
     if request.method == 'POST':
-        createPositionRevision(
+        position = createPositionRevision(
             position,
             g.currentUser.fullName,
             request.form.get('positionTitle'),
@@ -89,7 +89,6 @@ def revisePosition(org, account, positionCode):
             request.form.getlist('sectionContent[]')
         )
         flash('Position revision saved.', 'success')
-        return redirect(url_for('main.managePositions', org=org, account=account))
 
     sections = getPositionDescriptionSections(position)
 
