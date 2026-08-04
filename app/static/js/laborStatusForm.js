@@ -6,11 +6,13 @@ $(document).ready(function(){
   if($("#selectedDepartment").val()){ // prepopulates position on redirect from rehire button and checks whether department is in compliance.
     checkCompliance($("#selectedDepartment"));
     getDepartment($("#selectedDepartment"));
+    loadAllocationSummary();
   }
   if($("#jobType").val()){ // fills hours per week selectpicker with correct information from laborstatusform. This is triggered on redirect from form history.
     var value = $("#selectedHoursPerWeek").val();
     $("#selectedHoursPerWeek").val(value);
     fillHoursPerWeek("fillhours");
+    checkAllocation();
   }
   var cookies = document.cookie;
   if (cookies){
@@ -23,6 +25,7 @@ $(document).ready(function(){
     $("#selectedSupervisor option[value=" + parsedArrayOfStudentCookies[0].stuSupervisorID + "]").attr('selected', 'selected');
     $("#selectedDepartment option[value=\"" + parsedArrayOfStudentCookies[0].stuDepartmentORG + "\"]").attr('selected', 'selected');
     getDepartment($("#selectedDepartment"));
+    loadAllocationSummary();
     preFilledDate($("#selectedTerm"));
     showAccessLevel($("#selectedTerm"));
     disableTermSupervisorDept();
@@ -336,6 +339,194 @@ function checkCompliance(obj) {
       });
 }
 
+// Checks the department's allocation status for the selected job type/hours band.
+// This is informational only and never blocks or disables form submission.
+function checkAllocation() {
+  $("#allocation-remaining-text").hide();
+  $("#allocation-warning").hide();
+
+  var departmentSelect = $("#selectedDepartment");
+  var departmentOrg = departmentSelect.val();
+  var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+  var jobType = $("#jobType").val();
+  var hours = $("#selectedHoursPerWeek").val();
+
+  if (!departmentOrg || !jobType || !hours) {
+    return;
+  }
+
+  $.ajax({
+    url: "/laborstatusform/checkallocation",
+    data: {
+      departmentOrg: departmentOrg,
+      departmentAcct: departmentAcct,
+      jobType: jobType,
+      hours: hours
+    },
+    dataType: "json",
+    success: function (response){
+      if (!response) {
+        return;
+      }
+      var remaining = response.remaining >= 0 ? response.remaining : 0;
+      $("#allocation-remaining-text").text(response.label + " Positions: " + response.used + "/" + response.allocated + " used (" + remaining + " remaining)").show();
+      if (response.isOverAllocated) {
+        $("#allocation-warning-text").html("This department is already over its allocation for " + response.label + " positions (" + response.used + "/" + response.allocated + "). You may still submit this form, but please contact the Labor Office.");
+        $("#allocation-warning").show();
+      }
+    },
+    error: function () {
+      // Informational only - if the check fails, just leave the allocation panels hidden.
+    }
+  });
+}
+
+// Live department allocation summary (Total Positions / Break Hours). Loaded once per
+// department selection, then bumped locally by +1/-1 as students are added or removed
+// from the table below, so the supervisor sees the effect immediately without waiting
+// on a server round trip for every add/remove.
+var allocationSummaryState = null;
+
+function clearAllocationSummary() {
+  allocationSummaryState = null;
+  $("#allocationSummaryPositionsAllocated").text("");
+  $("#allocationSummaryPositionsContracted").text("");
+  $("#allocationSummaryBreakHoursAllocated").text("");
+  $("#allocationSummaryBreakHoursContracted").text("");
+  $("#allocation-warning").hide();
+}
+
+function loadAllocationSummary() {
+  var departmentSelect = $("#selectedDepartment");
+  var departmentOrg = departmentSelect.val();
+  var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+
+  clearAllocationSummary();
+
+  if (!departmentOrg) {
+    return;
+  }
+
+  $.ajax({
+    url: "/laborstatusform/allocationsummary",
+    data: {
+      departmentOrg: departmentOrg,
+      departmentAcct: departmentAcct
+    },
+    dataType: "json",
+    success: function (response) {
+      if (!response || response.error) {
+        return;
+      }
+      allocationSummaryState = {
+        positionsAllocated: response.totalPositionsAllocated,
+        positionsUsed: response.totalPositionsUsed,
+        breakHoursAllocated: response.breakHoursAllocated,
+        breakHoursUsed: response.breakHoursUsed
+      };
+      // Students already staged in the table (e.g. restored from a cookie before this
+      // request returned) aren't reflected in the server totals yet, since they haven't
+      // been submitted. Fold them in so the summary matches what's already on screen.
+      for (var i = 0; i < globalArrayOfStudents.length; i++) {
+        applyAllocationDelta(globalArrayOfStudents[i], 1);
+      }
+      renderAllocationSummary();
+      checkLiveAllocationWarning();
+    },
+    error: function () {
+      // Informational only - if the check fails, just leave the summary cells blank.
+    }
+  });
+}
+
+function renderAllocationSummary() {
+  if (!allocationSummaryState) {
+    return;
+  }
+  var s = allocationSummaryState;
+  $("#allocationSummaryPositionsAllocated").text(s.positionsAllocated);
+  $("#allocationSummaryPositionsContracted").text(s.positionsUsed);
+  $("#allocationSummaryBreakHoursAllocated").text(s.breakHoursAllocated);
+  $("#allocationSummaryBreakHoursContracted").text(s.breakHoursUsed);
+}
+
+// Mutates the running totals only, without touching the DOM. Used both by the live
+// add/remove flow below and to silently fold in students already staged in the table
+// (e.g. restored from a cookie) when the baseline first loads. Returns the break-hours
+// delta actually applied, so callers can decide whether to flash that number too.
+function applyAllocationDelta(studentDict, delta) {
+  if (!allocationSummaryState || !studentDict) {
+    return 0;
+  }
+  allocationSummaryState.positionsUsed += delta;
+  var breakHoursDelta = 0;
+  if (studentDict.isTermBreak) {
+    breakHoursDelta = delta * (parseInt(studentDict.stuContractHours, 10) || 0);
+    allocationSummaryState.breakHoursUsed += breakHoursDelta;
+  }
+  return breakHoursDelta;
+}
+
+// Warns as soon as the students staged in the table (not just what's already saved to the
+// database) would push the department over its allocation. checkAllocation() above only
+// ever sees committed/approved forms, so it never fires for a batch being built up right
+// now in this session - this covers that gap using the live running totals instead.
+function checkLiveAllocationWarning() {
+  if (!allocationSummaryState) {
+    return;
+  }
+  var s = allocationSummaryState;
+  var overPositions = s.positionsUsed > s.positionsAllocated;
+  var overBreakHours = s.breakHoursUsed > s.breakHoursAllocated;
+
+  if (!overPositions && !overBreakHours) {
+    $("#allocation-warning").hide();
+    return;
+  }
+
+  var messages = [];
+  if (overPositions) {
+    messages.push("Total Positions (" + s.positionsUsed + "/" + s.positionsAllocated + ")");
+  }
+  if (overBreakHours) {
+    messages.push("Break Hours (" + s.breakHoursUsed + "/" + s.breakHoursAllocated + ")");
+  }
+  $("#allocation-warning-text").html("The students added so far put this department over its allocation for " +
+    messages.join(" and ") + ". You may still continue, but please contact the Labor Office.");
+  $("#allocation-warning").show();
+}
+
+var allocationFlashTimeoutId = null;
+
+// delta is +1 when a student is added to the table, -1 when a row is removed. On an add,
+// flashes "<count before this click> +1" immediately so the supervisor sees the click
+// register right away, then settles to the plain running total a moment later - ready to
+// show "<new count> +1" on the next add.
+function bumpAllocationSummary(studentDict, delta) {
+  if (!allocationSummaryState || !studentDict) {
+    return;
+  }
+  var previousPositionsUsed = allocationSummaryState.positionsUsed;
+  var previousBreakHoursUsed = allocationSummaryState.breakHoursUsed;
+  var breakHoursDelta = applyAllocationDelta(studentDict, delta);
+
+  if (allocationFlashTimeoutId) {
+    clearTimeout(allocationFlashTimeoutId);
+    allocationFlashTimeoutId = null;
+  }
+
+  if (delta > 0) {
+    $("#allocationSummaryPositionsContracted").text(previousPositionsUsed + " +" + delta);
+    if (breakHoursDelta > 0) {
+      $("#allocationSummaryBreakHoursContracted").text(previousBreakHoursUsed + " +" + breakHoursDelta);
+    }
+    allocationFlashTimeoutId = setTimeout(renderAllocationSummary, 1500);
+  } else {
+    renderAllocationSummary();
+  }
+  checkLiveAllocationWarning();
+}
+
 // TABLE LABELS
 $("#contractHours").hide();
 $("#hoursPerWeek").hide();
@@ -394,6 +585,7 @@ function deleteRow(glyphicon) {
   for (var i = 0, row; row = table.rows[i]; i++) {
     if (rowParent === table.rows[i]) {
       $(glyphicon).parents("tr").remove();
+      bumpAllocationSummary(globalArrayOfStudents[i], -1);
       globalArrayOfStudents.splice(i, 1);
       if(globalArrayOfStudents.length > 1){
         document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
@@ -571,6 +763,7 @@ function initialLSFInsert(studentDict){ //Add student info to the table if they 
 function createAndFillTable(studentDict) {
   globalArrayOfStudents.push(studentDict);
   document.cookie = JSON.stringify(globalArrayOfStudents) + ";max-age=28800;";
+  bumpAllocationSummary(studentDict, 1);
   $("#mytable").show();
   $("#jobTable").show();
   $("#hoursTable").show();
