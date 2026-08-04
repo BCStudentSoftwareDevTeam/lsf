@@ -50,11 +50,7 @@ def getActivePendingPositionCounts(dept, currentYear):
             (FormHistory.status.in_(["Approved"] + pendingStatuses)) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
         )
-        .group_by(
-            LaborStatusForm.department,
-            LaborStatusForm.supervisor
-        )
-        .dicts()
+        .group_by(LaborStatusForm.department, LaborStatusForm.supervisor).dicts()
     )
 
     return {

@@ -55,9 +55,8 @@ app.register_blueprint(errors_bp)
 from app.controllers.api_routes.routes import initializeApiRoutes
 initializeApiRoutes(api)
 
-from flask import g
 from app.models.user import User
-from app.login_manager import require_login
+from app.login_manager import getUsernameFromEnv, require_login
 @app.before_request
 def load_user():
     requestUsername = getUsernameFromEnv(request.environ)
