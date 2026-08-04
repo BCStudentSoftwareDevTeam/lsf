@@ -201,7 +201,7 @@ def approveAllocationReview():
 
 
 @admin.route('/department/<org>/<account>/allocations/request', methods=['GET'])
-def managePositions(org, account):
+def allocationRequest(org, account):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except DoesNotExist:
@@ -222,7 +222,7 @@ def managePositions(org, account):
 
     # checking if the allocation has already been approved
     isApproved = bool(Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == True))
-    if isApproved: 
+    if isApproved: # if the approved allocation exists (in other words, if it is not None)
         flash(f"The allocation for the {nextAY.termName} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
         return redirect('/admin/manageDepartments/')
     
@@ -256,6 +256,8 @@ def submitAllocationRequest():
     # getting the name of the user who approves the request
     supervisorID = require_login().supervisor
 
+
+    # the list of the fields updated after submitting the allocation request
     updatedFields = {
         "termCode": nextAY.termCode, 
         "department": request.form.get("submitter", type=int, default=None), 
@@ -277,9 +279,9 @@ def submitAllocationRequest():
                                                 isFinal=False, 
                                                 defaults={**updatedFields})
     
-    if not wasCreated:
+    if not wasCreated: # if the allocation has already existed (it is being resubmitted/updated)
         for key, value in updatedFields.items():
-            setattr(requestedAlloc, key, value)
+            setattr(requestedAlloc, key, value) # updating all the fields based on updatedFields values
     
     requestedAlloc.save()
 

@@ -99,12 +99,12 @@
         <label for="justification" id="allocationJustification">Justification / Notes: </label>
     </p>
 
-    <textarea name="justification" class="unresizeable" rows="3" style="width: 100%; margin-bottom: 40px;"></textarea> 
+    <textarea name="justification" id="justificationTextField" rows="3"></textarea> 
 
     <div class="allocationReviewSection">
 
-        <div align="pull-left" style="width: 70%; margin-top: -5px;">
-            <small id="allocationReviewNote">
+        <div align="pull-left" id="allocationReviewNote">
+            <small>
                 This allocation request for {{nextAY.termName.split(" ")[1]}} can be updated by resubmission. However, once the Labor Office approves it, you can no longer change it.   
             </small>
         </div>
