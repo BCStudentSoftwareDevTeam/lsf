@@ -37,21 +37,19 @@
 
 .description-header {
     font-weight: 700;
+    font-size: 2.5rem;
 }
 
 .position-container {
     margin: 2rem;
-    
 }
 
-/* Description section card */
 .position-description {
     text-align: left;
-    margin-top: 0;
-    margin-bottom: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
     font-size: 1.25rem;
-    white-space: pre-line;
-    /* overflow-wrap: break-word; */
+    overflow-wrap: break-word;
     word-wrap: break-word;
 }
 
@@ -61,7 +59,6 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-wrap: anywhere;
     word-wrap: break-word;
 }
 
