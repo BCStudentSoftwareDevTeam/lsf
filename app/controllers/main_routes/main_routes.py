@@ -111,17 +111,17 @@ def allocationTable(org=None, account=None):
         currentAY = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
         springTerm = Term.select().where(Term.termCode == currentDate[:4] + "12").get()
 
-
-    allocationDict = {"primary_10": 1,
-                    "primary_12": 2,
-                    "primary_15": 3,
-                    "primary_20": 4,
-                    "secondary_5": 5,
-                    "secondary_10": 6,
-                    "breakHours": 500,
-                    "totalPrimaries": 10,
-                    "totalSecondaries": 11,
-                    "totalAllocations": 21}
+    allocationDict = getTotalAllocations(currentAY, dept)
+    # allocationDict = {"primary_10": 1,
+    #                 "primary_12": 2,
+    #                 "primary_15": 3,
+    #                 "primary_20": 4,
+    #                 "secondary_5": 5,
+    #                 "secondary_10": 6,
+    #                 "breakHours": 500,
+    #                 "totalPrimaries": 10,
+    #                 "totalSecondaries": 11,
+    #                 "totalAllocations": 21}
     fallContracts = getContractedAllocations(fallTerm, dept)
     springContracts = getContractedAllocations(springTerm, dept)
 
