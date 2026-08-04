@@ -236,7 +236,7 @@ def test_getActivePendingPositionCounts():
             status="Approved"
         )
 
-        counts = getActivePendingPositionCounts(dept)
+        counts = getActivePendingPositionCounts(dept,(2026, 2027))
         row = counts[(dept.departmentID, supervisor.ID)]
 
         assert row["active_primary_positions"] == 1

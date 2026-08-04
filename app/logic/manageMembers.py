@@ -8,16 +8,10 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 
 
-def getActivePendingPositionCounts(dept):
-    """Active/pending primary/secondary position counts for the current academic year."""
+def getActivePendingPositionCounts(dept, currentYear):
+    """Active/pending primary/secondary position counts for the selected academic year."""
     today = date.today()
-
-    if today.month < 7:
-        startYear = today.year - 1
-    else:
-        startYear = today.year
-
-    academicYearName = f"AY {startYear}-{startYear + 1}"
+    academicYearName = f"AY {currentYear[0]}-{currentYear[1]}"
     pendingStatuses = ["Pending", "Pre-Student Approval"]
 
     releasedFormIds = (

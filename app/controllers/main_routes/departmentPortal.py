@@ -25,19 +25,12 @@ def manageMembers(org=None, account=None):
         abort(404)
 
     departmentMembers = getSupervisorDepartments(dept)
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(
-        supervisor=currentUser.supervisor,
-        department=dept
-    )
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=currentUser.supervisor, department=dept)
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        supervisorDeptRecord
-    ):
+    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
         return render_template('errors/403.html'), 403
 
-    activePendingPositionCounts = getActivePendingPositionCounts(dept)
+    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear)
     departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
 
     return render_template(
@@ -74,11 +67,7 @@ def searchMember(query=None):
     """Search supervisors by name or B-number."""
     currentUser = g.currentUser
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        currentUser.supervisor
-    ):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor ):
         return render_template('errors/403.html'), 403
 
     supervisors = (
@@ -108,16 +97,9 @@ def updateCoordinator():
     supervisorDeptRecord = None
 
     if currentUser.supervisor:
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(
-            (SupervisorDepartment.supervisor == currentUser.supervisor) &
-            (SupervisorDepartment.department == departmentID)
-        )
+        supervisorDeptRecord = SupervisorDepartment.get_or_none( (SupervisorDepartment.supervisor == currentUser.supervisor) & (SupervisorDepartment.department == departmentID))
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        supervisorDeptRecord
-    ):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord ):
         return render_template('errors/403.html'), 403
 
     member = SupervisorDepartment.get(
@@ -136,11 +118,7 @@ def updateEligibility():
     """Updates a supervisor's eligibility status."""
     currentUser = g.currentUser
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        currentUser.supervisor
-    ):
+    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -160,11 +138,7 @@ def removeMember():
     """Removes a staff member from a department."""
     currentUser = g.currentUser
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        currentUser.supervisor
-    ):
+    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
@@ -173,10 +147,7 @@ def removeMember():
     if not supervisorID or not departmentID:
         return "", 400
 
-    member = SupervisorDepartment.get(
-        (SupervisorDepartment.supervisor == supervisorID) &
-        (SupervisorDepartment.department == departmentID)
-    )
+    member = SupervisorDepartment.get((SupervisorDepartment.supervisor == supervisorID) & (SupervisorDepartment.department == departmentID))
 
     member.delete_instance()
 
@@ -193,11 +164,7 @@ def addUserToDept():
     if not supervisorID or not departmentID:
         return jsonify(success=False, message="Missing supervisor or department."), 400
 
-    if not (
-        currentUser.isLaborAdmin or
-        currentUser.isLaborDepartmentStudent or
-        currentUser.supervisor
-    ):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     try:
