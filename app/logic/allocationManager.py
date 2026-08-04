@@ -89,9 +89,13 @@ def getContractedAllocations(termCode, dept):
     "used_20": countContracts("Primary", "20", termCode, dept),
     "used_5_sec": countContracts("Secondary", "5", termCode, dept),
     "used_10_sec": countContracts("Secondary", "10", termCode, dept),
+    "used_primaries": 0,
+    "used_secondaries": 0,
     "used_total": 0,
     "break_hours": breakSum["total_hours"]
     }
+    usedPositions["used_primaries"] = sum(list(usedPositions.values())[:5])
+    usedPositions["used_secondaries"] = sum(list(usedPositions.values())[5:7])
     usedPositions["used_total"] = sum(list(usedPositions.values())[:7])
     return usedPositions
 

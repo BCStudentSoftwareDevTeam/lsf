@@ -43,7 +43,7 @@
         </button>
     </div>
     <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-      <table class="table table-striped table-bordered" id="fallTermTable">
+      <table class="table table-striped table-bordered" id="fallTermPrimaries">
           <thead style="padding:50%;">
             <tr>
               <th style="width:20%; text-align: center;">Primaries</th>
@@ -52,30 +52,67 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td style="text-align: center">Total Contracts</td>
+              <td style="text-align: center">{{fallContracts["used_total"]}}</td>
+              <td style="text-align: center;">{{allocations["totalAllocations"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">Total Primaries</td>
+              <td style="text-align: center">{{fallContracts["used_primaries"]}}</td>
+              <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">10 Hour</td>
+              <td style="text-align: center">{{fallContracts["used_10"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_10"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">12 Hour</td>
+              <td style="text-align: center">{{fallContracts["used_12"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_12"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">15 Hour</td>
+              <td style="text-align: center">{{fallContracts["used_15"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_15"]}}</td>
+            </tr>
               <tr>
-                <td style="text-align: center">Total Primaries</td>
-                <td style="text-align: center">{{fallContracts["used_total"]}}</td>
-                <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">10 Hour</td>
-                <td style="text-align: center">{{fallContracts["used_10"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_10"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">12 Hour</td>
-                <td style="text-align: center">{{fallContracts["used_12"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_12"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">15 Hour</td>
-                <td style="text-align: center">{{fallContracts["used_15"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_15"]}}</td>
-                  <tr>
                 <td style="text-align: center">20 Hour</td>
                 <td style="text-align: center">{{fallContracts["used_20"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_20"]}}</td>
               </tr>
+        </tbody>
+      </table>
+      <table class="table table-striped table-bordered" id="fallTermSecondaries">
+          <thead style="padding:50%;">
+            <tr>
+              <th style="width:20%; text-align: center;">Secondaries</th>
+              <th style="width:40%; text-align: center;">Contracted</th>
+              <th style="width: 40%; text-align: center;">Allocated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center">Total Contracts</td>
+              <td style="text-align: center">{{fallContracts["used_total"]}}</td>
+              <td style="text-align: center;">{{allocations["totalAllocations"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">Total Secondaries</td>
+              <td style="text-align: center">{{fallContracts["used_secondaries"]}}</td>
+              <td style="text-align: center;">{{allocations["totalSecondaries"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">5 Hour</td>
+              <td style="text-align: center">{{fallContracts["used_5_sec"]}}</td>
+              <td style="text-align: center;">{{allocations["secondary_5"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">10 Hour</td>
+              <td style="text-align: center">{{fallContracts["used_10_sec"]}}</td>
+              <td style="text-align: center;">{{allocations["secondary_10"]}}</td>
+            </tr>
         </tbody>
       </table>
       </div>
@@ -92,7 +129,7 @@
         </button>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-       <table class="table table-striped table-bordered" id="springTermTable">
+      <table class="table table-striped table-bordered" id="springTermPrimaries">
           <thead style="padding:50%;">
             <tr>
               <th style="width:20%; text-align: center;">Primaries</th>
@@ -101,30 +138,67 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td style="text-align: center">Total Contracts</td>
+              <td style="text-align: center">{{springContracts["used_total"]}}</td>
+              <td style="text-align: center;">{{allocations["totalAllocations"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">Total Primaries</td>
+              <td style="text-align: center">{{springContracts["used_primaries"]}}</td>
+              <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">10 Hour</td>
+              <td style="text-align: center">{{springContracts["used_10"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_10"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">12 Hour</td>
+              <td style="text-align: center">{{springContracts["used_12"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_12"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">15 Hour</td>
+              <td style="text-align: center">{{springContracts["used_15"]}}</td>
+              <td style="text-align: center;">{{allocations["primary_15"]}}</td>
+            </tr>
               <tr>
-                <td style="text-align: center">Total Primaries</td>
-                <td style="text-align: center">{{springContracts["used_total"]}}</td>
-                <td style="text-align: center;">{{allocations["totalPrimaries"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">10 Hour</td>
-                <td style="text-align: center">{{springContracts["used_10"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_10"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">12 Hour</td>
-                <td style="text-align: center">{{springContracts["used_12"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_12"]}}</td>
-              </tr>
-                <tr>
-                <td style="text-align: center">15 Hour</td> 
-                <td style="text-align: center">{{springContracts["used_15"]}}</td>
-                <td style="text-align: center;">{{allocations["primary_15"]}}</td>
-                  <tr>
-                <td style="text-align: center">20 Hour</td> 
+                <td style="text-align: center">20 Hour</td>
                 <td style="text-align: center">{{springContracts["used_20"]}}</td>
                 <td style="text-align: center;">{{allocations["primary_20"]}}</td>
               </tr>
+        </tbody>
+      </table>
+      <table class="table table-striped table-bordered" id="springTermSecondaries">
+          <thead style="padding:50%;">
+            <tr>
+              <th style="width:20%; text-align: center;">Secondaries</th>
+              <th style="width:40%; text-align: center;">Contracted</th>
+              <th style="width: 40%; text-align: center;">Allocated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center">Total Contracts</td>
+              <td style="text-align: center">{{springContracts["used_total"]}}</td>
+              <td style="text-align: center;">{{allocations["totalAllocations"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">Total Secondaries</td>
+              <td style="text-align: center">{{springContracts["used_secondaries"]}}</td>
+              <td style="text-align: center;">{{allocations["totalSecondaries"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">5 Hour</td>
+              <td style="text-align: center">{{springContracts["used_5_sec"]}}</td>
+              <td style="text-align: center;">{{allocations["secondary_5"]}}</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">10 Hour</td>
+              <td style="text-align: center">{{springContracts["used_10_sec"]}}</td>
+              <td style="text-align: center;">{{allocations["secondary_10"]}}</td>
+            </tr>
         </tbody>
       </table>
     </div>

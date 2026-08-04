@@ -123,28 +123,8 @@ def allocationTable(org=None, account=None):
                     "totalSecondaries": 11,
                     "totalAllocations": 21}
     fallContracts = getContractedAllocations(fallTerm, dept)
-    # fallContracts = {
-    #     "used_10": 4,
-    #     "used_12": 4,
-    #     "used_15": 4,
-    #     "used_20": 4,
-    #     "used_5_sec": 4,
-    #     "used_10_sec": 4,
-    #     "used_total": 0,
-    #     "break_hours": "3"
-    #     }
     springContracts = getContractedAllocations(springTerm, dept)
 
-    # springContracts = {
-    #     "used_10": 4,
-    #     "used_12": 4,
-    #     "used_15": 4,
-    #     "used_20": 4,
-    #     "used_5_sec": 4,
-    #     "used_10_sec": 4,
-    #     "used_total": 0,
-    #     "break_hours": "3"
-    #     }
     breakContracts = {
         "thanksgiving":getBreakContracts(currentAY.termCode + 1, dept),
         "winter": getBreakContracts(currentAY.termCode + 2, dept),

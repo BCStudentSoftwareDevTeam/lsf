@@ -1,6 +1,15 @@
 $(document).ready( function(){
-    fallTermTable = $('#fallTermTable');
-    fallTermTable.DataTable({
+    fallTermPrimaries = $('#fallTermPrimaries');
+    fallTermPrimaries.DataTable({
+        pageLength: 25,
+        info: false,
+        lengthChange: false,
+        searching: false,
+        paging: false,
+        "order": []
+    });
+    fallTermSecondaries = $('#fallTermSecondaries');
+    fallTermSecondaries.DataTable({
         pageLength: 25,
         info: false,
         lengthChange: false,
@@ -9,8 +18,17 @@ $(document).ready( function(){
         "order": []
     });
 
-    springTermTable = $('#springTermTable');
-    springTermTable.DataTable({
+    springTermPrimaries = $('#springTermPrimaries');
+    springTermPrimaries.DataTable({
+        pageLength: 25,
+        info: false,
+        lengthChange: false,
+        searching: false,
+        paging: false,
+        "order": []
+    });
+    springTermSecondaries = $('#springTermSecondaries');
+    springTermSecondaries.DataTable({
         pageLength: 25,
         info: false,
         lengthChange: false,
