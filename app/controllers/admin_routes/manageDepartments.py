@@ -106,9 +106,17 @@ def annualPositionReviewRequest():
     if not currentUser or not currentUser.isLaborAdmin:
         return jsonify({"Success": False}), 403
 
+    rsp = request.get_json(silent=True)
+    if not rsp or "academicYear" not in rsp:
+        return jsonify({"Success": False, "message": "Request must include academicYear."}), 400
+
     try:
-        rsp = request.get_json()
-        result = sendAnnualPositionReviewRequests(int(rsp['academicYear']), currentUser)
+        academicYear = int(rsp["academicYear"])
+    except (TypeError, ValueError):
+        return jsonify({"Success": False, "message": "academicYear must be a valid integer."}), 400
+
+    try:
+        result = sendAnnualPositionReviewRequests(academicYear, currentUser)
         return jsonify({"Success": True, **result})
     except Exception as e:
         print(e)
