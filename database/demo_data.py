@@ -14,7 +14,6 @@ from app.models.department import Department
 from app.models.user import User
 from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
-from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -41,37 +40,8 @@ bothStudents = [
                 "STU_CPO":"700",
                 "LAST_POSN":"Media Technician",
                 "LAST_SUP_PIDM":"7"
-                },          
-                {
-                "ID":"B00741361",
-                "PIDM":"99",
-                "FIRST_NAME":"Antonia",
-                "LAST_NAME":"Schmith",
-                "CLASS_LEVEL":"Freshman",
-                "ACADEMIC_FOCUS":"Computer Science",
-                "MAJOR":"Computer Science",
-                "PROBATION":"0",
-                "ADVISOR":"Scott Heggen",
-                "STU_EMAIL":"schmitha@berea.edu",
-                "STU_CPO":"777",
-                "LAST_POSN":"TA",
-                "LAST_SUP_PIDM":"7"
                 },
-                {
-                "ID":"B00732363",
-                "PIDM":"58",
-                "FIRST_NAME":"Barbara",
-                "LAST_NAME":"Williams",
-                "CLASS_LEVEL":"Junior",
-                "ACADEMIC_FOCUS":"Computer Science",
-                "MAJOR":"Computer Science",
-                "PROBATION":"0",
-                "ADVISOR":"Jasmine Jones",
-                "STU_EMAIL":"williamsb@berea.edu",
-                "STU_CPO":"118",
-                "LAST_POSN":"TA",
-                "LAST_SUP_PIDM":"7"
-                },
+
                 {
                 "ID":"B00730361",
                 "PIDM":"1",
@@ -491,22 +461,6 @@ users = [
         "isSaasAdmin": None
         },
         {
-        "student": "B00741361",
-        "supervisor": None,
-        "username": "schmitha",
-        "isLaborAdmin": None,
-        "isFinancialAidAdmin": None,
-        "isSaasAdmin": None
-        },
-        {
-        "student": "B00732363",
-        "supervisor":  None,
-        "username": "williamsb",
-        "isLaborAdmin": None,
-        "isFinancialAidAdmin": None,
-        "isSaasAdmin": None
-        },
-        {
         "student": "B00730361",
         "supervisor": None,
         "username": "jamalie",
@@ -653,137 +607,16 @@ LaborStatusForm.insert([{
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
             "startDate": f"2020-04-01",
-            "endDate": f"2020-09-01",
-            "studentConfirmation": True
+            "endDate": f"2020-09-01"
         }]).on_conflict_replace().execute()
-
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
-            "status": "Pending"
+            "status_id": "Pending"
         }]).on_conflict_replace().execute()
-
-LaborStatusForm.insert([{
-            "laborStatusFormID": 11,
-            "termCode_id": f"202500",
-            "studentName": "Antonia Schmith",
-            "studentSupervisee_id": "B00741361",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 1,
-            "POSN_TITLE": "Student Programmer",
-            "POSN_CODE": "S61407",
-            "weeklyHours": 10,
-            "startDate": f"2026-04-01",
-            "endDate": f"2026-09-01",
-            "studentConfirmation": True
-        }]).on_conflict_replace().execute()
-
-FormHistory.insert([{
-            "formHistoryID": 11,
-            "formID_id": "11",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()
-
-LaborStatusForm.insert([{
-            "laborStatusFormID": 12,
-            "termCode_id": f"202500",
-            "studentName": "Barbara Williams",
-            "studentSupervisee_id": "B00732363",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 1,
-            "POSN_TITLE": "Student Programmer",
-            "POSN_CODE": "S61407",
-            "weeklyHours": 10,
-            "startDate": f"2027-04-01",
-            "endDate": f"2029-09-01",
-            "studentConfirmation": True            
-        }]).on_conflict_replace().execute()
-
-FormHistory.insert([{
-            "formHistoryID": 12,
-            "formID_id": "12",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()    
-
-LaborReleaseForm.insert([{
-            "laborReleaseFormID": 10,
-            "conditionAtRelease": "unsatisfactory",
-            "releaseDate": f"2025-04-14",
-            "reasonForRelease": "Smoking Cigarettes in the Programmers' space."
-        }]).on_conflict_replace().execute()    
-
-FormHistory.insert([{
-            "formHistoryID": 13,
-            "formID_id": "12",
-            "historyType_id": "Labor Release Form",
-            "releaseForm": 10,
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()    
-
-LaborStatusForm.insert([{
-            "laborStatusFormID": 4,
-            "termCode_id": f"202500",
-            "studentName": "Elaleh Jamali",
-            "studentSupervisee_id": "B00730361",
-            "supervisor_id": "B12361006",
-            "department_id": 1,
-            "jobType": "Secondary",
-            "WLS": 1,
-            "POSN_TITLE": "Labor Workers",
-            "POSN_CODE": "S61419",
-            "weeklyHours": 10,
-            "startDate": f"2027-04-01",
-            "endDate": "2027-09-01"
-        }]).on_conflict_replace().execute()  
-
-FormHistory.insert([{
-            "formHistoryID": 4,
-            "formID_id": "4",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()    
-
-LaborStatusForm.insert([{
-            "laborStatusFormID": 5,
-            "termCode_id": f"202500",
-            "studentName": "Oluwagbayi Makinde",
-            "studentSupervisee_id": "B00791326",
-            "supervisor_id": "B12365892",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 1,
-            "POSN_TITLE": "Labor Workers",
-            "POSN_CODE": "S61429",
-            "weeklyHours": 10,
-            "startDate": f"2025-04-01",
-            "endDate": "2029-09-01"
-        }]).on_conflict_replace().execute()  
-
-FormHistory.insert([{
-            "formHistoryID": 5,
-            "formID_id": "5",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()    
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
@@ -807,34 +640,8 @@ FormHistory.insert([{
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute() 
-
-
-LaborStatusForm.insert([{
-            "laborStatusFormID": 6,
-            "termCode_id": f"202500",
-            "studentName": "Guillermo Adams",
-            "studentSupervisee_id": "B00734292",
-            "supervisor_id": "B12365892",
-            "department_id": 1,
-            "jobType": "Primary",
-            "WLS": 1,
-            "POSN_TITLE": "Labor Workers",
-            "POSN_CODE": "S61439",
-            "weeklyHours": 10,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-        }]).on_conflict_replace().execute()  
-
-FormHistory.insert([{
-            "formHistoryID": 6,
-            "formID_id": "6",
-            "historyType_id": "Labor Status Form",
-            "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
-            "status": "Approved"
-        }]).on_conflict_replace().execute()      
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()    
 
 
 
@@ -948,7 +755,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":         202500,
+    "termCode":        202500,
     "department":       2,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1011,39 +818,7 @@ allocations = [
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
-allocation =[
-                {
-                    "termCode":f"{2025}00",
-                    "department": 3,
-                    "isFinal": True,
-                    "approvedOn": f"{2025}-06-30",
-                    "approvedBy": "B12365892",
-                    "justification": "We just want it for fun", 
-                    "primary_10": 2,
-                    "primary_12": 3,
-                    "primary_15": 1, 
-                    "primary_20": 6, 
-                    "secondary_5": 2,
-                    "secondary_10": 0,
-                    "breakHours": 500
-                },
-                {
-                    "termCode":f"{2025}00",
-                    "department": 2,
-                    "isFinal": False,
-                    "approvedOn": f"{2025 }-06-20",
-                    "approvedBy": "B00763721",
-                    "justification": "We need it to lower the amount of allocations we have", 
-                    "primary_10": 1,
-                    "primary_12": 2,
-                    "primary_15": 5, 
-                    "primary_20": 2, 
-                    "secondary_5": 10,
-                    "secondary_10": 0,
-                    "breakHours": 1500
-                }
-            ]
-Allocation.insert_many(allocation).on_conflict_replace().execute()
+print(" * allocation added")
 
 
 #############################
