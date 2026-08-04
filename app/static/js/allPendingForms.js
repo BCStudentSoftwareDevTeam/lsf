@@ -41,6 +41,7 @@ $(document).ready(function() {
 // CHECK ALL CHECKBOX ON APPROVE BUTTON
   $('#checkAll').change(function(){
     $(".approveCheckbox").prop('checked', $(this).prop("checked"));
+    updatePageAllocationWarnings();
   });
 
 
@@ -53,10 +54,41 @@ $(document).ready(function() {
     if ($('.approveCheckbox:checked').length == $('.approveCheckbox').length ){
         $("#checkAll")[0].checked = true;
     }
+    updatePageAllocationWarnings();
   });
 
 
 });
+
+// Shows the same per-department allocation warnings directly on the list page as boxes get
+// checked/unchecked, so the admin sees the impact before ever opening the approval modal.
+// Reuses the same endpoint the modal uses, since it already groups by department and only
+// returns warnings for departments represented among the given form IDs.
+function updatePageAllocationWarnings() {
+  if ($('#pageAllocationWarnings').length === 0) {
+    return;
+  }
+
+  var checkedIds = $('.approveCheckbox:checked').map(function() { return this.value; }).get();
+  $('#pageAllocationWarnings').empty();
+
+  if (checkedIds.length === 0) {
+    return;
+  }
+
+  $.ajax({
+    type: "POST",
+    url: "/admin/checkedForms",
+    datatype: "json",
+    data: JSON.stringify(checkedIds),
+    contentType: 'application/json',
+    success: function(response) {
+      if (response) {
+        renderAllocationWarningBoxes(response.allocationWarnings, '#pageAllocationWarnings');
+      }
+    }
+  });
+}
 
 
 var labor_details_ids = []; // for insertApprovals() and final_approval() only
@@ -115,8 +147,11 @@ function updateApproveTableData(returned_details) {
 // Shows a non-blocking allocation warning per department represented among the
 // selected forms, so admins can see the impact of approval before confirming.
 // Each category (positions / break hours) is highlighted independently, since
-// a department can be over on one and fine on the other.
-function updateAllocationWarnings(allocationWarnings) {
+// a department can be over on one and fine on the other. Used both for the approval
+// modal and for the live warnings on the list page itself (see updatePageAllocationWarnings).
+function renderAllocationWarningBoxes(allocationWarnings, targetSelector) {
+  var $target = $(targetSelector);
+  $target.empty();
   if (!allocationWarnings) { return; }
   for (var i = 0; i < allocationWarnings.length; i++) {
     var w = allocationWarnings[i];
@@ -140,8 +175,12 @@ function updateAllocationWarnings(allocationWarnings) {
       '<span style="' + positionsStyle + '">Total Positions (all bands): ' + w.positionsRemaining + ' remaining</span>' + bandDetail + '<br>' +
       '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursRemaining + ' remaining</span>' +
       '</div>';
-    $('#allocationWarnings').append(html);
+    $target.append(html);
   }
+}
+
+function updateAllocationWarnings(allocationWarnings) {
+  renderAllocationWarningBoxes(allocationWarnings, '#allocationWarnings');
 }
 
 
