@@ -1,0 +1,62 @@
+@media(min-width:970px) and (max-width:1340px) {
+  .container {
+    width: 80%;
+    }
+}
+
+@media(min-width:1340px) and (max-width:1800px) {
+  .container {
+    width: 55%;
+    }
+}
+
+@media(min-width:1800px) {
+  .container {
+    width: 40%;
+    }
+}
+
+#allocationReviewSubtitle{
+  margin-bottom: 30px;
+}
+
+.separationLine {
+  border: 0; 
+  border-top: 1px solid black;
+}
+
+#breakHours {
+  margin-top: 0px; 
+  margin-bottom: 30px;
+}
+
+.allocationReviewSection{
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between;
+}
+
+.positionNumericSpinner {
+  width: 45px;
+}
+
+.breakHoursNumericSpinner {
+  width: 65px;
+}
+
+#requestedPositions {
+  margin-bottom: -10px;
+}
+
+#allocationJustification {
+  margin-top: 30px;
+}
+
+.unresizeable {
+  resize: none;
+}
+
+#allocationReviewNote {
+  max-width:70%; 
+  color: grey;
+}

@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block styles %} {{super()}}
+<link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/allocationRequest.css?u={{lastStaticUpdate}}" />
+{% endblock %} {% block scripts %} {{super()}}
+<script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/allocationRequest.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %} {% block app_content %}
+
+<h2 align="center">
+    <strong>
+        Allocation Request
+    </strong>
+</h2>
+
+<p  align="center" id="allocationReviewSubtitle">
+    <strong>
+        Submit an allocation request to the Labor Department
+    </strong>
+</p>
+
+<form action="/admin/allocationReview/approve" method="POST" class="container">
+    <p>
+        <!-- Requester = Requesting Department -->
+        <label for="requestingDepartment">Submitter: </label> {{department.DEPT_NAME}} Department
+        <input type="hidden" name="submitter" value="{{department.departmentID}}">
+    </p>
+
+    <p>
+        <label for="academicYear">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        
+    </p>
+    
+    <hr class="separationLine">
+
+    <p>
+        <label for="breakHours" id="breakHours">Number of Break Hours: </label>
+        <input type="number" name="breakHours" min="0" step="1" value="{{currentAlloc.breakHours}}" class="breakHoursNumericSpinner"> 
+        <small> (currently allocated: {{currentAlloc.breakHours}})</small> 
+    </p>
+
+    <p>
+        <label for="requestedPositions" id="requestedPositions">Number of Positions: </label>            
+    </p>
+
+    <div class="allocationReviewSection">
+        <div>
+            <p>
+                <small>
+                    <b>Primary</b>
+                </small>
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input name="primary_10" type="number" min="0" step="1" value="{{currentAlloc.primary_10}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_10}})</small>  
+            </p>
+
+            <p>
+                12 hours:&nbsp;
+                <input name="primary_12" type="number" min="0" step="1" value="{{currentAlloc.primary_12}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_12}})</small>  
+            </p>
+
+            <p>
+                15 hours:&nbsp;
+                <input name="primary_15" type="number" min="0" step="1" value="{{currentAlloc.primary_15}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_15}})</small>  
+            </p>
+
+            <p>
+                20 hours:&nbsp;
+                <input name="primary_20" type="number" min="0" step="1" value="{{currentAlloc.primary_20}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_20}})</small>  
+            </p>
+        </div>
+        <div> 
+            <p>
+                <small>
+                    <b>Secondary</b>
+                </small>
+            </p>
+
+            <p>
+                5 hours:&nbsp;&nbsp;&nbsp;
+                <input name="secondary_5" type="number" min="0" step="1" value="{{currentAlloc.secondary_5}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_5}})</small>  
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input name="secondary_10" type="number" min="0" step="1" value="{{currentAlloc.secondary_10}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_10}})</small>  
+            </p>
+        </div>
+    </div>
+    
+    <p>
+        <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
+    </p>
+
+    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea> 
+
+    <div class="allocationReviewSection">
+
+        <div align="pull-left" style="width: 70%; margin-top: -5px;">
+            <small id="allocationReviewNote">
+                This allocation request for {{nextAY.termName.split(" ")[1]}} can be updated by resubmission. However, once the Labor Office approves it, you can no longer change it.   
+            </small>
+        </div>
+
+        <div class="section">
+            <button type="button" class="btn"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+    </div>
+</form>
+
+{% endblock %}

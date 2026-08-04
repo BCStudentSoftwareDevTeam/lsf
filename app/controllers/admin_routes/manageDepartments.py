@@ -190,3 +190,45 @@ def approveAllocationReview():
 
 
     return redirect("/admin/manageDepartments")
+
+
+
+
+
+
+#######################################################################################################################
+### ALL THE CODE BELOW SHOULD BE MOVED TO departmentPortal.py EVENTUALLY #############################################
+#####################################################################################################################
+
+
+@admin.route('/department/<org>/<account>/allocations/request', methods=['GET'])
+def managePositions(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except DoesNotExist:
+        return render_template('errors/404.html'), 404
+    
+    if not g.currentUser.isLaborAdmin:
+        if not SupervisorDepartment.select().where(
+            (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
+            (SupervisorDepartment.department == dept.departmentID)
+        ).exists():
+            return render_template('errors/403.html'), 403
+    
+
+    # Retrieving the next year 
+    # DON'T DELETE THE UNDERSCORES
+    currentAY, _, nextAY = generateAdjacentYears()
+    
+
+    # getting the current allocation
+    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+
+
+    return render_template('main/allocationRequest.html', 
+                            department = dept, 
+                            nextAY = nextAY, 
+                            currentAlloc = currentAlloc
+                            )
+
+
