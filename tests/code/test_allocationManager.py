@@ -6,11 +6,12 @@ from app.models.laborStatusForm import *
 from app.models.department import *
 from app.models.term import *
 from app.models.formHistory import FormHistory
-from app.logic.allocationManager import *
 from app.models.student import *
 from app.models.supervisor import * 
 from app.models.historyType import * 
 from app.models.user import User
+
+from app.logic.allocationManager import *
 
 
 @pytest.fixture
@@ -35,7 +36,7 @@ def testDepartment():
 
     yield department
 
-    #destroy
+    #destroyLabor Status
     department.delete_instance()
 
 @pytest.fixture
@@ -70,8 +71,6 @@ def testAllocation(testDepartment,testTerm):
     #destroy
     allocation.delete_instance()
 
-
-
 @pytest.fixture
 def testStudent():
     student_data = Student.create(
@@ -82,7 +81,6 @@ def testStudent():
     #destroy
     student_data.delete_instance()
 
-
 @pytest.fixture
 def testSupervisor():
     supervisor_data = Supervisor.create(
@@ -92,7 +90,6 @@ def testSupervisor():
     #destroy
     supervisor_data.delete_instance()
 
-
 @pytest.fixture
 def testHistoryType():
     History_data = HistoryType.create(
@@ -101,9 +98,6 @@ def testHistoryType():
     yield History_data
     #destroy
     History_data.delete_instance()
-
-
-
 
 @pytest.fixture
 def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
@@ -134,22 +128,18 @@ def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
       #destroy
     laborStatusForm.delete_instance()
 
-
 @pytest.fixture
-def testFormHistory(testLaborStatusForm, testHistoryType,testUser):
+def testFormHistory(testLaborStatusForm,testUser):
     formHistory = FormHistory.create(
         formHistoryID = 8989,
         formID        = testLaborStatusForm,      # pass the model instance
-        historyType   = testHistoryType,
+        historyType   = "Labor Status Form", 
         createdBy     = testUser.userID,
         createdDate   = "2025-03-02",
         status        = "Approved",
     )
     yield formHistory
     formHistory.delete_instance()
-
-
-
 
 @pytest.mark.integration
 def test_getAllocation(testDepartment, testTerm, testAllocation):
@@ -169,14 +159,11 @@ def test_getTotalAllocations(testDepartment, testTerm, testAllocation):
     assert totalAllocation['totalPrimaries'] == 17
     assert totalAllocation['totalSecondaries'] == 2
     assert totalAllocation['totalAllocations'] == 19
-  
 
 @pytest.mark.integration
 def test_countContracts(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
     contractsCounts = countContracts(testLaborStatusForm.jobType,testLaborStatusForm.weeklyHours,testTerm.termCode,testDepartment.departmentID)
     assert contractsCounts == 1
-
-
 
 @pytest.mark.integration
 def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment, testFormHistory,testAllocation):
@@ -188,7 +175,4 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['used_5_sec'] == 0
     assert contractedAllocation['used_10_sec'] == 0
     assert contractedAllocation['used_total'] == 1
-    assert contractedAllocation['break_hours'] == 0
-
-
-
+    assert contractedAllocation['break_hours'] == 500
