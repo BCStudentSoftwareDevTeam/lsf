@@ -21,6 +21,9 @@ def getAllocation(termCode: int, dept: int, isFinal = True):
 
 
 def getTotalAllocations(termCode: int, dept: int):
+    '''
+    This function returns a dictionary representation of the given department's allocation for the given term.
+    '''
     allocationObject = getAllocation(termCode, dept)
     allocationDict = {"primary_10": allocationObject["primary_10"],
                     "primary_12": allocationObject["primary_12"],
@@ -94,9 +97,12 @@ def getContractedAllocations(termCode: int, dept: int):
     "used_20": countContracts("Primary", "20", termCode, dept),
     "used_5_sec": countContracts("Secondary", "5", termCode, dept),
     "used_10_sec": countContracts("Secondary", "10", termCode, dept),
-    "used_primaries": sum(list(usedPositions.values())[:4]),
-    "used_secondaries": sum(list(usedPositions.values())[4:6]),
-    "used_total": sum(list(usedPositions.values())[:6]),  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
+    "used_primaries": 0,
+    "used_secondaries": 0,
+    "used_total": 0,  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
     "break_hours": breakSum["total_hours"]  # all break hours contracted (but not necessarily worked)
     }
+    usedPositions["used_primaries"] = sum(list(usedPositions.values())[:4])
+    usedPositions["used_secondaries"] = sum(list(usedPositions.values())[4:6])
+    usedPositions["used_total"] = sum(list(usedPositions.values())[:6])
     return usedPositions
