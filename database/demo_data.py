@@ -1236,21 +1236,6 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202600,
-    "department":       4,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Having more students! Yay!!!",
-    "primary_10":       11,
-    "primary_12":       7,
-    "primary_15":       0,
-    "primary_20":       0,
-    "secondary_5":      6,
-    "secondary_10":     0,
-    "breakHours":       301,
-    },
-    {
     "termCode":         202500,
     "department":       5,
     "isFinal":          True,
@@ -1279,7 +1264,7 @@ allocations = [
     "secondary_5":      3,
     "secondary_10":     9,
     "breakHours":       1200,
-    },   
+    }
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 

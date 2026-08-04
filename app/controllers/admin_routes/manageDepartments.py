@@ -124,8 +124,16 @@ def allocationReview(org=None, account=None):
     currentAY, _, nextAY = generateAdjacentYears()
     
 
-    requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
+    # getting the current allocation
     currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+
+
+    # checking if the department has requested any allocation review 
+    requestedAlloc = Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
+    isRequested    = bool(requestedAlloc)
+    if not isRequested: 
+        flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "danger")
+        return redirect('/admin/manageDepartments/')
 
 
     # checking if the allocation has already been approved
@@ -159,9 +167,17 @@ def approveAllocationReview():
                                 )
 
 
+
+    # getting the name of the user who approves the request
+    supervisorID = require_login().supervisor
+
+
+    # saving the newly approved allocation
     newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
                                         department      = request.form.get("requester", type=int, default=None), 
                                         isFinal         = True,
+                                        approvedBy      = supervisorID,
+                                        approvedOn      = date.today(),
                                         primary_10      = request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
                                         primary_12      = request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
                                         primary_15      = request.form.get("primary_15", type=int, default=currentAlloc.primary_15),
@@ -169,9 +185,7 @@ def approveAllocationReview():
                                         secondary_5     = request.form.get("secondary_5", type=int, default=currentAlloc.secondary_5),
                                         secondary_10    = request.form.get("secondary_10", type=int, default=currentAlloc.secondary_10),
                                         breakHours      = request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
-    )
-
-
+                                        )
     newApprovedAlloc.save()
 
 
