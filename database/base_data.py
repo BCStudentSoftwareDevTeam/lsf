@@ -391,7 +391,7 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":''' 
-                <p> An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved.
+                <p> An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved. </p>
                             ''',
                 "audience":"Academic Advisor"
                 },
