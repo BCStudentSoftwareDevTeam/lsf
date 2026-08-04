@@ -7,7 +7,7 @@ from app.login_manager import require_login
 
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
-
+from app.logic.getPositions import getToBeReviewedPosition
 from app.models.formHistory import FormHistory
 from app.models.user import *
 from app.models.term import *
@@ -130,5 +130,9 @@ def positionreview(org=None, account=None):
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         abort(404)
-    
-    return render_template('admin/positionreview.html')
+
+    positionsList = getToBeReviewedPosition(dept) 
+
+    return render_template('admin/positionreview.html',
+                            positions = positionsList
+    )

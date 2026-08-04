@@ -1302,7 +1302,118 @@ positionHistory = [
         "revisionDate" : f"2026-05-03",
         "description": "",
         "department" : 1
-    }
+    },
+    # --- New positions, never been active ---
+    {
+        "positionTitle": "Library Assistant",
+        "positionCode": "S30111",
+        "status": "Requested",
+        "wls": 1,
+        "revisionDate": f"2026-06-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Lab Monitor",
+        "positionCode": "S30112",
+        "status": "Requested",
+        "wls": 2,
+        "revisionDate": f"2026-06-15",
+        "description": "",
+        "department": 3
+    },
+    {
+        "positionTitle": "Grounds Crew",
+        "positionCode": "S30113",
+        "status": "Requested",
+        "wls": 2,
+        "revisionDate": f"2026-07-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Peer Tutor",
+        "positionCode": "S30114",
+        "status": "Requested",
+        "wls": 3,
+        "revisionDate": f"2026-07-04",
+        "description": "",
+        "department": 3
+    },
+    {
+        "positionTitle": "Front Desk Attendant",
+        "positionCode": "S30115",
+        "status": "Requested",
+        "wls": 1,
+        "revisionDate": f"2026-07-15",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Kitchen Assistant",
+        "positionCode": "S30116",
+        "status": "Requested",
+        "wls": 2,
+        "revisionDate": f"2026-08-01",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Archives Digitization Aide",
+        "positionCode": "S30117",
+        "status": "Requested",
+        "wls": 4,
+        "revisionDate": f"2026-08-10",
+        "description": "",
+        "department": 3
+    },
+    {
+        "positionTitle": "Web Content Editor",
+        "positionCode": "S30118",
+        "status": "Requested",
+        "wls": 5,
+        "revisionDate": f"2026-08-20",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Shift Supervisor",
+        "positionCode": "S30119",
+        "status": "Requested",
+        "wls": 6,
+        "revisionDate": f"2026-09-01",
+        "description": "",
+        "department": 1
+    },
+
+    # --- Requested revisions of positions that already exist above ---
+    {
+        "positionTitle": "Student Programmer",
+        "positionCode": "S61407",
+        "status": "Requested",
+        "wls": 2,
+        "revisionDate": f"2026-06-10",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Junior Data Analyst",
+        "positionCode": "S39568",
+        "status": "Requested",
+        "wls": 5,
+        "revisionDate": f"2026-06-20",
+        "description": "",
+        "department": 1
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Requested",
+        "wls": 3,
+        "revisionDate": f"2026-07-12",
+        "description": "",
+        "department": 3
+    },
     
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()

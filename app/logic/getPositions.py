@@ -25,3 +25,9 @@ def getPositions(dept):
                                 .where((PositionHistory.department == dept) &
                                        (PositionHistory.status == "Active"))
                                 .order_by(PositionHistory.positionTitle.asc())))
+
+def getToBeReviewedPosition(dept):
+    return((PositionHistory.select()
+                                .where((PositionHistory.department == dept) &
+                                       (PositionHistory.status == "Requested"))
+                                .order_by(PositionHistory.positionTitle.asc())))
