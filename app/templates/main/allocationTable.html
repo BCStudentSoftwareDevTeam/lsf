@@ -16,16 +16,12 @@
 
 <h2 class="text-center">{% if department %} {{department.DEPT_NAME}} Allocations {% else %} Choose a Department: {% endif %} </h2>
 
- <div class ="button-container" style="display: flex; justify-content: space-between;">
-      <a id="download" class="btn btn-success" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/download">Download Allocation History</a>
-      <a id="request" class="btn btn-info" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/request">Request Allocation</a>
+<div class ="button-container">
+  <h3 class="termDisplay">Current Term: {{currentAY.termName}}</h3>
+  <a id="download" class="btn btn-success" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/download">Download Allocation History</a>
+  <a id="request" class="btn btn-info" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/request">Request Allocation</a>
 </div>
-  
-<div>
-  <h4>Current Term: {{currentAY.termName}}</h4>
-</div>  
  
-
 <div id="cardAccordion" class="accordion">
   
   <!-- Fall Allocations -->

@@ -35,6 +35,7 @@
 .btn-info{
     justify-self:flex-end;
     align-self: center;
+    margin-left: 4px
 }
 .accordion-arrow {
   display: inline-block;
@@ -47,7 +48,7 @@
   transform: rotate(0deg);
 }
 .button-container {
-  display:grid;
+  display:flex;
   justify-content:end;
 }
 .btn-block{
@@ -56,4 +57,7 @@
   text-align: center;
   justify-content: center;
   height: 100%
+}
+.termDisplay{
+  margin-right:auto;
 }
