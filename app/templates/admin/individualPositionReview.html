@@ -1,0 +1,33 @@
+    {% extends "base.html" %} {% block styles %} {{super()}}
+<link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/individualposition.css?u={{lastStaticUpdate}}" />
+{% endblock %} {% block scripts %} {{super()}}
+<script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/positionreview.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %} {% block app_content %}
+
+<h3>
+  Revision of {{position.positionTitle}} position
+</h3>
+
+<div class="positions">
+  <div class="old_position">
+    <h1>Previous Position Description</h1>
+    <h3>Title: {{position.positionTitle}}</h3>
+    <h3>WLS Level (1-6): {{position.WLS}}</h3>
+    <h3>Position Code: {{position.positionCode}}</h3>
+
+    Description:
+
+  </div>
+  <div class="new_position">
+        <h1>Previous Position Description</h1>
+    <h3>Title: {{position.positionTitle}}</h3>
+    <h3>WLS Level (1-6): {{position.WLS}}</h3>
+    <h3>Position Code: {{position.positionCode}}</h3>
+
+    Description:
+  </div>
+</div>
+{% endblock %}

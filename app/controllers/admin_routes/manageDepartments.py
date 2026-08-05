@@ -9,6 +9,7 @@ from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
 from app.logic.getPositions import getToBeReviewedPosition
 from app.models.formHistory import FormHistory
+from app.models.positionHistory import PositionHistory
 from app.models.user import *
 from app.models.term import *
 from app.models.department import *
@@ -134,5 +135,22 @@ def positionreview(org=None, account=None):
     positionsList = getToBeReviewedPosition(dept) 
 
     return render_template('admin/positionreview.html',
-                            positions = positionsList
+                            positions = positionsList,
+                            department = dept
+
+    )
+
+@admin.route('/admin/manageDepartments/<org>/<account>/positionreview/<poscode>', methods=['GET'])
+def individualpositions(org=None, account=None,poscode=None):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+        pos = PositionHistory.get(PositionHistory.positionCode == poscode)
+    except (NameError, DoesNotExist):
+        abort(404)
+
+
+
+    return render_template('admin/individualPositionReview.html',
+                            department = dept,
+                            position= pos
     )

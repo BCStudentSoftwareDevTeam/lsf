@@ -1,16 +1,13 @@
     {% extends "base.html" %} {% block styles %} {{super()}}
 <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="/static/css/manageDepartments.css?u={{lastStaticUpdate}}" />
 {% endblock %} {% block scripts %} {{super()}}
 <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
-<script type="text/javascript"
-  src="{{url_for('static', filename='js/manageDepartments.js') }}?u={{lastStaticUpdate}}"></script>
 <script type="text/javascript"
   src="{{url_for('static', filename='js/positionreview.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %} {% block app_content %}
 
 <h1>
-  {Departments} positions to be revisision
+  {{department.DEPT_NAME}} Position revision 
 </h1>
 
 <div>
@@ -21,10 +18,10 @@
           Position
         </th>
         <th>
-          revision date
+          Revision date
         </th>
          <th>
-          review
+          Review Position
         </th>
       </tr>
     </thead>
@@ -33,7 +30,7 @@
       <tr>
         <td>{{position.positionTitle}} <small class="text-muted">({{ position.positionCode }})</small></td>
         <td>{{position.revisionDate}}</td>
-        <td><button class="btn btn-primary">Review</button></td>
+        <td><a href="positionreview/{{position.positionCode}}" class="btn btn-primary">Review</a></td>
       </tr>
       {% endfor %}
     </tbody>
