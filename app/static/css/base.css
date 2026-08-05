@@ -126,8 +126,8 @@ a {
   box-sizing: border-box;
   left: 280px;
   right: 0px;
-  width: calc(100vw - 280px);
   margin-right: 280px;
+  width: calc(100vw - 300px);
 }
 
 

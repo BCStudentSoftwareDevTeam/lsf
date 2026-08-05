@@ -29,11 +29,12 @@
             <tbody>
                 {% for position in positions %}
                 <tr>
-                    <td>{{ position.positionTitle }} <small class="text-muted">{{ position.positionCode }}</small></td>
+                    <td>{{ position.positionTitle }}  <small class="text-muted">{{ position.positionCode }}</small></td>
                     <td>{{ position.wls }}</td>
                     <td>{{ position.revisionDate }}</td>
                     <td>
-                        <button class="btn btn-success view-btn" data-position-id="{{ position.id }}">View</button>
+                        <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}"
+                        class="btn btn-success view-btn">View</a>
                         <button class="btn btn-primary request-btn" data-position-id="{{ position.id }}">Revise Position</button>
                     </td>
                 </tr>
