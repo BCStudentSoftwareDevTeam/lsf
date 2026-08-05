@@ -1,43 +1,75 @@
-from flask import abort, g, jsonify, redirect, render_template, request, url_for
+from datetime import datetime
+
+from flask import abort, g, jsonify, redirect, render_template, request, send_file, url_for
 from peewee import DoesNotExist
 
 from app.controllers.main_routes import main_bp
-from app.logic.getPositions import getPositions
+from app.logic.download import makePositionDescriptionPDF
+from app.logic.getPositions import getPosition, getPositions, getPositionDescriptionSections
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
-from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts  
+from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts
 from app.logic.search import searchPerson
 from app.models.department import Department
+from app.models.positionHistory import PositionHistory
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
+def postionDescription(org, account, positionCode):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
 
-@main_bp.route('/department/<org>/<account>/members', methods=['GET'])
-def manageMembers(org=None, account=None):
-    """Generates the Manage Members page."""
-    currentUser = g.currentUser
+    revisionDateParam = request.args.get('revisionDate')
+    revisionDate = None
+    if revisionDateParam:
+        try:
+            revisionDate = datetime.strptime(revisionDateParam, '%Y-%m-%d').date()
+        except ValueError:
+            return render_template('errors/404.html'), 404
 
-    if not currentUser.supervisor:
-        return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
+    position = getPosition(dept, positionCode, revisionDate)
 
-    dept = Department.get_or_none(Department.ORG == org, Department.ACCOUNT == account)
+    if not position:
+        return render_template('errors/404.html'), 404
 
-    if not dept:
-        abort(404)
-
-    departmentMembers = getSupervisorDepartments(dept)
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=currentUser.supervisor, department=dept)
-
-    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
-        return render_template('errors/403.html'), 403
-
-    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear)
-    departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
+    sections = getPositionDescriptionSections(position)
 
     return render_template(
-        'main/manageMembers.html',
-        members=departmentMembers,
+        'main/individualPositions.html',
         department=dept,
+        position=position,
+        sections=sections
     )
+
+
+@main_bp.route('/department/<org>/<account>/positions/<positionCode>/download', methods=['GET'])
+def downloadPositionDescription(org, account, positionCode):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    revisionDateParam = request.args.get('revisionDate')
+    revisionDate = None
+    if revisionDateParam:
+        try:
+            revisionDate = datetime.strptime(revisionDateParam, '%Y-%m-%d').date()
+        except ValueError:
+            return render_template('errors/404.html'), 404
+
+    position = getPosition(dept, positionCode, revisionDate)
+
+    if not position:
+        return render_template('errors/404.html'), 404
+
+    pdfBuffer = makePositionDescriptionPDF(dept, position)
+
+    filename = f'{position.positionCode}_position_description.pdf'
+    return send_file(pdfBuffer, mimetype='application/pdf', as_attachment=True, download_name=filename)
+
+
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
 def managePositions(org, account):
@@ -188,3 +220,31 @@ def addUserToDept():
             success=False,
             message="Could not add supervisor to department."
         ), 500
+        
+@main_bp.route('/department/<org>/<account>/members', methods=['GET'])
+def manageMembers(org=None, account=None):
+    """Generates the Manage Members page."""
+    currentUser = g.currentUser
+
+    if not currentUser.supervisor:
+        return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
+
+    dept = Department.get_or_none(Department.ORG == org, Department.ACCOUNT == account)
+
+    if not dept:
+        abort(404)
+
+    departmentMembers = getSupervisorDepartments(dept)
+    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=currentUser.supervisor, department=dept)
+
+    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
+        return render_template('errors/403.html'), 403
+
+    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear)
+    departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
+
+    return render_template(
+        'main/manageMembers.html',
+        members=departmentMembers,
+        department=dept,
+    )
