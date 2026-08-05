@@ -17,6 +17,7 @@ from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import * 
 from app.logic.allocationManager import allocationExists
+from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 
@@ -128,9 +129,8 @@ def allocationReview(org=None, account=None):
             return render_template('errors/403.html'), 403
 
 
-    # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORE
-    currentAY, _, nextAY = generateAdjacentYears()
+    # Retrieving the current and following academic years
+    currentAY, nextAY = getCurrentAndNextAY()
 
 
     # checking if the allocation has already been approved
@@ -162,21 +162,17 @@ def allocationReview(org=None, account=None):
 @admin.route('/admin/allocationReview/approve', methods=['POST'])
 def approveAllocationReview():
     
-    # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORE
-    currentAY, _, nextAY = generateAdjacentYears()
+    # Retrieving the current and following academic years
+    currentAY, nextAY = getCurrentAndNextAY()
 
     # getting the name of the user who approves the request
     approverID = require_login().supervisor
 
-
     # getting the name of the requesting department
     requester = request.form.get("requester", type=int, default=None)
 
-
     # getting the current allocation (for default values)
     currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == requester, Allocation.isFinal == True)
-
 
     # saving the newly approved allocation
     newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
@@ -193,6 +189,5 @@ def approveAllocationReview():
                                         breakHours      = request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
                                         )
     newApprovedAlloc.save()
-
 
     return redirect("/admin/manageDepartments")

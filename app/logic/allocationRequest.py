@@ -1,14 +1,14 @@
 from flask import request, g
 from app.models.allocation import Allocation
 from app.logic.allocationManager import *
+from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 def getOrUpdateRequestedAllocation():
     """
     Gets or updates the requested allocation (used for the Allocation Request page specificially). 
     """
-    currentAY = (g.openTerm.termCode // 100) * 100                          # current academic year
-    nextAY = currentAY + 100                                                # upcoming (next) academic year
+    currentAY, nextAY = getCurrentAndNextAY()
 
     requester = request.form.get("submitter", type=int, default=None)       # the requesting department
 

@@ -8,14 +8,11 @@ from app.models.allocation import Allocation
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.logic.allocationRequest import getOrUpdateRequestedAllocation
 from app.logic.allocationManager import allocationExists
+from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 @main_bp.route('/department/<org>/<account>/allocations/request', methods=['GET'])
 def allocationRequest(org, account):
-
-    # an import statement (it was put here to avoid circular imports)
-    from app.logic.manageDepartments import generateAdjacentYears
-
 
     # getting the name of the currently chosen department (based on the org and account numbers)
     try:
@@ -33,9 +30,9 @@ def allocationRequest(org, account):
             return render_template('errors/403.html'), 403
     
 
-    # Retrieving the next year 
+    # Retrieving the current and following academic years 
     # DON'T DELETE THE UNDERSCORES
-    currentAY, _, nextAY = generateAdjacentYears()
+    currentAY, nextAY = getCurrentAndNextAY()
 
 
     # checking if the allocation has already been approved (in other words, if an approved allocation exists)
