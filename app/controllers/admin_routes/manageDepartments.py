@@ -119,7 +119,6 @@ def annualPositionReviewRequest():
         result = sendAnnualPositionReviewRequests(academicYear, currentUser)
         return jsonify({"Success": True, **result})
     except Exception as e:
-        print(e)
         return jsonify({"Success": False})
 
 
