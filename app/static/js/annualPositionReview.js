@@ -1,4 +1,4 @@
-function submitAnnualPositionReview() {
+function submitAnnualPositionReview(button) {
 /*
  POSTs the Annual Position Review request for the currently selected academic year.
  Sends a review request email to every active department's Labor Coordinators and
@@ -7,6 +7,12 @@ function submitAnnualPositionReview() {
  RETURNS: None
 */
   var academicYear = $('[data-target="#annualPositionModal"]').data('academic-year');
+
+  // Disable immediately so a double-click can't fire this request twice -
+  // PositionReview dedupes the record, but the emails would still go out
+  // more than once. Re-enabled in complete regardless of outcome so a retry
+  // after a failure is possible without reloading the page.
+  $(button).prop("disabled", true);
 
   $.ajax({
     method: "POST",
@@ -31,6 +37,9 @@ function submitAnnualPositionReview() {
         ? "You don't have permission to send Annual Position Review requests."
         : "Something went wrong sending the Annual Position Review requests.";
       flashMessage("danger", msg);
+    },
+    complete: function() {
+      $(button).prop("disabled", false);
     }
   })
 }
