@@ -261,21 +261,26 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
 
 @pytest.mark.integration
 def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment):
+
+    # Test that the formHistory object exists
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == 168
 
+    # Test it with a higher amount of hours
     testBreakLaborStatusForm[0].contractHours  = 800
     testBreakLaborStatusForm[0].save()
 
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == 800
 
+    # Test that it works even if weeklyHours and contractHours are set
     testBreakLaborStatusForm[0].weeklyHours  = 9999
     testBreakLaborStatusForm[0].save()
 
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == 800
 
+    # Test that if the form is denied to not show up.
     testBreakLaborStatusForm[1].status  = "denied by student"
     testBreakLaborStatusForm[1].save()
 
