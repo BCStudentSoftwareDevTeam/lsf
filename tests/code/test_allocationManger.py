@@ -49,6 +49,15 @@ def testTerm():
     term.delete_instance()
 
 @pytest.fixture
+def testBreakTerm():
+    #create
+    term = Term.create(termCode = 200601)
+    yield term
+
+    #destroy
+    term.delete_instance()
+
+@pytest.fixture
 def testAllocation(testDepartment,testTerm):
     #create
     allocation = Allocation.create(
@@ -143,6 +152,50 @@ def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
     laborStatusForm.delete_instance()
 
 @pytest.fixture
+def testBreakLaborStatusForm(testStudent,testSupervisor,testDepartment,testBreakTerm):
+    breakLaborStatusForm = LaborStatusForm.create(
+    studentName                 = "John Doe",
+    laborStatusFormID           = 9898,
+    termCode                    = testBreakTerm.termCode,      
+    studentSupervisee           = testStudent.ID,
+    supervisor_id               = testSupervisor.ID,
+    department                  = testDepartment.departmentID,
+    jobType                     = "Secondary",
+    WLS                         = 1,
+    POSN_TITLE                  = "Vacation Worker",
+    POSN_CODE                   = "S61412",
+    contractHours               = 168,
+    weeklyHours                 = None,
+    startDate                   = "2006-04-01",
+    endDate                     = "2006-09-01",
+    supervisorNotes             = None,
+    laborDepartmentNotes        = None,
+    studentConfirmation         = True,
+    confirmationToken           = None,
+    studentExpirationDate       = True,
+    studentResponseDate         = True,
+    )
+
+    breakFormHistory = FormHistory.create(
+        formHistoryID = 9898,
+        formID_id = "9898",
+        historyType_id = "Labor Status Form",
+        releaseForm_id = None,
+        adjustedForm_id = None,
+        overloadForm_id = None,
+        createdBy_id = 1,
+        createdDate = "2006-02-01",
+        reviewedDate = "2006-03-01",
+        reviewedBy_id = 1,
+        status_id = "Approved",
+        rejectReason = None
+    )
+
+    yield breakLaborStatusForm, breakFormHistory
+      #destroy
+    breakLaborStatusForm.delete_instance()
+
+@pytest.fixture
 def testFormHistory(testLaborStatusForm,testUser):
     formHistory = FormHistory.create(
         formHistoryID = 8989,
@@ -205,3 +258,26 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['used_total'] == 1
 
     assert contractedAllocation['break_hours'] == 500
+
+@pytest.mark.integration
+def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment):
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 168
+
+    testBreakLaborStatusForm[0].contractHours  = 800
+    testBreakLaborStatusForm[0].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 800
+
+    testBreakLaborStatusForm[0].weeklyHours  = 9999
+    testBreakLaborStatusForm[0].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 800
+
+    testBreakLaborStatusForm[1].status  = "denied by student"
+    testBreakLaborStatusForm[1].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == None
