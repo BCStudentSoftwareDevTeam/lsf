@@ -1,11 +1,8 @@
 from datetime import date
 
-from peewee import fn
-
+from app.logic.allocationManager import getContractedAllocations, getTotalAllocations
 from app.models.allocation import Allocation
-from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
-from app.models.formHistory import FormHistory
 
 
 def getCurrentSemesterLabel(term):
@@ -17,39 +14,6 @@ def getCurrentSemesterLabel(term):
     if date.today().month >= 8:
         return f"Fall {academicYear}"
     return f"Spring {academicYear + 1}"
-
-
-def countWorkers(department, termCode, jobType, hoursBucket):
-    workerCount = (
-        LaborStatusForm.select()
-        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-        .where(
-            LaborStatusForm.department == department,
-            LaborStatusForm.termCode == termCode,
-            LaborStatusForm.jobType == jobType,
-            LaborStatusForm.weeklyHours == hoursBucket,
-            LaborStatusForm.contractHours.is_null(True),
-            FormHistory.historyType == "Labor Status Form",
-            ~(FormHistory.status % "Denied%"),
-        )
-        .count()
-    )
-    return workerCount
-
-
-def getBreakHours(department, termCode):
-    breakHoursTotal = (
-        LaborStatusForm.select(fn.SUM(LaborStatusForm.contractHours))
-        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-        .where(
-            LaborStatusForm.department == department,
-            LaborStatusForm.termCode == termCode,
-            FormHistory.historyType == "Labor Status Form",
-            FormHistory.status == "Approved",
-        )
-        .scalar()
-    ) or 0
-    return breakHoursTotal
 
 
 def getDepartmentAllocationSummary(department):
@@ -81,46 +45,29 @@ def getDepartmentAllocationSummary(department):
     result["term"] = recentTerm
     result["currentSemester"] = getCurrentSemesterLabel(recentTerm)
 
-    totalPositions = (
-        Allocation.select(
-            fn.SUM(Allocation.primary_10)
-            + fn.SUM(Allocation.primary_12)
-            + fn.SUM(Allocation.primary_15)
-            + fn.SUM(Allocation.primary_20)
-            + fn.SUM(Allocation.secondary_5)
-            + fn.SUM(Allocation.secondary_10)
-        )
-        .where(
-            Allocation.department == department,
-            Allocation.termCode == termCode,
-        )
-        .scalar()
-    )
-    result["allocated"] = totalPositions or 0
+    # allocationManager's helpers only look at the *final* Allocation row for the
+    # term (they call getAllocation(..., isFinal=True) under the hood) and raise
+    # if one doesn't exist yet. A department whose most recent term is still a
+    # draft has no final row - fall back to the zeroed defaults above rather
+    # than letting that propagate into a 500 on the department portal.
+    try:
+        result["allocated"] = getTotalAllocations(termCode, department.departmentID)["totalAllocations"]
 
-    usedAllocation = (
-        LaborStatusForm.select()
-        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-        .where(
-            LaborStatusForm.department == department,
-            LaborStatusForm.termCode == termCode,
-            LaborStatusForm.contractHours.is_null(True),
-            FormHistory.historyType == "Labor Status Form",
-            ~(FormHistory.status % "Denied%"),
-        )
-        .count()
-    )
-    result["used"] = usedAllocation
-
-    result["usedPositions"] = {
-        "used10": countWorkers(department, termCode, "Primary", 10),
-        "used12": countWorkers(department, termCode, "Primary", 12),
-        "used15": countWorkers(department, termCode, "Primary", 15),
-        "used20": countWorkers(department, termCode, "Primary", 20),
-        "usedSecondary5": countWorkers(department, termCode, "Secondary", 5),
-        "usedSecondary10": countWorkers(department, termCode, "Secondary", 10),
-    }
-
-    result["breakHours"] = getBreakHours(department, termCode)
+        contractedAllocations = getContractedAllocations(termCode, department.departmentID)
+        result["used"] = contractedAllocations["used_total"]
+        result["usedPositions"] = {
+            "used10": contractedAllocations["used_10"],
+            "used12": contractedAllocations["used_12"],
+            "used15": contractedAllocations["used_15"],
+            "used20": contractedAllocations["used_20"],
+            "usedSecondary5": contractedAllocations["used_5_sec"],
+            "usedSecondary10": contractedAllocations["used_10_sec"],
+        }
+        # getContractedAllocations' underlying SQL SUM() returns None (not 0)
+        # for a department/term whose only approved forms are weekly-hours
+        # ones (no break contract) - coalesce so the card doesn't render "None"
+        result["breakHours"] = contractedAllocations["break_hours"] or 0
+    except Allocation.DoesNotExist:
+        pass
 
     return result

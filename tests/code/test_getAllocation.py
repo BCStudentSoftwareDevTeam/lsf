@@ -13,7 +13,7 @@ from app.models.formHistory import FormHistory
 from app.models.historyType import HistoryType
 from app.models.status import Status
 from app.models.user import User
-from app.logic.getAllocation import getDepartmentAllocationSummary, countWorkers, getBreakHours, getCurrentSemesterLabel
+from app.logic.getAllocation import getDepartmentAllocationSummary, getCurrentSemesterLabel
 
 
 def createFormHistory(form, statusName):
@@ -59,7 +59,13 @@ def test_getDepartmentAllocationSummary():
     Test that the summary reports allocated/used/breakHours for a department's
     most recent term, covering a missing department, a department with no
     Allocation rows, allocations spread across terms, several Allocation rows
-    in one term, break-term contracts, and an allocation with no forms.
+    in one term, break-term contracts, an allocation with no forms, and a
+    most-recent term that only has a draft (not yet final) allocation.
+
+    The allocated/used/breakHours values are sourced from allocationManager's
+    getTotalAllocations/getContractedAllocations (see test_allocationManger.py
+    for those functions' own unit coverage) - only the term-selection and
+    fallback behavior is re-verified here.
     """
     zeroedUsedPositions = {
         "used10": 0,
@@ -175,7 +181,9 @@ def test_getDepartmentAllocationSummary():
 
         # More than one Allocation row for the same most-recent term (e.g. a
         # draft and a final revision, which the model's (termCode, department,
-        # isFinal) index allows) sums across both rows rather than picking one
+        # isFinal) index allows) reports only the final row - the draft is not
+        # counted, since allocationManager's getTotalAllocations only looks at
+        # the isFinal=True row for a term
         multiRowDept = Department.create(departmentID=203, DEPT_NAME="Mathematics", ACCOUNT="6753", ORG="2123", isActive=True)
         multiRowTerm = Term.create(termCode=900300, termName="AY Test Multi")
 
@@ -193,7 +201,7 @@ def test_getDepartmentAllocationSummary():
         summary = getDepartmentAllocationSummary(multiRowDept)
 
         assert summary["term"].termCode == 900300
-        assert summary["allocated"] == 3  # 1 + 2, summed across both rows
+        assert summary["allocated"] == 2  # only the final row counts, the draft's 1 is not added in
 
         # An allocation for the most recent term with no LaborStatusForm records
         # at all shows allocated > 0 with used/breakHours at 0, rather than
@@ -215,129 +223,35 @@ def test_getDepartmentAllocationSummary():
         assert summary["breakHours"] == 0
         assert summary["usedPositions"] == zeroedUsedPositions
 
-        transaction.rollback()
+        # A most-recent term with only a draft (isFinal=False) allocation - no
+        # final row exists yet, so allocationManager's getTotalAllocations has
+        # nothing to select and would raise; the summary should fall back to
+        # the zeroed defaults (still reporting the term) instead of erroring
+        draftOnlyDept = Department.create(departmentID=205, DEPT_NAME="Art", ACCOUNT="6755", ORG="2125", isActive=True)
+        draftOnlyTerm = Term.create(termCode=900500, termName="AY Test Draft Only")
 
-
-@pytest.mark.integration
-def test_countWorkers():
-    """
-    Test that countWorkers only counts LaborStatusForm rows matching the
-    given department, term, job type, and weekly-hours bucket, and excludes
-    forms with a different job type/hours bucket, a break-term contract
-    (contractHours set instead of weeklyHours), or a denied history status.
-    """
-    with mainDB.atomic() as transaction:
-        dept = Department.create(departmentID=205, DEPT_NAME="English", ACCOUNT="6755", ORG="2125", isActive=True)
-        term = Term.create(termCode=900500, termName="AY Test Workers")
-
-        supervisor = Supervisor.create(ID="SUP003", isActive=True)
-        student = Student.create(ID="STU003", isActive=True)
-
-        # Matches department, term, job type, and hours bucket - should count
-        matchForm = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Match", POSN_CODE="S010",
-            weeklyHours=10, contractHours=None,
+        Allocation.create(
+            termCode=draftOnlyTerm, department=draftOnlyDept, isFinal=False, justification="draft",
+            primary_10=5, primary_12=0, primary_15=0, primary_20=0,
+            secondary_5=0, secondary_10=0, breakHours=30,
         )
-        createFormHistory(matchForm, "Approved")
 
-        # Different job type - should not count toward ("Primary", 10)
-        wrongJobTypeForm = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Secondary", WLS="10", POSN_TITLE="Wrong Job Type", POSN_CODE="S011",
-            weeklyHours=10, contractHours=None,
-        )
-        createFormHistory(wrongJobTypeForm, "Approved")
+        summary = getDepartmentAllocationSummary(draftOnlyDept)
 
-        # Different hours bucket - should not count toward ("Primary", 10)
-        wrongHoursForm = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="12", POSN_TITLE="Wrong Hours", POSN_CODE="S012",
-            weeklyHours=12, contractHours=None,
-        )
-        createFormHistory(wrongHoursForm, "Approved")
-
-        # Break-term contract (contractHours set) - should not count even though
-        # job type and weeklyHours otherwise match
-        breakContractForm = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Break Contract", POSN_CODE="S013",
-            weeklyHours=10, contractHours=40,
-        )
-        createFormHistory(breakContractForm, "Approved")
-
-        # Matches everything but was DENIED - should not count
-        deniedForm = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Denied Match", POSN_CODE="S014",
-            weeklyHours=10, contractHours=None,
-        )
-        createFormHistory(deniedForm, "Denied by Admin")
-
-        assert countWorkers(dept, term.termCode, "Primary", 10) == 1
-        assert countWorkers(dept, term.termCode, "Secondary", 10) == 1
-        assert countWorkers(dept, term.termCode, "Primary", 12) == 1
-        assert countWorkers(dept, term.termCode, "Primary", 15) == 0
+        assert summary["term"].termCode == 900500
+        assert summary["allocated"] == 0
+        assert summary["used"] == 0
+        assert summary["breakHours"] == 0
+        assert summary["usedPositions"] == zeroedUsedPositions
 
         transaction.rollback()
 
 
-@pytest.mark.integration
-def test_getBreakHours():
-    """
-    Test that getBreakHours sums only APPROVED forms with contractHours set
-    (break-term contracts) for the given department and term, excludes
-    weekly-hours forms, excludes forms under a different term, and excludes
-    forms that are not approved (e.g. still pending).
-    """
-    with mainDB.atomic() as transaction:
-        dept = Department.create(departmentID=206, DEPT_NAME="Philosophy", ACCOUNT="6756", ORG="2126", isActive=True)
-        term = Term.create(termCode=900600, termName="AY Test Break Hours")
-        otherTerm = Term.create(termCode=900601, termName="AY Test Other Term")
-
-        supervisor = Supervisor.create(ID="SUP004", isActive=True)
-        student = Student.create(ID="STU004", isActive=True)
-
-        # Approved break-term contracts under the target term - should be summed
-        formA = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Break A", POSN_CODE="S020",
-            weeklyHours=None, contractHours=40,
-        )
-        createFormHistory(formA, "Approved")
-
-        formB = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Secondary", WLS="5", POSN_TITLE="Break B", POSN_CODE="S021",
-            weeklyHours=None, contractHours=60,
-        )
-        createFormHistory(formB, "Approved")
-
-        # Weekly-hours form (contractHours=None) - should be excluded regardless
-        formC = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Weekly Job", POSN_CODE="S022",
-            weeklyHours=10, contractHours=None,
-        )
-        createFormHistory(formC, "Approved")
-
-        # Break-term contract under a DIFFERENT term - should be excluded
-        formD = LaborStatusForm.create(
-            termCode=otherTerm, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Break Other Term", POSN_CODE="S023",
-            weeklyHours=None, contractHours=25,
-        )
-        createFormHistory(formD, "Approved")
-
-        # Break-term contract that is still PENDING - should be excluded
-        formE = LaborStatusForm.create(
-            termCode=term, studentSupervisee=student, supervisor=supervisor, department=dept,
-            jobType="Primary", WLS="10", POSN_TITLE="Break Pending", POSN_CODE="S024",
-            weeklyHours=None, contractHours=999,
-        )
-        createFormHistory(formE, "Pending")
-
-        assert getBreakHours(dept, term.termCode) == 100       # 40 + 60, excludes the pending form
-        assert getBreakHours(dept, otherTerm.termCode) == 25   # only the other term's contract
-
-        transaction.rollback()
+# countWorkers and getBreakHours were removed in favor of calling
+# allocationManager's getContractedAllocations directly from
+# getDepartmentAllocationSummary (see test_allocationManger.py's
+# test_countContracts/test_getContractedAllocations for that function's own
+# coverage). Note the counting rules aren't identical to the old
+# countWorkers/getBreakHours: getContractedAllocations doesn't exclude
+# break-term contracts (contractHours set) from the weekly-hours buckets, and
+# uses a narrower status whitelist instead of "anything not Denied".
