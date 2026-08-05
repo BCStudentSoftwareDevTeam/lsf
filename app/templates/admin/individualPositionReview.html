@@ -1,33 +1,55 @@
     {% extends "base.html" %} {% block styles %} {{super()}}
 <link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="/static/css/individualposition.css?u={{lastStaticUpdate}}" />
+<link rel="stylesheet" type="text/css" href="/static/css/individualPositionReview.css?u={{lastStaticUpdate}}" />
 {% endblock %} {% block scripts %} {{super()}}
 <script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script type="text/javascript"
-  src="{{url_for('static', filename='js/positionreview.js') }}?u={{lastStaticUpdate}}"></script>
+  src="{{url_for('static', filename='js/individualPositionReview.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %} {% block app_content %}
 
 <h3>
   Revision of {{position.positionTitle}} position
 </h3>
 
-<div class="positions">
+<div class="positions p-10">
   <div class="old_position">
     <h1>Previous Position Description</h1>
     <h3>Title: {{position.positionTitle}}</h3>
-    <h3>WLS Level (1-6): {{position.WLS}}</h3>
+    <h3>WLS Level (1-6): {{position.wls}}</h3>
     <h3>Position Code: {{position.positionCode}}</h3>
 
-    Description:
+    <h3>Description:</h3>
+    <section class="position-description ">
+          {%- if sections %}
+            {%- for section in sections %}
+              <div class="section-title">{{ section.sectionTitle |safe }}</div>
+              <div class="description-content">{{ section.sectionContent |safe }}</div>
+            {%- endfor %}
+          {%- else %}
+            <p class="text-muted">No description available.</p>
+          {%- endif %}
+        </section>
 
   </div>
   <div class="new_position">
-        <h1>Previous Position Description</h1>
+    <h1>New Position Description</h1>
     <h3>Title: {{position.positionTitle}}</h3>
-    <h3>WLS Level (1-6): {{position.WLS}}</h3>
-    <h3>Position Code: {{position.positionCode}}</h3>
+    <h3>WLS Level (1-6): {{position.wls}}</h3>
+    <h3>Position Code: <span class="text-muted">{{position.positionCode}}</span></h3>
 
-    Description:
+    <h3>Description:</h3>
+    <section class="position-description ">
+          {%- if sections %}
+            {%- for section in sections %}
+              <div class="section-title">{{ section.sectionTitle |safe }}</div>
+              <div id="editor_{{section.order}}" class="description-content editor">{{ section.sectionContent |safe }}</div>
+            {%- endfor %}
+          {%- else %}
+            <p class="text-muted">No description available.</p>
+          {%- endif %}
+        </section>
   </div>
 </div>
 {% endblock %}

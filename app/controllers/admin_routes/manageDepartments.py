@@ -7,7 +7,7 @@ from app.login_manager import require_login
 
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
-from app.logic.getPositions import getToBeReviewedPosition
+from app.logic.getPositions import *
 from app.models.formHistory import FormHistory
 from app.models.positionHistory import PositionHistory
 from app.models.user import *
@@ -147,10 +147,11 @@ def individualpositions(org=None, account=None,poscode=None):
         pos = PositionHistory.get(PositionHistory.positionCode == poscode)
     except (NameError, DoesNotExist):
         abort(404)
-
-
+    
+    positiondesc = getPositionDescriptionSections(pos)
 
     return render_template('admin/individualPositionReview.html',
                             department = dept,
-                            position= pos
+                            position= pos,
+                            sections = positiondesc
     )

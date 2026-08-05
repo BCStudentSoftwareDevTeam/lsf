@@ -1,0 +1,19 @@
+*{
+    /* outline:solid 2px lime; */
+}
+
+.positions{
+    width: 100% !important;
+    display:flex;
+    /* justify-content: space-around; */
+    gap:5%;
+    padding: 1rem;
+}
+
+.positions > div{
+    width: 100%;
+}
+.editsection{
+
+ height: auto !important;
+}

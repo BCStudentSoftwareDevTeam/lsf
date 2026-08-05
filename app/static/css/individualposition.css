@@ -1,9 +1,0 @@
-*{
-    /* outline:solid 2px lime; */
-}
-
-.positions{
-    display:flex;
-    /* justify-content: space-around; */
-    gap:20%;
-}
