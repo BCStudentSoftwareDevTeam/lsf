@@ -40,9 +40,10 @@ def require_login():
     # Update the user's name
     user = updateUserFromTracy(user)
 
-    if 'username' not in session:
+    if session.get('username') != user.username:
         print("Logging in as", user.username)
-        session['username'] = user.username
+
+    session['username'] = user.username
 
     return user
 
