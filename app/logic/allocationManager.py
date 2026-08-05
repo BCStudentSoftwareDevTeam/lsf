@@ -106,3 +106,15 @@ def getContractedAllocations(termCode: int, dept: int):
     usedPositions["used_secondaries"] = sum(list(usedPositions.values())[4:6])
     usedPositions["used_total"] = sum(list(usedPositions.values())[:6])
     return usedPositions
+
+def approvedAllocationExists(termCode: int, dept: int):
+    """
+    Checks if there is an approved allocation. 
+    """
+    return bool(Allocation.get_or_none(Allocation.termCode == termCode, Allocation.department == dept, Allocation.isFinal == True))
+
+def requestedAllocationExists(termCode: int, dept: int):
+    """
+    Checks if there is a requested allocation. 
+    """
+    return bool(Allocation.get_or_none(Allocation.termCode == termCode, Allocation.department == dept, Allocation.isFinal == False))

@@ -16,6 +16,11 @@ from app.models.allocation import *
 from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import * 
+from app.logic.allocationManager import approvedAllocationExists, requestedAllocationExists
+
+
+
+### MANAGE DEPARTMENTS PAGE ###################################################################################
 
 
 
@@ -93,6 +98,10 @@ def complianceStatusCheck():
 
 
 
+### ALLOCATION REVIEW PAGE ####################################################################################
+
+
+
 @admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
     """
@@ -101,7 +110,7 @@ def allocationReview(org=None, account=None):
     """
 
 
-    # Retrieving the departments based on the org and account numbers 
+    # getting the name of the currently chosen department (based on the org and account numbers)
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
@@ -120,34 +129,32 @@ def allocationReview(org=None, account=None):
 
 
     # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORES
+    # DON'T DELETE THE UNDERSCORE
     currentAY, _, nextAY = generateAdjacentYears()
+
+
+    # checking if the allocation has already been approved
+    if approvedAllocationExists(nextAY.termCode, dept): 
+        flash("You cannot reapprove an allocation request.", "danger")
+        return redirect('/admin/manageDepartments/')
+
     
-
-    # getting the current allocation
-    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
-
-
     # checking if the department has requested any allocation review 
-    requestedAlloc = Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
-    isRequested    = bool(requestedAlloc)
-    if not isRequested: 
+    if not requestedAllocationExists(nextAY.termCode, dept):
         flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "danger")
         return redirect('/admin/manageDepartments/')
 
 
-    # checking if the allocation has already been approved
-    isApproved = bool(Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == True))
-    if isApproved: 
-        flash("You cannot reapprove an allocation request.", "danger")
-        return redirect('/admin/manageDepartments/')
+    # getting the current and the requested allocations
+    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+    requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
 
 
     return render_template('admin/allocationReview.html',
                             department = dept, 
                             nextAY = nextAY,
-                            requestedAlloc = requestedAlloc,
-                            currentAlloc = currentAlloc
+                            currentAlloc = currentAlloc,
+                            requestedAlloc = requestedAlloc
                             )
 
 
@@ -156,26 +163,26 @@ def allocationReview(org=None, account=None):
 def approveAllocationReview():
     
     # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORES
+    # DON'T DELETE THE UNDERSCORE
     currentAY, _, nextAY = generateAdjacentYears()
 
-
-    currentAlloc = Allocation.get(
-                                Allocation.termCode     == currentAY.termCode, 
-                                Allocation.department   == request.form.get("requester", type=int, default=None), 
-                                Allocation.isFinal      == True
-                                )
-
-
     # getting the name of the user who approves the request
-    supervisorID = require_login().supervisor
+    approverID = require_login().supervisor
+
+
+    # getting the name of the requesting department
+    requester = request.form.get("requester", type=int, default=None)
+
+
+    # getting the current allocation (for default values)
+    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == requester, Allocation.isFinal == True)
 
 
     # saving the newly approved allocation
     newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
-                                        department      = request.form.get("requester", type=int, default=None), 
+                                        department      = requester, 
                                         isFinal         = True,
-                                        approvedBy      = supervisorID,
+                                        approvedBy      = approverID,
                                         approvedOn      = date.today(),
                                         primary_10      = request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
                                         primary_12      = request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
@@ -186,104 +193,6 @@ def approveAllocationReview():
                                         breakHours      = request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
                                         )
     newApprovedAlloc.save()
-
-
-    return redirect("/admin/manageDepartments")
-
-
-
-
-
-
-#######################################################################################################################
-### ALL THE CODE BELOW SHOULD BE MOVED TO departmentPortal.py EVENTUALLY #############################################
-#####################################################################################################################
-
-
-@admin.route('/department/<org>/<account>/allocations/request', methods=['GET'])
-def allocationRequest(org, account):
-    try:
-        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
-    except DoesNotExist:
-        return render_template('errors/404.html'), 404
-    
-    if not g.currentUser.isLaborAdmin:
-        if not SupervisorDepartment.select().where(
-            (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
-            (SupervisorDepartment.department == dept.departmentID)
-        ).exists():
-            return render_template('errors/403.html'), 403
-    
-
-    # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORES
-    currentAY, _, nextAY = generateAdjacentYears()
-
-
-    # checking if the allocation has already been approved
-    isApproved = bool(Allocation.get_or_none(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == True))
-    if isApproved: # if the approved allocation exists (in other words, if it is not None)
-        flash(f"The allocation for the {nextAY.termName} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
-        return redirect('/admin/manageDepartments/')
-    
-
-    # getting the current allocation
-    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
-
-
-    return render_template('main/allocationRequest.html', 
-                            department = dept, 
-                            nextAY = nextAY, 
-                            currentAlloc = currentAlloc
-                            )
-
-
-@admin.route('/allocationRequest/submit', methods=['POST'])
-def submitAllocationRequest():
-    
-    # Retrieving the next year 
-    # DON'T DELETE THE UNDERSCORES
-    currentAY, _, nextAY = generateAdjacentYears()
-
-
-    currentAlloc = Allocation.get(
-                                Allocation.termCode     == currentAY.termCode, 
-                                Allocation.department   == request.form.get("submitter", type=int, default=None), 
-                                Allocation.isFinal      == True
-                                )                 
-
-
-    # getting the name of the user who approves the request
-    supervisorID = require_login().supervisor
-
-
-    # the list of the fields updated after submitting the allocation request
-    updatedFields = {
-        "termCode": nextAY.termCode, 
-        "department": request.form.get("submitter", type=int, default=None), 
-        "isFinal": False,
-        "justification": request.form.get("justification", default=""),
-        "primary_10": request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
-        "primary_12": request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
-        "primary_15": request.form.get("primary_15", type=int, default=currentAlloc.primary_15),
-        "primary_20": request.form.get("primary_20", type=int, default=currentAlloc.primary_20),
-        "secondary_5": request.form.get("secondary_5", type=int, default=currentAlloc.secondary_5),
-        "secondary_10": request.form.get("secondary_10", type=int, default=currentAlloc.secondary_10),
-        "breakHours": request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
-    }
-
-
-    # saving the newly approved allocation
-    requestedAlloc, wasCreated = Allocation.get_or_create(termCode=nextAY.termCode, 
-                                                department=request.form.get("submitter", type=int, default=None), 
-                                                isFinal=False, 
-                                                defaults={**updatedFields})
-    
-    if not wasCreated: # if the allocation has already existed (it is being resubmitted/updated)
-        for key, value in updatedFields.items():
-            setattr(requestedAlloc, key, value) # updating all the fields based on updatedFields values
-    
-    requestedAlloc.save()
 
 
     return redirect("/admin/manageDepartments")
