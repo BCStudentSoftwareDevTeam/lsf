@@ -249,11 +249,3 @@ def test_getDepartmentAllocationSummary():
         transaction.rollback()
 
 
-# countWorkers and getBreakHours were removed in favor of calling
-# allocationManager's getContractedAllocations directly from
-# getDepartmentAllocationSummary (see test_allocationManger.py's
-# test_countContracts/test_getContractedAllocations for that function's own
-# coverage). Note the counting rules aren't identical to the old
-# countWorkers/getBreakHours: getContractedAllocations doesn't exclude
-# break-term contracts (contractHours set) from the weekly-hours buckets, and
-# uses a narrower status whitelist instead of "anything not Denied".
