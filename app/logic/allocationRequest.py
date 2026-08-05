@@ -2,12 +2,6 @@ from flask import request, g
 from app.models.allocation import Allocation
 from app.logic.allocationManager import *
 
-def belongsToDepartment(department):
-    """
-    Checks whether the current user is a supervisor who belongs to a certain department.
-    """
-    return SupervisorDepartment.select().where((SupervisorDepartment.supervisor == g.currentUser.supervisor) & (SupervisorDepartment.department == department.departmentID)).exists()
-
 
 def getOrUpdateRequestedAllocation():
     """

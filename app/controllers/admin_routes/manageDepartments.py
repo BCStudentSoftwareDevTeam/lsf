@@ -16,7 +16,7 @@ from app.models.allocation import *
 from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import * 
-from app.logic.allocationManager import approvedAllocationExists, requestedAllocationExists
+from app.logic.allocationManager import allocationExists
 
 
 
@@ -134,13 +134,13 @@ def allocationReview(org=None, account=None):
 
 
     # checking if the allocation has already been approved
-    if approvedAllocationExists(nextAY.termCode, dept): 
+    if allocationExists(nextAY.termCode, dept, isFinal=True): 
         flash("You cannot reapprove an allocation request.", "danger")
         return redirect('/admin/manageDepartments/')
 
     
     # checking if the department has requested any allocation review 
-    if not requestedAllocationExists(nextAY.termCode, dept):
+    if not allocationExists(nextAY.termCode, dept, isFinal=False):
         flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "danger")
         return redirect('/admin/manageDepartments/')
 

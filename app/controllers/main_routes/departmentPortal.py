@@ -1,4 +1,4 @@
-from flask import render_template, g, request, redirect
+from flask import render_template, g, request, redirect, flash
 from app.login_manager import require_login
 from app.controllers.main_routes import main_bp
 from app.logic.getPositions import getPositions
@@ -6,8 +6,8 @@ from peewee import DoesNotExist
 from app.models.department import Department
 from app.models.allocation import Allocation
 from app.models.supervisorDepartment import SupervisorDepartment
-from app.logic.allocationRequest import belongsToDepartment, getOrUpdateRequestedAllocation
-from app.logic.allocationManager import approvedAllocationExists
+from app.logic.allocationRequest import getOrUpdateRequestedAllocation
+from app.logic.allocationManager import allocationExists
 
 
 @main_bp.route('/department/<org>/<account>/allocations/request', methods=['GET'])
@@ -26,7 +26,10 @@ def allocationRequest(org, account):
 
     # cheching if the user can visit this page
     if not g.currentUser.isLaborAdmin:
-        if not belongsToDepartment(dept):
+        if not SupervisorDepartment.select().where(
+            (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
+            (SupervisorDepartment.department == dept.departmentID)
+        ).exists():
             return render_template('errors/403.html'), 403
     
 
@@ -36,7 +39,7 @@ def allocationRequest(org, account):
 
 
     # checking if the allocation has already been approved (in other words, if an approved allocation exists)
-    if approvedAllocationExists(nextAY.termCode, dept):
+    if allocationExists(nextAY.termCode, dept, isFinal=True):
         flash(f"The allocation for the {nextAY.termName.split(" ")[1]} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
         return redirect('/admin/manageDepartments/')
     
