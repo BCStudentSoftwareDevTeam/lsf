@@ -348,10 +348,11 @@ function checkAllocation() {
   var departmentSelect = $("#selectedDepartment");
   var departmentOrg = departmentSelect.val();
   var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+  var termCode = $("#selectedTerm").val();
   var jobType = $("#jobType").val();
   var hours = $("#selectedHoursPerWeek").val();
 
-  if (!departmentOrg || !jobType || !hours) {
+  if (!departmentOrg || !termCode || !jobType || !hours) {
     return;
   }
 
@@ -360,6 +361,7 @@ function checkAllocation() {
     data: {
       departmentOrg: departmentOrg,
       departmentAcct: departmentAcct,
+      termCode: termCode,
       jobType: jobType,
       hours: hours
     },
@@ -400,10 +402,11 @@ function loadAllocationSummary() {
   var departmentSelect = $("#selectedDepartment");
   var departmentOrg = departmentSelect.val();
   var departmentAcct = departmentSelect.find('option:selected').attr('value-account');
+  var termCode = $("#selectedTerm").val();
 
   clearAllocationSummary();
 
-  if (!departmentOrg) {
+  if (!departmentOrg || !termCode) {
     return;
   }
 
@@ -411,7 +414,8 @@ function loadAllocationSummary() {
     url: "/laborstatusform/allocationsummary",
     data: {
       departmentOrg: departmentOrg,
-      departmentAcct: departmentAcct
+      departmentAcct: departmentAcct,
+      termCode: termCode
     },
     dataType: "json",
     success: function (response) {

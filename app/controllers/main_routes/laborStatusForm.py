@@ -14,7 +14,7 @@ from app.models.department import *
 from flask import json, jsonify
 from flask import request
 from datetime import datetime, date, timedelta
-from flask import Flask, redirect, url_for, flash, g
+from flask import Flask, redirect, url_for, flash
 from app.logic.emailHandler import*
 from app.logic.userInsertFunctions import*
 from app.models.supervisor import Supervisor
@@ -178,12 +178,17 @@ def checkAllocation():
     departmentAcct = request.args.get("departmentAcct")
     jobType = request.args.get("jobType")
     hours = request.args.get("hours")
+    termCode = request.args.get("termCode")
 
     dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
     if not dept:
         return jsonify({"error": "Department not found"}), 404
 
-    status = getBandAllocationStatus(dept, g.openTerm, jobType, int(hours))
+    term = Term.get_or_none(Term.termCode == termCode) if termCode else None
+    if not term:
+        return jsonify({"error": "Term not found"}), 404
+
+    status = getBandAllocationStatus(dept, term, jobType, int(hours))
     if status is None:
         return jsonify({"error": "No allocation data for this job type/hours band"}), 404
 
@@ -195,12 +200,17 @@ def allocationSummary():
     labor status form can show a live summary that updates as students are added before submission. """
     departmentOrg = request.args.get("departmentOrg")
     departmentAcct = request.args.get("departmentAcct")
+    termCode = request.args.get("termCode")
 
     dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
     if not dept:
         return jsonify({"error": "Department not found"}), 404
 
-    warning = getAllocationWarning(dept, g.openTerm)
+    term = Term.get_or_none(Term.termCode == termCode) if termCode else None
+    if not term:
+        return jsonify({"error": "Term not found"}), 404
+
+    warning = getAllocationWarning(dept, term)
     if warning is None:
         return jsonify({"error": "No allocation data for this department"}), 404
 

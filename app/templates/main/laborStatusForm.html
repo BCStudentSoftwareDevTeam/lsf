@@ -113,7 +113,7 @@
                     data-toggle="tooltip"
                     title="Term"
                     data-width="100%"
-                    onchange = "showAccessLevel(); preFilledDate(this); summerLaborWarning()">
+                    onchange = "showAccessLevel(); preFilledDate(this); summerLaborWarning(); checkAllocation(); loadAllocationSummary()">
                 <option value = "" disabled selected>Select a Term</option>
             {% for term in terms %}
                 <option value = "{{term.termCode}}" data-termSummer = "{{term.isSummer|lower}}" data-termBreak = "{{term.isBreak|lower}}">{{term.termName}}</option>
