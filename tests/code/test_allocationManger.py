@@ -205,3 +205,54 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['used_total'] == 1
 
     assert contractedAllocation['break_hours'] == 500
+
+@pytest.mark.integration
+def test_getContractedAllocations_withoutAnAllocationRow(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
+    '''
+    getContractedAllocations must not require an Allocation row to exist for
+    the department/term (e.g. before one has been created or finalized) -
+    it should still report the LaborStatusForm-derived counts.
+    '''
+    contractedAllocation = getContractedAllocations(testTerm.termCode, testDepartment.departmentID)
+    assert contractedAllocation['used_15'] == 1
+    assert contractedAllocation['break_hours'] == 500
+
+@pytest.mark.integration
+def test_getContractedAllocations_sumsBreakHoursAcrossAcademicYearCode(testDepartment, testStudent, testSupervisor, testUser):
+    '''
+    A department can have approved break-term contracts under both a specific
+    term and that year's academic-year "00" bucket term - break_hours should
+    sum both, not silently keep only whichever one the query happens to see
+    first.
+    '''
+    specificTerm = Term.create(termCode=200610)
+    academicYearTerm = Term.create(termCode=200600)  # matches testTerm's code
+
+    specificTermForm = LaborStatusForm.create(
+        laborStatusFormID=9001, termCode=specificTerm, studentSupervisee=testStudent,
+        supervisor_id=testSupervisor.ID, department=testDepartment, jobType="Primary", WLS=1,
+        POSN_TITLE="Specific Term Break", POSN_CODE="S9001", contractHours=100, weeklyHours=None,
+    )
+    FormHistory.create(
+        formHistoryID=9001, formID=specificTermForm, historyType="Labor Status Form",
+        createdBy=testUser.userID, createdDate="2025-03-02", status="Approved",
+    )
+
+    academicYearForm = LaborStatusForm.create(
+        laborStatusFormID=9002, termCode=academicYearTerm, studentSupervisee=testStudent,
+        supervisor_id=testSupervisor.ID, department=testDepartment, jobType="Primary", WLS=1,
+        POSN_TITLE="Academic Year Break", POSN_CODE="S9002", contractHours=250, weeklyHours=None,
+    )
+    FormHistory.create(
+        formHistoryID=9002, formID=academicYearForm, historyType="Labor Status Form",
+        createdBy=testUser.userID, createdDate="2025-03-02", status="Approved",
+    )
+
+    try:
+        contractedAllocation = getContractedAllocations(specificTerm.termCode, testDepartment.departmentID)
+        assert contractedAllocation['break_hours'] == 350  # 100 + 250, both terms summed
+    finally:
+        specificTermForm.delete_instance()
+        academicYearForm.delete_instance()
+        specificTerm.delete_instance()
+        academicYearTerm.delete_instance()

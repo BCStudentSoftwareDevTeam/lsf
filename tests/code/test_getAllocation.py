@@ -59,13 +59,17 @@ def test_getDepartmentAllocationSummary():
     Test that the summary reports allocated/used/breakHours for a department's
     most recent term, covering a missing department, a department with no
     Allocation rows, allocations spread across terms, several Allocation rows
-    in one term, break-term contracts, an allocation with no forms, and a
-    most-recent term that only has a draft (not yet final) allocation.
+    in one term (draft and final both counted), break-term contracts, an
+    allocation with no forms, and a most-recent term that only has a draft
+    (not yet final) allocation.
 
-    The allocated/used/breakHours values are sourced from allocationManager's
-    getTotalAllocations/getContractedAllocations (see test_allocationManger.py
-    for those functions' own unit coverage) - only the term-selection and
-    fallback behavior is re-verified here.
+    "used"/"usedPositions"/"breakHours" are sourced from allocationManager's
+    getContractedAllocations (see test_allocationManger.py for that
+    function's own unit coverage) - only the term-selection and allocated-sum
+    behavior is re-verified here. "allocated" is summed directly from the
+    Allocation rows for the most recent term (both draft and final), not
+    routed through allocationManager, since a department's allocation is
+    often still a draft when this is viewed.
     """
     zeroedUsedPositions = {
         "used10": 0,
@@ -181,9 +185,7 @@ def test_getDepartmentAllocationSummary():
 
         # More than one Allocation row for the same most-recent term (e.g. a
         # draft and a final revision, which the model's (termCode, department,
-        # isFinal) index allows) reports only the final row - the draft is not
-        # counted, since allocationManager's getTotalAllocations only looks at
-        # the isFinal=True row for a term
+        # isFinal) index allows) sums across both rows rather than picking one
         multiRowDept = Department.create(departmentID=203, DEPT_NAME="Mathematics", ACCOUNT="6753", ORG="2123", isActive=True)
         multiRowTerm = Term.create(termCode=900300, termName="AY Test Multi")
 
@@ -201,7 +203,7 @@ def test_getDepartmentAllocationSummary():
         summary = getDepartmentAllocationSummary(multiRowDept)
 
         assert summary["term"].termCode == 900300
-        assert summary["allocated"] == 2  # only the final row counts, the draft's 1 is not added in
+        assert summary["allocated"] == 3  # 1 + 2, summed across both rows
 
         # An allocation for the most recent term with no LaborStatusForm records
         # at all shows allocated > 0 with used/breakHours at 0, rather than
@@ -224,9 +226,9 @@ def test_getDepartmentAllocationSummary():
         assert summary["usedPositions"] == zeroedUsedPositions
 
         # A most-recent term with only a draft (isFinal=False) allocation - no
-        # final row exists yet, so allocationManager's getTotalAllocations has
-        # nothing to select and would raise; the summary should fall back to
-        # the zeroed defaults (still reporting the term) instead of erroring
+        # final row exists yet - still reports the draft's own numbers rather
+        # than zeroing out, since a department's allocation is often still a
+        # draft before it's finalized
         draftOnlyDept = Department.create(departmentID=205, DEPT_NAME="Art", ACCOUNT="6755", ORG="2125", isActive=True)
         draftOnlyTerm = Term.create(termCode=900500, termName="AY Test Draft Only")
 
@@ -239,7 +241,7 @@ def test_getDepartmentAllocationSummary():
         summary = getDepartmentAllocationSummary(draftOnlyDept)
 
         assert summary["term"].termCode == 900500
-        assert summary["allocated"] == 0
+        assert summary["allocated"] == 5
         assert summary["used"] == 0
         assert summary["breakHours"] == 0
         assert summary["usedPositions"] == zeroedUsedPositions

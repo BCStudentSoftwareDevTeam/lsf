@@ -1,6 +1,6 @@
 from datetime import date
 
-from app.logic.allocationManager import getContractedAllocations, getTotalAllocations
+from app.logic.allocationManager import getContractedAllocations
 from app.models.allocation import Allocation
 from app.models.term import Term
 
@@ -45,29 +45,27 @@ def getDepartmentAllocationSummary(department):
     result["term"] = recentTerm
     result["currentSemester"] = getCurrentSemesterLabel(recentTerm)
 
-    # allocationManager's helpers only look at the *final* Allocation row for the
-    # term (they call getAllocation(..., isFinal=True) under the hood) and raise
-    # if one doesn't exist yet. A department whose most recent term is still a
-    # draft has no final row - fall back to the zeroed defaults above rather
-    # than letting that propagate into a 500 on the department portal.
-    try:
-        result["allocated"] = getTotalAllocations(termCode, department.departmentID)["totalAllocations"]
+    # "allocated" is summed directly from the rows already fetched above rather
+    # than through allocationManager's getTotalAllocations, since that only
+    # looks at the *final* Allocation row for a term - a department whose most
+    # recent term is still a draft (isFinal=False, no final row yet) would
+    # otherwise show 0 allocated instead of its draft numbers.
+    recentTermAllocations = [a for a in departmentAllocations if a.termCode_id == termCode]
+    result["allocated"] = sum(
+        a.primary_10 + a.primary_12 + a.primary_15 + a.primary_20 + a.secondary_5 + a.secondary_10
+        for a in recentTermAllocations
+    )
 
-        contractedAllocations = getContractedAllocations(termCode, department.departmentID)
-        result["used"] = contractedAllocations["used_total"]
-        result["usedPositions"] = {
-            "used10": contractedAllocations["used_10"],
-            "used12": contractedAllocations["used_12"],
-            "used15": contractedAllocations["used_15"],
-            "used20": contractedAllocations["used_20"],
-            "usedSecondary5": contractedAllocations["used_5_sec"],
-            "usedSecondary10": contractedAllocations["used_10_sec"],
-        }
-        # getContractedAllocations' underlying SQL SUM() returns None (not 0)
-        # for a department/term whose only approved forms are weekly-hours
-        # ones (no break contract) - coalesce so the card doesn't render "None"
-        result["breakHours"] = contractedAllocations["break_hours"] or 0
-    except Allocation.DoesNotExist:
-        pass
+    contractedAllocations = getContractedAllocations(termCode, department.departmentID)
+    result["used"] = contractedAllocations["used_total"]
+    result["usedPositions"] = {
+        "used10": contractedAllocations["used_10"],
+        "used12": contractedAllocations["used_12"],
+        "used15": contractedAllocations["used_15"],
+        "used20": contractedAllocations["used_20"],
+        "usedSecondary5": contractedAllocations["used_5_sec"],
+        "usedSecondary10": contractedAllocations["used_10_sec"],
+    }
+    result["breakHours"] = contractedAllocations["break_hours"]
 
     return result
