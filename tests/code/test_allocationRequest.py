@@ -38,20 +38,6 @@ def test_getOrUpdateRequestedAllocation(client):
                 defaults={"termName": "AY 2002-2003", "isAcademicYear": True}
             )
 
-            currentAlloc = Allocation.create(
-                termCode=200200,
-                department=2,
-                isFinal=True,
-                justification="",
-                primary_10=12,
-                primary_12=3,
-                primary_15=4,
-                primary_20=5,
-                secondary_5=1,
-                secondary_10=3,
-                breakHours=399
-            )
-
             nextYear = Term.create(termCode=200300)
 
             getOrUpdateRequestedAllocation()

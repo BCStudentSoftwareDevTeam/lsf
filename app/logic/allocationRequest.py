@@ -12,21 +12,19 @@ def getOrUpdateRequestedAllocation():
 
     requester = request.form.get("submitter", type=int, default=None)       # the requesting department
 
-    currentAlloc = getAllocation(g.openTerm.termCode, requester, True)      # the current allocation 
-
     # the list of the fields updated after submitting the allocation request
     updatedFields = {
         "termCode": nextAY, 
         "department": request.form.get("submitter", type=int, default=None), 
         "isFinal": False,
         "justification": request.form.get("justification", default=""),
-        "primary_10": request.form.get("primary_10", type=int, default=currentAlloc["primary_10"]),
-        "primary_12": request.form.get("primary_12", type=int, default=currentAlloc["primary_12"]),
-        "primary_15": request.form.get("primary_15", type=int, default=currentAlloc["primary_15"]),
-        "primary_20": request.form.get("primary_20", type=int, default=currentAlloc["primary_20"]),
-        "secondary_5": request.form.get("secondary_5", type=int, default=currentAlloc["secondary_5"]),
-        "secondary_10": request.form.get("secondary_10", type=int, default=currentAlloc["secondary_10"]),
-        "breakHours": request.form.get("breakHours", type=int, default=currentAlloc["breakHours"])
+        "primary_10": request.form.get("primary_10", type=int, default=None),
+        "primary_12": request.form.get("primary_12", type=int, default=None),
+        "primary_15": request.form.get("primary_15", type=int, default=None),
+        "primary_20": request.form.get("primary_20", type=int, default=None),
+        "secondary_5": request.form.get("secondary_5", type=int, default=None),
+        "secondary_10": request.form.get("secondary_10", type=int, default=None),
+        "breakHours": request.form.get("breakHours", type=int, default=None)
     }
 
     # saving the newly approved allocation
