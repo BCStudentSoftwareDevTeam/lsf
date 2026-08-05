@@ -14,6 +14,7 @@ from app.models.department import Department
 from app.models.user import User
 from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment
