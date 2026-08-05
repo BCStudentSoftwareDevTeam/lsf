@@ -27,7 +27,6 @@ from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import *
 
 
-
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
     return redirect(logout())

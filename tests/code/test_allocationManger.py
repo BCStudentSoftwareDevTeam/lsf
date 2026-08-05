@@ -260,12 +260,12 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['break_hours'] == 500
 
 @pytest.mark.integration
-def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment):
+def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment,testTerm):
 
     # Test that the formHistory object exists
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == 168
-
+    
     # Test it with a higher amount of hours
     testBreakLaborStatusForm[0].contractHours  = 800
     testBreakLaborStatusForm[0].save()
@@ -286,3 +286,13 @@ def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartme
 
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == None
+
+    # Test if the term changes to a non-break term
+    testBreakLaborStatusForm[0].termCode = testTerm
+    testBreakLaborStatusForm[0].save()
+    testBreakLaborStatusForm[1].status  = "Approved"
+    testBreakLaborStatusForm[1].save()
+    
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == None
+    
