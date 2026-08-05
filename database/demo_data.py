@@ -1078,6 +1078,31 @@ FormHistory.insert([{
     "status_id": "Approved"
 }]).on_conflict_replace().execute()
 
+LaborStatusForm.insert([{
+    "laborStatusFormID": 76,
+    "termCode_id": "202600",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 1,
+    "POSN_TITLE": "Technology Assistant",
+    "POSN_CODE": "S61423",
+    "weeklyHours": 10,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 76,
+    "formID_id": "76",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
 
 # Break Positions
 

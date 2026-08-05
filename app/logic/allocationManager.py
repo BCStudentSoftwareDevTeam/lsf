@@ -44,6 +44,31 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
     5-hour positions in the CS department for the 2025 Fall term.
     '''
     academicYearCode = int(str(termCode)[:4] + "00") 
+    ###
+    # This sets the date condition to determine whether the form is within the boundaries of the term
+    # Fall only contracts end before spring, spring contracts start after fall.
+    ###
+    fallMonths = ["07","08","09","10","11","12"]
+    springMonths = ["01","02","03","04","05","06"]
+    if str(termCode).endswith("11"):
+        dateCondition = (
+            (LaborStatusForm.endDate.month.in_(fallMonths)) |
+            (LaborStatusForm.startDate.month.in_(fallMonths) &
+                LaborStatusForm.endDate.month.in_(springMonths))
+        )
+    elif str(termCode).endswith("12"):
+        dateCondition = (
+            (LaborStatusForm.startDate.month.in_(springMonths)) |
+            (LaborStatusForm.startDate.month.in_(fallMonths) &
+                LaborStatusForm.endDate.month.in_(springMonths))
+        )
+    else:
+        dateCondition = (
+            (LaborStatusForm.startDate.month.in_(fallMonths) &
+                LaborStatusForm.endDate.month.in_(springMonths))
+            
+        )
+
     lsfCountPositions = FormHistory.select(
                             ).join(LaborStatusForm
                             ).join(Department
@@ -54,6 +79,7 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
                                 LaborStatusForm.jobType == jobType, # 'primary' or 'secondary'
                                 LaborStatusForm.weeklyHours == weeklyContractHours, # 5, 10, 12, 15, or 20
                                 Department.departmentID == dept,
+                                dateCondition,
                             ).count()
     return lsfCountPositions 
 
