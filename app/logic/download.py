@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import xlsxwriter 
 
 from flask import g
 from fpdf import FPDF
@@ -11,6 +12,7 @@ from app.controllers.main_routes.main_routes import *
 from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formSearchResult import FormSearchResult
 from app.logic.getPositions import getPositionDescriptionSections
+from app.logic.allocationManager import *
 
 def saveFormSearchResult(displayName, formList, formType):
     ids = [form.formHistoryID for form in formList]
@@ -369,3 +371,11 @@ class CSVMaker:
                         evaluation.jobSpecific_score
                        )
         return tableRow
+
+
+def dataDataXls():
+    pass
+
+
+def createSpreadsheet():
+    pass
