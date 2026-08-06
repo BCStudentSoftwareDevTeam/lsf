@@ -96,7 +96,7 @@ def allocationTable(org=None, account=None):
     if currentUser.isLaborAdmin:
         pass
     else:
-        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())) #FIXME
 
 
     currentDate = date.today()
@@ -125,7 +125,6 @@ def allocationTable(org=None, account=None):
         "summer": getBreakContracts(currentAY.termCode + 13, dept)
         }
     breakContracts["total"] = sum(breakContracts.values())
-     
     return render_template('main/allocationTable.html',
                            department = dept,
                            currentAY = currentAY,

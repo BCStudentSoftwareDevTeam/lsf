@@ -141,4 +141,7 @@ def getBreakContracts(termCode, dept):
         LaborStatusForm.termCode == termCode,
         LaborStatusForm.department == dept,
         LaborStatusForm.contractHours != None).scalar()
-    return break_allocation
+    if break_allocation != None:
+        return break_allocation
+    else:
+        return 0
