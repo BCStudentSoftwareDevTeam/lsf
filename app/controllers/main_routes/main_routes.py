@@ -98,17 +98,19 @@ def allocationTable(org=None, account=None):
     else:
         departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-    currentDate = str(date.today())
-    if int(currentDate[5:7]) <= 6:
-        # If it is the spring semester, then the term code is 1 year behind. e.g. 2025-2026 term code is 202500.
-        springTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "12") - 100).get()
-        currentAY = currentTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "00") - 100).get()
-        fallTerm = Term.select().where(Term.termCode == int(currentDate[:4] + "11") - 100).get()
+
+    currentDate = date.today()
+    if currentDate.month <= 6:
+        # If it is the spring semester, then the term code is 1 year behind. e.g. 2025-2026 term code is 202500. Thus the - 100 in the spring term.
+        # The (year * 100) turns the year into an AY term code, 2025 -> 202500. The + 12/11 turns it into a fall or spring term.
+        springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12 - 100).get()
+        currentAY = Term.select().where(Term.termCode == currentDate.year * 100 - 100).get()
+        fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11 - 100).get()
 
     else:
-        fallTerm = Term.select().where(Term.termCode == currentDate[:4] + "11").get()
-        currentAY = Term.select().where(Term.termCode == currentDate[:4] + "00").get()
-        springTerm = Term.select().where(Term.termCode == currentDate[:4] + "12").get()
+        fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11).get()
+        currentAY = Term.select().where(Term.termCode == currentDate.year * 100).get()
+        springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12).get()
 
     allocationDict = getTotalAllocations(currentAY, dept)
     fallContracts = getContractedAllocations(fallTerm, dept)
