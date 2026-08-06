@@ -44,10 +44,9 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
     5-hour positions in the CS department for the 2025 Fall term.
     '''
     academicYearCode = int(str(termCode)[:4] + "00") 
-    ###
+
     # This sets the date condition to determine whether the form is within the boundaries of the term
     # Fall only contracts end before spring, spring contracts start after fall.
-    ###
     fallMonths = ["07","08","09","10","11","12"]
     springMonths = ["01","02","03","04","05","06"]
     if str(termCode).endswith("11"):
