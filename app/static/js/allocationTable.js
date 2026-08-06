@@ -1,48 +1,18 @@
 $(document).ready( function(){
-    fallTermPrimaries = $('#fallTermPrimaries');
-    fallTermPrimaries.DataTable({
-        pageLength: 25,
-        info: false,
-        lengthChange: false,
-        searching: false,
-        paging: false,
-        "order": []
-    });
-    fallTermSecondaries = $('#fallTermSecondaries');
-    fallTermSecondaries.DataTable({
-        pageLength: 25,
-        info: false,
-        lengthChange: false,
-        searching: false,
-        paging: false,
-        "order": []
-    });
-
-    springTermPrimaries = $('#springTermPrimaries');
-    springTermPrimaries.DataTable({
-        pageLength: 25,
-        info: false,
-        lengthChange: false,
-        searching: false,
-        paging: false,
-        "order": []
-    });
-    springTermSecondaries = $('#springTermSecondaries');
-    springTermSecondaries.DataTable({
-        pageLength: 25,
-        info: false,
-        lengthChange: false,
-        searching: false,
-        paging: false,
-        "order": []
-    });
-    breakTable = $('#breakTable');
-    breakTable.DataTable({
-        pageLength: 25,
-        info: false,
-        lengthChange: false,
-        searching: false,
-        paging: false,
-        "order": []
-    });
+    function initTable(selector) {
+        return $(selector).DataTable({
+            pageLength: 25,
+            info: false,
+            lengthChange: false,
+            searching: false,
+            paging: false,
+            order: []
+        });
+    }
+    
+    const fallTermPrimaries = initTable('#fallTermPrimaries');
+    const fallTermSecondaries = initTable('#fallTermSecondaries');
+    const springTermPrimaries = initTable('#springTermPrimaries');
+    const springTermSecondaries = initTable('#springTermSecondaries');
+    const breakTable = initTable('#breakTable');
 });
