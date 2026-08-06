@@ -80,15 +80,19 @@ def revisePosition(org, account, positionCode):
         return render_template('errors/404.html'), 404
 
     if request.method == 'POST':
-        position = createPositionRevision(
-            position,
-            g.currentUser.fullName,
-            request.form.get('positionTitle'),
-            request.form.get('wls'),
-            request.form.getlist('sectionTitle[]'),
-            request.form.getlist('sectionContent[]')
-        )
-        flash('Position revision saved.', 'success')
+        wls = request.form.get('wls', type=int)
+        if wls is None or not (0 <= wls <= 6):
+            flash('WLS level must be between 0 and 6.')
+        else:
+            position = createPositionRevision(
+                position,
+                g.currentUser.fullName,
+                request.form.get('positionTitle'),
+                wls,
+                request.form.getlist('sectionTitle[]'),
+                request.form.getlist('sectionContent[]')
+            )
+            flash('Position revision saved.', 'success')
 
     sections = getPositionDescriptionSections(position)
 

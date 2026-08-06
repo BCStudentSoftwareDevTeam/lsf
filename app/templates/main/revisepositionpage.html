@@ -2,6 +2,7 @@
 
 {% block scripts %}
   {{ super() }}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/ckeditor/ckeditor.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/revisepositionpage.js') }}?u={{ lastStaticUpdate }}"></script>
   <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{ lastStaticUpdate }}" />
   <link rel="stylesheet" type="text/css" href="/static/css/revisepositionpage.css?u={{ lastStaticUpdate }}" />
@@ -36,7 +37,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label" for="wls">WLS Level:</label>
               <div class="col-sm-9">
-                <input type="number" class="form-control" id="wls" name="wls" min="0" value="{{ position.wls }}" required>
+                <input type="number" class="form-control" id="wls" name="wls" min="0" max="6" value="{{ position.wls }}" required>
               </div>
             </div>
 
