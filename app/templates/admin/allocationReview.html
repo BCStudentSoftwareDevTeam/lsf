@@ -99,19 +99,15 @@
             </p>
         </div>
     </div>
-    <div class="allocationReviewSection" id="allocationReviewFooter">
+    <div id="allocationReviewNote">
+        <small >
+            Once this request is approved, the {{department.DEPT_NAME}} department can no longer submit any new allocation requests for {{nextAY.termName.split(" ")[1]}}.  
+        </small>
+    </div>
 
-        <div align="pull-left" id="allocationReviewNote">
-            <small >
-                Once this request is approved, the {{department.DEPT_NAME}} department can no longer submit any new allocation requests for {{nextAY.termName.split(" ")[1]}}.  
-            </small>
-        </div>
-
-        <div class="section">
-            <button type="button" class="btn btn-danger"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
-            <button type="submit" class="btn btn-success">Approve</button>
-        </div>
-
+    <div class="section cancel-or-approve">
+        <button type="button" class="btn btn-danger"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
+        <button type="submit" class="btn btn-success">Approve</button>
     </div>
 </form>
 

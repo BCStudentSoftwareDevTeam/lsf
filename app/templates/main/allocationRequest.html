@@ -13,7 +13,7 @@
     </strong>
 </h2>
 
-<p  align="center" id="allocationReviewSubtitle">
+<p  align="center" id="allocationRequestSubtitle">
     <strong>
         Submit an allocation request to the Labor Department
     </strong>
@@ -42,7 +42,7 @@
         <label for="requestedPositions" id="requestedPositions">Number of Positions: </label>            
     </p>
 
-    <div class="allocationReviewSection">
+    <div class="allocationRequestSection">
         <div>
             <p>
                 <small>
@@ -101,20 +101,17 @@
 
     <textarea name="justification" id="justificationTextField" rows="3"></textarea> 
 
-    <div class="allocationReviewSection">
-
-        <div align="pull-left" id="allocationReviewNote">
-            <small>
-                This allocation request for {{nextAY.termName.split(" ")[1]}} can be updated by resubmission. However, once the Labor Office approves it, you can no longer change it.   
-            </small>
-        </div>
-
-        <div class="section">
-            <button type="button" class="btn"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-
+    <div id="allocationRequestNote">
+        <small>
+            This allocation request for {{nextAY.termName.split(" ")[1]}} can be updated by resubmission. However, once the Labor Office approves it, you can no longer change it.   
+        </small>
     </div>
+
+    <div class="section cancel-or-submit">
+        <button type="button" class="btn btn-danger"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </div>
+
 </form>
 
 {% endblock %}
