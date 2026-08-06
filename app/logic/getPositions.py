@@ -1,3 +1,4 @@
+import re
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
 from datetime import date
@@ -56,6 +57,30 @@ def getPositionDescriptionSections(position):
 
     return positionDescriptionSections
 
+allowedDescriptionTags = {'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'}
+tagPattern = re.compile(r'<(/?)\s*([a-zA-Z][a-zA-Z0-9]*)((?:\s+[^<>]*)?)\s*/?>')
+hrefPattern = re.compile(r'href\s*=\s*(["\'])(https?:.*?|mailto:.*?|/.*?)\1', re.IGNORECASE)
+
+def sanitizeDescriptionHTML(value):
+    """
+    Strips any HTML tag not in allowedDescriptionTags, and drops all attributes
+    except a safe href on <a> tags, since section content is rendered with |safe.
+    """
+    if not value:
+        return ''
+
+    def replaceTag(match):
+        closingSlash, tag, attrs = match.groups()
+        tag = tag.lower()
+        if tag not in allowedDescriptionTags:
+            return ''
+        if tag == 'a' and not closingSlash:
+            hrefMatch = hrefPattern.search(attrs)
+            return f'<a href="{hrefMatch.group(2)}">' if hrefMatch else '<a>'
+        return f'<{closingSlash}{tag}>'
+
+    return tagPattern.sub(replaceTag, str(value))
+
 def createPositionRevision(position, revisedBy, positionTitle, wls, sectionTitles, sectionContents):
     """
     Creates a new pending (Requested) revision of a position, copying forward its
@@ -75,8 +100,8 @@ def createPositionRevision(position, revisedBy, positionTitle, wls, sectionTitle
     for order, (sectionTitle, sectionContent) in enumerate(zip(sectionTitles, sectionContents)):
         PositionDescriptionSection.create(
             position=newPosition,
-            sectionTitle=sectionTitle,
-            sectionContent=sectionContent,
+            sectionTitle=sanitizeDescriptionHTML(sectionTitle),
+            sectionContent=sanitizeDescriptionHTML(sectionContent),
             order=order
         )
 
