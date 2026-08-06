@@ -40,7 +40,7 @@
     <p>
         <label for="breakHours" id="breakHours">Number of Break Hours: </label>
         <input type="number" name="breakHours" min="0" step="1" value="{{requestedAlloc.breakHours}}" class="breakHoursNumericSpinner"> 
-        <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested break hours & Currently allocated break hours"> (requested: {{requestedAlloc.breakHours}}; current: {{currentAlloc.breakHours}})</small> 
+        <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested break hours & Currently allocated break hours"> (requested: {{requestedAlloc.breakHours}}; current: {{currentAlloc.breakHours or 0}})</small> 
     </p>
 
     <p>
@@ -58,25 +58,25 @@
             <p>
                 10 hours:&nbsp;
                 <input name="primary_10" type="number" min="0" step="1" value="{{requestedAlloc.primary_10}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated" data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_10}}; current: {{currentAlloc.primary_10}})</small>  
+                <small class="currentAndAllocated" data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_10}}; current: {{currentAlloc.primary_10 or 0}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
                 <input name="primary_12" type="number" min="0" step="1" value="{{requestedAlloc.primary_12}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_12}}; current: {{currentAlloc.primary_12}})</small>  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_12}}; current: {{currentAlloc.primary_12 or 0}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
                 <input name="primary_15" type="number" min="0" step="1" value="{{requestedAlloc.primary_15}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_15}}; current: {{currentAlloc.primary_15}})</small>  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_15}}; current: {{currentAlloc.primary_15 or 0}})</small>  
             </p>
 
             <p>
                 20 hours:&nbsp;
                 <input name="primary_20" type="number" min="0" step="1" value="{{requestedAlloc.primary_20}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_20}}; current: {{currentAlloc.primary_20}})</small>  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_20}}; current: {{currentAlloc.primary_20 or 0}})</small>  
             </p>
         </div>
         <div> 
@@ -89,13 +89,13 @@
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
                 <input name="secondary_5" type="number" min="0" step="1" value="{{requestedAlloc.secondary_5}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_5}}; current: {{currentAlloc.secondary_5}})</small>  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_5}}; current: {{currentAlloc.secondary_5 or 0}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
                 <input name="secondary_10" type="number" min="0" step="1" value="{{requestedAlloc.secondary_10}}" class="positionNumericSpinner">  
-                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_10}}; current: {{currentAlloc.secondary_10}})</small>  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_10}}; current: {{currentAlloc.secondary_10 or 0}})</small>  
             </p>
         </div>
     </div>

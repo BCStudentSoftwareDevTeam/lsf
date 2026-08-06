@@ -34,8 +34,8 @@
 
     <p>
         <label for="breakHours" id="breakHours">Number of Break Hours: </label>
-        <input type="number" name="breakHours" min="0" step="1" value="{{currentAlloc.breakHours}}" class="breakHoursNumericSpinner"> 
-        <small> (currently allocated: {{currentAlloc.breakHours}})</small> 
+        <input type="number" name="breakHours" min="0" step="1" value="{{currentAlloc.breakHours or 0}}" class="breakHoursNumericSpinner"> 
+        <small> (currently allocated: {{currentAlloc.breakHours or 0}})</small> 
     </p>
 
     <p>
@@ -52,26 +52,26 @@
 
             <p>
                 10 hours:&nbsp;
-                <input name="primary_10" type="number" min="0" step="1" value="{{currentAlloc.primary_10}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.primary_10}})</small>  
+                <input name="primary_10" type="number" min="0" step="1" value="{{currentAlloc.primary_10 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_10 or 0}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
-                <input name="primary_12" type="number" min="0" step="1" value="{{currentAlloc.primary_12}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.primary_12}})</small>  
+                <input name="primary_12" type="number" min="0" step="1" value="{{currentAlloc.primary_12 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_12 or 0}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
-                <input name="primary_15" type="number" min="0" step="1" value="{{currentAlloc.primary_15}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.primary_15}})</small>  
+                <input name="primary_15" type="number" min="0" step="1" value="{{currentAlloc.primary_15 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_15 or 0}})</small>  
             </p>
 
             <p>
                 20 hours:&nbsp;
-                <input name="primary_20" type="number" min="0" step="1" value="{{currentAlloc.primary_20}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.primary_20}})</small>  
+                <input name="primary_20" type="number" min="0" step="1" value="{{currentAlloc.primary_20 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_20 or 0}})</small>  
             </p>
         </div>
         <div> 
@@ -83,14 +83,14 @@
 
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
-                <input name="secondary_5" type="number" min="0" step="1" value="{{currentAlloc.secondary_5}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_5}})</small>  
+                <input name="secondary_5" type="number" min="0" step="1" value="{{currentAlloc.secondary_5 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_5 or 0}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
-                <input name="secondary_10" type="number" min="0" step="1" value="{{currentAlloc.secondary_10}}" class="positionNumericSpinner">  
-                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_10}})</small>  
+                <input name="secondary_10" type="number" min="0" step="1" value="{{currentAlloc.secondary_10 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_10 or 0}})</small>  
             </p>
         </div>
     </div>

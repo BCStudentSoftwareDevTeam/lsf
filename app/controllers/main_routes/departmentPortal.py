@@ -36,12 +36,12 @@ def allocationRequest(org, account):
 
     # checking if the allocation has already been approved (in other words, if an approved allocation exists)
     if allocationExists(nextAY.termCode, dept, isFinal=True):
-        flash(f"The allocation for the {nextAY.termName.split(" ")[1]} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
+        flash(f"The allocation for the {nextAY.termName.split(' ')[1]} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
         return redirect('/admin/manageDepartments/')
     
 
     # getting the current approved allocation
-    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+    currentAlloc = Allocation.get_or_none(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
 
 
     return render_template('main/allocationRequest.html', 

@@ -21,10 +21,6 @@ from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 
-### MANAGE DEPARTMENTS PAGE ###################################################################################
-
-
-
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
 def manageDepartments(academicYear = None):
@@ -99,10 +95,6 @@ def complianceStatusCheck():
 
 
 
-### ALLOCATION REVIEW PAGE ####################################################################################
-
-
-
 @admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
     """
@@ -146,7 +138,7 @@ def allocationReview(org=None, account=None):
 
 
     # getting the current and the requested allocations
-    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+    currentAlloc = Allocation.get_or_none(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
     requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
 
 
@@ -171,22 +163,19 @@ def approveAllocationReview():
     # getting the name of the requesting department
     requester = request.form.get("requester", type=int, default=None)
 
-    # getting the current allocation (for default values)
-    currentAlloc = Allocation.get(Allocation.termCode == currentAY.termCode, Allocation.department == requester, Allocation.isFinal == True)
-
     # saving the newly approved allocation
     newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
                                         department      = requester, 
                                         isFinal         = True,
                                         approvedBy      = approverID,
                                         approvedOn      = date.today(),
-                                        primary_10      = request.form.get("primary_10", type=int, default=currentAlloc.primary_10),
-                                        primary_12      = request.form.get("primary_12", type=int, default=currentAlloc.primary_12),
-                                        primary_15      = request.form.get("primary_15", type=int, default=currentAlloc.primary_15),
-                                        primary_20      = request.form.get("primary_20", type=int, default=currentAlloc.primary_20),
-                                        secondary_5     = request.form.get("secondary_5", type=int, default=currentAlloc.secondary_5),
-                                        secondary_10    = request.form.get("secondary_10", type=int, default=currentAlloc.secondary_10),
-                                        breakHours      = request.form.get("breakHours", type=int, default=currentAlloc.breakHours)
+                                        primary_10      = request.form.get("primary_10", type=int, default=None),
+                                        primary_12      = request.form.get("primary_12", type=int, default=None),
+                                        primary_15      = request.form.get("primary_15", type=int, default=None),
+                                        primary_20      = request.form.get("primary_20", type=int, default=None),
+                                        secondary_5     = request.form.get("secondary_5", type=int, default=None),
+                                        secondary_10    = request.form.get("secondary_10", type=int, default=None),
+                                        breakHours      = request.form.get("breakHours", type=int, default=None)
                                         )
     newApprovedAlloc.save()
 
