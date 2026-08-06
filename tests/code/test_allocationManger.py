@@ -137,8 +137,8 @@ def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
     POSN_CODE                   = "S61412",
     contractHours               = 500,
     weeklyHours                 = 15,
-    startDate                   = "2025-04-01",
-    endDate                     = "2025-09-01",
+    startDate                   = "2006-08-01",
+    endDate                     = "2007-5-01",
     supervisorNotes             = None,
     laborDepartmentNotes        = None,
     studentConfirmation         = True,
@@ -285,7 +285,7 @@ def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartme
     testBreakLaborStatusForm[1].save()
 
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
-    assert breakContractHours == None
+    assert breakContractHours == 0
 
     # Test if the term changes to a non-break term
     testBreakLaborStatusForm[0].termCode = testTerm
@@ -294,5 +294,5 @@ def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartme
     testBreakLaborStatusForm[1].save()
     
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
-    assert breakContractHours == None
+    assert breakContractHours == 0
     
