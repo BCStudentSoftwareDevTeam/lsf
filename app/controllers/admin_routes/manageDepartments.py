@@ -64,7 +64,6 @@ def manageDepartments(academicYear = None):
                             inactiveDepartments = inactiveDepartments,
                             allSupervisors = allSupervisors,
                             currentAY = currentAY,
-                            previousAY = previousAY,
                             nextAY = nextAY,
                             academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
