@@ -93,10 +93,10 @@ def allocationTable(org=None, account=None):
     except (NameError, DoesNotExist):
         dept = None
 
-    if currentUser.isLaborAdmin:
-        pass
-    else:
-        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc())) #FIXME
+    if not currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
 
 
     currentDate = date.today()
