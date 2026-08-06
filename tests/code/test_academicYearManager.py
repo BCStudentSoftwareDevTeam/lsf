@@ -8,11 +8,7 @@ from app.logic.academicYearManager import *
 @pytest.mark.integration
 def test_getCurrentAndNextAY():
     with app.app_context():
-        g.openTerm, _ = Term.get_or_create(
-            termCode = 196700,
-            defaults={"termName": "AY 1967-1968", "isAcademicYear": True}
-        )
-        
+        g.currentYear = (1967, 1968)
         currentYear, nextYear = getCurrentAndNextAY()
         
         assert currentYear.termCode == 196700
@@ -22,11 +18,7 @@ def test_getCurrentAndNextAY():
         assert nextYear.termName == "AY 1968-1969"
 
 
-        g.openTerm, _ = Term.get_or_create(
-            termCode = 210212,
-            defaults={"termName": "AY 2102-2103", "isAcademicYear": True}
-        )
-
+        g.currentYear = (2102, 2103)
         currentYear, nextYear = getCurrentAndNextAY()
         
         assert currentYear.termCode == 210200

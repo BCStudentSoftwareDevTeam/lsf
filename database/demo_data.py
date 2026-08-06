@@ -647,6 +647,16 @@ terms = [
         "adjustmentCutOff": f"2026-09-01",
         "isBreak": 1,
     },
+    {
+        "termCode": f"202700",
+        "termName": f"AY 2027-2028",
+        "termStart": f"2027-08-01",
+        "termEnd": f"2028-05-01",
+        "termState": 0,
+        "primaryCutOff": f"2027-09-01",
+        "adjustmentCutOff": f"2027-09-01",
+        "isBreak": 1,
+    },
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -1117,7 +1127,7 @@ print(f"termCode_id being used: {202500!r}")
 ###########################
 allocations = [ 
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       1,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1132,7 +1142,7 @@ allocations = [
     "breakHours":       550,
     },
     {
-    "termCode":         202600,
+    "termCode":         202700,
     "department":       1,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1147,7 +1157,7 @@ allocations = [
     "breakHours":       560,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       2,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1162,7 +1172,7 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202600,
+    "termCode":         202700,
     "department":       2,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1177,7 +1187,7 @@ allocations = [
     "breakHours":       900,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       3,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1192,7 +1202,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":         202600,
+    "termCode":         202700,
     "department":       3,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1207,7 +1217,7 @@ allocations = [
     "breakHours":       360,
     },
     {
-    "termCode":         202600,
+    "termCode":         202700,
     "department":       3,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1221,7 +1231,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       4,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1236,7 +1246,7 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       5,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1251,7 +1261,7 @@ allocations = [
     "breakHours":       900,
     },
     {
-    "termCode":         202600,
+    "termCode":         202700,
     "department":       5,
     "isFinal":          False,
     "approvedOn":       None,

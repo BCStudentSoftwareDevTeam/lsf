@@ -4,10 +4,11 @@ from app.models.term import *
 def getCurrentAndNextAY():
     """
     Returns two Term peewee objects: one is the current academic year, 
-    and the other is the next academic year.
+    and the other is the next academic year (note that a new academic year
+    begins from the start of July). 
     """
 
-    currentYear      = g.openTerm.termCode // 100
+    currentYear      = g.currentYear[0] 
     nextYear         = currentYear + 1
 
     currentAYCode    = currentYear * 100

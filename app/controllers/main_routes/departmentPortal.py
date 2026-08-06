@@ -30,8 +30,7 @@ def allocationRequest(org, account):
             return render_template('errors/403.html'), 403
     
 
-    # Retrieving the current and following academic years 
-    # DON'T DELETE THE UNDERSCORES
+    # Retrieving the current and following academic years
     currentAY, nextAY = getCurrentAndNextAY()
 
 
