@@ -20,7 +20,6 @@ from app.logic.manageDepartments import *
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
 def manageDepartments(academicYear = None):
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
@@ -45,7 +44,7 @@ def manageDepartments(academicYear = None):
         academicYear = int(academicYear)
 
 
-    currentAY, previousAY, nextAY = generateAdjacentYears(academicYear)
+    currentAY, nextAY = generateAdjacentYears(academicYear)
     chosenAY = Term.get(Term.termCode == academicYear)
 
     breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}

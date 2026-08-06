@@ -20,16 +20,14 @@ def generateAdjacentYears(academicYearTermCode=None):
     """
 
     currentYear      = g.openTerm.termCode // 100
-    previousYear     = currentYear - 1
     nextYear         = currentYear + 1
 
 
     currentAYCode    = currentYear * 100
-    previousAYCode   = previousYear * 100
     nextAYCode       = nextYear * 100
 
     # Admins cannot view allocations for the years that are beyond the current, the previous, or the following academic year 
-    if academicYearTermCode not in (None, currentAYCode, previousAYCode, nextAYCode):
+    if academicYearTermCode not in (None, currentAYCode, nextAYCode):
         abort(400)
 
 
@@ -38,17 +36,12 @@ def generateAdjacentYears(academicYearTermCode=None):
         defaults={"termName": "AY {}-{}".format(currentYear, currentYear + 1), "isAcademicYear": True}
         )
 
-    previousAY, _ = Term.get_or_create(
-        termCode=previousAYCode,
-        defaults={"termName": "AY {}-{}".format(previousYear, previousYear + 1), "isAcademicYear": True}
-    )
-    
     nextAY, _     = Term.get_or_create(
         termCode=nextAYCode,
         defaults={"termName": "AY {}-{}".format(nextYear, nextYear + 1), "isAcademicYear": True}
     )
 
-    return (currentAY, previousAY, nextAY)
+    return (currentAY, nextAY)
 
 
 
