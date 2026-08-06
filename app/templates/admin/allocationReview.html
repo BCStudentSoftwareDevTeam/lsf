@@ -1,0 +1,112 @@
+{% extends "base.html" %} {% block styles %} {{super()}}
+<link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/allocationReview.css?u={{lastStaticUpdate}}" />
+{% endblock %} {% block scripts %} {{super()}}
+<script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/allocationReview.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %} {% block app_content %}
+
+<h2 align="center">
+    <strong>
+        Allocation Review
+    </strong>
+</h2>
+
+<p  align="center" id="allocationReviewSubtitle">
+    <strong>
+        Review to Confirm an Allocation Request
+    </strong>
+</p>
+
+<div class="container">
+    <p>
+        <!-- Requester = Requesting Department -->
+        <label for="requestingDepartment">Requester: </label> {{department.DEPT_NAME}} Department
+    </p>
+
+    <p>
+        <label for="academicYear"">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+    </p>
+    
+    <hr style="border: 0; border-top: 1px solid black;">
+
+    <p>
+        <label for="breakHours" id="breakHours">Number of Break Hours: </label>
+        <input type="number" name="breakHours" min="0" step="1" value="10" class="numericSpinner"> <!--Note that it's HARD_CODED-->
+        <small> (requested: 120)</small> <!--Note that it's HARD_CODED-->
+    </p>
+
+    <p>
+        <label for="requestedPositions" id="requestedPositions">Requested Positions: </label>            
+    </p>
+
+    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <div>
+            <p>
+                <small>
+                    <b>Primary</b>
+                </small>
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+            </p>
+
+            <p>
+                12 hours:&nbsp;
+                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+            </p>
+
+            <p>
+                15 hours:&nbsp;
+                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+            </p>
+        </div>
+        <div> 
+            <p>
+                <small>
+                    <b>Secondary</b>
+                </small>
+            </p>
+
+            <p>
+                5 hours:&nbsp;&nbsp;&nbsp;
+                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
+                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+            </p>
+        </div>
+    </div>
+
+    <p>
+        <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
+    </p>
+    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea>
+
+    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+
+        <div align="pull-left" style="width: 70%; margin-top: -5px;">
+            <small id="allocationReviewNote">
+                *To submit the form, you must either specify the number of extra break hours or fill in one of the fields in the Requested Positions section.  
+            </small>
+        </div>
+
+        <div>
+            <button type="button" class="btn btn-danger"  onclick="">Cancel</button>
+            <button type="button" class="btn btn-success" onclick="">Approve</button>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

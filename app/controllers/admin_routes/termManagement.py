@@ -37,26 +37,42 @@ def createTerms(termYear):
         This function creates the terms for the given Academic Year
     """
     code = termYear * 100
+    createdTerms = []
     for i in range(8):
         try:
             if i == 0:
-                Term.create(termCode = code, termName = "AY {}-{}".format(termYear, termYear + 1), isAcademicYear=True)
+                term = Term.create(termCode = code, termName = "AY {}-{}".format(termYear, termYear + 1), isAcademicYear=True)
             elif i == 1:
-                Term.create(termCode = (code + 11), termName = "Fall {}".format(termYear))
+                term = Term.create(termCode = (code + 11), termName = "Fall {}".format(termYear))
             elif i == 7:
-                Term.create(termCode = (code + 4), termName = "Fall Break {}".format(termYear), isBreak=True)
+                term = Term.create(termCode = (code + 4), termName = "Fall Break {}".format(termYear), isBreak=True)
             elif i == 2:
-                Term.create(termCode = (code + 1), termName = "Thanksgiving Break {}".format(termYear), isBreak=True)
+                term = Term.create(termCode = (code + 1), termName = "Thanksgiving Break {}".format(termYear), isBreak=True)
             elif i == 3:
-                Term.create(termCode = (code + 2), termName = "Christmas Break {}".format( termYear), isBreak=True)
+                term = Term.create(termCode = (code + 2), termName = "Christmas Break {}".format( termYear), isBreak=True)
             elif i == 4:
-                Term.create(termCode = (code + 12), termName = "Spring {}".format(termYear + 1))
+                term = Term.create(termCode = (code + 12), termName = "Spring {}".format(termYear + 1))
             elif i == 5:
-                Term.create(termCode = (code + 3), termName = "Spring Break {}".format(termYear + 1), isBreak=True)
+                term = Term.create(termCode = (code + 3), termName = "Spring Break {}".format(termYear + 1), isBreak=True)
             elif i == 6:
-                Term.create(termCode = (code + 13), termName = "Summer {}".format(termYear + 1), isBreak=True, isSummer=True)
+                term = Term.create(termCode = (code + 13), termName = "Summer {}".format(termYear + 1), isBreak=True, isSummer=True)
         except IntegrityError as e:
-            pass
+            termCodeMap = {
+                0: code, 
+                1: code + 11,  
+                2: code + 1,
+                3: code + 2, 
+                4: code + 12, 
+                5: code + 3, 
+                6: code + 13,
+                7: code + 4,
+            }
+            term = Term.get_or_none(Term.termCode == termCodeMap[i])
+
+        if term is not None:
+            createdTerms.append(term)
+
+    return createdTerms
 
 @admin.route("/termManagement/setDate/", methods=['POST'])
 def ourDate():
