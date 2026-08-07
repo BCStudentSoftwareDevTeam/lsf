@@ -114,7 +114,7 @@ def allocationReview(org=None, account=None):
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not currentUser.isLaborAdmin: 
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent()): 
         if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
@@ -157,8 +157,8 @@ def approveAllocationReview():
     # Retrieving the current and following academic years
     currentAY, nextAY = getCurrentAndNextAY()
 
-    # getting the name of the user who approves the request
-    approverID = require_login().supervisor
+    # getting the ID of the user who approves the request
+    approverID = require_login().userID
 
     # getting the name of the requesting department
     requester = request.form.get("requester", type=int, default=None)
