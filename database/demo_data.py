@@ -553,7 +553,7 @@ LaborStatusForm.insert([{
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
-            "historyType_id": "Labor Status Form",
+            "historyType_id": "Labor Overload Form",
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
             "status_id": "Pending"
