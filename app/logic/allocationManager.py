@@ -140,7 +140,7 @@ def getBreakContracts(termCode, dept):
         FormHistory.status.in_(["Approved", "Pending", "Pre-Student Approval"]),
         LaborStatusForm.termCode == termCode,
         LaborStatusForm.department == dept,
-        LaborStatusForm.contractHours != None).scalar()
+        LaborStatusForm.contractHours.is_null(False)).scalar()
     if break_allocation != None:
         return break_allocation
     else:
