@@ -56,27 +56,6 @@
         Download Allocation History
       </button>
     </div>
-    <div class="col-md-4" align="center" style="margin-bottom: 1px">
-        <div class="btn-group">
-          <button class="form-control btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="true" style="width: 200px; margin-bottom: 5px;">
-            Chosen AY: {{ academicYear.split(" ")[1] }}
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" style="width: 200px; text-align: center;">
-            <li>
-              <a href="/admin/manageDepartments/{{ currentAY.termCode }}">
-                Current AY: {{ currentAY.termName.split(" ")[1] }}
-              </a>
-            </li>
-            <li>
-              <a href="/admin/manageDepartments/{{ nextAY.termCode }}">
-                Future AY: {{ nextAY.termName.split(" ")[1] }}
-              </a>
-            </li>
-      </div>
-    </div>
-
     
     <div class="col-md-4" align="right" style="margin-bottom: 1px;">
       {% include "snips/annualAllocationReview.html" %}
