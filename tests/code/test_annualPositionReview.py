@@ -10,7 +10,7 @@ from app.models.user import User
 from app.models.positionReview import PositionReview
 
 
-from app.logic.emailHandler import sendAnnualPositionReviewRequests
+from app.logic.emailHandler import emailHandler
 
 
 
@@ -66,7 +66,8 @@ def test_sendAnnualPositionReviewRequests():
 
 
             ################ SENDING REQUESTS ################
-            result = sendAnnualPositionReviewRequests(term.termCode, admin)
+            handler = emailHandler(academicYearTermCode=term.termCode)
+            result = handler.sendAnnualPositionReviewRequests(admin)
 
 
             # Only "Test Department" has supervisors/coordinators, so only it gets an email.
@@ -92,7 +93,7 @@ def test_sendAnnualPositionReviewRequests():
 
 
             ################ RE-SENDING SHOULD UPDATE, NOT DUPLICATE ################
-            sendAnnualPositionReviewRequests(term.termCode, admin)
+            handler.sendAnnualPositionReviewRequests(admin)
 
 
             reviews = PositionReview.select().where(

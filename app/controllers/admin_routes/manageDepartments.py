@@ -16,7 +16,7 @@ from app.models.allocation import *
 from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import *
-from app.logic.emailHandler import sendAnnualPositionReviewRequests
+from app.logic.emailHandler import emailHandler
 
 
 
@@ -113,12 +113,11 @@ def annualPositionReviewRequest():
         return jsonify({"Success": False, "message": "Request must include a valid academicYear."}), 400
 
     try:
-        result = sendAnnualPositionReviewRequests(academicYear, currentUser)
+        handler = emailHandler(academicYearTermCode=academicYear)
+        result = handler.sendAnnualPositionReviewRequests(currentUser)
         return jsonify({"Success": True, **result})
     except Exception:
         return jsonify({"Success": False})
-
-
 
 @admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
