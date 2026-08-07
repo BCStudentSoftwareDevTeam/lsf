@@ -102,17 +102,15 @@ def annualPositionReviewRequest():
     records the request. Triggered from the Manage Departments page.
     """
     currentUser = require_login()
-    if not currentUser or not currentUser.isLaborAdmin:
+    if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return jsonify({"Success": False}), 403
 
     rsp = request.get_json(silent=True)
-    if not rsp or "academicYear" not in rsp:
-        return jsonify({"Success": False, "message": "Request must include academicYear."}), 400
 
     try:
         academicYear = int(rsp["academicYear"])
-    except (TypeError, ValueError):
-        return jsonify({"Success": False, "message": "academicYear must be a valid integer."}), 400
+    except (TypeError, ValueError, KeyError):
+        return jsonify({"Success": False, "message": "Request must include a valid academicYear."}), 400
 
     try:
         result = sendAnnualPositionReviewRequests(academicYear, currentUser)
