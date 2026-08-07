@@ -91,63 +91,70 @@
           <thead>
             <tr>
               <th>Department</th>
-              
               <th>Status</th>
-              <th>Current Allocations <br>({{ academicYear }})</th>
+              <th>Current Allocations <br>({{ currentAY.termName }})</th>
               <th>Requested Allocations <br>({{ nextAY.termName }})</th>
               <th class="noSorting">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {% for department in activeDepartments %}
+            {% for entry in activeDepartmentsAllocations.values() %}
 
             <tr>
               <td scope="row">
-                <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}" class="departmentName"
-                  id="{{department.departmentID}}">{{department.DEPT_NAME}}</a><br><small>({{department.ORG}},
-                  {{department.ACCOUNT}})</small>
+                <a href="/department/{{ entry.department.ORG }}/{{ entry.department.ACCOUNT }}" class="departmentName"
+                  id="{{entry.department.departmentID}}">{{entry.department.DEPT_NAME}}</a><br><small>({{entry.department.ORG}},
+                  {{entry.department.ACCOUNT}})</small>
               </td>
-              <td id="dept_{{department.departmentID}}" scope="row" style="text-align: center; vertical-align: middle"
-                data-order="{% if department.departmentCompliance == True %}1{% else %}-1{% endif %}">
-                <button type="button" id="dept_btn_{{department.departmentID}}" name="deptName"
-                  class="{% if department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
-                  onclick="status({{department.departmentID}}, '{{department.DEPT_NAME}}')"
-                  value="{{department.departmentID}}">
-                  {% if department.departmentCompliance == True %}In
+
+              <td id="dept_{{entry.department.departmentID}}" scope="row"
+                style="text-align: center; vertical-align: middle"
+                data-order="{% if entry.department.departmentCompliance == True %}1{% else %}-1{% endif %}">
+                <button type="button" id="dept_btn_{{entry.department.departmentID}}" name="deptName"
+                  class="{% if entry.department.departmentCompliance == True %} btn btn-success {% else %} btn btn-danger {% endif %} complianceBtn"
+                  onclick="status({{entry.department.departmentID}}, '{{entry.department.DEPT_NAME}}')"
+                  value="{{entry.department.departmentID}}">
+                  {% if entry.department.departmentCompliance == True %}In
                   Compliance{% else %}Not in Compliance{% endif %}
                 </button>
               </td>
+
               <td style="white-space: nowrap">
+                {% if entry.allocation %}
                 <span>
                   <strong>Primary: </strong>
-                  {{department.lsfCountPrimaries}} of {{department.totalPrimaries}}
+                  {{entry.allocation.lsfCountPrimaries}} of {{entry.allocation.totalPrimaries}}
                 </span>
                 <br>
+
                 <span>
                   <strong>Secondary:</strong>
-                  {{department.lsfCountSecondaries}} of {{department.totalSecondaries}}
+                  {{entry.allocation.lsfCountSecondaries}} of {{entry.allocation.totalSecondaries}}
                 </span>
                 <br>
                 <span>
-                  <strong>Break:</strong> {{ breakHoursByDepartment.get(department.departmentID, 0) }} of {{
-                  department.allocation.breakHours }} hours
+                  <strong>Break:</strong> {{ breakHoursByDepartment.get(entry.department.departmentID, 0) }} of
+                  {{entry.allocation.breakHours }} hours
                 </span>
+                {% else %}
+                <span class="text-muted">No current allocation</span>
+                {% endif %}
 
               </td>
 
               <td style="white-space: nowrap">
                 <span>
                   <strong>Primary: </strong>
-                  {{department.lsfCountPrimaries}} of {{department.totalPrimaries}}
+                  {{entry.requestedAllocation.totalPrimaries}}
                 </span>
                 <br>
                 <span>
                   <strong>Secondary:</strong>
-                  {{department.lsfCountSecondaries}} of {{department.totalSecondaries}}
+                  {{entry.requestedAllocation.totalSecondaries}}
                 </span>
                 <br>
                 <span>
-                  <strong>Break:</strong> {{ breakHoursByDepartment.get(department.departmentID, 0) }} of {{ department.allocation.breakHours }} hours
+                  <strong>Break:</strong> {{ entry.requestedAllocation.breakHours }} hours
                 </span>
 
               </td>
@@ -162,19 +169,26 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations">Show Allocation
+                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/allocations">Show
+                        Allocation
                         History</a></li>
-                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/members">Manage Dept Members</a>
+                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/members">Manage Dept
+                        Members</a>
                     </li>
-                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/positions">View Positions</a>
+                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/positions">View
+                        Positions</a>
                     </li>
-                    <li><a href="{{department.ORG}}/{{department.ACCOUNT}}/allocationReview">Review Allocation</a></li>
+                    <li><a href="{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/allocationReview">Review
+                        Allocation</a></li>
                   </ul>
+
+
                 </div>
       </div>
+
       </td>
       </tr>
-      {% endfor %}
+      {%endfor%}
       </tbody>
       </table>
     </div>

@@ -12,16 +12,16 @@ from app.models.term import *
 
 from app.login_manager import require_login
 
+from playhouse.shortcuts import model_to_dict
+
 
 
 def generateAdjacentYears(academicYearTermCode=None): 
     """
-    Generates the current, the previous, and the following academic years. 
+    Generates the current, and the following academic years. 
     """
-
     currentYear      = g.openTerm.termCode // 100
     nextYear         = currentYear + 1
-
 
     currentAYCode    = currentYear * 100
     nextAYCode       = nextYear * 100
@@ -48,9 +48,6 @@ def generateAdjacentYears(academicYearTermCode=None):
 
 ####################################################################################################################################
 # Everything below this line will eventually be deleted  
-
-
-
 
 
 def getUsedBreakHours(term):
@@ -109,7 +106,7 @@ def getLSFCountSecondaries(currentTerm, department):
 
 
 
-def getActiveDepartmentsWithAllocation(term):
+def getActiveDepartmentsWithAllocation(term,isFinal = True):
     """
     Returns a list of active departments with allocations for the given term.
     """
@@ -118,24 +115,61 @@ def getActiveDepartmentsWithAllocation(term):
     # activeDepartments = Department.select().where(Department.isActive == True)
     # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
 
-    activeDepartments = (Department
+    activeDepartments = (Allocation
                         .select(Department, Allocation)
-                        .join(Allocation)
+                        .join(Department)
                         .where(
                             Department.isActive == True,
-                            Allocation.termCode == term.termCode
-                        )
+                            Allocation.termCode == term.termCode,
+                            Allocation.isFinal == isFinal,
+                            )
                     )
     
-    for dept in activeDepartments:
-        dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
-        dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
+  
+    for allocation in activeDepartments:
+        allocation.totalPrimaries = (allocation.primary_10 + allocation.primary_12 + allocation.primary_15 + allocation.primary_20)
+        allocation.totalSecondaries = (allocation.secondary_5 + allocation.secondary_10)
 
-        dept.lsfCountPrimaries = getLSFCountPrimaries(term, dept)
-        dept.lsfCountSecondaries = getLSFCountSecondaries(term, dept)
-
+        if isFinal:            # do not need to count them for requested allocations
+            allocation.lsfCountPrimaries = getLSFCountPrimaries(term, allocation.department)
+            allocation.lsfCountSecondaries = getLSFCountSecondaries(term, allocation.department)
+  
     return activeDepartments
 
+
+def getActiveDepartmentsAllocations(term,nextTerm):
+    """
+    This function gets active departments, active allocations for the current AY and future AY.
+    It returns a dictionary which contains three objects grouped by the departmentID
+    """
+
+    activeDepartments = Department.select().where(Department.isActive == True)  
+
+    allocations = getActiveDepartmentsWithAllocation(term)
+
+    allocByDeptId = {}
+
+    # index allocations by department ID
+    for alloc in allocations:
+        allocByDeptId[alloc.department.departmentID] = alloc
+
+    requestedAllocations = getActiveDepartmentsWithAllocation(nextTerm, False) 
+
+    # index requested allocations by department ID
+    reqAllocByDeptId = {}
+    for alloc in requestedAllocations:
+        reqAllocByDeptId[alloc.department.departmentID] = alloc
+
+    # build combined dictionary for active departments
+    activeDepartmentsAllocations = {}
+
+    for dept in activeDepartments:
+        activeDepartmentsAllocations[dept.departmentID] = {
+        "department": dept,
+        "allocation": allocByDeptId.get(dept.departmentID),  # None if no allocation
+        "requestedAllocation": reqAllocByDeptId.get(dept.departmentID),  # None if no requested allocation
+    }
+    return activeDepartmentsAllocations
 
 
 def getAllocationStatus(term, department):
