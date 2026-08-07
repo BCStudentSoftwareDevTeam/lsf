@@ -1115,10 +1115,12 @@ print(f"termCode_id being used: {202500!r}")
 ############################
 # Allocation Dummy Data:
 ###########################
+
+# Active Allocations for 2025
 allocations = [ 
     {
     "termCode":         202500,
-    "department":       3,
+    "department":       1,
     "isFinal":          False,
     "approvedOn":       None,
     "approvedBy":       None,
@@ -1148,7 +1150,7 @@ allocations = [
     },
     {
     "termCode":         202500,
-    "department":       1,
+    "department":       3,
     "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
@@ -1164,7 +1166,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -1191,6 +1193,8 @@ allocations = [
     "secondary_10":     1,
     "breakHours":       900,
     },
+
+    # Active Allocations for 2026
     {
     "termCode":         202600,
     "department":       5,
@@ -1276,12 +1280,12 @@ allocations = [
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
     "primary_10":       1,
-    "primary_12":       2,
+    "primary_12":       22,
     "primary_15":       3,
     "primary_20":       4,
     "secondary_5":      1,
     "secondary_10":     1,
-    "breakHours":       100,
+    "breakHours":       89,
     },
     {
     "termCode":         202600,
@@ -1290,13 +1294,13 @@ allocations = [
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
-    "primary_10":       1,
+    "primary_10":       11,
     "primary_12":       2,
     "primary_15":       3,
     "primary_20":       4,
     "secondary_5":      1,
     "secondary_10":     1,
-    "breakHours":       100,
+    "breakHours":       293,
     },
     {
     "termCode":         202600,
@@ -1306,12 +1310,12 @@ allocations = [
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
     "primary_10":       1,
-    "primary_12":       2,
+    "primary_12":       23,
     "primary_15":       3,
     "primary_20":       4,
     "secondary_5":      1,
     "secondary_10":     1,
-    "breakHours":       100,
+    "breakHours":       999,
     },
     {
     "termCode":         202600,
@@ -1320,13 +1324,13 @@ allocations = [
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
-    "primary_10":       1,
+    "primary_10":       10,
     "primary_12":       2,
     "primary_15":       3,
-    "primary_20":       4,
+    "primary_20":       13,
     "secondary_5":      1,
-    "secondary_10":     1,
-    "breakHours":       100,
+    "secondary_10":     19,
+    "breakHours":       1000,
     },
     {
     "termCode":         202600,
