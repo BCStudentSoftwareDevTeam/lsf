@@ -15,7 +15,7 @@ def getOrUpdateRequestedAllocation():
     # the list of the fields updated after submitting the allocation request
     updatedFields = {
         "termCode": nextAY, 
-        "department": request.form.get("submitter", type=int, default=None), 
+        "department": requester, 
         "isFinal": False,
         "justification": request.form.get("justification", default=""),
         "primary_10": request.form.get("primary_10", type=int, default=None),

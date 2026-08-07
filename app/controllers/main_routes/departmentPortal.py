@@ -22,7 +22,7 @@ def allocationRequest(org, account):
     
 
     # cheching if the user can visit this page
-    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
+    if not g.currentUser.isLaborAdmin:
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)
@@ -36,7 +36,7 @@ def allocationRequest(org, account):
 
     # checking if the allocation has already been approved (in other words, if an approved allocation exists)
     if allocationExists(nextAY.termCode, dept, isFinal=True):
-        flash(f"The allocation for the {nextAY.termName.split(' ')[1]} academic year has already been approved; therefore, you can no longer resubmit it.", "danger")
+        flash(f"The allocation for the {nextAY.termName.split(' ')[1]} academic year has already been approved; therefore, you can no longer resubmit it.", "info")
         return redirect('/admin/manageDepartments/')
     
 
@@ -54,7 +54,8 @@ def allocationRequest(org, account):
 @main_bp.route('/allocationRequest/submit', methods=['POST'])
 def submitAllocationRequest():  
     getOrUpdateRequestedAllocation()
-    return redirect("/admin/manageDepartments")
+    submitter = Department.get(Department.departmentID == request.form.get("submitter", type=int, default=None))
+    return redirect(f"/department/{submitter.ORG}/{submitter.ACCOUNT}")
 
 
 @main_bp.route('/department/<org>/<account>/positions', methods=['GET'])
@@ -64,7 +65,7 @@ def managePositions(org, account):
     except DoesNotExist:
         return render_template('errors/404.html'), 404
     
-    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
+    if not g.currentUser.isLaborAdmin:
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)

@@ -32,7 +32,7 @@ def manageDepartments():
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):   
+    if not currentUser.isLaborAdmin:   
         if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
@@ -104,7 +104,7 @@ def allocationReview(org=None, account=None):
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent): 
+    if not currentUser.isLaborAdmin: 
         if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
@@ -117,13 +117,13 @@ def allocationReview(org=None, account=None):
 
     # checking if the allocation has already been approved
     if allocationExists(nextAY.termCode, dept, isFinal=True): 
-        flash("You cannot reapprove an allocation request.", "danger")
+        flash("You cannot reapprove an allocation request.", "info")
         return redirect('/admin/manageDepartments/')
 
     
     # checking if the department has requested any allocation review 
     if not allocationExists(nextAY.termCode, dept, isFinal=False):
-        flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "danger")
+        flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "info")
         return redirect('/admin/manageDepartments/')
 
 
