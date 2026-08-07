@@ -112,9 +112,9 @@ def allocationTable(org=None, account=None):
         currentAY = Term.select().where(Term.termCode == currentDate.year * 100).get()
         springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12).get()
 
-    allocationDict = getTotalAllocations(currentAY, dept)
-    fallContracts = getContractedAllocations(fallTerm, dept)
-    springContracts = getContractedAllocations(springTerm, dept)
+    allocationDict = getTotalAllocations(currentAY.termCode, dept)
+    fallContracts = getContractedAllocations(fallTerm.termCode, dept)
+    springContracts = getContractedAllocations(springTerm.termCode, dept)
 
     breakContracts = {
         "total": 0,
