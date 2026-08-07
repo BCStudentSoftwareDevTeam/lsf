@@ -22,7 +22,7 @@ def allocationRequest(org, account):
     
 
     # cheching if the user can visit this page
-    if not g.currentUser.isLaborAdmin:
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent()):
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)
