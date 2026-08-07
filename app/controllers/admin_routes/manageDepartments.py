@@ -39,11 +39,13 @@ def manageDepartments(academicYear = None):
             return render_template('errors/403.html'), 403
 
 
-    # The condition below may be deleted if the routing to the Manage Departments page is changed. 
-    if academicYear == None: 
-        academicYear = g.openTerm.termCode
-    else: 
+    # The condition below may be deleted if the routing to the Manage Departments page is changed.
+    if academicYear == None:
+        academicYear = g.currentYear[0] * 100
+    else:
         academicYear = int(academicYear)
+
+    print("Academic Year Term Code asasasas:", academicYear)
 
 
     currentAY, nextAY = generateAdjacentYears(academicYear)

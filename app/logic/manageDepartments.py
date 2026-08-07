@@ -19,8 +19,8 @@ def generateAdjacentYears(academicYearTermCode=None):
     Generates the current and the following academic years.
     """
 
-    currentYear      = g.openTerm.termCode // 100
-    nextYear         = currentYear + 1
+    currentYear      = g.currentYear[0]
+    nextYear         = g.currentYear[1]
 
 
     currentAYCode    = currentYear * 100
