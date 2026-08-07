@@ -22,7 +22,6 @@ from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET']) 
 def manageDepartments(academicYear = None):
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
@@ -47,7 +46,7 @@ def manageDepartments(academicYear = None):
         academicYear = int(academicYear)
 
 
-    currentAY, previousAY, nextAY = generateAdjacentYears(academicYear)
+    currentAY, nextAY = generateAdjacentYears(academicYear)
     chosenAY = Term.get(Term.termCode == academicYear)
 
     breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
@@ -67,7 +66,6 @@ def manageDepartments(academicYear = None):
                             inactiveDepartments = inactiveDepartments,
                             allSupervisors = allSupervisors,
                             currentAY = currentAY,
-                            previousAY = previousAY,
                             nextAY = nextAY,
                             academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
