@@ -33,7 +33,7 @@ def manageDepartments(academicYear = None):
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not currentUser.isLaborAdmin:   
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):   
         if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:
@@ -114,7 +114,7 @@ def allocationReview(org=None, account=None):
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
         return render_template('errors/403.html')
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent()): 
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent): 
         if currentUser.student:
             return redirect('/laborHistory/' + currentUser.student.ID)
         elif currentUser.supervisor:

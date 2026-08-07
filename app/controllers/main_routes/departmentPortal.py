@@ -22,7 +22,7 @@ def allocationRequest(org, account):
     
 
     # cheching if the user can visit this page
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent()):
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)
@@ -64,7 +64,7 @@ def managePositions(org, account):
     except DoesNotExist:
         return render_template('errors/404.html'), 404
     
-    if not g.currentUser.isLaborAdmin:
+    if not (g.currentUser.isLaborAdmin or g.currentUser.isLaborDepartmentStudent):
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &
             (SupervisorDepartment.department == dept.departmentID)
