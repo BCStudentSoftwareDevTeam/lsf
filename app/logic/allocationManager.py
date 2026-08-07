@@ -37,7 +37,7 @@ def getTotalAllocations(termCode: int, dept: int):
                     "totalAllocations": (allocationObject["primary_10"] + allocationObject["primary_12"] + allocationObject["primary_15"] + allocationObject["primary_20"] + allocationObject["secondary_5"] + allocationObject["secondary_10"] )}
     return allocationDict 
 
-def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: int):
+def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: int, AYtermCode: int = None):
     '''
     This function counts the number of positions of a given type in a given department.
     For example, countContracts('secondary', 5, 202511, 1) returns the number of secondary 
@@ -52,21 +52,20 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
     if str(termCode).endswith("11"):
         dateCondition = (
             (LaborStatusForm.endDate.month.in_(fallMonths)) |
-            (LaborStatusForm.startDate.month.in_(fallMonths) &
+            (LaborStatusForm.startDate.month.in_(fallMonths) & # Reused check for year-long positions
                 LaborStatusForm.endDate.month.in_(springMonths))
-        )
+            )
     elif str(termCode).endswith("12"):
         dateCondition = (
             (LaborStatusForm.startDate.month.in_(springMonths)) |
             (LaborStatusForm.startDate.month.in_(fallMonths) &
                 LaborStatusForm.endDate.month.in_(springMonths))
-        )
+            )
     else:
         dateCondition = (
             (LaborStatusForm.startDate.month.in_(fallMonths) &
                 LaborStatusForm.endDate.month.in_(springMonths))
-            
-        )
+            )
 
     lsfCountPositions = FormHistory.select(
                             ).join(LaborStatusForm
