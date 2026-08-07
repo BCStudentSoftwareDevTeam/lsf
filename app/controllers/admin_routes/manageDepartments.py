@@ -22,7 +22,7 @@ from app.logic.academicYearManager import getCurrentAndNextAY
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-def manageDepartments(academicYear = None):
+def manageDepartments():
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
     and their allocations.  
@@ -38,16 +38,8 @@ def manageDepartments(academicYear = None):
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
-
-    # The condition below may be deleted if the routing to the Manage Departments page is changed. 
-    if academicYear == None: 
-        academicYear = g.openTerm.termCode
-    else: 
-        academicYear = int(academicYear)
-
-
-    currentAY, nextAY = generateAdjacentYears(academicYear)
-    chosenAY = Term.get(Term.termCode == academicYear)
+    currentAY, nextAY = getCurrentAndNextAY()
+    chosenAY = Term.get(Term.termCode == currentAY.termCode)
 
     breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
 
