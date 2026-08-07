@@ -21,6 +21,7 @@ from app.logic.emailHandler import sendAnnualPositionReviewRequests
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET'])
 def manageDepartments(academicYear = None):
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
