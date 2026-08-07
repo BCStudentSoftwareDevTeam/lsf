@@ -24,7 +24,7 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
-from app.logic.allocationManager import *
+from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
 
 
 @main_bp.route('/logout', methods=['GET'])
