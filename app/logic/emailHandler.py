@@ -16,82 +16,96 @@ import string
 from app import app
 import os
 from datetime import datetime, date
+from app.models.department import Department
+from app.models.term import Term
+from app.models.positionReview import PositionReview
+from app.logic.getSupervisors import getSupervisors
 
 
 class emailHandler():
-    def __init__(self, formHistoryKey):
+    def __init__(self, formHistoryKey=None, academicYearTermCode=None):
         self.mail = Mail(app)
 
-        self.formHistory = FormHistory.get(FormHistory.formHistoryID == formHistoryKey)
-        self.laborStatusForm = self.formHistory.formID
-        self.term = self.laborStatusForm.termCode
-        self.student = self.laborStatusForm.studentSupervisee
-        self.studentEmail = self.student.STU_EMAIL
-        self.creatorEmail = self.formHistory.createdBy.email
-        self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
-        self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
-        self.weeklyHours = str(self.laborStatusForm.weeklyHours)
-        self.contractHours = str(self.laborStatusForm.contractHours)
-        self.adminName = ""
-        self.positions = LaborStatusForm.select().where(LaborStatusForm.termCode == self.term, LaborStatusForm.studentSupervisee == self.student)
-        self.supervisors = []
-        for position in self.positions:
-            self.supervisors.append(position.supervisor)
+        # emailHandler was originally built entirely around a single
+        # LaborStatusForm (formHistoryKey). Annual Position Review isn't tied
+        # to a form at all - it's scoped to an academic year across every
+        # department - so construction branches on whichever was given.
+        if formHistoryKey is not None:
+            self.formHistory = FormHistory.get(FormHistory.formHistoryID == formHistoryKey)
+            self.laborStatusForm = self.formHistory.formID
+            self.term = self.laborStatusForm.termCode
+            self.student = self.laborStatusForm.studentSupervisee
+            self.studentEmail = self.student.STU_EMAIL
+            self.creatorEmail = self.formHistory.createdBy.email
+            self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
+            self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
+            self.weeklyHours = str(self.laborStatusForm.weeklyHours)
+            self.contractHours = str(self.laborStatusForm.contractHours)
+            self.adminName = ""
+            self.positions = LaborStatusForm.select().where(LaborStatusForm.termCode == self.term, LaborStatusForm.studentSupervisee == self.student)
+            self.supervisors = []
+            for position in self.positions:
+                self.supervisors.append(position.supervisor)
 
-        if not self.term.isBreak:
+            if not self.term.isBreak:
+                try:
+                    ayTermCode = str(self.laborStatusForm.termCode.termCode)[:-2] + '00'
+                    self.primaryEmail = None
+                    self.primaryForm = None
+                    self.primaryForm = FormHistory.select().join_from(FormHistory, LaborStatusForm) \
+                                                .join_from(FormHistory, HistoryType).join_from(FormHistory, Status) \
+                                                .where((FormHistory.formID.jobType == "Primary") &
+                                                        (FormHistory.formID.studentSupervisee == self.laborStatusForm.studentSupervisee) &
+                                                        ((FormHistory.formID.termCode == self.laborStatusForm.termCode) | (FormHistory.formID.termCode == ayTermCode)) &
+                                                        (FormHistory.historyType.historyTypeName == "Labor Status Form") &
+                                                        ~(FormHistory.status.statusName % "Denied%")).get()
+                    self.primaryEmail = self.primaryForm.formID.supervisor.EMAIL
+                except DoesNotExist:
+                    # This case happens from some of the old data
+                    pass
+
+            self.link = ""
+            self.releaseReason = ""
+            self.releaseDate = ""
+            self.newAdjustmentField = ""
+            self.oldAdjustmentField = ""
+
+            # generating a confirmation link for student approval
+            self.confirmationLink = ""
+            if self.laborStatusForm.confirmationToken:
+                self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
+
+
+            if self.formHistory.adjustedForm:
+                if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
+                    from app.logic.userInsertFunctions import createSupervisorFromTracy
+                    newSupervisor = createSupervisorFromTracy(bnumber=self.formHistory.adjustedForm.newValue)
+                    self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
+                    self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
+                elif self.formHistory.adjustedForm.fieldAdjusted == "position":
+                    currentPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.oldValue)
+                    newPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.newValue)
+                    self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
+                    self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
+                else:
+                    self.oldAdjustmentField = "Current Hours: {0}".format(self.formHistory.adjustedForm.oldValue)
+                    self.newAdjustmentField = "Pending new Hours: {0}".format(self.formHistory.adjustedForm.newValue)
+
             try:
-                ayTermCode = str(self.laborStatusForm.termCode.termCode)[:-2] + '00'
-                self.primaryEmail = None
-                self.primaryForm = None
-                self.primaryForm = FormHistory.select().join_from(FormHistory, LaborStatusForm) \
-                                              .join_from(FormHistory, HistoryType).join_from(FormHistory, Status) \
-                                              .where((FormHistory.formID.jobType == "Primary") &
-                                                     (FormHistory.formID.studentSupervisee == self.laborStatusForm.studentSupervisee) &
-                                                     ((FormHistory.formID.termCode == self.laborStatusForm.termCode) | (FormHistory.formID.termCode == ayTermCode)) &
-                                                     (FormHistory.historyType.historyTypeName == "Labor Status Form") &
-                                                     ~(FormHistory.status.statusName % "Denied%")).get()
-                self.primaryEmail = self.primaryForm.formID.supervisor.EMAIL
-            except DoesNotExist:
-                # This case happens from some of the old data
-                pass
+                self.releaseDate = self.formHistory.releaseForm.releaseDate.strftime("%m/%d/%Y")
+                self.releaseReason = self.formHistory.releaseForm.reasonForRelease
 
-        self.link = ""
-        self.releaseReason = ""
-        self.releaseDate = ""
-        self.newAdjustmentField = ""
-        self.oldAdjustmentField = ""
+            except Exception as e:
+                # The error you should get when the form is not a release form
+                # is the 'AttributeError' error. We expect to get the 'AttributeError',
+                # but if we get anything else then we want to print the error
+                if e.__class__.__name__ != "AttributeError":
+                    print (e)
 
-        # generating a confirmation link for student approval
-        self.confirmationLink = ""
-        if self.laborStatusForm.confirmationToken:
-            self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
-
-
-        if self.formHistory.adjustedForm:
-            if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
-                from app.logic.userInsertFunctions import createSupervisorFromTracy
-                newSupervisor = createSupervisorFromTracy(bnumber=self.formHistory.adjustedForm.newValue)
-                self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
-                self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
-            elif self.formHistory.adjustedForm.fieldAdjusted == "position":
-                currentPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.oldValue)
-                newPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.newValue)
-                self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
-                self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
-            else:
-                self.oldAdjustmentField = "Current Hours: {0}".format(self.formHistory.adjustedForm.oldValue)
-                self.newAdjustmentField = "Pending new Hours: {0}".format(self.formHistory.adjustedForm.newValue)
-
-        try:
-            self.releaseDate = self.formHistory.releaseForm.releaseDate.strftime("%m/%d/%Y")
-            self.releaseReason = self.formHistory.releaseForm.reasonForRelease
-
-        except Exception as e:
-            # The error you should get when the form is not a release form
-            # is the 'AttributeError' error. We expect to get the 'AttributeError',
-            # but if we get anything else then we want to print the error
-            if e.__class__.__name__ != "AttributeError":
-                print (e)
+        elif academicYearTermCode is not None:
+            self.term = Term.get(Term.termCode == academicYearTermCode)
+        else:
+            raise ValueError("emailHandler requires either formHistoryKey or academicYearTermCode")
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
@@ -110,7 +124,53 @@ class emailHandler():
         else:
             print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
 
+    def sendAnnualPositionReviewRequests(self, requestingUser):
+        """
+        Sends an Annual Position Review request email to every active department's
+        Labor Coordinators and supervisors, and records that the request was made
+        for this handler's academic year (self.term).
+        """
+        template = EmailTemplate.get(EmailTemplate.purpose == "Annual Position Review Request")
+        departments = Department.select().where(Department.isActive == True)
 
+        sentCount = 0
+        for department in departments:
+            # A review is considered "requested" for every active department as soon
+            # as this runs, whether or not there's currently anyone to email - a
+            # department with no supervisors/coordinators assigned is itself worth
+            # surfacing, not silently skipping.
+            existingReview = PositionReview.get_or_none(
+                PositionReview.academicYear == self.term,
+                PositionReview.department == department
+            )
+            if existingReview:
+                existingReview.requestedOn = datetime.now()
+                existingReview.requestedBy = requestingUser
+                existingReview.save()
+            else:
+                PositionReview.create(
+                    academicYear=self.term,
+                    department=department,
+                    requestedOn=datetime.now(),
+                    requestedBy=requestingUser
+                )
+
+            supervisors, laborCoordinators = getSupervisors(department)
+            recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
+            if not recipients:
+                continue
+
+            subject = template.subject.replace("@@AcademicYear@@", self.term.termName)
+            body = template.body.replace("@@Department@@", department.DEPT_NAME).replace("@@AcademicYear@@", self.term.termName)
+
+            message = Message(subject, recipients=list(recipients))
+            message.html = body
+            self.send(message)
+
+            sentCount += 1
+            print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
+            print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, self.term.termName))
+        return {"sentCount": sentCount, "departmentCount": departments.count()}
 
     # The methods of this class each handle a different email situation. Some of the methods need to handle
     # "primary" and "secondary" forms differently, but a majority do not need to differentiate between the two.

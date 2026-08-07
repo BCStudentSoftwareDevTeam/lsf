@@ -15,11 +15,13 @@ from app.models.department import *
 from app.models.allocation import *
 from app.models.laborStatusForm import *
 
-from app.logic.manageDepartments import * 
+from app.logic.manageDepartments import *
+from app.logic.emailHandler import emailHandler
 
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET'])
 def manageDepartments(academicYear = None):
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
@@ -37,11 +39,13 @@ def manageDepartments(academicYear = None):
             return render_template('errors/403.html'), 403
 
 
-    # The condition below may be deleted if the routing to the Manage Departments page is changed. 
-    if academicYear == None: 
-        academicYear = g.openTerm.termCode
-    else: 
+    # The condition below may be deleted if the routing to the Manage Departments page is changed.
+    if academicYear == None:
+        academicYear = g.currentYear[0] * 100
+    else:
         academicYear = int(academicYear)
+
+    print("Academic Year Term Code asasasas:", academicYear)
 
 
     currentAY, nextAY = generateAdjacentYears(academicYear)
@@ -65,6 +69,7 @@ def manageDepartments(academicYear = None):
                             allSupervisors = allSupervisors,
                             currentAY = currentAY,
                             nextAY = nextAY,
+                            chosenAY = chosenAY,
                             academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
                             allocationStatus = allocationStatus
@@ -90,6 +95,31 @@ def complianceStatusCheck():
         return jsonify({"Success": False})
 
 
+
+@admin.route('/admin/manageDepartments/annualPositionReview', methods=['POST'])
+def annualPositionReviewRequest():
+    """
+    Sends an Annual Position Review request email to every active department's
+    Labor Coordinators and supervisors for the selected academic year, and
+    records the request. Triggered from the Manage Departments page.
+    """
+    currentUser = require_login()
+    if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+        return jsonify({"Success": False}), 403
+
+    rsp = request.get_json(silent=True)
+
+    try:
+        academicYear = int(rsp["academicYear"])
+    except (TypeError, ValueError, KeyError):
+        return jsonify({"Success": False, "message": "Request must include a valid academicYear."}), 400
+
+    try:
+        handler = emailHandler(academicYearTermCode=academicYear)
+        result = handler.sendAnnualPositionReviewRequests(currentUser)
+        return jsonify({"Success": True, **result})
+    except Exception:
+        return jsonify({"Success": False})
 
 @admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
