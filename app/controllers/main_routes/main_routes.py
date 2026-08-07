@@ -91,8 +91,8 @@ def allocationTable(org=None, account=None):
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
-        dept = None
-
+        return render_template('errors/404.html'), 404
+        
     if not currentUser.isLaborAdmin:
         allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
         if dept.departmentID not in allowedDepartmentIds:
