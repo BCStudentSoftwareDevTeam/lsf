@@ -17,7 +17,7 @@ from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import * 
 
-
+from playhouse.shortcuts import model_to_dict
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 def manageDepartments(academicYear = None):
@@ -25,7 +25,6 @@ def manageDepartments(academicYear = None):
     Returns the Manage Departments page, which allows the admin to view all the departments
     and their allocations.  
     """
-
     # Checking Admin Rights
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
@@ -36,40 +35,23 @@ def manageDepartments(academicYear = None):
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
-
-    # The condition below may be deleted if the routing to the Manage Departments page is changed. 
-    if academicYear == None: 
-        academicYear = g.openTerm.termCode
-    else: 
-        academicYear = int(academicYear)
-
-
-    currentAY, nextAY = generateAdjacentYears(academicYear)
-    chosenAY = Term.get(Term.termCode == academicYear)
-
-    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
-
-    activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
-    inactiveDepartments = Department.select().where(Department.isActive == False)  
+    currentAY, nextAY = generateAdjacentYears(g.openTerm.termCode)
     
-    allocationStatus = {
-        department.departmentID: getAllocationStatus(chosenAY, department)
-        for department in activeDepartments
-    }
+    inactiveDepartments = Department.select().where(Department.isActive == False)  
+    allSupervisors = Supervisor.select().order_by(Supervisor.LAST_NAME)
 
-    allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
+    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(currentAY)}
+
+    activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
 
     return render_template( 'admin/manageDepartments.html',
-                            activeDepartments = activeDepartments,
+                            activeDepartmentsAllocations = activeDepartmentsAllocations,
                             inactiveDepartments = inactiveDepartments,
-                            allSupervisors = allSupervisors,
+                            allSupervisors = allSupervisors,                 
                             currentAY = currentAY,
                             nextAY = nextAY,
-                            academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
-                            allocationStatus = allocationStatus
                             )
-
 
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
