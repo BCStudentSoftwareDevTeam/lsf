@@ -142,6 +142,7 @@
 
               </td>
 
+              {% if entry.allocation %}
               <td style="white-space: nowrap">
                 <span>
                   <strong>Primary: </strong>
@@ -156,6 +157,9 @@
                 <span>
                   <strong>Break:</strong> {{ entry.requestedAllocation.breakHours }} hours
                 </span>
+                {% else %}
+                <span class="text-muted">No current allocation</span>
+                {% endif %}
 
               </td>
 
