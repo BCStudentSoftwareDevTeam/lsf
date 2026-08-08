@@ -142,8 +142,9 @@
 
               </td>
 
-              {% if entry.allocation %}
+              
               <td style="white-space: nowrap">
+                {% if entry.allocation %}
                 <span>
                   <strong>Primary: </strong>
                   {{entry.requestedAllocation.totalPrimaries}}
@@ -162,8 +163,6 @@
                 {% endif %}
 
               </td>
-
-
 
               <td style="white-space: nowrap">
                 <div class="dropdown">
