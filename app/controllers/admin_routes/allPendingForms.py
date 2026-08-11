@@ -335,7 +335,7 @@ def finalUpdateStatus(raw_status):
     currentUser = require_login()
     if not currentUser:                    # Not logged in
         return render_template('errors/403.html'), 403
-    if not currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent:       # Not an admin
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):       # Not an admin
         return render_template('errors/403.html'), 403
 
     if raw_status == 'approved':
