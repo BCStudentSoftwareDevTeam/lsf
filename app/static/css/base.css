@@ -206,3 +206,30 @@ a {
   font-size:1.2em;
   z-index:999;
 }
+
+.site-footer {
+  position: fixed;
+  left: 280px;
+  right: 0;
+  bottom: 0;
+
+  background-color: #e9ebec;
+  color: #1e2433;
+
+  padding: 8px 15px;
+  line-height: 1.4;
+  box-sizing: border-box;
+  z-index: 101;
+
+}
+
+.sidebar-push {
+  padding-bottom: 85px;
+}
+
+@media (max-width: 991px) {
+  .site-footer {
+    left: 0;
+    width: 100%;
+  }
+}
