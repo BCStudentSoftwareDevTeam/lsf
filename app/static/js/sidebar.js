@@ -17,6 +17,13 @@ $(document).ready(function() {
   $('#sidebar-overlay').on('click', function() {
     closeSidebar();
   });
+  $('#admin-toggle').on('click', function() {
+    if ($('#admin').hasClass('in')) { 
+      toggleAdminPanelClose();
+    } else {
+      toggleAdminPanelOpen();
+    }
+  });
   });
 
 function openSidebar() {
@@ -31,6 +38,9 @@ function closeSidebar() {
   $('body').removeClass('sidebar-is-open');
   $('#sidebar-toggle').attr('aria-expanded', false);
 }
-
-
-
+function toggleAdminPanelOpen() {
+  $('#admin-toggle h4 i').removeClass('bi-chevron-down').addClass('bi-chevron-up');
+}
+function toggleAdminPanelClose() {
+  $('#admin-toggle h4 i').removeClass('bi-chevron-up').addClass('bi-chevron-down');
+}
