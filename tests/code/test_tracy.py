@@ -19,7 +19,6 @@ class Test_Tracy:
         with app.app_context():
             students = tracy.getStudents()
             for s in students:
-                print(s.STU_CPO)
                 assert ['Antonia','Barbara','Elaheh','Guillermo','Jeremiah','Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
                 assert ['777','118','718','300','420','420', '883', '700', '420'] == [s.STU_CPO for s in students]
 
