@@ -89,6 +89,7 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
 
         if not formHistory.formID.termCode.isBreak and not isOverload:
             email = emailHandler(formHistory.formHistoryID)
+            email.laborStatusFormSubmitted()
 
         return formHistory
     except Exception as e:
