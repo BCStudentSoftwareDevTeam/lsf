@@ -12,20 +12,24 @@ def getAllocation(termCode: int, dept: int, isFinal = True):
     This function returns a peewee object containing the selected allocation for given 
     department and term. If you want the pending allocation, pass in False for isFinal.
     '''
-    academicYearCode = int(str(termCode)[:4] + "00")
-    allocationObject = Allocation.select().where(
-        Allocation.termCode.in_([termCode,academicYearCode]),
-        Allocation.department == dept, 
-        Allocation.isFinal == isFinal).dicts().get()
-    return allocationObject 
+    try:
+        academicYearCode = int(str(termCode)[:4] + "00")
+        allocationObject = Allocation.select().where(
+            Allocation.termCode.in_([termCode,academicYearCode]),
+            Allocation.department == dept, 
+            Allocation.isFinal == isFinal).dicts().get()
+        return allocationObject 
+    except:
+        return 0 
 
 
 def getTotalAllocations(termCode: int, dept: int):
     '''
     This function returns a dictionary representation of the given department's allocation for the given term.
     '''
-    allocationObject = getAllocation(termCode, dept)
-    allocationDict = {"primary_10": allocationObject["primary_10"],
+    try:
+        allocationObject = getAllocation(termCode, dept)
+        allocationDict = {"primary_10": allocationObject["primary_10"],
                     "primary_12": allocationObject["primary_12"],
                     "primary_15": allocationObject["primary_15"],
                     "primary_20": allocationObject["primary_20"],
@@ -35,6 +39,17 @@ def getTotalAllocations(termCode: int, dept: int):
                     "totalPrimaries": (allocationObject["primary_10"] + allocationObject["primary_12"] + allocationObject["primary_15"] + allocationObject["primary_20"]),
                     "totalSecondaries": (allocationObject["secondary_5"] + allocationObject["secondary_10"]),
                     "totalAllocations": (allocationObject["primary_10"] + allocationObject["primary_12"] + allocationObject["primary_15"] + allocationObject["primary_20"] + allocationObject["secondary_5"] + allocationObject["secondary_10"] )}
+    except:
+        allocationDict = {"primary_10": "",
+                    "primary_12": "",
+                    "primary_15": "",
+                    "primary_20": "",
+                    "secondary_5": "",
+                    "secondary_10": "", 
+                    "breakHours": "No Allocations Found", 
+                    "totalPrimaries": "", 
+                    "totalSecondaries": "",
+                    "totalAllocations": "No Allocations Found"}
     return allocationDict 
 
 def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: int, AYtermCode: int = None):
