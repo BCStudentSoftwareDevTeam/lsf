@@ -25,6 +25,7 @@ from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
+from app.logic.getCurrentTerms import getCurrentTerms
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -98,20 +99,8 @@ def allocationTable(org=None, account=None):
         if dept.departmentID not in allowedDepartmentIds:
             return render_template('errors/403.html'), 403
 
-
-    currentDate = date.today()
-    if currentDate.month <= 6:
-        # If it is the spring semester, then the term code is 1 year behind. e.g. 2025-2026 term code is 202500. Thus the - 100 in the spring term.
-        # The (year * 100) turns the year into an AY term code, 2025 -> 202500. The + 12/11 turns it into a fall or spring term.
-        springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12 - 100).get()
-        currentAY = Term.select().where(Term.termCode == currentDate.year * 100 - 100).get()
-        fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11 - 100).get()
-
-    else:
-        fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11).get()
-        currentAY = Term.select().where(Term.termCode == currentDate.year * 100).get()
-        springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12).get()
-
+    currentAY, fallTerm, springTerm = getCurrentTerms()
+    
     allocationDict = getTotalAllocations(currentAY.termCode, dept)
     fallContracts = getContractedAllocations(fallTerm.termCode, dept)
     springContracts = getContractedAllocations(springTerm.termCode, dept)
