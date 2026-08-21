@@ -1,7 +1,6 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
-from datetime import datetime, date
 import operator
 
 from app.models.department import Department
@@ -100,7 +99,7 @@ def allocationTable(org=None, account=None):
             return render_template('errors/403.html'), 403
 
     currentAY, fallTerm, springTerm = getCurrentTerms()
-    
+
     allocationDict = getTotalAllocations(currentAY.termCode, dept)
     fallContracts = getContractedAllocations(fallTerm.termCode, dept)
     springContracts = getContractedAllocations(springTerm.termCode, dept)
