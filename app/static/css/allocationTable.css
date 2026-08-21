@@ -57,3 +57,9 @@
 .termDisplay{
   margin-right:auto;
 }
+.bi-info-circle {
+    padding: 3px 3.5px 1.5px 3.5px;
+    font-size: 1.5rem;
+    vertical-align: middle;
+    color:#6e6e6e;
+}

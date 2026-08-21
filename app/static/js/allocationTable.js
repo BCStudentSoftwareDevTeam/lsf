@@ -16,3 +16,7 @@ $(document).ready( function(){
     const springTermSecondaries = initTable('#springTermSecondaries');
     const breakTable = initTable('#breakTable');
 });
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
