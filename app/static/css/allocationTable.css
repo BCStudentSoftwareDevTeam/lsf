@@ -50,7 +50,7 @@
 .btn-block{
   align-items: center;
   align-self: center;
-  text-align: center;
+  text-align: left;
   justify-content: center;
   height: 100%
 }
