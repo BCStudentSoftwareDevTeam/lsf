@@ -21,7 +21,7 @@ def allocationRequest(org, account):
         return render_template('errors/404.html'), 404
     
 
-    # cheching if the user can visit this page
+    # checking if the user can visit this page
     if not g.currentUser.isLaborAdmin:
         if not SupervisorDepartment.select().where(
             (SupervisorDepartment.supervisor == g.currentUser.supervisor) &

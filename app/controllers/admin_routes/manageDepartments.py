@@ -148,7 +148,7 @@ def approveAllocationReview():
     currentAY, nextAY = getCurrentAndNextAY()
 
     # getting the ID of the user who approves the request
-    approverID = require_login().userID
+    approverID = g.currentUser.userID
 
     # getting the name of the requesting department
     requester = request.form.get("requester", type=int, default=None)
