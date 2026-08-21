@@ -1,7 +1,4 @@
 $(document).ready( function(){
-
-    $('[data-toggle="popover"]').popover();
-    
     // not allowing users to type anything in a numeric spinner
     $("input[type='number'].breakHoursNumericSpinner").keypress(function (evt) {
       if (!/[0-9]/.test(evt.key)) {

@@ -205,3 +205,46 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['used_total'] == 1
 
     assert contractedAllocation['break_hours'] == 500
+
+@pytest.mark.integration
+def test_allocationExists(testTerm, testDepartment, testAllocation, testPendingAllocation):
+    
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=False) == True
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=True) == True
+
+    assert allocationExists(testTerm.termCode + 100, testDepartment.departmentID, isFinal=False) == False
+    assert allocationExists(testTerm.termCode + 100, testDepartment.departmentID, isFinal=True) == False
+
+    assert allocationExists(testTerm.termCode, 456, isFinal=False) == False
+    assert allocationExists(testTerm.termCode, 456, isFinal=True) == False
+
+    testAllocation.delete_instance()
+
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=False) == True
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=True) == False
+
+    testPendingAllocation.delete_instance()
+
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=False) == False
+    assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=True) == False
+
+    with mainDB.atomic() as transaction: 
+        allocation = Allocation.create(
+                                        termCode       = testTerm.termCode,
+                                        department     = testDepartment.departmentID,
+                                        isFinal        = True,
+                                        approvedOn     = None,
+                                        approvedBy     = None,
+                                        justification  = "brovich",
+                                        primary_10     = 22,
+                                        primary_12     = 6,
+                                        primary_15     = 7,
+                                        primary_20     = 12,
+                                        secondary_5    = 45,
+                                        secondary_10   = 22,
+                                        breakHours     = 894)
+        
+        assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=False) == False
+        assert allocationExists(testTerm.termCode, testDepartment.departmentID, isFinal=True) == True
+
+        transaction.rollback()

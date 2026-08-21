@@ -16,7 +16,7 @@
     }
 }
 
-#allocationReviewSubtitle{
+#allocationRequestSubtitle{
   margin-bottom: 30px;
 }
 
@@ -30,7 +30,7 @@
   margin-bottom: 30px;
 }
 
-.allocationReviewSection{
+.allocationRequestSection{
   display: flex; 
   flex-direction: row; 
   justify-content: space-between;
@@ -48,24 +48,25 @@
   margin-bottom: -10px;
 }
 
-.currentAndAllocated {
-  transition-duration: 150ms;
+#allocationJustification {
+  margin-top: 30px;
 }
 
-.currentAndAllocated:hover {
-  color: grey;
+#justificationTextField {
+  resize: none;
+  width: 100%; 
+  margin-bottom: 15px;
 }
 
-#allocationReviewNote {
+#allocationRequestNote {
   text-align: center;
   margin: 0 auto; 
-  max-width:70%; 
-  margin-top: 15px;
+  max-width:70%;
   margin-bottom: 15px;
   color: grey;
 }
 
-.cancel-or-approve {
+.cancel-or-submit {
   display: flex; 
   flex-direction: row; 
   justify-content: space-between;

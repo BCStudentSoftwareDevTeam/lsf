@@ -14,45 +14,6 @@ from app.login_manager import require_login
 
 
 
-def generateAdjacentYears(academicYearTermCode=None): 
-    """
-    Generates the current, the previous, and the following academic years. 
-    """
-
-    currentYear      = g.openTerm.termCode // 100
-    nextYear         = currentYear + 1
-
-
-    currentAYCode    = currentYear * 100
-    nextAYCode       = nextYear * 100
-
-    # Admins cannot view allocations for the years that are beyond the current, the previous, or the following academic year 
-    if academicYearTermCode not in (None, currentAYCode, nextAYCode):
-        abort(400)
-
-
-    currentAY, _  = Term.get_or_create(
-        termCode=currentAYCode,
-        defaults={"termName": "AY {}-{}".format(currentYear, currentYear + 1), "isAcademicYear": True}
-        )
-
-    nextAY, _     = Term.get_or_create(
-        termCode=nextAYCode,
-        defaults={"termName": "AY {}-{}".format(nextYear, nextYear + 1), "isAcademicYear": True}
-    )
-
-    return (currentAY, nextAY)
-
-
-
-
-####################################################################################################################################
-# Everything below this line will eventually be deleted  
-
-
-
-
-
 def getUsedBreakHours(term):
     """
     Returns the total number of break hours used by each department for a given term.
@@ -147,42 +108,3 @@ def getAllocationStatus(term, department):
         (Allocation.department == department)
     )
     return allocation.isFinal
-
-
-
-
-
-
-# THE FUNCTIONS BELOW ARE NO LONGER USED IN THE CODE (BECAUSE WE CAN ONLY CHOOSE AN ACADEMIC YEAR IN THE CODE). 
-# IF SOMETHING CHANGES,YOU CAN USE THE CODE BELOW
-
-# # USED IN THE generateTermsForAdjacentYears() FUNCTION
-# def generateTerms(termCode):
-#     """
-#     Generates all the terms in an academic year. 
-#     """
-
-#     # Truncating term codes to hundreds. That's how we get the academic year. 
-#     academicYearCode = (termCode // 100)
-    
-#     return createTerms(academicYearCode)   
-
-
-
-# def generateTermsForAdjacentYears(academicYear): 
-#     """
-#     Generates all the terms for the current, the previous, and the future academic years. 
-#     """
-
-#     previousAYCode  = g.openTerm.termCode - 100
-#     currentAYCode   = g.openTerm.termCode 
-#     nextATCode      = g.openTerm.termCode + 100
-
-#     if (academicYear != previousAYCode) and (academicYear != currentAYCode) and (academicYear != nextATCode):
-#         abort(400)
-
-#     PreviousAYTerms    = generateTerms(previousAYCode)
-#     CurrentAYTerms     = generateTerms(currentAYCode) 
-#     NextAYTerms        = generateTerms(nextATCode)
-
-#     return (PreviousAYTerms, CurrentAYTerms, NextAYTerms)
