@@ -8,7 +8,7 @@ def getCurrentAndNextAY():
     begins from the start of July). 
     """
 
-    currentYear, nextYear = g.currentYear 
+    currentYear, nextYear = g.currentAY
 
     currentAYCode    = currentYear * 100
     nextAYCode       = nextYear * 100
