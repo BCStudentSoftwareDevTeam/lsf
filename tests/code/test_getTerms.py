@@ -9,12 +9,13 @@ from datetime import datetime, date
 def test_terms():
     # Make terms and get a set year, its far enough back that the test won't break other data.
 
-    currentYear = date.today().year - 2000
+    currentYear = 2000
+    AcademicYear = f"{currentYear}-{currentYear + 1}"
     print(currentYear)
 
     test_currentAY = Term.create(
         termCode = int(f"{currentYear}00"),
-        termName = f"AY {currentYear}-{currentYear - 1}",
+        termName = f"AY {currentYear}-{currentYear + 1}",
         termStart = f"{currentYear}-08-01",
         termEnd = f"{currentYear + 1}-05-01",
         termState = 1,
@@ -39,7 +40,7 @@ def test_terms():
             primaryCutOff = f"{currentYear + 1}-02-01",
             adjustmentCutOff = f"{currentYear + 1}-3-01"
             )
-    yield test_currentAY, test_fallTerm, test_springTerm, currentYear
+    yield test_currentAY, test_fallTerm, test_springTerm, AcademicYear
 
     #destroy all created data
     test_currentAY.delete_instance()
@@ -48,7 +49,7 @@ def test_terms():
 
 @pytest.mark.integration
 def test_getCurrentTerms(test_terms):
-    currentAY, fallTerm, springTerm = getCurrentTerms(test_terms[3], 8) # Get terms for the year that is selected.
+    currentAY, fallTerm, springTerm = getCurrentTerms(test_terms[3]) # Get terms for the year that is selected.
 
     assert currentAY == test_terms[0]
     assert fallTerm == test_terms[1]
