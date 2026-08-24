@@ -2,7 +2,7 @@ import pytest
 from app import app
 
 from app.models.term import Term
-from app.logic.getTerms import getCurrentTerms
+from app.logic.getTerms import getTerms
 from datetime import datetime, date
 
 @pytest.fixture
@@ -49,7 +49,7 @@ def test_terms():
 
 @pytest.mark.integration
 def test_getCurrentTerms(test_terms):
-    currentAY, fallTerm, springTerm = getCurrentTerms(test_terms[3]) # Get terms for the year that is selected.
+    currentAY, fallTerm, springTerm = getTerms(test_terms[3]) # Get terms for the year that is selected.
 
     assert currentAY == test_terms[0]
     assert fallTerm == test_terms[1]

@@ -24,7 +24,7 @@ from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
-from app.logic.getTerms import getCurrentTerms
+from app.logic.getTerms import getTerms
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -98,7 +98,7 @@ def allocationTable(org=None, account=None):
         if dept.departmentID not in allowedDepartmentIds:
             return render_template('errors/403.html'), 403
 
-    currentAY, fallTerm, springTerm = getCurrentTerms()
+    currentAY, fallTerm, springTerm = getTerms()
 
     allocationDict = getTotalAllocations(currentAY.termCode, dept)
     fallContracts = getContractedAllocations(fallTerm.termCode, dept)
