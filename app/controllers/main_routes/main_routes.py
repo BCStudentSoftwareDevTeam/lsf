@@ -24,7 +24,7 @@ from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
-from app.logic.getCurrentTerms import getCurrentTerms
+from app.logic.getTerms import getCurrentTerms
 
 
 @main_bp.route('/logout', methods=['GET'])
