@@ -7,6 +7,7 @@ from datetime import datetime, date
 
 @pytest.fixture
 def test_terms():
+    # Make terms and get a set year, its far enough back that the test won't break other data.
 
     currentYear = date.today().year - 2000
     print(currentYear)
@@ -47,7 +48,7 @@ def test_terms():
 
 @pytest.mark.integration
 def test_getCurrentTerms(test_terms):
-    currentAY, fallTerm, springTerm = getCurrentTerms(test_terms[3], 8)
+    currentAY, fallTerm, springTerm = getCurrentTerms(test_terms[3], 8) # Get terms for the year that is selected.
 
     assert currentAY == test_terms[0]
     assert fallTerm == test_terms[1]

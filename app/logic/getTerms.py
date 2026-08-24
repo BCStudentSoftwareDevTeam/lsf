@@ -25,7 +25,7 @@ def getCurrentTerms(year: int = None, month: int = None):
     else:
         # The check for the current year, not a given one
         currentDate = date.today()
-        if month <= 6:
+        if currentDate.month <= 6:
             springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12 - 100).get()
             currentAY = Term.select().where(Term.termCode == currentDate.year * 100 - 100).get()
             fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11 - 100).get()
