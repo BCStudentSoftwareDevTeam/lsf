@@ -76,7 +76,7 @@ def manageLaborAdmin():
 
 def addAdmin(user, adminType):
     setattr(user, f"is{adminType}Admin", True)
-    user.save() 
+    user.save()
 
 def removeAdmin(user, adminType):
     setattr(user, f"is{adminType}Admin", False)

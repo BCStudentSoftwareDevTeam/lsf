@@ -65,11 +65,11 @@
           <div class="col-sm-4" align="left">{{form.status}}</div>
         </div>
         {% if "Denied" in form.status.statusName %}
-        <div class="leftMargin">
+        <div class="smallDataMargin">
            <div class="row">
-             <p class="control-label col-sm-5 pTag" align="right">Reject Reason: </p>
+             <p class="control-label col-sm-5 pTag"><strong>Reject Reason:</strong></p>
            <div class="col-sm-5">
-             <textarea class="rejectReasonTextArea" rows="3" cols="25" readonly>{{form.rejectReason}}</textarea>
+             <textarea class="rejectReasonTextArea" rows="3" cols="25" disabled readonly>{{form.rejectReason}}</textarea>
            </div>
            </div>
         </div>
@@ -80,8 +80,9 @@
           <div class="col-sm-4" align="left">Submitted</div>
         </div>
       {% endif %}
+    {% endif %}
 
-    {% elif form.releaseForm != None %}
+    {% if form.releaseForm != None %}
       {% if form.reviewedDate == None %}
         <div class="h4 nopadding">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
@@ -95,11 +96,11 @@
           <div class="col-sm-4" align="left">{{form.status}}</div>
         </div>
         {% if "Denied" in form.status.statusName %}
-        <div class="leftMargin">
+        <div class="smallDataMargin">
           <div class="row">
-            <p class="col-sm-4 pTag">Reject Reason:</p>
+            <p class="col-sm-4 pTag"><strong>Reject Reason:</strong></p>
           <div class="col-sm-7">
-            <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
+            <textarea class="rejectReasonTextArea" rows="2" cols="45" disabled readonly>{{form.rejectReason}}</textarea>
           </div>
           </div>
         </div>
@@ -112,13 +113,13 @@
       {% endif %}
         <div class="smallDataMargin">
           <div class="row" style="padding-top:5px">
-            <p class="col-sm-4 releaseTopRows pTag">Condition at Release:</p>
+            <p class="col-sm-4 releaseTopRows pTag"><strong>Condition at Release:</strong></p>
             <div class="col-sm-7" align="left">
               <p>{{form.releaseForm.conditionAtRelease}}</p>
             </div>
           </div>
           <div class="row" style="padding-top:5px">
-            <p class="col-sm-4 releaseTopRows pTag">Labor Office Contact:</p>
+            <p class="col-sm-4 releaseTopRows pTag"><strong>Labor Office Contact:</strong></p>
             <div class="col-sm-7" align="left">
                 <p>
                 {% if form.releaseForm.contactPerson_id %}
@@ -130,52 +131,55 @@
             </div>
           </div>
           <div class="row">
-            <p class="col-sm-4 releaseTopRows pTag" align="left">Release Date:</p>
+            <p class="col-sm-4 releaseTopRows pTag" align="left"><strong>Release Date:</strong></p>
           <div class="col-sm-7" align="left">
             <p>{{form.releaseForm.releaseDate.strftime('%m-%d-%Y')}}</p>
           </div>
           </div>
           <div class="row">
-            <p class="col-sm-4 bottomRows pTag">Reason for release:</p>
+            <p class="col-sm-4 bottomRows pTag"><strong>Reason for release:</strong></p>
           <div class="col-sm-7" align="left">
-            <textarea class="releaseReasonTextArea" rows="2" cols="45" readonly>{{form.releaseForm.reasonForRelease}}</textarea>
+            <textarea class="releaseReasonTextArea" rows="2" cols="45" disabled readonly>{{form.releaseForm.reasonForRelease}}</textarea>
           </div>
           </div>
         </div>
-    {% elif form.adjustedForm != None %}
-    {% if form.reviewedDate == None %}
-      <div class="h4 nopadding">
-        <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-5 ">{{form.historyType}}</div>
-        <div class="col-sm-4" align="left">Submitted</div>
-      </div>
-    {% elif form.reviewedDate != None %}
-      <div class="h4 nopadding">
-        <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-5 ">{{form.historyType}}</div>
-        <div class="col-sm-4" align="left">{{form.status}}</div>
-      </div>
-      {% if "Denied" in form.status.statusName %}
-      <div class="leftMargin">
-        <div class="row">
-          <p class="col-sm-4 pTag">Reject Reason:</p>
-        <div class="col-sm-7">
-          <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
-        </div>
-        </div>
-      </div>
-      {% endif %}
-      <div class="h4 nopadding">
-        <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
-        <div class="col-sm-5 ">{{form.historyType}}</div>
-        <div class="col-sm-4" align="left">Submitted</div>
-      </div>
     {% endif %}
+
+    {% if form.adjustedForm != None %}
+      {% if form.reviewedDate == None %}
+          <div class="h4 nopadding">
+            <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
+            <div class="col-sm-5 ">{{form.historyType}}</div>
+            <div class="col-sm-4" align="left">Submitted</div>
+          </div>
+        {% else %}
+          <div class="h4 nopadding">
+            <div class="col-sm-3">{{form.reviewedDate.strftime('%m-%d-%Y')}}</div>
+            <div class="col-sm-5 ">{{form.historyType}}</div>
+            <div class="col-sm-4" align="left">{{form.status}}</div>
+          </div>
+          {% if "Denied" in form.status.statusName %}
+            <div class="smallDataMargin">
+              <div class="row">
+                <p class="col-sm-4 pTag"><strong>Reject Reason:</strong></p>
+                <div class="col-sm-7">
+                  <textarea class="rejectReasonTextArea" rows="2" cols="45" disabled readonly>{{form.rejectReason}}</textarea>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          <div class="h4 nopadding">
+            <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
+            <div class="col-sm-5 ">{{form.historyType}}</div>
+            <div class="col-sm-4" align="left">Submitted</div>
+          </div>
+        {% endif %}
       <div class="row">
         <p class="col-sm-11 smallDataMargin pTag">{{form.adjustedForm.fieldAdjusted}} changed from {{form.adjustedForm.oldValue}} to {{form.adjustedForm.newValue}}</p>
       </div>
-
-    {% elif form.overloadForm != None %}
+    {% endif %}
+    
+    {% if form.overloadForm != None %}
       {% if form.reviewedDate == None %}
         <div class="h4 overloadBottom">
           <div class="col-sm-3">{{form.createdDate.strftime('%m-%d-%Y')}}</div>
@@ -195,11 +199,11 @@
           <div class="col-sm-4" align="left">{{status}}</div>
         </div>
         {% if "Denied" in form.status.statusName %}
-        <div class="leftMargin">
+        <div class="smallDataMargin">
           <div class="row">
-            <p class="col-sm-4 nopadding pTag">Reject Reason:</p>
+            <p class="col-sm-4 nopadding pTag"><strong>Reject Reason:</strong></p>
           <div class="col-sm-7">
-            <textarea class="rejectReasonTextArea" rows="2" cols="45" readonly>{{form.rejectReason}}</textarea>
+            <textarea class="rejectReasonTextArea" rows="2" cols="45" disabled readonly>{{form.rejectReason}}</textarea>
           </div>
           </div>
         </div>
@@ -211,6 +215,33 @@
         </div>
       {% endif %}
 
+        <div class="smallDataMargin">
+        <div class="row">
+          <p class="col-sm-4 pTag"><strong>Labor Office Contact:</strong></p>
+          <div class="col-sm-7" align="left">
+            <p>
+              {% set laborApprover = form.overloadForm.laborApprover.supervisor %}
+              {% if form.overloadForm.laborApprover_id and (laborApprover.FIRST_NAME or laborApprover.LAST_NAME) %}
+                  {{laborApprover.FIRST_NAME}} {{laborApprover.LAST_NAME}}
+              {% else %}
+                  None
+              {% endif %}
+            </p> 
+          </div>
+        </div>
+        <div class="row">
+          <p class="col-sm-4 pTag" align="left"><strong>Labor Review Date:</strong></p>
+          <div class="col-sm-7" align="left">
+            <p>{{form.overloadForm.laborReviewDate.strftime('%m-%d-%Y') if form.overloadForm.laborReviewDate else "Not yet reviewed"}}</p>
+          </div>
+        </div> 
+        <div class="row">
+          <p class="col-sm-4 pTag"><strong>Reason for overload:</strong></p>
+          <div class="col-sm-7" align="left">
+            <textarea class="overloadReasonTextArea" rows="2" cols="45" disabled readonly>{{form.overloadForm.studentOverloadReason}}</textarea>
+          </div>
+        </div>
+      </div>
     {% endif %}
 
   {% endfor %}

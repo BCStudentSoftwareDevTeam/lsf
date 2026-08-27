@@ -1,9 +1,8 @@
-from app import app
 import os
-from peewee import *
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy(app)
 
+from peewee import *
+
+from app import app
 
 def getMySQLDB():
     if os.environ.get("USING_CONTAINER", False):

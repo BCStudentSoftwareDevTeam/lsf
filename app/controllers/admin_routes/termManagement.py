@@ -25,7 +25,7 @@ def term_Management():
     termsByYear ={}
     for termYear in range(today.year-2, today.year+3):
         createTerms(termYear)
-        termsByYear[termYear] = list(Term.select().where(Term.termCode.cast('char').contains(termYear)))
+        termsByYear[termYear] = list(Term.select().where(Term.termCode.cast('char').contains(str(termYear))))
 
     return render_template( 'admin/termManagement.html',
                              title='Term Management',
