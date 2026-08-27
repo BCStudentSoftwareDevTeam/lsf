@@ -12,6 +12,7 @@ from app.models.formHistory import FormHistory
 from app.models.term import Term
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
+from app.models.allocation import Allocation
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
@@ -24,6 +25,8 @@ from app.logic.banner import Banner
 from app.logic.getAllocation import getDepartmentAllocationSummary
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
+from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
+from app.logic.getTerms import getTerms
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -102,6 +105,42 @@ def departmentPortal(org=None,account=None):
                            positions = positionsList,
                            posURL = posURL)
 
+@main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
+def allocationTable(org=None, account=None):
+    currentUser = g.currentUser
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+        
+    if not currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
+
+    currentAY, fallTerm, springTerm = getTerms()
+
+    allocationDict = getTotalAllocations(currentAY.termCode, dept)
+    fallContracts = getContractedAllocations(fallTerm.termCode, dept)
+    springContracts = getContractedAllocations(springTerm.termCode, dept)
+
+    breakContracts = {
+        "total": 0,
+        "thanksgiving":getBreakContracts(currentAY.termCode + 1, dept),
+        "winter": getBreakContracts(currentAY.termCode + 2, dept),
+        "spring": getBreakContracts(currentAY.termCode + 3, dept),
+        "fall":getBreakContracts(currentAY.termCode + 4, dept),
+        "summer": getBreakContracts(currentAY.termCode + 13, dept)
+        }
+    breakContracts["total"] = sum(breakContracts.values())
+    return render_template('main/allocationTable.html',
+                           department = dept,
+                           currentAY = currentAY,
+                           allocations = allocationDict,
+                           fallContracts = fallContracts,
+                           springContracts = springContracts,
+                           breakContracts = breakContracts)
+                           
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():

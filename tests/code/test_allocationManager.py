@@ -49,6 +49,15 @@ def testTerm():
     term.delete_instance()
 
 @pytest.fixture
+def testBreakTerm():
+    #create
+    term = Term.create(termCode = 200601)
+    yield term
+
+    #destroy
+    term.delete_instance()
+
+@pytest.fixture
 def testAllocation(testDepartment,testTerm):
     #create
     allocation = Allocation.create(
@@ -128,8 +137,8 @@ def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
     POSN_CODE                   = "S61412",
     contractHours               = 500,
     weeklyHours                 = 15,
-    startDate                   = "2025-04-01",
-    endDate                     = "2025-09-01",
+    startDate                   = "2006-08-01",
+    endDate                     = "2007-5-01",
     supervisorNotes             = None,
     laborDepartmentNotes        = None,
     studentConfirmation         = True,
@@ -141,6 +150,50 @@ def testLaborStatusForm(testStudent,testSupervisor,testDepartment,testTerm):
     yield laborStatusForm
       #destroy
     laborStatusForm.delete_instance()
+
+@pytest.fixture
+def testBreakLaborStatusForm(testStudent,testSupervisor,testDepartment,testBreakTerm):
+    breakLaborStatusForm = LaborStatusForm.create(
+    studentName                 = "John Doe",
+    laborStatusFormID           = 9898,
+    termCode                    = testBreakTerm.termCode,      
+    studentSupervisee           = testStudent.ID,
+    supervisor_id               = testSupervisor.ID,
+    department                  = testDepartment.departmentID,
+    jobType                     = "Secondary",
+    WLS                         = 1,
+    POSN_TITLE                  = "Vacation Worker",
+    POSN_CODE                   = "S61412",
+    contractHours               = 168,
+    weeklyHours                 = None,
+    startDate                   = "2006-04-01",
+    endDate                     = "2006-09-01",
+    supervisorNotes             = None,
+    laborDepartmentNotes        = None,
+    studentConfirmation         = True,
+    confirmationToken           = None,
+    studentExpirationDate       = True,
+    studentResponseDate         = True,
+    )
+
+    breakFormHistory = FormHistory.create(
+        formHistoryID = 9898,
+        formID_id = "9898",
+        historyType_id = "Labor Status Form",
+        releaseForm_id = None,
+        adjustedForm_id = None,
+        overloadForm_id = None,
+        createdBy_id = 1,
+        createdDate = "2006-02-01",
+        reviewedDate = "2006-03-01",
+        reviewedBy_id = 1,
+        status_id = "Approved",
+        rejectReason = None
+    )
+
+    yield breakLaborStatusForm, breakFormHistory
+      #destroy
+    breakLaborStatusForm.delete_instance()
 
 @pytest.fixture
 def testFormHistory(testLaborStatusForm,testUser):
@@ -207,6 +260,7 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['break_hours'] == 500
 
 @pytest.mark.integration
+<<<<<<< HEAD:tests/code/test_allocationManger.py
 def test_getContractedAllocations_withoutAnAllocationRow(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
     '''
     getContractedAllocations must not require an Allocation row to exist for
@@ -256,3 +310,41 @@ def test_getContractedAllocations_sumsBreakHoursAcrossAcademicYearCode(testDepar
         academicYearForm.delete_instance()
         specificTerm.delete_instance()
         academicYearTerm.delete_instance()
+=======
+def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment,testTerm):
+
+    # Test that the formHistory object exists
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 168
+    
+    # Test it with a higher amount of hours
+    testBreakLaborStatusForm[0].contractHours  = 800
+    testBreakLaborStatusForm[0].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 800
+
+    # Test that it works even if weeklyHours and contractHours are set
+    testBreakLaborStatusForm[0].weeklyHours  = 9999
+    testBreakLaborStatusForm[0].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 800
+
+    # Test that if the form is denied to not show up.
+    testBreakLaborStatusForm[1].status  = "denied by student"
+    testBreakLaborStatusForm[1].save()
+
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 0
+
+    # Test if the term changes to a non-break term
+    testBreakLaborStatusForm[0].termCode = testTerm
+    testBreakLaborStatusForm[0].save()
+    testBreakLaborStatusForm[1].status  = "Approved"
+    testBreakLaborStatusForm[1].save()
+    
+    breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
+    assert breakContractHours == 0
+    
+>>>>>>> f0ab8139ac7ae3967301c5e539fd15f4e69896ec:tests/code/test_allocationManager.py

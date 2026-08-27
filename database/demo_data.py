@@ -42,8 +42,7 @@ bothStudents = [
                 "STU_CPO":"700",
                 "LAST_POSN":"Media Technician",
                 "LAST_SUP_PIDM":"7"
-                },
-
+                },          
                 {
                 "ID":"B00741361",
                 "PIDM":"99",
@@ -141,8 +140,21 @@ localStudents = [
                 {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
                 {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
                 {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"},
-                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"}
-        ]
+                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"},
+                {"ID": "B12345759", "legal_name": "Mister Marlowe", "isActive": True, "PIDM": "14", "FIRST_NAME": "Mister", "LAST_NAME": "Marlowe"},
+                {"ID": "B11231123", "legal_name": "Mister Thanksgiving", "isActive": True, "PIDM": "15", "FIRST_NAME": "Mister", "LAST_NAME": "Thanksgiving"},
+                {"ID": "B12345762", "legal_name": "Alex Carter",      "isActive": True, "PIDM": "16", "FIRST_NAME": "Alex",   "LAST_NAME": "Carter"},
+                {"ID": "B12345763", "legal_name": "Morgan Hayes",     "isActive": True, "PIDM": "17", "FIRST_NAME": "Morgan", "LAST_NAME": "Hayes"},
+                {"ID": "B12345764", "legal_name": "Jordan Brooks",    "isActive": True, "PIDM": "18", "FIRST_NAME": "Jordan", "LAST_NAME": "Brooks"},
+                {"ID": "B12345765", "legal_name": "Taylor Morgan",    "isActive": True, "PIDM": "19", "FIRST_NAME": "Taylor", "LAST_NAME": "Morgan"},
+                {"ID": "B12345766", "legal_name": "Casey Turner",     "isActive": True, "PIDM": "20", "FIRST_NAME": "Casey",  "LAST_NAME": "Turner"},
+                {"ID": "B12345767", "legal_name": "Jamie Foster",     "isActive": True, "PIDM": "21", "FIRST_NAME": "Jamie",  "LAST_NAME": "Foster"},
+                {"ID": "B12345768", "legal_name": "Riley Cooper",     "isActive": True, "PIDM": "22", "FIRST_NAME": "Riley",  "LAST_NAME": "Cooper"},
+                {"ID": "B12345769", "legal_name": "Drew Bennett",     "isActive": True, "PIDM": "23", "FIRST_NAME": "Drew",   "LAST_NAME": "Bennett"},
+                {"ID": "B12345770", "legal_name": "Logan Price",      "isActive": True, "PIDM": "24", "FIRST_NAME": "Logan",  "LAST_NAME": "Price"},
+                {"ID": "B12345771", "legal_name": "Avery Sullivan",   "isActive": True, "PIDM": "25", "FIRST_NAME": "Avery",  "LAST_NAME": "Sullivan"},
+
+                ]
 tracyStudents = [
                 {
                 "ID":"B00785329",
@@ -639,6 +651,83 @@ terms = [
         "adjustmentCutOff": f"2025-09-01",
         "isBreak": 1,
     },
+    {
+        "termCode": "202600",
+        "termName": "AY 2026-2027",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+    },
+    {
+        "termCode": "202601",
+        "termName": "Thanksgiving Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202602",
+        "termName": "Christmas Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202603",
+        "termName": "Spring Break 2027",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202604",
+        "termName": "Fall Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202611",
+        "termName": "Fall 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2026-12-31",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+    },
+    {
+        "termCode": "202612",
+        "termName": "Spring 2027",
+        "termStart": "2027-01-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2027-02-01",
+        "adjustmentCutOff": "2027-03-01",
+    },
+    {
+        "termCode": "202613",
+        "termName": "Summer 2027",
+        "termStart": "2027-05-02",
+        "termEnd": "2027-08-01",
+        "termState": 0,
+        "primaryCutOff": "2027-06-01",
+        "adjustmentCutOff": "2027-07-01",
+        "isSummer": 1,
+    },
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -813,7 +902,7 @@ FormHistory.insert([{
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
             "status_id": "Approved"
-        }]).on_conflict_replace().execute()    
+        }]).on_conflict_replace().execute()  
 LaborStatusForm.insert([{
     
             "laborStatusFormID": 9,
@@ -829,10 +918,453 @@ LaborStatusForm.insert([{
             "contractHours": 15,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
-        
+
         }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 9,
+            "formID_id": "9",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute() 
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 60,
+            "termCode_id": f"202500",
+            "studentName": "Mister Marlowe",
+            "studentSupervisee_id": "B12345759",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Break Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 400,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 60,
+            "formID_id": "60",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 61,
+            "termCode_id": f"202501",
+            "studentName": "Mister Thanksgiving",
+            "studentSupervisee_id": "B11231123",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Thanksgiving Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 50,
+            "startDate": f"2025-11-23",
+            "endDate": "2025-12-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 61,
+            "formID_id": "61",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-11-01",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()   
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 62,
+    "termCode_id": "202611",
+    "studentName": "Alex Carter",
+    "studentSupervisee_id": "B12345762",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Office Assistant",
+    "POSN_CODE": "S61413",
+    "weeklyHours": 10,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 62,
+    "formID_id": "62",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
 
 
+LaborStatusForm.insert([{
+    "laborStatusFormID": 63,
+    "termCode_id": "202611",
+    "studentName": "Morgan Hayes",
+    "studentSupervisee_id": "B12345763",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Computer Lab Assistant",
+    "POSN_CODE": "S61414",
+    "weeklyHours": 15,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 63,
+    "formID_id": "63",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 64,
+    "termCode_id": "202611",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Help Desk Assistant",
+    "POSN_CODE": "S61415",
+    "weeklyHours": 20,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 64,
+    "formID_id": "64",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 65,
+    "termCode_id": "202611",
+    "studentName": "Taylor Morgan",
+    "studentSupervisee_id": "B12345765",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Reception Assistant",
+    "POSN_CODE": "S61416",
+    "weeklyHours": 5,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 65,
+    "formID_id": "65",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 66,
+    "termCode_id": "202611",
+    "studentName": "Casey Turner",
+    "studentSupervisee_id": "B12345766",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Library Assistant",
+    "POSN_CODE": "S61417",
+    "weeklyHours": 10,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 66,
+    "formID_id": "66",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 72,
+    "termCode_id": "202612",
+    "studentName": "Alex Carter",
+    "studentSupervisee_id": "B12345762",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Office Assistant",
+    "POSN_CODE": "S61413",
+    "weeklyHours": 10,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 72,
+    "formID_id": "72",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 73,
+    "termCode_id": "202612",
+    "studentName": "Morgan Hayes",
+    "studentSupervisee_id": "B12345763",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Computer Lab Assistant",
+    "POSN_CODE": "S61414",
+    "weeklyHours": 15,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 73,
+    "formID_id": "73",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 74,
+    "termCode_id": "202612",
+    "studentName": "Taylor Morgan",
+    "studentSupervisee_id": "B12345765",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Reception Assistant",
+    "POSN_CODE": "S61416",
+    "weeklyHours": 5,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 74,
+    "formID_id": "74",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+# Student had a Fall-only position and receives a new Spring assignment.
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 75,
+    "termCode_id": "202612",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Technology Assistant",
+    "POSN_CODE": "S61423",
+    "weeklyHours": 12,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 75,
+    "formID_id": "75",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 76,
+    "termCode_id": "202600",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 1,
+    "POSN_TITLE": "Technology Assistant",
+    "POSN_CODE": "S61423",
+    "weeklyHours": 10,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 76,
+    "formID_id": "76",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+# Break Positions
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 67,
+    "termCode_id": "202601",
+    "studentName": "Jamie Foster",
+    "studentSupervisee_id": "B12345767",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Thanksgiving Worker",
+    "POSN_CODE": "S61418",
+    "contractHours": 40,
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-29"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 68,
+    "termCode_id": "202602",
+    "studentName": "Riley Cooper",
+    "studentSupervisee_id": "B12345768",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Christmas Worker",
+    "POSN_CODE": "S61419",
+    "contractHours": 120,
+    "startDate": "2026-12-20",
+    "endDate": "2027-01-03"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 69,
+    "termCode_id": "202603",
+    "studentName": "Drew Bennett",
+    "studentSupervisee_id": "B12345769",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Spring Break Worker",
+    "POSN_CODE": "S61420",
+    "contractHours": 80,
+    "startDate": "2027-03-07",
+    "endDate": "2027-03-14"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 70,
+    "termCode_id": "202604",
+    "studentName": "Logan Price",
+    "studentSupervisee_id": "B12345770",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Fall Break Worker",
+    "POSN_CODE": "S61421",
+    "contractHours": 24,
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-18"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 71,
+    "termCode_id": "202613",
+    "studentName": "Avery Sullivan",
+    "studentSupervisee_id": "B12345771",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Summer Worker",
+    "POSN_CODE": "S61422",
+    "contractHours": 320,
+    "startDate": "2027-05-15",
+    "endDate": "2027-08-01"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 67,
+    "formID_id": "67",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-11-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 68,
+    "formID_id": "68",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-12-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 69,
+    "formID_id": "69",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-02-20",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 70,
+    "formID_id": "70",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-10-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 71,
+    "formID_id": "71",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-04-15",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
 
 #############################
 # admin Notes
@@ -1002,6 +1534,21 @@ allocations = [
     "secondary_5":      5,
     "secondary_10":     1,
     "breakHours":       900,
+    },
+    {
+    "termCode":         202600,
+    "department":       1,
+    "isFinal":          True,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Maintaining current staffing levels while allowing for moderate growth in student employment opportunities.",
+    "primary_10":       6,
+    "primary_12":       5,
+    "primary_15":       4,
+    "primary_20":       2,
+    "secondary_5":      6,
+    "secondary_10":     1,
+    "breakHours":       600,
     },
                 
     ]
