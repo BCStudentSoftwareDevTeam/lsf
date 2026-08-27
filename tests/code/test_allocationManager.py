@@ -260,7 +260,6 @@ def test_getContractedAllocations(testLaborStatusForm, testTerm, testDepartment,
     assert contractedAllocation['break_hours'] == 500
 
 @pytest.mark.integration
-<<<<<<< HEAD:tests/code/test_allocationManger.py
 def test_getContractedAllocations_withoutAnAllocationRow(testLaborStatusForm, testTerm, testDepartment, testFormHistory):
     '''
     getContractedAllocations must not require an Allocation row to exist for
@@ -310,7 +309,6 @@ def test_getContractedAllocations_sumsBreakHoursAcrossAcademicYearCode(testDepar
         academicYearForm.delete_instance()
         specificTerm.delete_instance()
         academicYearTerm.delete_instance()
-=======
 def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartment,testTerm):
 
     # Test that the formHistory object exists
@@ -347,4 +345,3 @@ def test_getBreakContracts(testBreakLaborStatusForm, testBreakTerm, testDepartme
     breakContractHours = getBreakContracts(testBreakTerm, testDepartment)
     assert breakContractHours == 0
     
->>>>>>> f0ab8139ac7ae3967301c5e539fd15f4e69896ec:tests/code/test_allocationManager.py
