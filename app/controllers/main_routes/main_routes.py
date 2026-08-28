@@ -27,7 +27,7 @@ from app.logic.getAllocation import getDepartmentAllocationSummary
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
-from app.logic.getTerms import getTerms
+from app.logic.getTerms import getTerms, getCurrentSemester
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -77,26 +77,12 @@ def departmentPortal(org=None,account=None):
     
     supervisors, laborCoordinators = getSupervisors(dept)
 
-    allocationSummary = getDepartmentAllocationSummary(dept)
-    recentTerm = allocationSummary["term"]
 
     currentAY, fallTerm, springTerm = getTerms()
     allocationDict = getTotalAllocations(currentAY, dept)
+    currentSemester = getCurrentSemester()
+    contracts = getContractedAllocations(currentSemester, dept)
 
-    contracts = {}
-    currentDate = date.today()
-    if currentDate.month >= 7:
-        contracts = getContractedAllocations(fallTerm, dept)
-    else:
-        contracts = getContractedAllocations(springTerm, dept)
-
-    if recentTerm:
-        try:
-            allocation = Allocation.select(Allocation, Term).join(Term).where(Allocation.department == dept, Allocation.termCode == recentTerm.termCode).get()
-        except DoesNotExist:
-            allocation = None
-    else:
-        allocation = None
 
     positionsList, posURL = getActivePositions(dept) 
 
@@ -105,7 +91,7 @@ def departmentPortal(org=None,account=None):
                            department = dept,
                            contracts = contracts,
                            allocation = allocationDict,
-                           currentSemester = allocationSummary["currentSemester"],
+                           currentSemester = currentSemester.termName,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,
