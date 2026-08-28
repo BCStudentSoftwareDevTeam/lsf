@@ -36,46 +36,46 @@
         <section class="card" aria-labelledby="allocationTitle">
           <div class="card-body">
             <div class="media">
-            <div class="media-left media-middle">
-              <span aria-hidden="true" style="color: #424242; font-size: 24px;">
-                <i class="bi bi-clock"></i>
-              </span>
-            </div>
-            <div class="media-body media-middle">
-              <h3 id="allocationTitle">Current Allocations</h3>
-            </div>
-            {% macro allocationRow(hours, used, allocated) -%}
-              <tr><td>{{ hours }} hr: {{ used }} contract{{ 's' if used != 1 else '' }}<br>(out of {{ allocated }} allocation{{ 's' if allocated != 1 else '' }})</td></tr>
-            {%- endmacro %}
-            <div class="allocation-table-wrapper">
-              <div class="allocation-summary">
-                <h4>{{ currentSemester if currentSemester else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Contracted/Allocated"></i></h4>
-                <h4>{{used}} contracted of {{allocated or 0}} allocated Positions</h4>
+              <div class="media-left media-middle">
+                <span aria-hidden="true" style="color: #424242; font-size: 24px;">
+                  <i class="bi bi-clock"></i>
+                </span>
               </div>
-              <div class="allocation-columns">
-                <table class="allocation-table">
-                  <thead>
-                    <tr><th>Primary</th></tr>
-                  </thead>
-                  <tbody>
-                    {{ allocationRow(10, usedPositions.used10, allocation.primary_10) }}
-                    {{ allocationRow(12, usedPositions.used12, allocation.primary_12) }}
-                    {{ allocationRow(15, usedPositions.used15, allocation.primary_15) }}
-                    {{ allocationRow(20, usedPositions.used20, allocation.primary_20) }}
-                  </tbody>
-                </table>
-                <table class="allocation-table">
-                  <thead>
-                    <tr><th>Secondary</th></tr>
-                  </thead>
-                  <tbody>
-                    {{ allocationRow(5, usedPositions.usedSecondary5, allocation.secondary_5) }}
-                    {{ allocationRow(10, usedPositions.usedSecondary10, allocation.secondary_10) }}
-                  </tbody>
-                </table>
+              <div class="media-body media-middle">
+                <h3 id="allocationTitle">Current Allocations</h3>
+              </div>
+              {% macro allocationRow(hours, used, allocated) -%}
+                <tr><td>{{ hours }} hr: {{ used }} contract{{ 's' if used != 1 else '' }} out of {{ allocated }} allocation{{ 's' if allocated != 1 else '' }}</td></tr>
+              {%- endmacro %}
+              <div class="allocation-table-wrapper">
+                <div class="allocation-summary">
+                  <h4>{{ currentSemester if currentSemester else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Contracted/Allocated"></i></h4>
+                  <h5>{{used}} contracted of {{allocated or 0}} allocated Positions</h5>
+                </div>
+                <div class="allocation-columns">
+                  <table class="allocation-table">
+                    <thead>
+                      <th>Primary</th>
+                    </thead>
+                    <tbody>
+                      {{ allocationRow(10, contracts["used_10"], allocation["primary_10"]) }}
+                      {{ allocationRow(12, contracts["used_12"], allocation["primary_12"]) }}
+                      {{ allocationRow(15, contracts["used_15"], allocation["primary_15"]) }}
+                      {{ allocationRow(20, contracts["used_20"], allocation["primary_20"]) }}
+                    </tbody>
+                  </table>
+                  <table class="allocation-table">
+                    <thead>
+                      <th>Secondary</th>
+                    </thead>
+                    <tbody>
+                      {{ allocationRow(5,contracts["used_5_sec"], allocation["secondary_5"]) }}
+                      {{ allocationRow(10, contracts["used_10_sec"], allocation["secondary_10"]) }}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
           </div>
           <div class="card-footer text-center">
             <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/allocations" class="btn btn-primary">View Allocations<span class="glyphicon glyphicon-chevron-right"></span></a>
