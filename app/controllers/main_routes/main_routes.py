@@ -2,7 +2,6 @@ from flask import render_template, request, json, redirect, url_for, send_file, 
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
-from datetime import date
 
 from app.models.department import Department
 from app.models.supervisor import Supervisor
