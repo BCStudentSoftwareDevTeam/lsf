@@ -45,12 +45,12 @@
                 <h3 id="allocationTitle">Current Allocations</h3>
               </div>
               {% macro allocationRow(hours, used, allocated) -%}
-                <tr><td>{{ hours }} hr: {{ used }} contract{{ 's' if used != 1 else '' }} out of {{ allocated }} allocation{{ 's' if allocated != 1 else '' }}</td></tr>
+                <tr><td>{{ hours }} hr: {{ used }} contract{{ 's' if used != 1 else '' }} out of {{ allocated if allocated is integer else 0 }} allocation{{ 's' if allocated != 1 else '' }}</td></tr>
               {%- endmacro %}
               <div class="allocation-table-wrapper">
                 <div class="allocation-summary">
-                  <h4>{{ currentSemester if currentSemester else "No term data" }} <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="All values are shown as Contracted/Allocated"></i></h4>
-                  <h5>{{used}} contracted of {{allocated or 0}} allocated Positions</h5>
+                  <h4><b>{{ currentSemester if currentSemester else "No term data" }}</b></h4>
+                  <h4>{{contracts["used_total"]}} contracted of {{allocation["totalAllocations"] if allocation["totalAllocations"] is integer else 0}} allocations</h4>
                 </div>
                 <div class="allocation-columns">
                   <table class="allocation-table">
