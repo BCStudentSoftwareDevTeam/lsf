@@ -2,6 +2,7 @@ from flask import render_template, request, json, redirect, url_for, send_file, 
 from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+from datetime import date
 
 from app.models.department import Department
 from app.models.supervisor import Supervisor
@@ -78,6 +79,16 @@ def departmentPortal(org=None,account=None):
 
     allocationSummary = getDepartmentAllocationSummary(dept)
     recentTerm = allocationSummary["term"]
+
+    currentAY, fallTerm, springTerm = getTerms()
+    allocationDict = getTotalAllocations(currentAY, dept)
+
+    contracts = {}
+    currentDate = date.today()
+    if currentDate.month >= 7:
+        contracts = getContractedAllocations(fallTerm, dept)
+    else:
+        contracts = getContractedAllocations(springTerm, dept)
 
     if recentTerm:
         try:
