@@ -46,21 +46,19 @@
     margin: 10px 0;
 }
 .allocation-columns {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0 2rem;
 }
 .allocation-table {
     /* wraps onto its own line when the card is too narrow, instead of shrinking */
     flex: 1 1 180px;
     border-collapse: collapse;
-    font-size: 1.2em;
+    font-size: 1.05em;
 }
 .allocation-table th,
 .allocation-table td {
     text-align: left;
     white-space: nowrap;
-    padding: 4px 10px 4px 0;
+    padding: 4px 0px 4px 0;
     line-height: 1.3;
 }
 .allocation-table th {
