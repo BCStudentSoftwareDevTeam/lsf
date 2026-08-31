@@ -4,7 +4,3 @@ $(document).ready(function() {
         window.location = `/department/${deptData.org}/${deptData.account}`;
     });
 });
-
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
