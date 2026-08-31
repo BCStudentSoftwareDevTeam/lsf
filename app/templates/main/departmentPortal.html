@@ -49,7 +49,7 @@
               {%- endmacro %}
               <div class="allocation-table-wrapper">
                 <div class="allocation-summary">
-                  <h4><b>{{ currentSemester if currentSemester else "No term data" }}</b></h4>
+                  <h4><b>{{ currentSemester }}</b></h4>
                   <h4>{{contracts["used_total"]}} contracted of {{allocation["totalAllocations"] if allocation["totalAllocations"] is integer else 0}} allocations</h4>
                 </div>
                 <div class="allocation-columns">
