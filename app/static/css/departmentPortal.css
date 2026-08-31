@@ -11,20 +11,16 @@
   padding: 1rem;
   min-width: 100%;
 }
-.bi-suitcase-lg-fill {  /* Bootstrap Icon */
-  border: 1px solid #c0c0c0;
-  border-radius: 8px;
-  padding: 3px 3.5px 1.5px 3.5px;
-  font-size: 3rem;
-  color:#6e6e6e;
-}
-.bi-clock {
+.bi-suitcase-lg-fill,
+.bi-clock,
+.bi-people-fill {
     border: 1px solid #c0c0c0;
     border-radius: 8px;
-    padding: 3px 3.5px 1.5px 3.5px;
+    padding: 3px 3.5px 1.5px;
     font-size: 3rem;
-    color:#6e6e6e;
+    color: #6e6e6e;
 }
+
 .allocation-table-wrapper {
     overflow-x: auto;
     margin: 10px 0;
@@ -43,8 +39,6 @@
     gap: 0 2rem;
 }
 .allocation-table {
-    /* wraps onto its own line when the card is too narrow, instead of shrinking */
-    flex: 1 1 180px;
     border-collapse: collapse;
     font-size: 1.05em;
 }
@@ -52,33 +46,16 @@
 .allocation-table td {
     text-align: left;
     white-space: nowrap;
-    padding: 4px 0px 4px 0;
+    padding: 4px 0px;
     line-height: 1.3;
 }
 .allocation-table th {
-    font-weight: 700;
     padding-top: 10px;
 }
 
-.bi-people-fill {  /* Bootstrap Icon for Members Card */
-  border: 1px solid #c0c0c0;
-  border-radius: 8px;
-  padding: 3px 3.5px 1.5px 3.5px;
-  font-size: 3rem;
-  color:#6e6e6e;
-}
-
-.card-group {
-    gap: 1rem;
-}
 .form-group {
     width: 50%;
-    margin-left: auto ;
-    margin-right:auto;
-}
-.card-body {
-  padding: 1rem 1rem;
-  min-width: 100%
+    margin: 0 auto;
 }
 .card-row {
     display: flex;
