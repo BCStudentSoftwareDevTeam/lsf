@@ -27,8 +27,7 @@ def testCreateStudentEval():
                         termState=1,
                         isBreak=0,
                         isSummer=0,
-                        isAcademicYear=0,
-                        isFinalEvaluationOpen=1))
+                        isAcademicYear=0))
 
         testingStudent =  (Student.create(
                 ID="B00000002",
@@ -76,7 +75,6 @@ def testCreateStudentEval():
                                                status = "Approved"))
 
         testCreation = {"isSubmitted": True,
-                        "submit_as_final": True,
                         "attendance": 15,
                         "accountability": 7,
                         "teamwork": 7,

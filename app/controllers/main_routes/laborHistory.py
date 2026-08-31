@@ -117,9 +117,8 @@ def downloadFormHistory():
         formSearchResults.searchType,
         requestedLSFs=formHistories, 
         additionalSpreadsheetFields=[],
-        includeEvals=False
     )
-    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, download_name=excel.relativePath.split('/').pop())
 
 @main_bp.route('/laborHistory/modal/<statusKey>', methods=['GET'])
 def populateModal(statusKey):
