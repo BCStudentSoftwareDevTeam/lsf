@@ -50,7 +50,7 @@ def test_limitSearchByUserDepartment():
 
         # intialize labor status forms
         inDeptForm = LaborStatusForm.create(StudentName = "Tyler Parton",
-                                            termCode = 202500,
+                                            termCode = 202600,
                                             studentSupervisee = "B10701360",
                                             supervisor = "B00763721",
                                             department = 1,
@@ -60,7 +60,7 @@ def test_limitSearchByUserDepartment():
                                             POSN_CODE = "S61407")
 
         outDeptForm = LaborStatusForm.create(StudentName = "Not Tyler",
-                                             termCode = 202500,
+                                             termCode = 202600,
                                              studentSupervisee = "B00000000",
                                              supervisor = "B00000001",
                                              department = 4,
@@ -152,7 +152,7 @@ def test_getDepartmentsForSupervisors():
 
         # Form in which our superUser is the supervisor and not the creator.
         lsf1 = LaborStatusForm.create(StudentName = "Tyler Parton",
-                                        termCode = 202500,
+                                        termCode = 202600,
                                         studentSupervisee = "B99999999",
                                         supervisor = supervisor.ID,
                                         department = supervisorDept.departmentID,
@@ -163,7 +163,7 @@ def test_getDepartmentsForSupervisors():
 
         #Form in which our superUser is the creator and not the supervisor.
         lsf2 = LaborStatusForm.create(StudentName = "Tyler Parton",
-                                        termCode = 202500,
+                                        termCode = 202600,
                                         studentSupervisee = "B99999999",
                                         supervisor = "B00000002",
                                         department = nonSupervisorDept.departmentID,
@@ -195,7 +195,7 @@ def test_getDepartmentsForSupervisors():
                                          reviewedBy = None,
                                          status = "Approved")
 
-
+    
         departments = list(getDepartmentsForSupervisor(supervisorUser))
         departments = [i.DEPT_NAME for i in departments]
         assert supervisorDept.DEPT_NAME in departments
@@ -222,6 +222,7 @@ def test_getDepartmentsForSupervisors():
 
 @pytest.mark.integration
 def test_getSupervisorsForDepartment():
+
     with mainDB.atomic() as transaction:
 
         SupervisorDepartment.create(supervisor = 'B00763721', department = 1) 

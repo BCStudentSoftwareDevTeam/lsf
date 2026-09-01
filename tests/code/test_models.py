@@ -64,8 +64,7 @@ def test_user_model():
             release_history_type = HistoryType.get(HistoryType.historyTypeName == "Labor Release Form")
         except HistoryType.DoesNotExist:
             release_history_type = HistoryType.create(historyTypeName="Labor Release Form")
-            
-
+       
         dept = Department.create(DEPT_NAME="Labor Department", isActive=True, ACCOUNT=6740, ORG=4022) #tests stu_user1 is Labor Student Staff & tests if LSF exists but not within current date
         inactive_dept = Department.create(DEPT_NAME="CS Department", isActive=False, ACCOUNT=6740, ORG=4187) #checks if stu_user2 isn't Labor Dep Student Worker if the dep isn't active 
         non_active_lab_dep = Department.create(DEPT_NAME="Labor Department", isActive=False, ACCOUNT=6740, ORG=4187) #checks if stu_user3 isn't a Labor Dep Student Worker if the Dep isn't active
@@ -105,7 +104,7 @@ def test_user_model():
         lsf1 = LaborStatusForm.create(
             studentSupervisee=student1,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -114,11 +113,11 @@ def test_user_model():
             startDate=date.today() - timedelta(days=1),  # started in the past
             endDate=date.today() + timedelta(days=10)    # ends in the future
         )
-
+        
         lsf2 = LaborStatusForm.create(
             studentSupervisee=student2,
             department=inactive_dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -131,7 +130,7 @@ def test_user_model():
         lsf3 = LaborStatusForm.create(
             studentSupervisee=student3,
             department=non_active_lab_dep,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -144,7 +143,7 @@ def test_user_model():
         lsf4 = LaborStatusForm.create(
             studentSupervisee=student4,
             department=active_dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -157,7 +156,7 @@ def test_user_model():
         lsf5 = LaborStatusForm.create(
             studentSupervisee=student5,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -170,7 +169,7 @@ def test_user_model():
         lsf6 = LaborStatusForm.create(
             studentSupervisee=student6,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -183,7 +182,7 @@ def test_user_model():
         lsf7 = LaborStatusForm.create(
             studentSupervisee=student7,
             department=case_sensive_name ,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -196,7 +195,7 @@ def test_user_model():
         lsf8 = LaborStatusForm.create(
             studentSupervisee=student8,
             department=case_sensive_name2 ,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -209,7 +208,7 @@ def test_user_model():
         lsf9 = LaborStatusForm.create(
             studentSupervisee=student9,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -222,7 +221,7 @@ def test_user_model():
         lsf10 = LaborStatusForm.create(
             studentSupervisee=student10,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -235,7 +234,7 @@ def test_user_model():
         lsf11 = LaborStatusForm.create(
             studentSupervisee=student11,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -373,7 +372,7 @@ def test_user_model():
         release_form10 = LaborReleaseForm.create(
             studentSupervisee=student10,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,
@@ -388,7 +387,7 @@ def test_user_model():
         release_form11 = LaborReleaseForm.create(
             studentSupervisee=student11,
             department=dept,
-            termCode_id="202500",
+            termCode_id="202600",
             supervisor_id="B12361006",
             jobType="Primary",
             WLS=1,

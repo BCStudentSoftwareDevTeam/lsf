@@ -21,9 +21,9 @@ def testCreateLaborStatusForm():
     'stuEndDate': "09/01/2020"
     }
 
-    newlsf = createLaborStatusForm(Student.get_by_id("B00730361"), "B12365892", 1, 202500, lsfDict )
+    newlsf = createLaborStatusForm(Student.get_by_id("B00730361"), "B12365892", 1, 202600, lsfDict )
     lsf = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == newlsf.laborStatusFormID)
-    assert lsf.termCode_id == 202500
+    assert lsf.termCode_id == 202600
     assert lsf.studentSupervisee_id == "B00730361"
     assert lsf.supervisor_id == "B12365892"
     assert lsf.department_id == 1
