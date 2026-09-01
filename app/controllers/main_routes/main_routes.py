@@ -10,8 +10,8 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
-from app.models.positionHistory import PositionHistory
 from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
@@ -24,7 +24,7 @@ from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
-from app.logic.getTerms import getTerms
+from app.logic.getTerms import getTerms, getCurrentSemester
 
 
 @main_bp.route('/logout', methods=['GET'])
@@ -74,11 +74,21 @@ def departmentPortal(org=None,account=None):
     
     supervisors, laborCoordinators = getSupervisors(dept)
 
+
+    currentAY, fallTerm, springTerm = getTerms()
+    allocationDict = getTotalAllocations(currentAY, dept)
+    currentSemester = getCurrentSemester()
+    contracts = getContractedAllocations(currentSemester, dept)
+
+
     positionsList, posURL = getActivePositions(dept) 
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
                            department = dept,
+                           contracts = contracts,
+                           allocation = allocationDict,
+                           currentSemester = currentSemester.termName,
                            supervisors = supervisors,
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,

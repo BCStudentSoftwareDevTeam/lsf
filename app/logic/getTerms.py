@@ -33,3 +33,15 @@ def getTerms(academicYear: str = None):
             springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12).get()
             return currentAY, fallTerm, springTerm
 
+def getCurrentSemester():
+    '''
+    The difference between this function and the one above is that it gets just the current term
+    It does not get both Fall and Spring, it just gets one depending on the month.
+    '''
+    currentDate = date.today()
+    if currentDate.month <= 6:
+        springTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 12 - 100).get()
+        return springTerm
+    else:
+        fallTerm = Term.select().where(Term.termCode == currentDate.year * 100 + 11).get()
+        return fallTerm

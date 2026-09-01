@@ -14,6 +14,7 @@ from app.models.department import Department
 from app.models.user import User
 from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
+from app.models.laborReleaseForm import LaborReleaseForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -510,6 +511,22 @@ users = [
         "isSaasAdmin": None
         },
         {
+        "student": "B00741361",
+        "supervisor": None,
+        "username": "schmitha",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
+        "student": "B00732363",
+        "supervisor":  None,
+        "username": "williamsb",
+        "isLaborAdmin": None,
+        "isFinancialAidAdmin": None,
+        "isSaasAdmin": None
+        },
+        {
         "student": "B00730361",
         "supervisor": None,
         "username": "jamalie",
@@ -743,6 +760,124 @@ FormHistory.insert([{
             "createdDate": f"2025-04-14",
             "status_id": "Pending"
         }]).on_conflict_replace().execute()
+LaborStatusForm.insert([{
+            "laborStatusFormID": 11,
+            "termCode_id": f"202500",
+            "studentName": "Antonia Schmith",
+            "studentSupervisee_id": "B00741361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 10,
+            "startDate": f"2026-04-01",
+            "endDate": f"2026-09-01",
+            "studentConfirmation": True
+        }]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+            "formHistoryID": 11,
+            "formID_id": "11",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status": "Approved"
+        }]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 12,
+            "termCode_id": f"202500",
+            "studentName": "Barbara Williams",
+            "studentSupervisee_id": "B00732363",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 10,
+            "startDate": f"2027-04-01",
+            "endDate": f"2029-09-01",
+            "studentConfirmation": True            
+        }]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+            "formHistoryID": 12,
+            "formID_id": "12",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status": "Approved"
+        }]).on_conflict_replace().execute()    
+
+LaborReleaseForm.insert([{
+            "laborReleaseFormID": 10,
+            "conditionAtRelease": "unsatisfactory",
+            "releaseDate": f"2025-04-14",
+            "reasonForRelease": "Smoking Cigarettes in the Programmers' space."
+        }]).on_conflict_replace().execute()    
+
+FormHistory.insert([{
+            "formHistoryID": 13,
+            "formID_id": "12",
+            "historyType_id": "Labor Release Form",
+            "releaseForm": 10,
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status": "Approved"
+        }]).on_conflict_replace().execute()    
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 4,
+            "termCode_id": f"202500",
+            "studentName": "Elaleh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Labor Workers",
+            "POSN_CODE": "S61419",
+            "weeklyHours": 10,
+            "startDate": f"2027-04-01",
+            "endDate": "2027-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 4,
+            "formID_id": "4",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status": "Approved"
+        }]).on_conflict_replace().execute()    
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 5,
+            "termCode_id": f"202500",
+            "studentName": "Oluwagbayi Makinde",
+            "studentSupervisee_id": "B00791326",
+            "supervisor_id": "B12365892",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Labor Workers",
+            "POSN_CODE": "S61429",
+            "weeklyHours": 10,
+            "startDate": f"2025-04-01",
+            "endDate": "2029-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 5,
+            "formID_id": "5",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status": "Approved"
+        }]).on_conflict_replace().execute()  
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
@@ -1830,3 +1965,121 @@ PositionDescriptionSection.insert_many(
 ).on_conflict_replace().execute()
 
 print(" * position description sections added")
+
+
+allocation =[
+                {
+                    "termCode":f"{2025}00",
+                    "department": 3,
+                    "isFinal": True,
+                    "approvedOn": f"{2025}-06-30",
+                    "approvedBy": "B12365892",
+                    "justification": "We just want it for fun", 
+                    "primary_10": 2,
+                    "primary_12": 3,
+                    "primary_15": 1, 
+                    "primary_20": 6, 
+                    "secondary_5": 2,
+                    "secondary_10": 0,
+                    "breakHours": 500
+                },
+                {
+                    "termCode":f"{2025}00",
+                    "department": 2,
+                    "isFinal": False,
+                    "approvedOn": f"{2025}-06-20",
+                    "approvedBy": "B00763721",
+                    "justification": "We need it to lower the amount of allocations we have", 
+                    "primary_10": 1,
+                    "primary_12": 2,
+                    "primary_15": 5, 
+                    "primary_20": 2, 
+                    "secondary_5": 10,
+                    "secondary_10": 0,
+                    "breakHours": 1500
+                }
+            ]
+Allocation.insert_many(allocation).on_conflict_replace().execute()
+print(" * allocation added")
+
+
+dummy_lsf = [
+    {
+        "laborStatusFormID": 13,
+            "termCode_id": f"202500",
+            "studentName": "Chris Georgiev",
+            "studentSupervisee_id": "B00811617",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 4,
+            "POSN_TITLE": "guy who does stuff",
+            "POSN_CODE": "S61415",
+            "weeklyHours": 12,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        
+        "laborStatusFormID": 14,
+            "termCode_id": f"202500",
+            "studentName": "Julius Fritz",
+            "studentSupervisee_id": "B00815474",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 2,
+            "POSN_TITLE": "guy who sits in chair",
+            "POSN_CODE": "S61416",
+            "weeklyHours": 15,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        "laborStatusFormID": 15,
+            "termCode_id": f"202500",
+            "studentName": "Subaru Natsuki",
+            "studentSupervisee_id": "B12345223",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Aura Monster",
+            "POSN_CODE": "S61417",
+            "weeklyHours": 20,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+    },
+    {
+        "laborStatusFormID": 16,
+            "termCode_id": f"202500",
+            "studentName": "Hatsune Miku",
+            "studentSupervisee_id": "B12345003",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 6,
+            "POSN_TITLE": "Singer",
+            "POSN_CODE": "S61409",
+            "weeklyHours": 20,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        },
+        {
+        "laborStatusFormID": 17,
+            "termCode_id": f"202500",
+            "studentName": "Michael Jackson",
+            "studentSupervisee_id": "B12345772",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Secondary",
+            "WLS": 6,
+            "POSN_TITLE": "Famous singer",
+            "POSN_CODE": "S61410",
+            "weeklyHours": 5,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+        }
+]
+LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()

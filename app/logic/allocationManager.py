@@ -98,36 +98,22 @@ def countContracts(jobType: str, weeklyContractHours: int, termCode: int, dept: 
 
 def getContractedAllocations(termCode: int, dept: int):
     '''
-    This function returns a dictionary with a breakdown of all types of contracts 
+    This function returns a dictionary with a breakdown of all types of contracts
     for the given department and term in the form of a dictionary.
     '''
     academicYearCode = int(str(termCode)[:4] + "00")
-    allocationObject = getAllocation(termCode, dept)
-    breakAllocation = FormHistory.select(
-        LaborStatusForm.department,
-        LaborStatusForm.termCode,
-        fn.SUM(LaborStatusForm.contractHours).alias('total_hours')
-    ).join(
-        LaborStatusForm,
-        on=(FormHistory.formID == LaborStatusForm.laborStatusFormID),
-    ).join(
-        Term,
-        on = (LaborStatusForm.termCode == Term.termCode )
-    ).where(
-        (FormHistory.historyType == "Labor Status Form") &
-        (FormHistory.status == "Approved") & 
-        (LaborStatusForm.termCode.in_([termCode,academicYearCode]))
-    ).group_by(
-        LaborStatusForm.department, 
-        LaborStatusForm.termCode).dicts()
-    
-    breakSum = {"total_hours": 0}
-    if dept:
-        for row in breakAllocation:
-            if row["department"] == dept:
-                breakSum = row
-                break
-    
+    breakHoursTotal = (
+        FormHistory.select(fn.SUM(LaborStatusForm.contractHours))
+        .join(LaborStatusForm, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
+        .where(
+            FormHistory.historyType == "Labor Status Form",
+            FormHistory.status == "Approved",
+            LaborStatusForm.termCode.in_([termCode, academicYearCode]),
+            LaborStatusForm.department == dept,
+        )
+        .scalar()
+    ) or 0
+
     # dictionary definition:
     usedPositions = {
     "used_10": countContracts("Primary", "10", termCode, dept),
@@ -139,7 +125,7 @@ def getContractedAllocations(termCode: int, dept: int):
     "used_primaries": 0,
     "used_secondaries": 0,
     "used_total": 0,  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
-    "break_hours": breakSum["total_hours"]  # all break hours contracted (but not necessarily worked)
+    "break_hours": breakHoursTotal  # all break hours contracted (but not necessarily worked)
     }
     usedPositions["used_primaries"] = sum(list(usedPositions.values())[:4])
     usedPositions["used_secondaries"] = sum(list(usedPositions.values())[4:6])
