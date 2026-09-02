@@ -513,6 +513,8 @@ print(" * departments added")
 today = datetime.now()
 current_year = today.year - (today.month < 8)
 
+print("Current year:", current_year)
+
 terms = [
     {
         "termCode": f"202000",
@@ -595,7 +597,7 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
             "department_id": 1,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
@@ -619,11 +621,11 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
             "department_id": 5,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
-            "weeklyHours": 10,
+            "contractHours": 100,
             "startDate": f"{current_year}-04-01",
             "endDate": "2025-09-01"
         }]).on_conflict_replace().execute()  
@@ -635,9 +637,62 @@ FormHistory.insert([{
             "createdBy_id": 1,
             "createdDate": f"{current_year}-04-14",
             "status_id": "Approved"
-        }]).on_conflict_replace().execute()    
+        }]).on_conflict_replace().execute()  
 
 
+#############################
+# Create Active Labor Status Form
+#############################
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 4,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 5,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 100,
+            "startDate": f"{current_year}-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 4,
+            "formID_id": "4",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 5,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Elaheh Jamali",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 5,
+            "jobType": "Secondary",
+            "WLS": 1,
+            "POSN_TITLE": "Media Technician",
+            "POSN_CODE": "S61409",
+            "contractHours": 100,
+            "startDate": f"{current_year}-04-01",
+            "endDate": "2025-09-01"
+        }]).on_conflict_replace().execute()  
+
+FormHistory.insert([{
+            "formHistoryID": 5,
+            "formID_id": "5",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
 
 #############################
 # admin Notes
@@ -748,7 +803,7 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202400,
+    "termCode":         202500,
     "department":       1,
     "isFinal":       False,
     "approvedOn":       None,
@@ -797,6 +852,7 @@ allocations = [
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print("Data insertion complete :)")
+
 allocation =[
                 {
                     "termCode":f"{current_year}00",
