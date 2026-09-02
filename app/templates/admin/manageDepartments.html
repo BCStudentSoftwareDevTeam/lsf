@@ -172,9 +172,9 @@
                     <span class="sr-only">Toggle Dropdown</span>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="{{ url_for('main.departmentPortal', org=department.ORG, account=department.ACCOUNT) }}">Allocation History</a></li>
+                    <li><a href="{{ url_for('main.departmentAllocationHistory', org=department.ORG, account=department.ACCOUNT) }}">Allocation History</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="{{ url_for('main.departmentPortal', org=department.ORG, account=department.ACCOUNT) }}">Department Personnel</a></li>
+                    <li><a href="{{ url_for('main.departmentPersonnel', org=department.ORG, account=department.ACCOUNT) }}">Department Personnel</a></li>
                   </ul>
                 </div>
               </td>
@@ -193,6 +193,7 @@
           <thead>
             <tr>
               <th>Department</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -205,6 +206,26 @@
                   id="{{department.departmentID}}"
                   >{{department.DEPT_NAME}}</a
                 ><small>({{department.ORG}}, {{department.ACCOUNT}})</small>
+              </td>
+              <td style="white-space: nowrap">
+                <div class="btn-group" style="display: inline-flex">
+                  <button type="button" class="btn btn-default">Action</button>
+                  <button
+                    type="button"
+                    class="btn btn-default dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('main.departmentAllocationHistory', org=department.ORG, account=department.ACCOUNT) }}">Allocation History</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{{ url_for('main.departmentPersonnel', org=department.ORG, account=department.ACCOUNT) }}">Department Personnel</a></li>
+                  </ul>
+                </div>
               </td>
             </tr>
             {% endfor %}

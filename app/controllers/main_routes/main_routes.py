@@ -9,10 +9,11 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
+from app.models.allocation import Allocation
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
 from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
-from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
+from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal, getSupervisorsForDepartment
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
@@ -63,9 +64,38 @@ def departmentPortal(org=None,account=None):
     else:
         departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
 
-    return render_template('main/departmentPortal.html', 
+    return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept)
+
+@main_bp.route('/department/<org>/<account>/allocationHistory', methods=['GET'])
+def departmentAllocationHistory(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    allocations = (Allocation.select()
+                   .join(Term)
+                   .where(Allocation.department == dept)
+                   .order_by(Term.termStart.desc()))
+
+    return render_template('main/departmentAllocationHistory.html',
+                           department = dept,
+                           allocations = allocations)
+
+@main_bp.route('/department/<org>/<account>/personnel', methods=['GET'])
+def departmentPersonnel(org, account):
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+
+    supervisors = getSupervisorsForDepartment(dept.departmentID)
+
+    return render_template('main/departmentPersonnel.html',
+                           department = dept,
+                           supervisors = supervisors)
 
 @main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
 def addUserToDept():
