@@ -33,9 +33,8 @@
                     <td>{{ position.wls }}</td>
                     <td>{{ position.revisionDate }}</td>
                     <td>
-                        <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}"
-                        class="btn btn-success view-btn">View</a>
-                        <button class="btn btn-primary request-btn" data-position-id="{{ position.id }}">Revise Position</button>
+                        <a href="{{ url_for('main.postionDescription', org=department.ORG, account=department.ACCOUNT, positionCode=position.positionCode) }}" class="btn btn-success">View</a>
+                        <a href="{{ url_for('main.revisePosition', org=department.ORG, account=department.ACCOUNT, positionCode=position.positionCode) }}" class="btn btn-primary">Revise Position</a>
                     </td>
                 </tr>
                 {% endfor %}
