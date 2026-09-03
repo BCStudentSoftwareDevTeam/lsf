@@ -87,8 +87,8 @@ def userInsert():
         try:
             with mainDB.atomic():
                 lsf = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, rspFunctional[i])
-                try:
-                    createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host) 
+                createOverloadFormAndFormHistory(rspFunctional[i], lsf, currentUser, host=request.host)
+                try: 
                     emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
                 except Exception as e:
                     errorMessage = "Email(s) delivery failed! Contact support for assistance."

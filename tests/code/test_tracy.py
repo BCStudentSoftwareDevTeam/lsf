@@ -17,9 +17,7 @@ class Test_Tracy:
     @pytest.mark.integration
     def test_getStudents(self, tracy):
         with app.app_context():
-            print("HERE")
             students = tracy.getStudents()
-            print("THERE")
             assert ['Elaheh','Guillermo','Jeremiah', 'Kafui', 'Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
             assert ['718','300','420', '200', '420', '883', '700', '420'] == [s.STU_CPO for s in students]
 
