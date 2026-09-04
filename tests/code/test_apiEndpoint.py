@@ -30,7 +30,7 @@ def test_getLaborInformation():
                                isLaborAdmin = None,
                                isFinancialAidAdmin = None,
                                isSaasAdmin = None)
-        print("what about here")
+
         with app.test_request_context():
             # Case 1: verify the LSF for Alex in demo data is returend and contains what we would expect
             response = getLaborInformation(orgCode = 2114, bNumber="B00841417")
