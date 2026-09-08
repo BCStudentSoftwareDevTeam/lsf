@@ -117,6 +117,11 @@ def annualPositionReviewRequest():
     try:
         handler = emailHandler(academicYearTermCode=academicYear)
         result = handler.sendAnnualPositionReviewRequests(currentUser)
+        if result["failedDepartments"]:
+            result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
+                result["sentCount"], result["departmentCount"], ", ".join(result["failedDepartments"])
+            )
+            return jsonify({"Success": False, **result})
         return jsonify({"Success": True, **result})
     except Exception:
         return jsonify({"Success": False})
