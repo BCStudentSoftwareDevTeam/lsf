@@ -18,7 +18,7 @@ import os
 from datetime import datetime, date
 from app.models.department import Department
 from app.models.term import Term
-from app.models.positionReview import PositionReview
+from app.models.positionHistory import PositionHistory
 from app.logic.getSupervisors import getSupervisors
 
 
@@ -130,25 +130,30 @@ class emailHandler():
         Labor Coordinators and supervisors, and records that the request was made
         for this handler's academic year (self.term).
         """
-        template = EmailTemplate.get(EmailTemplate.purpose == "Annual Position Review Request")
+        template = EmailTemplate.get_or_none(EmailTemplate.purpose == "Annual Position Review Request")
+        if template is None:
+            raise ValueError("The 'Annual Position Review Request' email template is missing.")
+
         departments = Department.select().where(Department.isActive == True)
 
         sentCount = 0
+        failedDepartments = []
         for department in departments:
             # A review is considered "requested" for every active department as soon
             # as this runs, whether or not there's currently anyone to email - a
             # department with no supervisors/coordinators assigned is itself worth
             # surfacing, not silently skipping.
-            existingReview = PositionReview.get_or_none(
-                PositionReview.academicYear == self.term,
-                PositionReview.department == department
+            existingReview = PositionHistory.get_or_none(
+                PositionHistory.academicYear == self.term,
+                PositionHistory.department == department,
+                PositionHistory.positionCode.is_null(True)
             )
             if existingReview:
                 existingReview.requestedOn = datetime.now()
                 existingReview.requestedBy = requestingUser
                 existingReview.save()
             else:
-                PositionReview.create(
+                PositionHistory.create(
                     academicYear=self.term,
                     department=department,
                     requestedOn=datetime.now(),
@@ -163,14 +168,23 @@ class emailHandler():
             subject = template.subject.replace("@@AcademicYear@@", self.term.termName)
             body = template.body.replace("@@Department@@", department.DEPT_NAME).replace("@@AcademicYear@@", self.term.termName)
 
-            message = Message(subject, recipients=list(recipients))
-            message.html = body
-            self.send(message)
+            try:
+                message = Message(subject, recipients=list(recipients))
+                message.html = body
+                self.send(message)
+            except Exception as error:
+                failedDepartments.append(department.DEPT_NAME)
+                print("Failed to send Annual Position Review request for department {}: {}".format(department.DEPT_NAME, error))
+                continue
 
             sentCount += 1
             print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
             print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, self.term.termName))
-        return {"sentCount": sentCount, "departmentCount": departments.count()}
+        return {
+            "sentCount": sentCount,
+            "departmentCount": departments.count(),
+            "failedDepartments": failedDepartments
+        }
 
     # The methods of this class each handle a different email situation. Some of the methods need to handle
     # "primary" and "secondary" forms differently, but a majority do not need to differentiate between the two.
