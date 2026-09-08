@@ -92,7 +92,7 @@ def userInsert():
                     emailDuringBreak(checkForSecondLSFBreak(term.termCode, student.ID), term)
                 except Exception as e:
                     errorMessage = "Email(s) delivery failed! Contact support for assistance."
-                    print("ERROR on sending email " + str(e))
+                    print("ERROR in sending email: " + str(e))
                     raise
             all_forms.append(True)
         except Exception as e:

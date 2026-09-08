@@ -48,17 +48,21 @@ def createLaborStatusForm(student, primarySupervisor, department, term, rspFunct
 
 def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
     """
-    Creates a 'Labor Status Form' and then if the request needs an overload we create
-    a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form'
+    Creates a 'Labor Status Form,' and then, if the request needs an overload, we create
+    a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form.'
+
     rspFunctional: a dictionary containing all the data submitted in the LSF page
     lsf: stores the new instance of a labor status form
     creatorID: id of the user submitting the labor status form
     status: status of the labor status form (e.g. Pending, etc.)
     """
+
     # We create a 'Labor Status Form' first, then we check to see if a 'Labor Overload Form'
     # needs to be created
+
+    isOverload = rspFunctional.get("isItOverloadForm") == "True"
+
     try:
-        isOverload = rspFunctional.get("isItOverloadForm") == "True"
         if isOverload:
             newLaborOverloadForm = OverloadForm.create( studentOverloadReason = None,
                                                         financialAidApproved = None,
@@ -92,7 +96,10 @@ def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
             email.laborStatusFormSubmitted()
         return formHistory
     except Exception as e:
-        print("Error creating overload form:", e)
+        if isOverload: 
+            print("Error in creating an overload form: ", e)
+        else: 
+            print("Error in creating a form: ", e)
         raise 
 
 
