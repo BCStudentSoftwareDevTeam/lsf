@@ -767,79 +767,56 @@ function userInsert(){
            url: "/laborstatusform/userInsert",
            data: JSON.stringify(globalArrayOfStudents),
            contentType: "application/json",
-           success: function(response) {
-              setTimeout(() => {
-                  location.reload();}, 3000);
-                  
-               var isBreak = $('#selectedTerm').find('option:selected').data('termbreak');
-               modalList = [];
-               for(var key = 0; key < globalArrayOfStudents.length; key++){
-                   var studentName = globalArrayOfStudents[key].stuName;
-                   var position = globalArrayOfStudents[key].stuPosition;
-                   var selectedContractHours = globalArrayOfStudents[key].stuContractHours;
-                   var jobType = globalArrayOfStudents[key].stuJobType;
-                   var hours = globalArrayOfStudents[key].stuWeeklyHours;
-
-                   if (response.includes(false)){ // if there is even one false value in response
-                       // var selectedContractHours = globalArrayOfStudents[key].stuWeeklyHours;
-                       if (response[key] === false){ // Finds the form that has failed.
-                           if (isBreak){
-                              display_failed.push(key);
-                              var bigString = "<li>" +"<span class=\"glyphicon glyphicon-remove\" style=\"color:red\"></span> " + studentName + " | " + position + " | " + selectedContractHours + " hours";
-                           }
-                           else {
-                              display_failed.push(key);
-                              var bigString = "<li>"+"<span class=\"glyphicon glyphicon-remove\" style=\"color:red\"></span> " + studentName + " | " + position + " | " + jobType + " | " + hours + " hours";
-                           }
-                       }
-                       else{
-                            if (isBreak){
-                                var bigString = "<li>" +"<span class=\"glyphicon glyphicon-ok\" style=\"color:green\"></span> " + studentName + " | " + position + " | " + selectedContractHours + " hours";
-                            }
-                            else {
-                                var bigString = "<li>"+"<span class=\"glyphicon glyphicon-ok\" style=\"color:green\"></span> " + studentName + " | " + position + " | " + jobType + " | " + hours + " hours";
-                            }
-                       }
-                    modalList.push(bigString);
-                   $("#SubmitModalText").html("Some of your submitted Labor Status Form(s) did not succeed:<br><br>" +
-                                              "<ul style=\"list-style-type:none; display: inline-block;text-align:left;\">" +
-                                               modalList.join("</li>")+"</ul>"+""
-                                            );
-                   $("#closeBtn").hide();
-                   $("#SubmitModal").modal("show");
-                 }
-               else{
-                    if (isBreak){
-                    var bigString = "<li>" +"<span class=\"glyphicon glyphicon-ok\" style=\"color:green\"></span> " + studentName + " | " + position + " | " + selectedContractHours + " hours";
-                  }
-                    else{
-                    var bigString = "<li>"+"<span class=\"glyphicon glyphicon-ok\" style=\"color:green\"></span> " + studentName + " | " + position + " | " + jobType + " | " + hours + " hours";
-                  }
-                 modalList.push(bigString);
-                 $("#SubmitModalText").html("Labor Status Form(s) succeeded:<br><br>" +
-                                            "<ul style=\"list-style-type:none; display: inline-block;text-align:left;\">" +
-                                             modalList.join("</li>")+"</ul>"+""
-                                          );
-                 $("#closeBtn").hide();
-                 $("#SubmitModal").modal("show");
-                 $("#reviewButton0").prop('disabled',true);
-                 $("#addMoreStudent").prop('disabled',true);
-                 $("a").attr("onclick", "").unbind("click");
-                 $(".glyphicon-edit").css("color", "grey");
-                 $(".glyphicon-remove").css("color", "grey");
-                 parsedArrayOfStudentCookies = document.cookie;
-                 document.cookie = parsedArrayOfStudentCookies +";max-age=0";
-                 window.location.replace("/laborstatusform");
-               }
-             }
+           success: function (response) {
+             var isBreak = $('#selectedTerm').find('option:selected').data('termbreak');
+             var hasFailure = response.includes(false);
+             var hasSuccess = response.includes(true);
+             modalList = [];
+             for (var key = 0; key < globalArrayOfStudents.length; key++) {
+               var studentName = globalArrayOfStudents[key].stuName;
+               var position = globalArrayOfStudents[key].stuPosition;
+               var selectedContractHours = globalArrayOfStudents[key].stuContractHours;
+               var jobType = globalArrayOfStudents[key].stuJobType;
+               var hours = globalArrayOfStudents[key].stuWeeklyHours;
+               // build each row
+               var icon = response[key] === false
+                 ? "<span class='glyphicon glyphicon-remove' style='color:red'></span>"
+                 : "<span class='glyphicon glyphicon-ok' style='color:green'></span>";
+               var bigString;
+              if (isBreak) {
+                bigString = `<li>${icon} ${studentName} | ${position} | ${selectedContractHours} hours`;
+              } else {
+                bigString = `<li>${icon} ${studentName} | ${position} | ${jobType} | ${hours} hours`;
+              }
+              modalList.push(bigString);
+            }
+            let message = "";
+            if (!hasFailure) {
+              message = "Labor Status Form(s) succeeded:<br><br>";
+            } else if (hasFailure && hasSuccess) {
+              message = "Some of your submitted Labor Status Form(s) did not succeed:<br><br>";
+            } else {
+              message = "All Labor Status Form(s) failed:<br><br>";
+            }
+            $("#SubmitModalText").html(
+              message +
+              "<ul style='list-style-type:none; display: inline-block;text-align:left;'>" +
+              modalList.join("</li>") +
+              "</ul>"
+            );
+            $("#SubmitModal").modal("show");
+            window.location.replace("/laborstatusform");
+           },
+           error: function() {
+             $('#error_modal').empty();
+             $('#error_modal').append(
+               '<p style="padding-left:16px;"><b>ERROR:</b> The request failed. Please try again or contact Systems Support if the issue continues <span style="color:darkred;" class="glyphicon glyphicon-exclamation-sign"></span></p>'
+             );
+             msgFlash("Unable to submit the form(s) due to a server or network error.", "fail");
+             $("#SubmitModal").modal("hide");
              $("#submitmodalid").prop("disabled", false);
              $("#closeBtn").prop("disabled", false);
              $("#submitmodalid").text("Submit");
-             $("#SubmitModal").data("bs.modal").options.backdrop = true;
-             $("#SubmitModal").data("bs.modal").options.keyboard = true;
-
-             $("#submitmodalid").hide();
-             $("#doneBtn").show();
             }
          }); // ajax closing tag
 
