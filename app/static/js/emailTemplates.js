@@ -13,8 +13,59 @@ function getEmailArray() {
     dataType: "json",
     success: function(response) {
       emailTemplateArray = response;
+      prefillFromQueryParams();
     }
   })
+}
+
+function prefillFromQueryParams() {
+  // Allows deep-linking into this page (e.g. from another admin page's
+  // "Edit Email Template" button) with the Recipient/Form Type/Action
+  // selectpickers pre-selected, so the template loads without the admin
+  // having to click through the cascading dropdowns manually.
+  var params = new URLSearchParams(window.location.search);
+  var recipient = params.get("audience");
+  var formType = params.get("formType");
+  var action = params.get("action");
+  if (!recipient) {
+    return;
+  }
+
+  // populatePurpose() ends by inserting the body into the CKEditor instance,
+  // which initializes asynchronously (CKEDITOR.replace() in emailTemplates.html).
+  // Running this cascade immediately on page load (unlike a human clicking
+  // through the dropdowns) can race ahead of that, so wait for the editor
+  // to be ready before touching it.
+  function runPrefill() {
+    $("#recipient").val(recipient).selectpicker("refresh");
+    populateFormType();
+
+    if (formType) {
+      $("#formType").val(formType).selectpicker("refresh");
+      populateAction();
+
+      if (action) {
+        $("#action").val(action).selectpicker("refresh");
+        populatePurpose();
+      }
+    }
+  }
+
+  // CKEDITOR.instances["editor1"] is registered as soon as CKEDITOR.replace()
+  // is called, well before the editor is actually ready to accept content
+  // (that's the "ready" status). Checking mere existence isn't enough here.
+  var editor = CKEDITOR.instances["editor1"];
+  if (editor && editor.status === "ready") {
+    runPrefill();
+  } else if (editor) {
+    editor.on("instanceReady", runPrefill);
+  } else {
+    CKEDITOR.on("instanceReady", function(evt) {
+      if (evt.editor.name === "editor1") {
+        runPrefill();
+      }
+    });
+  }
 }
 
 function populateFormType() {

@@ -14,6 +14,34 @@ from app.login_manager import require_login
 
 
 
+def generateAdjacentYears(academicYearTermCode=None):
+    """
+    Generates the current and the following academic years.
+    """
+
+    currentYear      = g.currentAY[0]
+    nextYear         = g.currentAY[1]
+
+
+    currentAYCode    = currentYear * 100
+    nextAYCode       = nextYear * 100
+
+    # Admins can only view the current positions and the requested positions for the incoming academic year
+    if academicYearTermCode not in (None, currentAYCode, nextAYCode):
+        abort(400)
+
+
+    currentAY, _  = Term.get_or_create(
+        termCode=currentAYCode,
+        defaults={"termName": "AY {}-{}".format(currentYear, currentYear + 1), "isAcademicYear": True}
+        )
+
+    nextAY, _     = Term.get_or_create(
+        termCode=nextAYCode,
+        defaults={"termName": "AY {}-{}".format(nextYear, nextYear + 1), "isAcademicYear": True}
+    )
+
+    return (currentAY, nextAY)
 def getUsedBreakHours(term):
     """
     Returns the total number of break hours used by each department for a given term.
