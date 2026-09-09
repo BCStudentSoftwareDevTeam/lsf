@@ -79,12 +79,3 @@ function update_sum() {
 $("#finalSubmitButton").click(function() {
   $("#isSubmitted").val("True");
 });
-
-$('#submit_as_final').change(function() {
-  if (this.checked) {
-    $("#transcriptComments").attr("disabled", false);
-  } else {
-    $("#transcriptComments").attr("disabled", true);
-    $("#transcriptComments").val(null);
-  }
-})
