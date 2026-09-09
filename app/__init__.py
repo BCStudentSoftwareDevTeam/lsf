@@ -80,8 +80,11 @@ def load_openTerm():
             session['openTerm'] = model_to_dict(term)
         g.openTerm = term
 
-def getCurrentYear():
-
+def getCurrentAY():
+    """
+    Returns the current academic year as a tuple 
+    (the year when it starts, and the year when it ends)
+    """
     today = date.today()
     year = today.year
 
@@ -91,9 +94,9 @@ def getCurrentYear():
     return year, year + 1
 
 @app.before_request
-def load_currentYear():
-    g.currentYear = getCurrentYear()
-
+def load_currentAY():
+    g.currentAY = getCurrentAY()
+        
 @app.context_processor
 def inject_environment():
     return dict(env=app.config['ENV'])
@@ -102,4 +105,3 @@ def inject_environment():
 def queryCount():
     if session:
         session['querycount'] = 0
-

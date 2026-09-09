@@ -19,29 +19,35 @@
     </strong>
 </p>
 
-<div class="container">
+<form action="/admin/allocationReview/approve" method="POST" class="container">
     <p>
         <!-- Requester = Requesting Department -->
         <label for="requestingDepartment">Requester: </label> {{department.DEPT_NAME}} Department
+        <input type="hidden" name="requester" value="{{department.departmentID}}">
     </p>
 
     <p>
-        <label for="academicYear"">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        <label for="academicYear">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        
+    </p>
+
+    <p>
+        <label for="academicYear">Justification: </label> {{requestedAlloc.justification}}
     </p>
     
-    <hr style="border: 0; border-top: 1px solid black;">
+    <hr class="separationLine">
 
     <p>
         <label for="breakHours" id="breakHours">Number of Break Hours: </label>
-        <input type="number" name="breakHours" min="0" step="1" value="10" class="numericSpinner"> <!--Note that it's HARD_CODED-->
-        <small> (requested: 120)</small> <!--Note that it's HARD_CODED-->
+        <input type="number" name="breakHours" min="0" step="1" value="{{requestedAlloc.breakHours}}" class="breakHoursNumericSpinner"> 
+        <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested break hours & Currently allocated break hours"> (requested: {{requestedAlloc.breakHours}}; current: {{currentAlloc.breakHours or 0}})</small> 
     </p>
 
     <p>
-        <label for="requestedPositions" id="requestedPositions">Requested Positions: </label>            
+        <label for="requestedPositions" id="requestedPositions">Number of Positions: </label>            
     </p>
 
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <div class="allocationReviewSection">
         <div>
             <p>
                 <small>
@@ -51,20 +57,26 @@
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input name="primary_10" type="number" min="0" step="1" value="{{requestedAlloc.primary_10}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated" data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_10}}; current: {{currentAlloc.primary_10 or 0}})</small>  
             </p>
 
             <p>
                 12 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input name="primary_12" type="number" min="0" step="1" value="{{requestedAlloc.primary_12}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_12}}; current: {{currentAlloc.primary_12 or 0}})</small>  
             </p>
 
             <p>
                 15 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input name="primary_15" type="number" min="0" step="1" value="{{requestedAlloc.primary_15}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_15}}; current: {{currentAlloc.primary_15 or 0}})</small>  
+            </p>
+
+            <p>
+                20 hours:&nbsp;
+                <input name="primary_20" type="number" min="0" step="1" value="{{requestedAlloc.primary_20}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.primary_20}}; current: {{currentAlloc.primary_20 or 0}})</small>  
             </p>
         </div>
         <div> 
@@ -76,37 +88,27 @@
 
             <p>
                 5 hours:&nbsp;&nbsp;&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input name="secondary_5" type="number" min="0" step="1" value="{{requestedAlloc.secondary_5}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_5}}; current: {{currentAlloc.secondary_5 or 0}})</small>  
             </p>
 
             <p>
                 10 hours:&nbsp;
-                <input type="number" min="0" step="1" value="10" class="numericSpinner">  <!--Note that it's HARD_CODED-->
-                <small>&nbsp;(requested: 120)</small>  <!--Note that it's HARD_CODED-->
+                <input name="secondary_10" type="number" min="0" step="1" value="{{requestedAlloc.secondary_10}}" class="positionNumericSpinner">  
+                <small class="currentAndAllocated"  data-trigger= "hover" data-toggle="popover" data-content ="Requested number of positions & Currently allocated number of positions">&nbsp;(requested: {{requestedAlloc.secondary_10}}; current: {{currentAlloc.secondary_10 or 0}})</small>  
             </p>
         </div>
     </div>
-
-    <p>
-        <label for="allocationJustification" id="allocationJustification">Justification / Notes: </label>
-    </p>
-    <textarea class="unresizeable" name="allocationJustification" rows="3" style="width: 100%; margin-bottom: 40px;"> </textarea>
-
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-
-        <div align="pull-left" style="width: 70%; margin-top: -5px;">
-            <small id="allocationReviewNote">
-                *To submit the form, you must either specify the number of extra break hours or fill in one of the fields in the Requested Positions section.  
-            </small>
-        </div>
-
-        <div>
-            <button type="button" class="btn btn-danger"  onclick="">Cancel</button>
-            <button type="button" class="btn btn-success" onclick="">Approve</button>
-        </div>
-
+    <div id="allocationReviewNote">
+        <small >
+            Once this request is approved, the {{department.DEPT_NAME}} department can no longer submit any new allocation requests for {{nextAY.termName.split(" ")[1]}}.  
+        </small>
     </div>
-</div>
+
+    <div class="section cancel-or-approve">
+        <button type="button" class="btn btn-danger"  onclick="window.location.href='/admin/manageDepartments';">Cancel</button>
+        <button type="submit" class="btn btn-success">Approve</button>
+    </div>
+</form>
 
 {% endblock %}
