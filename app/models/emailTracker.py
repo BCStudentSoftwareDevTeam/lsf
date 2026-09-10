@@ -7,6 +7,7 @@ class EmailTracker(baseModel):
     formID             = ForeignKeyField(LaborStatusForm)               # foreign key to lsf
     date               = DateField()
     recipient          = CharField()
+    subject            = CharField()
     template           = ForeignKeyField(EmailTemplate)                 # foreign key to email template
     recipientEmails    = TextField()
     body               = TextField()
