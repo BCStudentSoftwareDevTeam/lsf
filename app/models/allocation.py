@@ -1,6 +1,6 @@
 from app.models import *
 from app.models.department import Department
-from app.models.supervisor import Supervisor
+from app.models.user import User
 from app.models.term import Term
 
 class Allocation(baseModel):
@@ -8,8 +8,8 @@ class Allocation(baseModel):
     department     = ForeignKeyField(Department)
     isFinal        = BooleanField(default=False)
     approvedOn     = DateField(null=True)
-    approvedBy     = ForeignKeyField(Supervisor, null=True)
-    justification  = TextField()
+    approvedBy     = ForeignKeyField(User, null=True)
+    justification  = TextField(default="", null=False)
     primary_10     = IntegerField()
     primary_12     = IntegerField()
     primary_15     = IntegerField()
