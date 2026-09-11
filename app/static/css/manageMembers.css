@@ -1,33 +1,6 @@
-#titleBlock {
-  margin-bottom: 15px;
-}
-
-.manage-members-page {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.table-responsive {
-  border: 0;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-#manageMembers_wrapper {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-#manageMembers {
-  width: 100% !important;
-  min-width: 0 !important;
-  table-layout: fixed;
-}
-
 #manageMembers th,
 #manageMembers td {
   vertical-align: middle !important;
-  white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -66,11 +39,6 @@
   margin: 0;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
 
 .slider {
   position: absolute;
@@ -112,39 +80,25 @@
 }
 
 a.hover-indicator {
-  text-decoration: none !important;
+  text-decoration: none;
   position: relative;
   border-bottom: 1px dotted #000;
   color: #000;
 }
 
-a.hover-indicator:visited,
-a.hover-indicator:link,
-a.hover-indicator:hover,
-a.hover-indicator:active {
-  color: #000;
-}
 
 [class*="hover-indicator"]::after {
   content: attr(aria-label);
   display: none;
   position: absolute;
-  top: 110%;
   left: 10px;
   z-index: 5000;
-  pointer-events: none;
   padding: 8px 10px;
-  line-height: 15px;
-  white-space: nowrap;
-  text-decoration: none !important;
-  text-indent: 0;
   overflow: visible;
   font-size: 0.9em;
-  font-weight: normal;
   border-radius: 2px;
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
   background-color: #fff;
-  color: #000;
 }
 
 [class*="hover-indicator"]:hover::after,
