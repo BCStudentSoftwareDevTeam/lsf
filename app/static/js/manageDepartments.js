@@ -27,6 +27,10 @@ $(document).ready( function(){
       $("#inactiveTab").addClass("active");
       $("#inactiveTable").show();
     })
+
+    $("#downloadAllocationHistoryButton").on("click", function() {
+      $("#downloadAllocationHistoryModal").modal("show");
+    });
     
     attachModalToDepartment()
     $('.deptTable').on('draw.dt', function() {
