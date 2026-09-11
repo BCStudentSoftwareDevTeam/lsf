@@ -4,15 +4,17 @@ from flask import abort, g, jsonify, redirect, render_template, request, send_fi
 from peewee import DoesNotExist
 
 from app.controllers.main_routes import main_bp
+
+from app.models.department import Department
+from app.models.positionHistory import PositionHistory
+from app.models.supervisor import Supervisor
+from app.models.supervisorDepartment import SupervisorDepartment
+
 from app.logic.download import makePositionDescriptionPDF
 from app.logic.getPositions import getPosition, getPositions, getPositionDescriptionSections
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
 from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts
 from app.logic.search import searchPerson
-from app.models.department import Department
-from app.models.positionHistory import PositionHistory
-from app.models.supervisor import Supervisor
-from app.models.supervisorDepartment import SupervisorDepartment
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
 def postionDescription(org, account, positionCode):
