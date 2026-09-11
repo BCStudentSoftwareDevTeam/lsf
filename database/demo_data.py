@@ -780,6 +780,15 @@ terms = [
         "adjustmentCutOff": "2027-07-01",
         "isSummer": 1,
     },
+    {
+        "termCode": "202700",
+        "termName": "AY 2027-2028",
+        "termStart": "2027-08-01",
+        "termEnd": "2028-05-01",
+        "termState": 0,
+        "primaryCutOff": "2027-09-01",
+        "adjustmentCutOff": "2027-10-01",
+    },
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -1828,7 +1837,7 @@ print(f"termCode_id being used: {202500!r}")
 ###########################
 allocations = [ 
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       1,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1843,7 +1852,7 @@ allocations = [
     "breakHours":       550,
     },
     {
-    "termCode":         202700,
+    "termCode":         f"202700",
     "department":       1,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1858,7 +1867,7 @@ allocations = [
     "breakHours":       560,
     },
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       2,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1873,7 +1882,7 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202700,
+    "termCode":         f"202700",
     "department":       2,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1888,7 +1897,7 @@ allocations = [
     "breakHours":       900,
     },
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       3,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1903,7 +1912,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":         202700,
+    "termCode":         f"202700",
     "department":       3,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1918,7 +1927,7 @@ allocations = [
     "breakHours":       360,
     },
     {
-    "termCode":         202700,
+    "termCode":         f"202700",
     "department":       3,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1932,7 +1941,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       4,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1947,7 +1956,7 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       5,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1962,7 +1971,7 @@ allocations = [
     "breakHours":       900,
     },
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       1,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1978,6 +1987,7 @@ allocations = [
     },
                 
     ]
+print("hehe")
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print(" * allocation added")
@@ -2025,7 +2035,6 @@ positionHistory = [
         "revisionDate" : f"2026-01-01",
         "revisedBy": "Scott Heggen",
         "department": 1
-
     },
     {
         "positionTitle": "Teaching Associate",
@@ -2392,6 +2401,8 @@ PositionDescriptionSection.insert_many(
 
 print(" * position description sections added")
 
+pearcej = User.get(User.supervisor == "B12365892")
+ramsay = User.get(User.supervisor == "B00763721")
 
 allocation =[
                 {
@@ -2399,7 +2410,7 @@ allocation =[
                     "department": 3,
                     "isFinal": True,
                     "approvedOn": f"{2025}-06-30",
-                    "approvedBy": "B12365892",
+                    "approvedBy": pearcej.userID,
                     "justification": "We just want it for fun", 
                     "primary_10": 2,
                     "primary_12": 3,
@@ -2414,7 +2425,7 @@ allocation =[
                     "department": 2,
                     "isFinal": False,
                     "approvedOn": f"{2025}-06-20",
-                    "approvedBy": "B00763721",
+                    "approvedBy": ramsay.userID,
                     "justification": "We need it to lower the amount of allocations we have", 
                     "primary_10": 1,
                     "primary_12": 2,
