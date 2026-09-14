@@ -242,7 +242,7 @@ def manageMembers(org=None, account=None):
     if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
         return render_template('errors/403.html'), 403
 
-    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear)
+    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear) #FIXME replace the g.current year w term manager
     departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
 
     return render_template(
