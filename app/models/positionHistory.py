@@ -10,6 +10,7 @@ class PositionHistory(baseModel):
     status             = CharField(null=True)
     wls                = IntegerField(null=True)
     revisionDate       = DateField(null=True)
+    revisedBy          = CharField(null=True)
     description        = TextField(default=None)
     academicYear       = ForeignKeyField(Term, null=True)
     requestedOn        = DateTimeField(null=True)

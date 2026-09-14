@@ -1,0 +1,138 @@
+/* Individual Positions page styles */
+/* Header */
+.department-header-container {
+    position: relative;
+}
+
+.department-header {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 5rem;
+}
+
+.download-btn {
+    position: absolute;
+    top: 0;
+    right: 15px;
+}
+
+.position-description div{
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+/* Metadata list (dt / dd spacing) */
+.position-information dl.row dt {
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    font-size: 2rem;
+}
+.position-information dl.row dd {
+    margin-bottom: 0.75rem;
+    color: #444;
+    text-align: left;
+    font-size: 2rem;
+}
+
+h2.description-header {
+    font-weight: 600;
+    font-size: 2rem;
+}
+
+
+.position-description h3 {
+    font-size: 1.7rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.position-description h4 {
+    font-size: 1.25rem;
+    font-weight: 300;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.position-description h5 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.35rem;
+}
+
+.position-container {
+    margin: 2rem;
+}
+
+.position-description {
+    text-align: left;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.description-content {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+/* Individual description sections */
+.section-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* Utility float class used across the app */
+.floatright {
+    float: right;
+    margin-left: 0.5rem;
+}
+
+/* Mobile layout */
+@media (max-width: 750px) {
+    .download-btn {
+        position: static;
+        display: table;
+        max-width: 100%;
+        margin: 0 auto 20px;
+        white-space: normal;
+    }
+
+    .department-header {
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+
+    .position-information dl.row dt,
+    .position-information dl.row dd {
+        font-size: 1.6rem;
+    }
+
+    .position-information dl.row dd {
+        margin-bottom: 15px;
+    }
+
+    .position-description {
+        font-size: 1.2rem;
+    }
+
+    .floatright {
+        float: none;
+        margin-left: 0;
+    }
+}
