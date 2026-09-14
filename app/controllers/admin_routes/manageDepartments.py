@@ -17,8 +17,6 @@ from app.models.laborStatusForm import *
 
 from app.logic.manageDepartments import * 
 
-from playhouse.shortcuts import model_to_dict
-
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 def manageDepartments(academicYear = None):
     """

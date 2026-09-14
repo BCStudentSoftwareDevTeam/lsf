@@ -12,9 +12,6 @@ from app.models.term import *
 
 from app.login_manager import require_login
 
-from playhouse.shortcuts import model_to_dict
-
-
 
 def generateAdjacentYears(academicYearTermCode=None): 
     """
