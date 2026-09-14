@@ -149,8 +149,6 @@ def sle(statusKey):
     return render_template("main/studentLaborEvaluation.html",
                             form = sleForm,
                             laborHistoryForm = laborHistoryForm,
-                            existing_evaluation = existing_evaluation,
-                            date_submitted = submittedDate,
                             overall_score = overall_score,
                             currentUser = currentUser
                           )

@@ -42,10 +42,6 @@
             <dd>{{laborHistoryForm.formID.jobType}} ({{laborHistoryForm.formID.weeklyHours}})</dd>
             <dt>Position (WLS): </dt>
             <dd>{{laborHistoryForm.formID.POSN_TITLE}} ({{laborHistoryForm.formID.WLS}})</dd>
-            {% if existing_evaluation %}
-              <dt>Date Submitted: </dt>
-              <dd>{{existing_evaluation.date_submitted}}</dd>
-            {% endif %}
           </dl>
         </div>
       </div>
@@ -77,11 +73,7 @@
           {{ form.attendance(**{"min":1, "max":20}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.attendance.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.attendance_score}}/20
-              {% else %}
                 {{form.attendance.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="attendance_help" hidden>The student has met your attendance expectations.</div>
@@ -89,9 +81,6 @@
         <div class="col-xs-6">
           {{form.attendanceComments.label}}
           {{form.attendanceComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.attendance_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.attendanceComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -127,11 +116,7 @@
           {{ form.accountability(**{"min":1, "max":10}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.accountability.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.accountability_score}}/10
-              {% else %}
                 {{form.accountability.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="accountability_help" hidden>The student has met your accountability expectations.</div>
@@ -139,9 +124,6 @@
         <div class="col-xs-6">
           {{form.accountabilityComments.label}}
           {{form.accountabilityComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.accountability_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.accountabilityComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -176,11 +158,7 @@
           {{ form.teamwork(**{"min":1, "max":10}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.teamwork.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.teamwork_score}}/10
-              {% else %}
                 {{form.teamwork.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="teamwork_help" hidden>The student has met your teamwork expectations.</div>
@@ -188,9 +166,6 @@
         <div class="col-xs-6">
           {{form.teamworkComments.label}}
           {{form.teamworkComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.teamwork_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.teamworkComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -224,11 +199,7 @@
           {{ form.initiative(**{"min":1, "max":10}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.initiative.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.initiative_score}}/10
-              {% else %}
                 {{form.initiative.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="initiative_help" hidden>The student has met your initiative expectations.</div>
@@ -236,9 +207,6 @@
         <div class="col-xs-6">
           {{form.initiativeComments.label}}
           {{form.initiativeComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.initiative_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.initiativeComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -272,11 +240,7 @@
           {{ form.respect(**{"min":1, "max":10}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.respect.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.respect_score}}/10
-              {% else %}
                 {{form.respect.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="respect_help" hidden>The student has met your respect expectations.</div>
@@ -284,9 +248,6 @@
         <div class="col-xs-6">
           {{form.respectComments.label}}
           {{form.respectComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.respect_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.respectComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -321,11 +282,7 @@
           {{ form.learning(**{"min":1, "max":20}) }}
           <div class = "col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.learning.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.learning_score}}/20
-              {% else %}
                 {{form.learning.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="learning_help" hidden>The student has met your learning expectations.</div>
@@ -333,9 +290,6 @@
         <div class="col-xs-6">
           {{form.learningComments.label}}
           {{form.learningComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.learning_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.learningComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -368,11 +322,7 @@
           {{ form.jobSpecific(**{"min":1, "max":20}) }}
           <div class="col-xs-2">
             <p class="h4 values score_bordered" id = "{{form.jobSpecific.id}}_value">
-              {% if existing_evaluation %}
-                {{existing_evaluation.jobSpecific_score}}/20
-              {% else %}
                 {{form.jobSpecific.data}}
-              {% endif %}
             </p>
           </div>
           <div class="col-xs-10 alert alert-info" id="jobSpecific_help" hidden>The student has met your job specific expectations.</div>
@@ -380,9 +330,6 @@
         <div class="col-xs-6">
           {{form.jobSpecificComments.label}}
           {{form.jobSpecificComments}}
-          {% if existing_evaluation %}
-            <p>{{existing_evaluation.jobSpecific_comment}}</p>
-          {% endif %}
           <div class="row">
             {% if form.jobSpecificComments.errors %}
               <div role="alert" id="flash-message" style="color:red;">
@@ -416,9 +363,6 @@
           <div class="col-xs-6">
             {{form.transcriptComments.label}}
             {{form.transcriptComments}}
-            {% if existing_evaluation %}
-              <p>{{existing_evaluation.transcript_comment}}</p>
-            {% endif %}
             <div class="row">
               {% if form.transcriptComments.errors %}
                 <div role="alert" id="flash-message" style="color:red;">
@@ -445,7 +389,6 @@
         </p>
 
       </div>
-      {% if not existing_evaluation %}
         {{form.isSubmitted}}
         <div class="btn-group pull-right col-xs-6" role="group">
           <div class="row">
@@ -453,12 +396,6 @@
             <button class="btn btn-lg btn-success" id="finalSubmitButton" type="submit">Submit {{laborHistoryForm.formID.studentSupervisee.FIRST_NAME}}'s Evaluation</button>
           </div>
         </div>
-      {% else %}
-      <div class="btn-group pull-right col-xs-6" role="group">
-        <div>
-          <button type="button" class="btn btn-lg btn-danger" id='resetForm'>Reset</button>
-        </div>
-      {% endif %}
     </div>
     {% include "snips/resetConfirmationModal.html" %}
   </form>
