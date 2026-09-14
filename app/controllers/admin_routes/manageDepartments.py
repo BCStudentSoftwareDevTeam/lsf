@@ -42,10 +42,7 @@ def manageDepartments(academicYear = None):
 
 
     # The condition below may be deleted if the routing to the Manage Departments page is changed.
-    if academicYear == None:
-        academicYear = g.currentAY[0] * 100
-    else:
-        academicYear = int(academicYear)
+    academicYear = g.currentAY[0] * 100 if academicYear is None else int(academicYear)
 
 
     currentAY, nextAY = generateAdjacentYears(academicYear)
