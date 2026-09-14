@@ -1,0 +1,117 @@
+{% extends "base.html" %} {% block styles %} {{super()}}
+<link href="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/allocationRequest.css?u={{lastStaticUpdate}}" />
+{% endblock %} {% block scripts %} {{super()}}
+<script src="https://cdn.datatables.net/v/dt/dt-2.1.6/datatables.min.js"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/allocationRequest.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %} {% block app_content %}
+
+<h2 align="center">
+    <strong>
+        Allocation Request
+    </strong>
+</h2>
+
+<p  align="center" id="allocationRequestSubtitle">
+    <strong>
+        Submit an allocation request to Berea's Work Study Program Department
+    </strong>
+</p>
+
+<form action="/allocationRequest/submit" method="POST" class="container">
+    <p>
+        <label for="requestingDepartment">Submitter: </label> {{department.DEPT_NAME}} Department
+        <input type="hidden" name="submitter" value="{{department.departmentID}}">
+    </p>
+
+    <p>
+        <label for="academicYear">Academic Year: </label> {{nextAY.termName.split(" ")[1]}}
+        
+    </p>
+    
+    <hr class="separationLine">
+
+    <p>
+        <label for="breakHours" id="breakHours">Number of Break Hours: </label>
+        <input type="number" name="breakHours" min="0" step="1" value="{{currentAlloc.breakHours or 0}}" class="breakHoursNumericSpinner"> 
+        <small> (currently allocated: {{currentAlloc.breakHours or 0}})</small> 
+    </p>
+
+    <p>
+        <label for="requestedPositions" id="requestedPositions">Number of Positions: </label>            
+    </p>
+
+    <div class="allocationRequestSection">
+        <div>
+            <p>
+                <small>
+                    <b>Primary</b>
+                </small>
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input name="primary_10" type="number" min="0" step="1" value="{{currentAlloc.primary_10 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_10 or 0}})</small>  
+            </p>
+
+            <p>
+                12 hours:&nbsp;
+                <input name="primary_12" type="number" min="0" step="1" value="{{currentAlloc.primary_12 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_12 or 0}})</small>  
+            </p>
+
+            <p>
+                15 hours:&nbsp;
+                <input name="primary_15" type="number" min="0" step="1" value="{{currentAlloc.primary_15 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_15 or 0}})</small>  
+            </p>
+
+            <p>
+                20 hours:&nbsp;
+                <input name="primary_20" type="number" min="0" step="1" value="{{currentAlloc.primary_20 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.primary_20 or 0}})</small>  
+            </p>
+        </div>
+        <div> 
+            <p>
+                <small>
+                    <b>Secondary</b>
+                </small>
+            </p>
+
+            <p>
+                5 hours:&nbsp;&nbsp;&nbsp;
+                <input name="secondary_5" type="number" min="0" step="1" value="{{currentAlloc.secondary_5 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_5 or 0}})</small>  
+            </p>
+
+            <p>
+                10 hours:&nbsp;
+                <input name="secondary_10" type="number" min="0" step="1" value="{{currentAlloc.secondary_10 or 0}}" class="positionNumericSpinner">  
+                <small>&nbsp;(currently allocated: {{currentAlloc.secondary_10 or 0}})</small>  
+            </p>
+        </div>
+    </div>
+    
+    <p>
+        <label for="justification" id="allocationJustification">Justification / Notes: </label>
+    </p>
+
+    <textarea name="justification" id="justificationTextField" rows="3"></textarea> 
+
+    <div id="allocationRequestNote">
+        <small>
+            This allocation request for {{nextAY.termName.split(" ")[1]}} can be updated by resubmission. However, once the Path to Purpose Office approves it, you can no longer change it.   
+        </small>
+    </div>
+
+    <div class="section cancel-or-submit">
+        <button type="button" class="btn btn-danger"  onclick="window.location.href='/department/{{department.ORG}}/{{department.ACCOUNT}}';">Cancel</button>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </div>
+
+</form>
+
+{% endblock %}

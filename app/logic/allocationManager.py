@@ -9,16 +9,16 @@ from app.models.formHistory import FormHistory
 
 def getAllocation(termCode: int, dept: int, isFinal = True):
     '''
-    This function returns a peewee object containing the selected allocation for given 
+    This function returns a dictionary containing the selected allocation for given 
     department and term. If you want the pending allocation, pass in False for isFinal.
     '''
     try:
         academicYearCode = int(str(termCode)[:4] + "00")
-        allocationObject = Allocation.select().where(
+        allocationDict = Allocation.select().where(
             Allocation.termCode.in_([termCode,academicYearCode]),
             Allocation.department == dept, 
             Allocation.isFinal == isFinal).dicts().get()
-        return allocationObject 
+        return allocationDict 
     except:
         return 0 
 
@@ -145,3 +145,9 @@ def getBreakContracts(termCode, dept):
         return break_allocation
     else:
         return 0
+
+def allocationExists(termCode: int, dept: int, isFinal: bool):
+    """
+    Checks if there is an allocation that matches certain criteria. 
+    """
+    return bool(Allocation.get_or_none(Allocation.termCode == termCode, Allocation.department == dept, Allocation.isFinal == isFinal))

@@ -1,14 +1,3 @@
-/*.flasher{
-  margin-top: 100px;
-}
-
-#flash_container {
-  margin-top: 100px;
-  margin-right: 140px;
-  margin-left: 20px;
-}
-*/
-
 h1 {
   text-align: center;
   padding-bottom: 5px;
@@ -29,9 +18,15 @@ h1 {
   width:20px;
 }
 .complianceBtn{
-  width:150px;
+  width:140px;
 }
 
 #flasher{
 	z-index: 999999;
+}
+
+#activeDepartmentsTable th,
+#activeDepartmentsTable td {
+  vertical-align: middle;
+  text-align: center;
 }
