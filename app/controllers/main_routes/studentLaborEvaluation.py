@@ -109,6 +109,7 @@ def sle(statusKey):
             sle.delete_instance()
         except DoesNotExist:
             pass
+        # Then, save the new record
 
         studentLaborEvaluation = StudentLaborEvaluation.create(
                                     formHistoryID = laborHistoryForm,
