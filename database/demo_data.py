@@ -620,6 +620,7 @@ EmailTracker.insert([{
             "formID": 2,
             "date": "2026-06-18",
             "recipient": "Julius Fritz",
+            "subject": "Labor Status Form Approved",
             "template": 4,
             "recipientEmails": "fritzj2@berea.edu",
             "body": "super secret text that you cant read"
