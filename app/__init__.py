@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 from flask import Flask
 from flask_restful import Api
@@ -78,6 +79,23 @@ def load_openTerm():
         if term:
             session['openTerm'] = model_to_dict(term)
         g.openTerm = term
+
+def getCurrentAY():
+    """
+    Returns the current academic year as a tuple 
+    (the year when it starts, and the year when it ends)
+    """
+    today = date.today()
+    year = today.year
+
+    if today.month < 7:
+        return year - 1, year
+
+    return year, year + 1
+
+@app.before_request
+def load_currentAY():
+    g.currentAY = getCurrentAY()
         
 @app.context_processor
 def inject_environment():
@@ -87,4 +105,3 @@ def inject_environment():
 def queryCount():
     if session:
         session['querycount'] = 0
-
