@@ -97,7 +97,7 @@ def complianceStatusCheck():
 def annualPositionReviewRequest():
     """
     Sends an Annual Position Review request email to every active department's
-    Labor Coordinators and supervisors for the selected academic year, and
+    Labor Coordinators and supervisors for the current academic year, and
     records the request. Triggered from the Manage Departments page.
     """
     currentUser = require_login()
