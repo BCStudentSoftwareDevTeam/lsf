@@ -13,6 +13,7 @@ from app.logic.apiEndpoint import getLaborInformation
 @pytest.mark.integration
 def test_getLaborInformation():
     with mainDB.atomic() as transaction:
+       
         FormHistory.update(status_id = "Approved").where(FormHistory.formHistoryID == 2).execute()
 
         testingSupervisor = Supervisor.create(ID = "B00000001",
@@ -29,14 +30,14 @@ def test_getLaborInformation():
                                isLaborAdmin = None,
                                isFinancialAidAdmin = None,
                                isSaasAdmin = None)
-        
+
         with app.test_request_context():
             # Case 1: verify the LSF for Alex in demo data is returend and contains what we would expect
             response = getLaborInformation(orgCode = 2114, bNumber="B00841417")
 
             responseData = response.get_json()
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
+            assert responseData['B00841417'][0]['termName'] == "AY 2026-2027"
         
         Term.create(termCode = 202100,
                     termName = "AY 2021-2022",
@@ -67,7 +68,7 @@ def test_getLaborInformation():
                                                laborDepartmentNotes = None,
                                                studentName = "Alex Bryant"
                                                )
-        
+       
         FormHistory.create(formID_id = testLaborForm.laborStatusFormID,
                            historyType = "Labor Status Form",
                            releaseForm = None, 
@@ -87,14 +88,14 @@ def test_getLaborInformation():
             responseData = response.get_json()
             assert len(responseData['B00841417']) == 2
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
-            assert responseData['B00841417'][0]['laborStart'] == "2020-04-01"
+            assert responseData['B00841417'][0]['termName'] == "AY 2021-2022"
+            assert responseData['B00841417'][0]['laborStart'] == "2021-08-01"
             assert responseData['B00841417'][1]['jobType'] == "Primary"
-            assert responseData['B00841417'][1]['termName'] == "AY 2021-2022"
-            assert responseData['B00841417'][1]['laborStart'] == "2021-08-01"
+            assert responseData['B00841417'][1]['termName'] == "AY 2026-2027"
+            assert responseData['B00841417'][1]['laborStart'] == "2026-04-01"
 
         LaborStatusForm.update(department_id = 4).where(LaborStatusForm.laborStatusFormID == testLaborForm.laborStatusFormID).execute()
-
+   
         with app.test_request_context():
             # Case 3: Confirm that the LSF in base data is the only form returned since the form created in the test has
             # had its dept changed and we are only getting forms for dept 1. 
@@ -102,8 +103,8 @@ def test_getLaborInformation():
 
             responseData = response.get_json()
             assert responseData['B00841417'][0]['jobType'] == "Primary"
-            assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
-            assert responseData['B00841417'][0]['laborStart'] == "2020-04-01"
+            assert responseData['B00841417'][0]['termName'] == "AY 2026-2027"
+            assert responseData['B00841417'][0]['laborStart'] == "2026-04-01"
             assert len(responseData['B00841417']) == 1
 
         transaction.rollback()
