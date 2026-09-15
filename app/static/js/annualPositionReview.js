@@ -1,13 +1,11 @@
 function submitAnnualPositionReview(button) {
 /*
- POSTs the Annual Position Review request for the currently selected academic year.
+ POSTs the Annual Position Review request for the current academic year.
  Sends a review request email to every active department's Labor Coordinators and
  supervisors, then shows a success/failure flash message.
 
  RETURNS: None
 */
-  var academicYear = $('[data-target="#annualPositionModal"]').data('academic-year');
-
   // Disable immediately so a double-click can't fire this request twice -
   // PositionHistory dedupes the request record, but the emails would still go out
   // more than once. Re-enabled in complete regardless of outcome so a retry
@@ -18,8 +16,6 @@ function submitAnnualPositionReview(button) {
     method: "POST",
     url: "/admin/manageDepartments/annualPositionReview",
     dataType: "json",
-    contentType: "application/json",
-    data: JSON.stringify({"academicYear": academicYear}),
     success: function(response) {
       $("#annualPositionModal").modal("hide");
 

@@ -104,16 +104,11 @@ def annualPositionReviewRequest():
     if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
         return jsonify({"Success": False}), 403
 
-    rsp = request.get_json(silent=True)
+    currentAY, _ = getCurrentAndNextAY()
 
     try:
-        academicYear = int(rsp["academicYear"])
-    except (TypeError, ValueError, KeyError):
-        return jsonify({"Success": False, "message": "Request must include a valid academicYear."}), 400
-
-    try:
-        handler = emailHandler(academicYearTermCode=academicYear)
-        result = handler.sendAnnualPositionReviewRequests(currentUser)
+        positionReviewEmail = emailHandler(academicYearTermCode=currentAY.termCode)
+        result = positionReviewEmail.sendAnnualPositionReviewRequests(currentUser)
         if result["failedDepartments"]:
             result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
                 result["sentCount"], result["departmentCount"], ", ".join(result["failedDepartments"])
