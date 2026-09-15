@@ -6,7 +6,6 @@ from peewee import ModelSelect
 
 from app.models.formHistory import *
 from app.controllers.main_routes.main_routes import *
-from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formSearchResult import FormSearchResult
 
 def saveFormSearchResult(displayName, formList, formType):
@@ -38,13 +37,6 @@ class CSVMaker:
         self.additionalSpreadsheetFields = (self._validateAdditionalSpreadsheetFields(additionalSpreadsheetFields))
         self.formHistories = requestedLSFs 
         self.makeCSV()
-        
-    @staticmethod
-    def _validateAdditionalSpreadsheetFields(additionalFields):
-        for additionalField in additionalFields:
-            if additionalField not in {'overloads', 'allEvaluations'}:
-                raise ValueError(f'Invalid spreadsheet fields: {additionalField}')
-        return additionalFields
 
     def makeCSV(self):
         '''
