@@ -1,39 +1,180 @@
-from app.models.laborStatusForm import *
-from app.models.formHistory import *
+from flask import g, abort
 from peewee import fn
 
+from app.controllers.main_routes import departmentPortal
+from app.controllers.admin_routes.termManagement import createTerms
 
-def getUsedBreakHours(terms):
+from app.models.laborStatusForm import *
+from app.models.formHistory import *
+from app.models.allocation import *
+from app.models.department import *
+from app.models.term import *
+
+from app.login_manager import require_login
+
+
+def generateAdjacentYears(academicYearTermCode=None): 
+    """
+    Generates the current, and the following academic years. 
+    """
+    currentYear      = g.openTerm.termCode // 100
+    nextYear         = currentYear + 1
+
+    currentAYCode    = currentYear * 100
+    nextAYCode       = nextYear * 100
+
+    # Admins cannot view allocations for the years that are beyond the current, the previous, or the following academic year 
+    if academicYearTermCode not in (None, currentAYCode, nextAYCode):
+        abort(400)
+
+
+    currentAY, _  = Term.get_or_create(
+        termCode=currentAYCode,
+        defaults={"termName": "AY {}-{}".format(currentYear, currentYear + 1), "isAcademicYear": True}
+        )
+
+    nextAY, _     = Term.get_or_create(
+        termCode=nextAYCode,
+        defaults={"termName": "AY {}-{}".format(nextYear, nextYear + 1), "isAcademicYear": True}
+    )
+
+    return (currentAY, nextAY)
+
+
+
+
+####################################################################################################################################
+# Everything below this line will eventually be deleted  
+
+
+def getUsedBreakHours(term):
+    """
+    Returns the total number of break hours used by each department for a given term.
+    """
+    
+    # THE PREVIOUS IMPLEMENTATION OF THIS FUNCTION (CAN BE USED IN CASE THE CURRENT IMPLEMENTATION DOESN'T WORK PROPERLY)
     # totalBreakSum = FormHistory.select(fn.SUM(LaborStatusForm.contractHours)).where( (FormHistory.historyType_id == "Labor Status Form ") & (FormHistory.status_id == "Approved"))
 
     totalBreakSum = (
     FormHistory
     .select(
         LaborStatusForm.department,
-        LaborStatusForm.termCode,
+        LaborStatusForm.termCode.termCode,
         fn.SUM(LaborStatusForm.contractHours).alias('totalHours')
         
     )
     .join(
         LaborStatusForm,
-        on=(FormHistory.formID == LaborStatusForm.laborStatusFormID)
+        on=(FormHistory.formID == LaborStatusForm.laborStatusFormID),
+    )
+    .join(
+        Term,
+        on = (LaborStatusForm.termCode == Term.termCode)
     )
     .where(
         (FormHistory.historyType == "Labor Status Form") &
         (FormHistory.status == "Approved") &
-        # LaborStatusForm.termCode.in_(terms) # Should have a list of terms, not just one term.
+        (LaborStatusForm.termCode == term)
     )
     .group_by(LaborStatusForm.department, LaborStatusForm.termCode).dicts()
 )
-    # correctLSF = LaborStatusForm.select().where(LaborStatusForm.termCode == term)
-
-    # print("Something2\n\n\n\n",list(correctLSF))
 
     return totalBreakSum
 
-# def getCurrentSelectedTerm(currentTerm):
-    #'''
-    #Returns the current term code based on a the selected term from a dropdown menu in the manage departments page.
-    #Should only contain the current term, the next term, and the previous term.
-    #'''
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountPrimaries(currentTerm, department):
+    """
+    Returns the count of primary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
+    return lsfCountPrimaries
+
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountSecondaries(currentTerm, department):
+    """
+    Returns the count of secondary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
+    return lsfCountSecondaries
+
+
+
+def getActiveDepartmentsWithAllocation(term,isFinal = True):
+    """
+    Returns a list of active departments with allocations for the given term.
+    """
+
+    # This was left just incase anything went wrong. Delete this if everything works as expected. Not necessary in current implementation.
+    # activeDepartments = Department.select().where(Department.isActive == True)
+    # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
+
+    activeDepartments = (Allocation
+                        .select(Department, Allocation)
+                        .join(Department)
+                        .where(
+                            Department.isActive == True,
+                            Allocation.termCode == term.termCode,
+                            Allocation.isFinal == isFinal,
+                            )
+                    )
     
+  
+    for allocation in activeDepartments:
+        allocation.totalPrimaries = (allocation.primary_10 + allocation.primary_12 + allocation.primary_15 + allocation.primary_20)
+        allocation.totalSecondaries = (allocation.secondary_5 + allocation.secondary_10)
+
+        if isFinal:            # do not need to count them for requested allocations
+            allocation.lsfCountPrimaries = getLSFCountPrimaries(term, allocation.department)
+            allocation.lsfCountSecondaries = getLSFCountSecondaries(term, allocation.department)
+  
+    return activeDepartments
+
+
+def getActiveDepartmentsAllocations(term,nextTerm):
+    """
+    This function gets active departments, active allocations for the current AY and future AY.
+    It returns a dictionary which contains three objects grouped by the departmentID
+    """
+
+    activeDepartments = Department.select().where(Department.isActive == True)  
+
+    allocations = getActiveDepartmentsWithAllocation(term)
+
+    allocByDeptId = {}
+
+    # index allocations by department ID
+    for alloc in allocations:
+        allocByDeptId[alloc.department.departmentID] = alloc
+
+    requestedAllocations = getActiveDepartmentsWithAllocation(nextTerm, False) 
+
+    # index requested allocations by department ID
+    reqAllocByDeptId = {}
+    for alloc in requestedAllocations:
+        reqAllocByDeptId[alloc.department.departmentID] = alloc
+
+    # build combined dictionary for active departments
+    activeDepartmentsAllocations = {}
+
+    for dept in activeDepartments:
+        activeDepartmentsAllocations[dept.departmentID] = {
+        "department": dept,
+        "allocation": allocByDeptId.get(dept.departmentID),  # None if no allocation
+        "requestedAllocation": reqAllocByDeptId.get(dept.departmentID),  # None if no requested allocation
+    }
+    return activeDepartmentsAllocations
+
+
+def getAllocationStatus(term, department):
+    """
+    Returns the allocation status for a given department during a given term.
+    """
+    allocation = Allocation.get(
+        (Allocation.termCode == term) &
+        (Allocation.department == department)
+    )
+    return allocation.isFinal

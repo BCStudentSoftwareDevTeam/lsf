@@ -17,11 +17,9 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
-from app.models.supervisorDepartment import SupervisorDepartment 
-from app.models.allocation import Allocation 
-from app.models.positionHistory import PositionHistory 
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
 
 
 print("Inserting data for demo and testing purposes")
@@ -519,6 +517,15 @@ print("Current year:", current_year)
 
 terms = [
     {
+        "termCode": f"202000",
+        "termName": f"AY 2020-2021",
+        "termStart": f"2020-08-01",
+        "termEnd": f"2021-05-01",
+        "termState": 0,
+        "primaryCutOff": f"2020-09-01",
+        "adjustmentCutOff": f"2020-10-01",
+    },
+    {
         "termCode": f"{current_year}00",
         "termName": f"AY {current_year}-{current_year+1}",
         "termStart": f"{current_year}-08-01",
@@ -585,7 +592,7 @@ today = datetime.now()
 current_year = today.year - (today.month < 8)
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"{current_year}00",
+            "termCode_id": f"202000",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -594,9 +601,9 @@ LaborStatusForm.insert([{
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
-            "contractHours": 100,
-            "startDate": f"{current_year}-04-01",
-            "endDate": f"{current_year}-09-01"
+            "weeklyHours": 10,
+            "startDate": f"2020-04-01",
+            "endDate": f"2020-09-01"
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,
@@ -768,7 +775,7 @@ allocations = [
     {
     "termCode":         202200,
     "department":       3,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -783,7 +790,7 @@ allocations = [
     {
     "termCode":        202300,
     "department":       2,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -798,7 +805,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       1,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -813,7 +820,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       4,
-    "isApproved":       False,
+    "isFinal":       False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -828,7 +835,7 @@ allocations = [
     {
     "termCode":         202500,
     "department":       5,
-    "isApproved":      False,
+    "isFinal":      False,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -850,7 +857,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 3,
-                    "isApproved": True,
+                    "isFinal": True,
                     "approvedOn": f"{current_year}-06-30",
                     "approvedBy": "B12365892",
                     "justification": "We just want it for fun", 
@@ -865,7 +872,7 @@ allocation =[
                 {
                     "termCode":f"{current_year}00",
                     "department": 2,
-                    "isApproved": False,
+                    "isFinal": False,
                     "approvedOn": f"{current_year}-06-20",
                     "approvedBy": "B00763721",
                     "justification": "We need it to lower the amount of allocations we have", 
