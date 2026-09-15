@@ -24,7 +24,6 @@ def retrieveFormSearchResult(formSearchResultId):
     # ensure we only give the result to the user who started the search
     if result.generatedBy == g.currentUser:
         return result
-
     return None
 
 class CSVMaker:
@@ -37,6 +36,13 @@ class CSVMaker:
         self.additionalSpreadsheetFields = (self._validateAdditionalSpreadsheetFields(additionalSpreadsheetFields))
         self.formHistories = requestedLSFs 
         self.makeCSV()
+
+    @staticmethod
+    def _validateAdditionalSpreadsheetFields(additionalFields):
+        for additionalField in additionalFields:
+            if additionalField not in {'overloads', 'finalEvaluations', 'midYearEvaluations', 'allEvaluations'}:
+                raise ValueError(f'Invalid spreadsheet fields: {additionalField}')
+        return additionalFields
 
     def makeCSV(self):
         '''
