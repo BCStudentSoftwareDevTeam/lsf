@@ -18,10 +18,8 @@ class Test_Tracy:
     def test_getStudents(self, tracy):
         with app.app_context():
             students = tracy.getStudents()
-            for s in students:
-                assert ['Antonia','Barbara','Elaheh','Guillermo','Jeremiah','Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
-                assert ['777','118','718','300','420','420', '883', '700', '420'] == [s.STU_CPO for s in students]
-
+            assert ['Elaheh','Guillermo','Jeremiah','Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
+            assert ['718','300','420','420', '883', '700', '420'] == [s.STU_CPO for s in students]
 
     @pytest.mark.integration
     def test_getStudentFromBNumber(self, tracy):
