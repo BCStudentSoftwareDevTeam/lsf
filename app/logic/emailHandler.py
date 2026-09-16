@@ -23,7 +23,7 @@ from app.logic.getSupervisors import getSupervisors
 
 
 class emailHandler():
-    def __init__(self, formHistoryKey=None, academicYearTermCode=None):
+    def __init__(self, formHistoryKey=None, termCodeUnderReview=None):
         self.mail = Mail(app)
 
         # emailHandler was originally built entirely around a single
@@ -102,10 +102,10 @@ class emailHandler():
                 if e.__class__.__name__ != "AttributeError":
                     print (e)
 
-        elif academicYearTermCode is not None:
-            self.term = Term.get(Term.termCode == academicYearTermCode)
+        elif termCodeUnderReview is not None:
+            self.term = Term.get(Term.termCode == termCodeUnderReview)
         else:
-            raise ValueError("emailHandler requires either formHistoryKey or academicYearTermCode")
+            raise ValueError("emailHandler requires either formHistoryKey or termCodeUnderReview")
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:

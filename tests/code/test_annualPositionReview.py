@@ -66,7 +66,7 @@ def test_sendAnnualPositionReviewRequests():
 
 
             ################ SENDING REQUESTS ################
-            handler = emailHandler(academicYearTermCode=term.termCode)
+            handler = emailHandler(termCodeUnderReview=term.termCode)
             result = handler.sendAnnualPositionReviewRequests(admin)
 
 

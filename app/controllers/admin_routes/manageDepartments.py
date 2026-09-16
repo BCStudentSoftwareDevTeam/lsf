@@ -102,12 +102,12 @@ def annualPositionReviewRequest():
     """
     currentUser = require_login()
     if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
-        return jsonify({"Success": False}), 403
+        return render_template('errors/403.html'), 403
 
     currentAY, _ = getCurrentAndNextAY()
 
     try:
-        positionReviewEmail = emailHandler(academicYearTermCode=currentAY.termCode)
+        positionReviewEmail = emailHandler(termCodeUnderReview=currentAY.termCode)
         result = positionReviewEmail.sendAnnualPositionReviewRequests(currentUser)
         if result["failedDepartments"]:
             result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
