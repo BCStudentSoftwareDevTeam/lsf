@@ -158,6 +158,7 @@
                            onclick="termStatus({{term.termCode}})"
                            value="{{term.termState}}">{% if term.termState == True %} Open {% elif term.termState == False %} Closed {% endif %}
                          </button>
+                      </td>
                   </tr>
           {% endfor %}
         </tbody>
