@@ -52,8 +52,11 @@ function attachModalToDepartment() {
 
 $("#supervisorModalSelect").on('change', function() {
   let supervisorID = $('#supervisorModalSelect :selected').val()
+  let supervisorFirstName = $('#supervisorModalSelect :selected').data("firstname")
+  let supervisorLastName = $('#supervisorModalSelect :selected').data("lastname")
+
   let departmentID = $('#departmentModalSelect').data('department-id')
-  addSupervisorToDepartment(supervisorID, departmentID, ()=>showSupervisorsInDepartment(departmentID))
+  addSupervisorToDepartment(supervisorID, departmentID, supervisorFirstName, supervisorLastName, ()=>showSupervisorsInDepartment(departmentID))
   
 })
 
@@ -72,6 +75,8 @@ function showSupervisorsInDepartment(departmentID) {
                                 <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
                                   data-supervisor="${supervisors[i]['ID']}" 
                                   data-department="${departmentID}" 
+                                  data-firstname="${supervisorFirstName}" 
+                                  data-lastname="${supervisors[i]['LAST_NAME']}"
                                   id="${supervisors[i]['ID']}-${departmentID}">Remove</div>
                                </span>`)}
       supervisorContent += ("</div>")
@@ -87,16 +92,18 @@ function removeSupervisorFromDepartment () {
   let departmentID = $(`#${this.id}`).data('department')
   let supervisorID = $(`#${this.id}`).data('supervisor')
   let data = {"supervisorID": supervisorID, "departmentID": departmentID}
+  let supervisorfirstName = $(`#${this.id}`).data('firstname')
+  let supervisorLastName = $(`#${this.id}`).data('lastname')
   $.ajax({
     method: "POST",
     url: "/admin/manageDepartments/removeSupervisorFromDepartment",
     data: data,
     success: function(response) {
         if (response == "True") {
-          msgFlash("Supervisor has been removed from department.", 'success')
+          msgFlash(`Supervisor ${supervisorfirstName} ${supervisorLastName} (${supervisorID}) has been removed from department. `, 'success')
           showSupervisorsInDepartment(departmentID)
         } else {
-          msgFlash("Supervisor is not a member of this department.", "warning")
+          msgFlash(`Supervisor ${supervisorfirstName} ${supervisorLastName} is not a member of this department.`, "warning")
         }
     },
     error: function() {
