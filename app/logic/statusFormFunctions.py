@@ -48,50 +48,59 @@ def createLaborStatusForm(student, primarySupervisor, department, term, rspFunct
 
 def createOverloadFormAndFormHistory(rspFunctional, lsf, creatorID, host=None):
     """
-    Creates a 'Labor Status Form' and then if the request needs an overload we create
-    a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form'
+    Creates a 'Labor Status Form,' and then, if the request needs an overload, we create
+    a 'Labor Overload Form'. Emails are sent based on whether the form is an 'Overload Form.'
+
     rspFunctional: a dictionary containing all the data submitted in the LSF page
     lsf: stores the new instance of a labor status form
     creatorID: id of the user submitting the labor status form
     status: status of the labor status form (e.g. Pending, etc.)
     """
+
     # We create a 'Labor Status Form' first, then we check to see if a 'Labor Overload Form'
     # needs to be created
+
     isOverload = rspFunctional.get("isItOverloadForm") == "True"
-    if isOverload:
-        newLaborOverloadForm = OverloadForm.create( studentOverloadReason = None,
-                                                    financialAidApproved = None,
-                                                    financialAidApprover = None,
-                                                    financialAidReviewDate = None,
-                                                    SAASApproved = None,
-                                                    SAASApprover = None,
-                                                    SAASReviewDate = None,
-                                                    laborApproved = None,
-                                                    laborApprover = None,
-                                                    laborReviewDate = None)
-        formOverload = FormHistory.create( formID = lsf.laborStatusFormID,
-                                            historyType = "Labor Overload Form",
-                                            overloadForm = newLaborOverloadForm.overloadFormID,
-                                            createdBy   = creatorID,
-                                            createdDate = date.today(),
-                                            status      = "Pre-Student Approval")
-        email = emailHandler(formOverload.formHistoryID)
-        link = makeThirdPartyLink("student", host, formOverload.formHistoryID)
-        email.LaborOverLoadFormSubmitted(link)
 
-    formHistory = FormHistory.create( formID = lsf.laborStatusFormID,
-                        historyType = "Labor Status Form",
-                        overloadForm = None,
-                        createdBy   = creatorID,
-                        createdDate = date.today(),
-                        status      = "Pre-Student Approval")
+    try:
+        if isOverload:
+            newLaborOverloadForm = OverloadForm.create( studentOverloadReason = None,
+                                                        financialAidApproved = None,
+                                                        financialAidApprover = None,
+                                                        financialAidReviewDate = None,
+                                                        SAASApproved = None,
+                                                        SAASApprover = None,
+                                                        SAASReviewDate = None,
+                                                        laborApproved = None,
+                                                        laborApprover = None,
+                                                        laborReviewDate = None)
+            formOverload = FormHistory.create( formID = lsf.laborStatusFormID,
+                                                historyType = "Labor Overload Form",
+                                                overloadForm = newLaborOverloadForm.overloadFormID,
+                                                createdBy   = creatorID,
+                                                createdDate = date.today(),
+                                                status      = "Pre-Student Approval")
+            email = emailHandler(formOverload.formHistoryID)
+            link = makeThirdPartyLink("student", host, formOverload.formHistoryID)
+            email.LaborOverLoadFormSubmitted(link)
 
-    if not formHistory.formID.termCode.isBreak and not isOverload:
-        email = emailHandler(formHistory.formHistoryID)
-        email.laborStatusFormSubmitted()
+        formHistory = FormHistory.create( formID = lsf.laborStatusFormID,
+                            historyType = "Labor Status Form",
+                            overloadForm = None,
+                            createdBy   = creatorID,
+                            createdDate = date.today(),
+                            status      = "Pre-Student Approval")
 
-    return formHistory
-
+        if not formHistory.formID.termCode.isBreak and not isOverload:
+            email = emailHandler(formHistory.formHistoryID)
+            email.laborStatusFormSubmitted()
+        return formHistory
+    except Exception as e:
+        if isOverload: 
+            print("Error in creating an overload form: ", e)
+        else: 
+            print("Error in creating a form: ", e)
+        raise 
 
 
 def checkForSecondLSFBreak(termCode, student):
@@ -223,13 +232,18 @@ def emailDuringBreak(secondLSFBreak, term):
     """
     Sending emails during break period
     """
-    if term.isBreak:
-        isOneLSF = json.loads(secondLSFBreak)
-        formHistory = FormHistory.get(FormHistory.formHistoryID == isOneLSF['formHistoryID'])
-        email = emailHandler(formHistory.formHistoryID)
-        email.laborStatusFormSubmitted()
-        if(len(isOneLSF["previousSupervisorNames"]) > 1): #Student has more than one lsf. Send email to both supervisors and student
-            email.notifyAdditionalLaborStatusFormSubmittedForBreak()
+    try: 
+        if term.isBreak:
+            isOneLSF = json.loads(secondLSFBreak)
+            formHistory = FormHistory.get(FormHistory.formHistoryID == isOneLSF['formHistoryID'])
+            email = emailHandler(formHistory.formHistoryID)
+            email.laborStatusFormSubmitted()
+            if(len(isOneLSF["previousSupervisorNames"]) > 1): #Student has more than one lsf. Send email to both supervisors and student
+                email.notifyAdditionalLaborStatusFormSubmittedForBreak()
+    except Exception as e:
+        print("Error sending email during break:", e)
+        raise
+        
 
 
 def createOverloadForm(newWeeklyHours, lsf, currentUser, adjustedForm=None,  formHistories=None, host=None):
