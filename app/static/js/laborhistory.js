@@ -68,7 +68,7 @@ function fillPDF(laborStatusKey){
       doc.setFillColor(48, 71, 102)
       doc.rect(20, 90, 550, 18, 'F')
       doc.addImage(logo, 'JPEG', 15, 50, 125, 125) // first integer moves along x axis. Second alog y-axis
-      doc.text('Labor Program Office', 565, 120,'right')
+      doc.text('Berea\'s Work College Program Office', 565, 120,'right')
       doc.setFontType("normal");
       doc.text('Hafer-Gibson Building', 565, 130,'right')
       doc.text('CPO 2180', 565, 140,'right')

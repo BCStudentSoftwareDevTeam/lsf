@@ -12,7 +12,7 @@ emailTemplates = {
             "<strong>@@Supervisor@@</strong> for <strong>@@Student@@</strong>. This is to notify the Labor Department so that a new labor position can be assigned for <strong>@@Student@@</strong>.</p>"
             "<p>&nbsp;</p>"
             "<p>Sincerely,</p>"
-            "<p>Labor Program Office</p>"
+            "<p>Berea's Work College Program Office</p>"
             "<p>labor_program@berea.edu</p>"
             "<p>859-985-3611</p>"
         ),
@@ -29,7 +29,7 @@ emailTemplates = {
             "<p>&nbsp;</p>"
             "<p>You can resubmit the Labor Status Form for the <strong>@@Student@@</strong>.</p>"
             "<p>Sincerely,</p>"
-            "<p>Labor Program Office</p>"
+            "<p>Berea's Work College Program Office</p>"
             "<p>labor_program@berea.edu</p>"
             "<p>859-985-3611</p>",
         ),
@@ -45,7 +45,7 @@ emailTemplates = {
             '<p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for you has expired.</p>'
             '<p>&nbsp;</p>'
             '<p>Please notify your supervisor <strong>@@Supervisor@@</strong> to resubmit the form.</p>'
-            '<p>Sincerely,<br>Labor Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+            '<p>Sincerely,<br>Berea\'s Work College Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
         ), 
         "audience":"Student",
     }
