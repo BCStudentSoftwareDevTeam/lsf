@@ -91,9 +91,9 @@ def managePositions(org, account):
     positions = getPositions(dept)
 
     return render_template('main/managePositions.html',
-                           department=dept,
-                           department_name=dept.DEPT_NAME,
-                           positions=positions
+                           department = dept,
+                           department_name = dept.DEPT_NAME,
+                           positions = positions
                            )
 
 
