@@ -15,6 +15,7 @@ from app.logic.getPositions import getPosition, getPositions, getPositionDescrip
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
 from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts
 from app.logic.search import searchPerson
+from app.logic.getTerms import getTerms
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
 def postionDescription(org, account, positionCode):
@@ -242,11 +243,14 @@ def manageMembers(org=None, account=None):
     if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
         return render_template('errors/403.html'), 403
 
-    activePendingPositionCounts = getActivePendingPositionCounts(dept, g.currentYear) #FIXME replace the g.current year w term manager
+    currentAY = getTerms()[0]
+
+    activePendingPositionCounts = getActivePendingPositionCounts(dept, currentAY)
     departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
 
     return render_template(
         'main/manageMembers.html',
-        members=departmentMembers,
-        department=dept,
+        members = departmentMembers,
+        department = dept,
+        academicYear = currentAY,
     )

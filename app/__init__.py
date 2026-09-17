@@ -1,5 +1,4 @@
 import os
-from datetime import date
 from flask import Flask, g, request, session
 from flask_bootstrap import Bootstrap
 from flask_restful import Api
@@ -88,19 +87,6 @@ def load_openTerm():
         if term:
             session['openTerm'] = model_to_dict(term)
         g.openTerm = term
-        
-def getCurrentYear():
-    today = date.today()
-    year = today.year
-
-    if today.month < 7:
-        return year - 1, year
-
-    return year, year + 1
-        
-@app.before_request
-def load_currentYear():
-    g.currentYear = getCurrentYear()
 
 
 @app.context_processor
