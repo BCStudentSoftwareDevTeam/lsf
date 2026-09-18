@@ -18,8 +18,8 @@ import os
 from datetime import datetime, date
 from app.models.department import Department
 from app.models.term import Term
-from app.models.positionHistory import PositionHistory
 from app.logic.getSupervisors import getSupervisors
+from app.logic.getPositions import markActivePositionsReviewed
 
 
 class emailHandler():
@@ -139,26 +139,11 @@ class emailHandler():
         sentCount = 0
         failedDepartments = []
         for department in departments:
-            # A review is considered "requested" for every active department as soon
-            # as this runs, whether or not there's currently anyone to email - a
-            # department with no supervisors/coordinators assigned is itself worth
-            # surfacing, not silently skipping.
-            existingReview = PositionHistory.get_or_none(
-                PositionHistory.academicYear == self.term,
-                PositionHistory.department == department,
-                PositionHistory.positionCode.is_null(True)
-            )
-            if existingReview:
-                existingReview.requestedOn = datetime.now()
-                existingReview.requestedBy = requestingUser
-                existingReview.save()
-            else:
-                PositionHistory.create(
-                    academicYear=self.term,
-                    department=department,
-                    requestedOn=datetime.now(),
-                    requestedBy=requestingUser
-                )
+            # A review is considered "requested" for every active position in this
+            # department as soon as this runs, whether or not there's currently
+            # anyone to email - a department with no supervisors/coordinators
+            # assigned is itself worth surfacing, not silently skipping.
+            markActivePositionsReviewed(department, self.term, requestingUser)
 
             supervisors, laborCoordinators = getSupervisors(department)
             recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
