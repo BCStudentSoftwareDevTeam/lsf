@@ -720,10 +720,54 @@ function reviewButtonFunctionality() { // Triggred when Review button is clicked
   }
 }
 
+// Shows the department's current allocation status in the Form(s) Submission review
+// modal, so departments can see the impact of their submission before confirming.
+// This is informational only and never blocks submission.
+function fetchAllocationWarning() {
+  $("#allocationWarnings").empty();
+  var student = globalArrayOfStudents[0];
+  if (!student) { return; }
+  var url = "/laborstatusform/allocationwarning/" + student.stuDepartmentORG + "/" +
+            student.stuDepartmentAccount + "/" + student.stuTermCode;
+  $.ajax({
+    method: "GET",
+    url: url,
+    success: function(warning) {
+      renderAllocationWarning(warning);
+    }
+  });
+}
+
+function renderAllocationWarning(w) {
+  if (!w) { return; }
+  var overStyle = 'color:#a94442; font-weight:bold;';
+  var boxClass = w.isOverAllocated ? 'alert-warning' : 'alert-info';
+  var positionsStyle = w.isPositionsOverAllocated ? overStyle : '';
+  var breakHoursStyle = w.isBreakHoursOverAllocated ? overStyle : '';
+  var positionsFlag = w.isPositionsOverAllocated ? ' &#9888; Over allocation' : '';
+  var breakHoursFlag = w.isBreakHoursOverAllocated ? ' &#9888; Over allocation' : '';
+  var bandDetail = '';
+  if (w.overAllocatedBands && w.overAllocatedBands.length > 0) {
+    var bandStrings = w.overAllocatedBands.map(function(b) {
+      return b.label + ' (' + b.used + '/' + b.allocated + ')';
+    });
+    bandDetail = '<br><span style="' + overStyle + '">Over on: ' + bandStrings.join(', ') + '</span>';
+  }
+  var html = '<div class="alert ' + boxClass + '" role="alert">' +
+    '<strong>' + w.departmentName + ' Allocation</strong><br>' +
+    '<span style="' + positionsStyle + '">Positions: ' + w.totalPositionsUsed + ' / ' + w.totalPositionsAllocated +
+    ' allocated (' + w.positionsRemaining + ' remaining)' + positionsFlag + '</span>' + bandDetail + '<br>' +
+    '<span style="' + breakHoursStyle + '">Break Hours: ' + w.breakHoursUsed + ' / ' + w.breakHoursAllocated +
+    ' allocated (' + w.breakHoursRemaining + ' remaining)' + breakHoursFlag + '</span>' +
+    '</div>';
+  $('#allocationWarnings').html(html);
+}
+
 function createModalContent() { // Populates Submit Modal with Student information from the table
   var isBreak = $('#selectedTerm').find('option:selected').data('termbreak');
   modalList = [];
   $("#closeBtn").show();
+  fetchAllocationWarning();
   if (isBreak){
     for (var i = 0; i < globalArrayOfStudents.length; i++) {
       var bigString = "<li>" + globalArrayOfStudents[i].stuName + " | " + globalArrayOfStudents[i].stuPosition + " | " +

@@ -22,6 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
+from app.logic.allocation import getAllocationWarning
 
 
 @main_bp.route('/laborstatusform', methods=['GET'])
@@ -143,6 +144,17 @@ def checkCompliance(department):
     for dept in depts:
         deptDict['Department'] = {'Department Compliance': dept.departmentCompliance}
     return json.dumps(deptDict)
+
+@main_bp.route("/laborstatusform/allocationwarning/<departmentOrg>/<departmentAcct>/<termCode>", methods=["GET"])
+def getAllocationWarningForForm(departmentOrg, departmentAcct, termCode):
+    """ Gets the department's current allocation status for the term being submitted to,
+    shown in the Form(s) Submission review modal so departments can see the impact of
+    their submission before it goes to the Labor Office for approval. """
+    require_login()
+    dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
+    term = Term.get_or_none(Term.termCode == termCode)
+    warning = getAllocationWarning(dept, term) if dept and term else None
+    return jsonify(warning)
 
 @main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<hours>", methods=["GET"])
 def checkTotalHours(termCode, student, hours):
