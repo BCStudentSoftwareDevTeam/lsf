@@ -44,7 +44,7 @@ def getActivePendingPositionCounts(dept, currentAY):
         .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
         .where(
             (LaborStatusForm.department == dept) &
-            (Term.termCode == currentAY.termCode) & #FIXME replace with termcode
+            (Term.termCode == currentAY.termCode) &
             (FormHistory.historyType == "Labor Status Form") &
             (FormHistory.status.in_(["Approved"] + pendingStatuses)) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
