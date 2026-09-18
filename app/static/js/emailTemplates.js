@@ -18,6 +18,24 @@ function getEmailArray() {
   })
 }
 
+function runPrefill(recipient, formType, action) {
+  // Cascades through the selectpickers to populate Form Type, Action, and Purpose
+  // based on the given Recipient/Form Type/Action parameters. Called when the page
+  // loads with query params or from any other context that wants to pre-populate.
+  $("#recipient").val(recipient).selectpicker("refresh");
+  populateFormType();
+
+  if (formType) {
+    $("#formType").val(formType).selectpicker("refresh");
+    populateAction();
+
+    if (action) {
+      $("#action").val(action).selectpicker("refresh");
+      populatePurpose();
+    }
+  }
+}
+
 function prefillFromQueryParams() {
   // Allows deep-linking into this page (e.g. from another admin page's
   // "Edit Email Template" button) with the Recipient/Form Type/Action
@@ -36,19 +54,8 @@ function prefillFromQueryParams() {
   // Running this cascade immediately on page load (unlike a human clicking
   // through the dropdowns) can race ahead of that, so wait for the editor
   // to be ready before touching it.
-  function runPrefill() {
-    $("#recipient").val(recipient).selectpicker("refresh");
-    populateFormType();
-
-    if (formType) {
-      $("#formType").val(formType).selectpicker("refresh");
-      populateAction();
-
-      if (action) {
-        $("#action").val(action).selectpicker("refresh");
-        populatePurpose();
-      }
-    }
+  function onEditorReady() {
+    runPrefill(recipient, formType, action);
   }
 
   // CKEDITOR.instances["editor1"] is registered as soon as CKEDITOR.replace()
@@ -56,13 +63,13 @@ function prefillFromQueryParams() {
   // (that's the "ready" status). Checking mere existence isn't enough here.
   var editor = CKEDITOR.instances["editor1"];
   if (editor && editor.status === "ready") {
-    runPrefill();
+    onEditorReady();
   } else if (editor) {
-    editor.on("instanceReady", runPrefill);
+    editor.on("instanceReady", onEditorReady);
   } else {
     CKEDITOR.on("instanceReady", function(evt) {
       if (evt.editor.name === "editor1") {
-        runPrefill();
+        onEditorReady();
       }
     });
   }
