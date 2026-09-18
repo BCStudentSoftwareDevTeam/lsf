@@ -7,7 +7,7 @@ from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.emailTemplate import EmailTemplate
 from app.models.user import User
-from app.models.positionReview import PositionReview
+from app.models.positionHistory import PositionHistory
 
 
 from app.logic.emailHandler import emailHandler
@@ -35,6 +35,25 @@ def test_sendAnnualPositionReviewRequests():
             emptyDepartment, wasCreated = Department.get_or_create(
                 DEPT_NAME="Empty Department", ACCOUNT="4321", ORG="9998",
                 defaults={"isActive": True}
+            )
+
+            # "Test Department" has one active position that should get marked
+            # reviewed, and one inactive position that should be left alone.
+            activePosition = PositionHistory.create(
+                positionTitle="Lab Assistant", positionCode="TESTPOS1", department=department,
+                status="Active", revisionDate="2020-01-01"
+            )
+            inactivePosition = PositionHistory.create(
+                positionTitle="Retired Role", positionCode="TESTPOS2", department=department,
+                status="Inactive", revisionDate="2020-01-01"
+            )
+
+            # "Empty Department" has no supervisors/coordinators, but does have an
+            # active position - it should still get marked reviewed even though no
+            # email goes out for it.
+            emptyDeptPosition = PositionHistory.create(
+                positionTitle="Office Assistant", positionCode="TESTPOS3", department=emptyDepartment,
+                status="Active", revisionDate="2020-01-01"
             )
 
 
@@ -75,33 +94,32 @@ def test_sendAnnualPositionReviewRequests():
             assert result["departmentCount"] == 2
 
 
-            review = PositionReview.get(
-                PositionReview.academicYear == term,
-                PositionReview.department == department
-            )
-            assert review.requestedBy.userID == admin.userID
-            firstRequestedOn = review.requestedOn
+            activePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS1")
+            assert activePosition.academicYear == term
+            assert activePosition.requestedBy.userID == admin.userID
+            firstRequestedOn = activePosition.requestedOn
+
+            # The inactive position is left untouched - reviewing only stamps active ones.
+            inactivePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS2")
+            assert inactivePosition.requestedBy is None
 
 
-            # A record is still made for Empty Department (the request was made),
-            # it just doesn't count toward sentCount since no email went out.
-            emptyReview = PositionReview.get(
-                PositionReview.academicYear == term,
-                PositionReview.department == emptyDepartment
-            )
-            assert emptyReview.requestedBy.userID == admin.userID
+            # The active position in "Empty Department" is still marked (the request
+            # was made), it just doesn't count toward sentCount since no email went out.
+            emptyDeptPosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS3")
+            assert emptyDeptPosition.requestedBy.userID == admin.userID
 
 
             ################ RE-SENDING SHOULD UPDATE, NOT DUPLICATE ################
             handler.sendAnnualPositionReviewRequests(admin)
 
 
-            reviews = PositionReview.select().where(
-                PositionReview.academicYear == term,
-                PositionReview.department == department
+            positions = PositionHistory.select().where(
+                PositionHistory.department == department,
+                PositionHistory.status == "Active"
             )
-            assert reviews.count() == 1
-            assert reviews.get().requestedOn >= firstRequestedOn
+            assert positions.count() == 1
+            assert positions.get().requestedOn >= firstRequestedOn
 
 
             transaction.rollback()
