@@ -251,6 +251,7 @@ def manageMembers(org=None, account=None):
     return render_template(
         'main/manageMembers.html',
         members = departmentMembers,
+        currentUser = currentUser,
         department = dept,
         academicYear = currentAY,
     )

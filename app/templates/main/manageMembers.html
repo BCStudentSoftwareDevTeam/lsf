@@ -51,6 +51,7 @@
                     <th>Name</th>
                     <th class="no-sorting">Supervisees</th>
                     <th class="no-sorting text-center">Assign Coordinator</th>
+                    {% if  currentUser.isLaborAdmin %}
                     <th class="no-sorting text-center">
                         Supervisor Eligibility
                         <span
@@ -60,6 +61,7 @@
                             class="bi bi-info-circle">
                         </span>
                     </th>
+                    {% endif %}
                     <th class="no-sorting text-center">Remove Member</th>
                 </tr>
             </thead>
@@ -120,7 +122,7 @@
                                 <span class="slider round"></span>
                             </label>
                     </td>
-
+                    {% if currentUser.isLaborAdmin %}
                     <td class="text-center">
                         <label class="switch table-switch">
                                 <input
@@ -135,6 +137,7 @@
                                 <span class="slider round"></span>
                             </label>
                     </td>
+                    {% endif %}
 
                     <td class="text-center remove-member"
                         data-supervisor="{{ member.supervisor.ID }}"
