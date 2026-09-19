@@ -29,7 +29,11 @@ def getAllocationSummary(dept, term):
     if not (dept and term):
         return summary
 
-    allocation = Allocation.get_or_none(Allocation.department == dept, Allocation.termCode == term)
+    # A department can have both a draft and a final allocation for a term; prefer the final one.
+    allocation = (Allocation.select()
+                  .where(Allocation.department == dept, Allocation.termCode == term)
+                  .order_by(Allocation.isFinal.desc())
+                  .first())
     summary['allocation'] = allocation
     if not allocation:
         return summary
@@ -68,6 +72,20 @@ def getAllocationSummary(dept, term):
                                  .scalar()) or 0
 
     return summary
+
+
+def getAllocationWarningForTermCode(dept, termCode):
+    """ Allocations are stored on the academic-year term (ending in 00), so terms like
+    Fall, Spring, or a break term fall back to their academic year's allocation. """
+    if not (dept and termCode):
+        return None
+    ayTermCode = str(termCode)[:-2] + '00'
+    for code in (str(termCode), ayTermCode):
+        term = Term.get_or_none(Term.termCode == code)
+        warning = getAllocationWarning(dept, term) if term else None
+        if warning:
+            return warning
+    return None
 
 
 def getAllocationWarning(dept, term):

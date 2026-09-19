@@ -14,7 +14,7 @@ from app.logic.tracy import Tracy
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.login_manager import DoesNotExist, render_template
-from app.logic.allocation import getAllocationWarning
+from app.logic.allocation import getAllocationWarning, getAllocationWarningForTermCode
 
 
 def saveStatus(new_status, formHistoryIds, currentUser):
@@ -86,13 +86,18 @@ def saveStatus(new_status, formHistoryIds, currentUser):
 
     # After approving, let the admin know right away if any affected department
     # is now over its allocated positions or break hours (informational only).
+    # This is informational only, so a failure here must never turn an already-saved
+    # approval into an error response.
     for dept in approvedDepartments.values():
-        warning = getAllocationWarning(dept, g.openTerm)
-        if warning and warning['isOverAllocated']:
-            messageParts = [f"{b['label']} ({b['used']}/{b['allocated']})" for b in warning['overAllocatedBands']]
-            if warning['isBreakHoursOverAllocated']:
-                messageParts.append(f"break hours ({warning['breakHoursUsed']}/{warning['breakHoursAllocated']})")
-            flash(f"{dept.DEPT_NAME} is now over its allocation for: {', '.join(messageParts)}.", "warning")
+        try:
+            warning = getAllocationWarning(dept, g.openTerm)
+            if warning and warning['isOverAllocated']:
+                messageParts = [f"{b['label']} ({b['used']}/{b['allocated']})" for b in warning['overAllocatedBands']]
+                if warning['isBreakHoursOverAllocated']:
+                    messageParts.append(f"break hours ({warning['breakHoursUsed']}/{warning['breakHoursAllocated']})")
+                flash(f"{dept.DEPT_NAME} is now over its allocation for: {', '.join(messageParts)}.", "warning")
+        except Exception as e:
+            print("Unable to check allocation after approval:", e)
 
     return jsonify({"success": True})
 
@@ -243,7 +248,8 @@ def modal_approval_and_denial_data(formHistoryIdList):
         details_list.append([studentName, deptName, position, str(weeklyHours),str(contractHours), supervisorName])
 
         if dept.departmentID not in allocationWarningsByDept:
-            warning = getAllocationWarning(dept, g.openTerm)
+            # Use the term the form was actually submitted for, not the currently open term.
+            warning = getAllocationWarningForTermCode(dept, lsf.termCode.termCode)
             if warning:
                 allocationWarningsByDept[dept.departmentID] = warning
 

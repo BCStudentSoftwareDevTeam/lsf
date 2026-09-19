@@ -437,7 +437,7 @@ function createStuDict(){
   var supervisorID = $("#selectedSupervisor").find("option:selected").attr("value");
   var department = $("#selectedDepartment").find("option:selected").text();
   var departmentORG = $("#selectedDepartment").find("option:selected").val();
-  var departmentAccount = $("#selectedDepartment").find("option:selected").data("account");
+  var departmentAccount = $("#selectedDepartment").find("option:selected").attr("value-account");
   var termCodeSelected = $("#selectedTerm").find("option:selected").val();
   var isBreak = $("#selectedTerm").find("option:selected").data("termbreak")
   var studentName = $("#student option:selected").text();
@@ -727,13 +727,23 @@ function fetchAllocationWarning() {
   $("#allocationWarnings").empty();
   var student = globalArrayOfStudents[0];
   if (!student) { return; }
-  var url = "/laborstatusform/allocationwarning/" + student.stuDepartmentORG + "/" +
-            student.stuDepartmentAccount + "/" + student.stuTermCode;
+  if (!student.stuDepartmentORG || !student.stuDepartmentAccount || !student.stuTermCode) {
+    console.warn("Allocation warning skipped: missing department org/account or term code", student);
+    return;
+  }
+  var url = "/laborstatusform/allocationwarning/" + encodeURIComponent(student.stuDepartmentORG) + "/" +
+            encodeURIComponent(student.stuDepartmentAccount) + "/" + encodeURIComponent(student.stuTermCode);
   $.ajax({
     method: "GET",
     url: url,
     success: function(warning) {
+      if (!warning) {
+        console.info("No allocation found for this department and term; nothing to display.");
+      }
       renderAllocationWarning(warning);
+    },
+    error: function(xhr, status, error) {
+      console.error("Could not load allocation warning:", xhr.status, error);
     }
   });
 }

@@ -184,6 +184,12 @@ function finalApproval() { //this method changes the status of the lsf from pend
           
           location.reload(true);
       }
+    },
+    error: function(xhr, status, error) {
+      // The server may have already saved some or all forms before failing, so reload
+      // to show the real current state instead of leaving the modal stuck on "Processing...".
+      console.error("Error updating form status:", xhr.status, error);
+      location.reload(true);
     }
   });
 }
