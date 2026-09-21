@@ -114,13 +114,13 @@
                     {% endwith %}
                     <a role="menuitem" href="#"
                       <span id="{{pendingOverloadFormPairs[allForms.formHistoryID]}}"
-                        onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});"
+                        onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}});"
                        aria-label="Pending Overload Form" title="Manage Overload Form" class="glyphicon glyphicon-exclamation-sign fa-lg"
                        style="color:red; top: 10px"></span></a>
                   </td>
                 {% else %}
                   <td> {# APPROVE #}
-                    <input class="approveCheckbox" type='checkbox' id='chk_{{allForms.formHistoryID}}' value="{{allForms.formHistoryID}}" name="check[]" autocomplete="off" />
+                    {% if allForms.formID.studentSupervisee.isActive and allForms.formID.supervisor.isActive %}<input class="approveCheckbox" type='checkbox' id='chk_{{allForms.formHistoryID}}' value="{{allForms.formHistoryID}}" name="check[]" autocomplete="off" /> {%endif%}
                   </td>
                 {% endif %}
               {% endif %}
@@ -144,17 +144,40 @@
               </td>
               <td> {# SUPERVISOR #}
                 {% if allForms.adjustedForm.fieldAdjusted == "supervisor" %}
-                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"><s aria-hidden="true">{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</s></a> <a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
-                  <br/>
-                  <a aria-label="{{allForms.adjustedForm.oldValue['ID']}}" class="hover_indicator">{{allForms.adjustedForm.newValue}} </a><a href="mailto:{{allForms.adjustedForm.oldValue['email']}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator"></a>
+                  <a href="mailto:{{allForms.formID.supervisor.EMAIL}}"> 
+                    <span class="glyphicon glyphicon-envelope mailtoIcon"></span> 
+                  </a>
+                   {% if allForms.formID.supervisor.isActive %} <br> 
+                    <a aria-label="{{allForms.adjustedForm.oldValue['ID']}}" class="hover_indicator">{{allForms.adjustedForm.newValue}} </a>
+                    <a href="mailto:{{allForms.adjustedForm.oldValue['email']}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+                  {% else %} 
+                    <span class=" inactive_badge" tabindex="0" > INACTIVE </span>
+                  {% endif %}
                 {% else %}
-                  <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator">{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}} </a><a href="mailto:{{allForms.formID.supervisor.EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+                    <a aria-label="{{allForms.formID.supervisor.ID}}" class="hover_indicator">
+                      <span >{{allForms.formID.supervisor.FIRST_NAME}} {{allForms.formID.supervisor.LAST_NAME}}</span>
+                    </a> 
+                    {% if allForms.formID.supervisor.isActive %}
+                      <a href="mailto:{{allForms.formID.supervisor.EMAIL}}">
+                        <span class="glyphicon glyphicon-envelope mailtoIcon"></span>
+                      </a>
+                    {% else %}<br>
+                      <span  class=" inactive_badge " tabindex="0" >INACTIVE</span>
+                    {% endif %}
                 {% endif %}
               </td>
               <td> {# STUDENT #}
-                <a aria-label="{{allForms.formID.studentSupervisee.ID}}" class="hover_indicator">{{allForms.formID.studentSupervisee.FIRST_NAME}}  {{allForms.formID.studentSupervisee.LAST_NAME}} </a><a href="mailto:{{allForms.formID.studentSupervisee.STU_EMAIL}}"><span class="glyphicon glyphicon-envelope mailtoIcon"></span></a>
+              <a aria-label="{{ allForms.formID.studentSupervisee.ID }}" class="hover_indicator">{{ allForms.formID.studentSupervisee.FIRST_NAME }} {{ allForms.formID.studentSupervisee.LAST_NAME }} </a>
+               {% if allForms.formID.studentSupervisee.isActive %} 
+                <a href="mailto:{{ allForms.formID.studentSupervisee.STU_EMAIL }}">
+                   <span class="glyphicon glyphicon-envelope mailtoIcon"></span> 
+                </a>
+               {% else %} <br> 
+                <span class="inactive_badge" tabindex="0" > INACTIVE </span>
+               {% endif %}
               </td>
-              <td data-order="{{allForms.formID.jobType}}"> {# POSITON AND WLS #}
+              <td data-order="{{allForms.formID.jobType}}"> {# POSITON AND WLS #} 
                 {% if allForms.adjustedForm.fieldAdjusted == "position"%}
                   <s aria-hidden="true"><a href="#" aria-label="{{allForms.formID.POSN_TITLE}}" class="hover_indicator">{{allForms.formID.POSN_CODE}} ({{allForms.formID.WLS}})</a></s><br/>
                   <a href="#" aria-label="{{allForms.adjustedForm.oldValue}}" class="hover_indicator"> {{allForms.adjustedForm.newValue}}</a><br>
@@ -206,7 +229,7 @@
                     <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1" style="min-width: 100%;">
                     {% if allForms.historyType.historyTypeName == 'Labor Overload Form' %}
-                        <li role="presentation">
+                        <li role="presentation" id ="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}});">
                         {% if currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin %}
                             {% set formurl = "financialAidOverloadApproval" %}
                             {% if currentUser.isSaasAdmin %}
@@ -215,33 +238,45 @@
                             <a role="menuitem" href="/admin/{{formurl}}/{{allForms.formHistoryID}}">Manage</a>
                         {% else %}
                             <a role="menuitem" href="#" >
-                                <span id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span>
+                                <span id="{{allForms.formHistoryID}}" onclick="loadOverloadModal({{allForms.formHistoryID}});">Manage</span>
                             </a>
                         {% endif %}
                         </li>
                     {% elif allForms.historyType.historyTypeName == 'Labor Release Form' %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadReleaseModal({{allForms.formHistoryID}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadReleaseModal('{{allForms.formHistoryID}}');">
+                          Manage
+                          </a></li>
                     {% elif allForms.formHistoryID in pendingOverloadFormPairs %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="{{allForms.formHistoryID}}"
-                                onclick="loadOverloadModal({{pendingOverloadFormPairs[allForms.formHistoryID]}}, {{allForms.formID.laborStatusFormID}});">Manage</span></a></li>
+                          <li role="presentation">
+                          <a id="{{allForms.formHistoryID}}" 
+                          role="menuitem"
+                          href="#"
+                          class="btn btn-secondary"
+                          onclick="event.preventDefault(); loadOverloadModal('{{allForms.formHistoryID}}');">
+                          Manage
+                          </a></li>
                     {% else %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span onclick="insertDenial({{allForms.formHistoryID}})"
+                        <li role="presentation"><a role="menuitem" href="#" class="btn-secondary"
+                               onclick="insertDenial({{allForms.formHistoryID}})"
                                 data-toggle="modal"
-                                data-target="#denyModal">Deny</span></a></li>
+                                data-target="#denyModal">Deny</a></li>
                     {% endif %}
                     {% if allForms.historyType.historyTypeName == 'Labor Status Form' %}
                         <li role="presentation"><a role="menuitem" href="/alterLSF/{{allForms.formID.laborStatusFormID}}">
                             <span >Modify</span></a></li>
                     {% endif %}
-                        <li role="presentation"><a role="menuitem" href="#">
-                          <span id="notes_{{allForms.formHistoryID}}"
-                                onclick="getNotes({{allForms.formID.laborStatusFormID}})"
-                                data-toggle="modal"
-                                data-target="#NotesModal">View Notes</span></a></li>
+                    <li role="presentation">
+                    <a role="menuitem" href="#" class="btn btn-secondary"
+                      id="notes_{{allForms.formHistoryID}}"
+                      onclick="getNotes({{allForms.formID.laborStatusFormID}})"
+                      data-toggle="modal"
+                      data-target="#NotesModal">Notes</a>
+                    </li>
                     {% if formType == 'preStudentApproval' %}
                         <li role="presentation"><a role="menuitem" href="#">
                           <span onclick="skipApproval({{allForms.formID.laborStatusFormID}})"

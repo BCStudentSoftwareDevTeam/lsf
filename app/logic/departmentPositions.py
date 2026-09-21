@@ -1,6 +1,5 @@
 from app.logic.tracy import Tracy, InvalidQueryException
 from app.models.department import Department
-from app.logic.userInsertFunctions import updateDepartmentRecord
 from app.models.Tracy.stuposn import STUPOSN
 
 

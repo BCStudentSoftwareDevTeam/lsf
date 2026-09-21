@@ -33,6 +33,7 @@ Python 3.7+
 2. Ensure your database connection is working by running ```python db_test.py```.
 3. Check your secret_config.yml and make sure you have the necessary config items (check example_secret_config.yml)
 4. Reset your database from the backup ```./reset_database.sh from-backup```.
+   - 4a. If you get an `ERROR 2026 (HY000): TLS/SSL error: self-signed certificate in certificate chain` error, fix it by going into `reset_database.sh` and add `--skip-ssl` after every instance of `-proot`
 5. Change your environment to ```staging```. Before starting the application, run ```export FLASK_ENV=staging```
 
 ## Updating pip dependencies (imports)

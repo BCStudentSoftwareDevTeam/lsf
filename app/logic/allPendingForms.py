@@ -283,6 +283,15 @@ def checkAdjustment(allForms):
             allForms.adjustedForm.oldValue = newPosition.POSN_TITLE
 
         if allForms.adjustedForm.fieldAdjusted == "department":
-            newDepartment = Department.get(Department.ORG==allForms.adjustedForm.newValue)
-            allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
-            allForms.adjustedForm.oldValue = newDepartment.ORG + "-" + newDepartment.ACCOUNT
+            newDepartment = Department.get_or_none(Department.ORG == allForms.adjustedForm.newValue)
+            
+            if newDepartment:
+                allForms.adjustedForm.newValue = newDepartment.DEPT_NAME
+            else:
+                allForms.adjustedForm.newValue = "Unknown - " + allForms.adjustedForm.newValue
+
+            oldDepartment = Department.get_or_none(Department.ORG == allForms.adjustedForm.oldValue)
+            if oldDepartment:
+                allForms.adjustedForm.oldValue = oldDepartment.ORG + "-" + oldDepartment.ACCOUNT
+            else:
+                allForms.adjustedForm.oldValue = "Unknown - " + allForms.adjustedForm.oldValue

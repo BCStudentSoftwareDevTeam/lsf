@@ -252,7 +252,7 @@ function resendApprovalLink(formId) {
   });
 }
 
-function getNotes(formId) {
+function getNotes(formId, formHistoryID) {
   $.ajax({
     type: "GET",
     url: "/admin/getNotes/" + formId,
@@ -286,7 +286,6 @@ function getNotes(formId) {
   });
 }
 
-
 function notesInsert(textareaID, buttonID) {
   var formId = $("#" + textareaID).data('formId');
   var laborNotes = $("#" + textareaID).val(); //this is getting the id of the labor notes text area
@@ -302,7 +301,6 @@ function notesInsert(textareaID, buttonID) {
   $("#" + buttonID).on('submit', function(e) {
     e.preventDefault();
   });
-
 
   $.ajax({
     method: "POST",
@@ -353,21 +351,29 @@ function clearTextArea() { //makes sure that it empties text areas and p tags wh
 
 
 
-function loadOverloadModal(formHistoryID, laborStatusFormID) {
-  /*
-  This method sends an AJAX call to recieve data used to populate
-  the overload modal.
-  */
+function loadOverloadModal(formHistoryID) {
+ /*
+  This method resets the modal content to a loading state to prevent 
+  displaying stale data, then fetches and renders the new form data.*/
+
+  $("#overloadModal").find(".modal-content").html(`<div class="modal-body"><div class="spinner" role="status">
+  <span class="visually-hidden"></span></div></div>`);
   $("#overloadModal").modal("show");
-  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID);
+  $("#overloadModal").find('.modal-content').load('/admin/overloadModal/' + formHistoryID) ;
+  
 }
 
 
-function loadReleaseModal(formHistoryID, laborStatusFormID) {
-  $("#modalRelease").modal("show");
+function loadReleaseModal(formHistoryID) {
+ /*
+  This method resets the modal content to a loading state to prevent 
+  displaying stale data, then fetches and renders the new form data.
+  */
+  $("#modalRelease").find(".modal-content").html(`<div class="modal-body"><div class="spinner" role="status">
+  <span class="visually-hidden"></span></div></div>`)
+  $("#modalRelease").modal("show");  
   $("#modalRelease").find('.modal-content').load('/admin/releaseModal/' + formHistoryID);
-
-
+ 
 }
 
 
@@ -588,7 +594,6 @@ function toggleNotesLog(laborStatusFormID, formHistoryID) {
   }
 }
 
-
 function notesCounter(laborStatusFormID, formHistoryID){
   /*
   This method displays the number of admin notes a Labor
@@ -604,7 +609,7 @@ function notesCounter(laborStatusFormID, formHistoryID){
     success: function(response) {
       var viewNotesID = '#notes_' + String(formHistoryID)
       var modalViewNotesID = '#modalNote_' + String(formHistoryID)
-      $(viewNotesID).html('View Notes (' + response['noteTotal'] + ')')
+      $(viewNotesID).html('Notes (' + response['noteTotal'] + ')')
       $(modalViewNotesID).html('View Notes (' + response['noteTotal'] + ')')
     },
     error: function(request,status,error){

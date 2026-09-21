@@ -25,7 +25,7 @@ def term_Management():
     termsByYear ={}
     for termYear in range(today.year-2, today.year+3):
         createTerms(termYear)
-        termsByYear[termYear] = list(Term.select().where(Term.termCode.cast('char').contains(termYear)))
+        termsByYear[termYear] = list(Term.select().where(Term.termCode.cast('char').contains(str(termYear))))
 
     return render_template( 'admin/termManagement.html',
                              title='Term Management',
@@ -115,22 +115,3 @@ def termStatusCheck():
     except Exception as e:
         print(e)
         return jsonify({"Success": False})
-
-@admin.route('/termManagement/manageEval', methods=['POST'])
-def manageEval():
-    try:
-        rsp = eval(request.data.decode("utf-8")) # This fixes byte indices must be integers or slices error
-        if rsp:
-            term = Term.get(rsp['evalBtn'])
-            if rsp["isMidyear"]:
-                term.isMidyearEvaluationOpen = not term.isMidyearEvaluationOpen
-                term.isFinalEvaluationOpen = False
-            else:
-                term.isFinalEvaluationOpen = not term.isFinalEvaluationOpen
-                term.isMidyearEvaluationOpen = False
-            term.save()
-            flasherInfo = {'termChanged': term.termName}
-            return jsonify(flasherInfo)
-    except Exception as e:
-        print(e)
-        return jsonify({}, 500)

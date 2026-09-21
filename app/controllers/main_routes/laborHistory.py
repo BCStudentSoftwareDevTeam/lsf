@@ -21,7 +21,6 @@ from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
 from app.models.department import Department
-from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
@@ -36,7 +35,7 @@ def laborhistory(id):
         if not currentUser:
             return render_template('errors/403.html'), 403
         student = getOrCreateStudentRecord(bnumber=id)
-        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType)
+        studentForms = (FormHistory.select(FormHistory, LaborStatusForm.termCode, LaborStatusForm.jobType, LaborStatusForm.startDate)
                                    .join_from(FormHistory, LaborStatusForm)
                                    .join_from(FormHistory, HistoryType)
                                    .where(FormHistory.formID.studentSupervisee == student, 
@@ -57,8 +56,9 @@ def laborhistory(id):
 
                 if len(authorizedForms) == 0:
                     return render_template('errors/403.html'), 403
-        
-        authorizedForms = Term.order_by_term(list(authorizedForms.objects()), reverse=True)
+
+        authorizedForms = list(authorizedForms.objects())
+        authorizedForms.sort(key=lambda f: f.startDate or datetime.date.min, reverse=True)
         downloadId = saveFormSearchResult("Labor History", authorizedForms, "studentHistory")
 
         laborStatusFormList = ','.join([str(form.formID.laborStatusFormID) for form in studentForms])
@@ -117,9 +117,8 @@ def downloadFormHistory():
         formSearchResults.searchType,
         requestedLSFs=formHistories, 
         additionalSpreadsheetFields=[],
-        includeEvals=False
     )
-    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, download_name=excel.relativePath.split('/').pop())
 
 @main_bp.route('/laborHistory/modal/<statusKey>', methods=['GET'])
 def populateModal(statusKey):
@@ -142,8 +141,7 @@ def populateModal(statusKey):
                 overload_history = f
             break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
-        student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = datetime.date.today()
+        currentDate = datetime.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
@@ -175,10 +173,11 @@ def populateModal(statusKey):
                     form.adjustedForm.oldValue = oldPosition.POSN_TITLE + " (" + oldPosition.WLS+")"
 
                 if form.adjustedForm.fieldAdjusted == "department":
-                    newDepartment = Department.get(Department.ORG == newValue)
-                    oldDepartment = Department.get(Department.ORG == oldValue)
-                    form.adjustedForm.newValue = newDepartment.DEPT_NAME
-                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME
+                    newDepartment = Department.get_or_none(Department.ORG == newValue)
+                    oldDepartment = Department.get_or_none(Department.ORG == oldValue)
+                    form.adjustedForm.newValue = newDepartment.DEPT_NAME if newDepartment else "Unknown " + newValue
+                    form.adjustedForm.oldValue = oldDepartment.DEPT_NAME if oldDepartment else "Unknown " + oldValue
+
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
