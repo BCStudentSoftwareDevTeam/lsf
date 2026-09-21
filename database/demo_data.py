@@ -988,7 +988,7 @@ FormHistory.insert([{
 LaborStatusForm.insert([{
 
             "laborStatusFormID": 61,
-            "termCode_id": f"202501",
+            "termCode_id": f"{current_year}01",
             "studentName": "Mister Thanksgiving",
             "studentSupervisee_id": "B11231123",
             "supervisor_id": "B12361006",
