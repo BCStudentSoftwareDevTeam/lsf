@@ -4,7 +4,7 @@ from app.models.emailTemplate import EmailTemplate
 
 class EmailTracker(baseModel):
     emailTrackerID     = PrimaryKeyField()
-    formID             = ForeignKeyField(LaborStatusForm)               # foreign key to lsf
+    formID             = ForeignKeyField(LaborStatusForm, on_delete="cascade")               # foreign key to lsf
     date               = DateField()
     recipient          = CharField()
     subject            = CharField(default='')
