@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import re
 import types
 from fpdf import FPDF
@@ -139,9 +139,10 @@ def populateModal(statusKey):
         for f in forms:
             if f.overloadForm is not None:
                 overload_history = f
-            break
+                break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
-        currentDate = datetime.today()
+        student = Student.get(Student.ID == statusForm.studentSupervisee)
+        currentDate = date.today()
         pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
@@ -196,7 +197,7 @@ def populateModal(statusKey):
         except Exception:
             status = None
  
-    
+       
         resp = make_response(render_template('snips/studentHistoryModal.html',
                                             forms = forms,
                                             currentUser = currentUser,
