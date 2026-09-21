@@ -2,6 +2,7 @@
 Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
+from datetime import *
 from app import app
 
 from app.models.Tracy import db
@@ -22,6 +23,7 @@ from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
  
+
 print("Inserting data for demo and testing purposes")
 
 #############################
@@ -217,6 +219,7 @@ for student in (localStudents + bothStudents):
     student['ID'] = student['ID'].strip()
     student['legal_name'] = student['FIRST_NAME'].strip()
     del student['FIRST_NAME']
+    student['isActive'] = True
 
     students.append(student)
 Student.insert_many(students).on_conflict_replace().execute()
@@ -464,6 +467,7 @@ with app.app_context():
 
         staff['legal_name'] = staff['FIRST_NAME'].strip()
         del staff['FIRST_NAME']
+        staff['isActive'] = True
         Supervisor.get_or_create(**staff)
 
     # Add non Supervisor staffs to Tracy db
@@ -620,35 +624,63 @@ print(" * departments added")
 #############################
 # Term
 #############################
-
+today = datetime.now()
+current_year = today.year - (today.month < 8)
 
 terms = [
     {
-        "termCode": f"202000",
-        "termName": f"AY 2020-2021",
-        "termStart": f"2020-08-01",
-        "termEnd": f"2021-05-01",
-        "termState": 0,
-        "primaryCutOff": f"2020-09-01",
-        "adjustmentCutOff": f"2020-10-01",
-    },
-    {
-        "termCode": f"202500",
-        "termName": f"AY 2025-2026",
-        "termStart": f"2025-08-01",
-        "termEnd": f"2026-05-01",
+        "termCode": f"{current_year}00",
+        "termName": f"AY {current_year}-{current_year+1}",
+        "termStart": f"{current_year}-08-01",
+        "termEnd": f"{current_year+1}-05-01",
         "termState": 1,
-        "primaryCutOff": f"2025-09-01",
-        "adjustmentCutOff": f"2025-09-01",
+        "primaryCutOff": f"{current_year}-09-01",
+        "adjustmentCutOff": f"{current_year}-09-01",
     },
     {
-        "termCode": f"202501",
-        "termName": f"Thanksgiving Break 2025",
-        "termStart": f"2025-08-01",
-        "termEnd": f"2026-05-01",
+        "termCode": f"{current_year-1}00",
+        "termName": f"AY {current_year-1}-{current_year}",
+        "termStart": f"{current_year-1}-08-01",
+        "termEnd": f"{current_year}-05-01",
         "termState": 0,
-        "primaryCutOff": f"2025-09-01",
-        "adjustmentCutOff": f"2025-09-01",
+        "primaryCutOff": f"{current_year-1}-09-01",
+        "adjustmentCutOff": f"{current_year-1}-09-01",
+    },
+    {
+        "termCode": f"{current_year-2}00",
+        "termName": f"AY {current_year-2}-{current_year-1}",
+        "termStart": f"{current_year-2}-08-01",
+        "termEnd": f"{current_year-1}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-2}-09-01",
+        "adjustmentCutOff": f"{current_year-2}-09-01",
+    },
+    {
+        "termCode": f"{current_year-3}00",
+        "termName": f"AY {current_year-3}-{current_year-2}",
+        "termStart": f"{current_year-3}-08-01",
+        "termEnd": f"{current_year-2}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-3}-09-01",
+        "adjustmentCutOff": f"{current_year-3}-09-01",
+    },
+    {
+        "termCode": f"{current_year-4}00",
+        "termName": f"AY {current_year-4}-{current_year-3}",
+        "termStart": f"{current_year-4}-08-01",
+        "termEnd": f"{current_year-3}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year-4}-09-01",
+        "adjustmentCutOff": f"{current_year-4}-09-01",
+    },
+    {
+        "termCode": f"{current_year}01",
+        "termName": f"Thanksgiving Break {current_year}",
+        "termStart": f"{current_year}-08-01",
+        "termEnd": f"{current_year+1}-05-01",
+        "termState": 0,
+        "primaryCutOff": f"{current_year}-09-01",
+        "adjustmentCutOff": f"{current_year}-09-01",
         "isBreak": 1,
     },
     {
@@ -739,7 +771,7 @@ print(f" * terms for 2025-2026 added")
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"202000",
+            "termCode_id": f"{current_year}00",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
@@ -749,15 +781,15 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
-            "startDate": f"2020-04-01",
-            "endDate": f"2020-09-01"
+            "startDate": f"{current_year}-04-01",
+            "endDate": f"{current_year}-09-01"
         }]).on_conflict_replace().execute()
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
+            "createdDate": f"{current_year}-04-14",
             "status_id": "Pending"
         }]).on_conflict_replace().execute()
 LaborStatusForm.insert([{
@@ -881,7 +913,7 @@ FormHistory.insert([{
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
-            "termCode_id": f"202500",
+            "termCode_id": f"{current_year}00",
             "studentName": "Test Taker",
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
@@ -891,16 +923,16 @@ LaborStatusForm.insert([{
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
             "weeklyHours": 10,
-            "startDate": f"2025-04-01",
-            "endDate": "2025-09-01"
-        }]).on_conflict_replace().execute()  
+            "startDate": f"{current_year}-04-01",
+            "endDate": f"{current_year}-09-01"
+        }]).on_conflict_replace().execute()
 
 FormHistory.insert([{
             "formHistoryID": 3,
             "formID_id": "3",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
-            "createdDate": f"2025-04-14",
+            "createdDate": f"{current_year}-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()  
 LaborStatusForm.insert([{
@@ -956,7 +988,7 @@ FormHistory.insert([{
 LaborStatusForm.insert([{
 
             "laborStatusFormID": 61,
-            "termCode_id": f"202501",
+            "termCode_id": f"{current_year}01",
             "studentName": "Mister Thanksgiving",
             "studentSupervisee_id": "B11231123",
             "supervisor_id": "B12361006",
@@ -1390,29 +1422,28 @@ notes = [
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
 
-
 ##############################
-# Departement Members 
+# Departement Members
 ##############################
 
-supervisorDepartmentMembers = [
+department_members = [
     {
         "supervisor": "B12361006",
         "department": 1,
         "isCoordinator": True
-    }, 
+    },
 
     {
         "supervisor": "B12365892",
         "department": 1,
         "isCoordinator": False
-    }, 
+    },
 
     {
         "supervisor": "B12365893",
         "department": 1,
         "isCoordinator": False
-    }, 
+    },
 
     {
         "supervisor": "B00763721",
@@ -1452,110 +1483,107 @@ supervisorDepartmentMembers = [
     }
 ]
 
-SupervisorDepartment.insert_many(supervisorDepartmentMembers).on_conflict_replace().execute()
+SupervisorDepartment.insert_many(department_members).on_conflict_replace().execute()
 print(" * Department members added")
-print(f"termCode_id being used: {202500!r}")
 
-############################
-# Allocation Dummy Data:
-###########################
-allocations = [ 
+#############################
+# Allocation
+#############################
+allocations = [
     {
-    "termCode":         202500,
-    "department":       3,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
-    "primary_10":       2,
-    "primary_12":       2,
-    "primary_15":       1,
-    "primary_20":       0,
-    "secondary_5":      1,
-    "secondary_10":     0,
-    "breakHours":       260,
+        "termCode": f"{current_year}00",
+        "department": 1,
+        "isFinal": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Computer Science based on enrollment.",
+        "primary_10": 2,
+        "primary_12": 3,
+        "primary_15": 5,
+        "primary_20": 5,
+        "secondary_5": 2,
+        "secondary_10": 3,
+        "breakHours": 200,
     },
     {
-    "termCode":        202500,
-    "department":       2,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Increase in student enrollment due to exodous from CS department",
-    "primary_10":       4,
-    "primary_12":       2,
-    "primary_15":       7,
-    "primary_20":       4,
-    "secondary_5":      2,
-    "secondary_10":     0,
-    "breakHours":       750,
+        "termCode": f"{current_year}00",
+        "department": 2,
+        "isFinal": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Technology and Applied Design.",
+        "primary_10": 1,
+        "primary_12": 2,
+        "primary_15": 2,
+        "primary_20": 1,
+        "secondary_5": 1,
+        "secondary_10": 1,
+        "breakHours": 100,
     },
     {
-    "termCode":         202500,
-    "department":       1,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "We are hiring more students to help with the increased workload in the department",
-    "primary_10":       5,
-    "primary_12":       6,
-    "primary_15":       4,
-    "primary_20":       1,
-    "secondary_5":      7,
-    "secondary_10":     0,
-    "breakHours":       550,
+        "termCode": f"{current_year}00",
+        "department": 3,
+        "isFinal": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Mathematics.",
+        "primary_10": 1,
+        "primary_12": 1,
+        "primary_15": 1,
+        "primary_20": 0,
+        "secondary_5": 1,
+        "secondary_10": 0,
+        "breakHours": 80,
     },
     {
-    "termCode":         202500,
-    "department":       4,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Downscaling the number of students in the department due to budget cuts",
-    "primary_10":       4,
-    "primary_12":       5,
-    "primary_15":       0,
-    "primary_20":       0,
-    "secondary_5":      1,
-    "secondary_10":     0,
-    "breakHours":       300,
+        "termCode": f"{current_year}00",
+        "department": 4,
+        "isFinal": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for Biology.",
+        "primary_10": 2,
+        "primary_12": 1,
+        "primary_15": 1,
+        "primary_20": 1,
+        "secondary_5": 1,
+        "secondary_10": 1,
+        "breakHours": 120,
     },
     {
-    "termCode":         202500,
-    "department":       5,
-    "isFinal":          False,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
-    "primary_10":       8,
-    "primary_12":       10,
-    "primary_15":       7,
-    "primary_20":       4,
-    "secondary_5":      5,
-    "secondary_10":     1,
-    "breakHours":       900,
+        "termCode": f"{current_year}00",
+        "department": 5,
+        "isFinal": True,
+        "approvedOn": f"{current_year}-08-15",
+        "approvedBy": "B12361006",
+        "justification": "Standard allocation for the Labor Department.",
+        "primary_10": 2,
+        "primary_12": 3,
+        "primary_15": 5,
+        "primary_20": 5,
+        "secondary_5": 2,
+        "secondary_10": 3,
+        "breakHours": 200,
     },
     {
-    "termCode":         202600,
-    "department":       1,
-    "isFinal":          True,
-    "approvedOn":       None,
-    "approvedBy":       None,
-    "justification":    "Maintaining current staffing levels while allowing for moderate growth in student employment opportunities.",
-    "primary_10":       6,
-    "primary_12":       5,
-    "primary_15":       4,
-    "primary_20":       2,
-    "secondary_5":      6,
-    "secondary_10":     1,
-    "breakHours":       600,
+        "termCode":         202600,
+        "department":       1,
+        "isFinal":          True,
+        "approvedOn":       None,
+        "approvedBy":       None,
+        "justification":    "Maintaining current staffing levels while allowing for moderate growth in student employment opportunities.",
+        "primary_10":       6,
+        "primary_12":       5,
+        "primary_15":       4,
+        "primary_20":       2,
+        "secondary_5":      6,
+        "secondary_10":     1,
+        "breakHours":       600,
     },
                 
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
-
-print(" * allocation added")
-
+print(" * allocations added")
 
 #############################
 # Position History
@@ -1673,7 +1701,6 @@ positionHistory = [
         "revisedBy": "Brian Ramsay",
         "department" : 1
     }
-    
 ]
 PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
 print(" * position history added")
