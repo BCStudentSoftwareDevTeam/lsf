@@ -8,4 +8,3 @@ class AdjustedForm(baseModel):
     oldValue                = CharField()
     newValue                = CharField()
     effectiveDate           = DateField()
-   

@@ -179,7 +179,7 @@ above, provided that you also meet all of these conditions:
     a warranty) and that users may redistribute the program under
     these conditions, and telling the user how to view a copy of this
     License.  (Exception: if the Program itself is interactive but
-    does not normally  such an announcement, your work based on
+    does not normally print such an announcement, your work based on
     the Program is not required to print an announcement.)
 
 These requirements apply to the modified work as a whole.  If
