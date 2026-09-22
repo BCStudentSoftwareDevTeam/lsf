@@ -69,7 +69,6 @@ if app.config['use_banner']:
 else:
     print("BANNER: Config says not to use banner. Check your secret_config")
 
-
 # NOT FOR PROD
 #b.insert(FormHistory.get_by_id(39061))
 

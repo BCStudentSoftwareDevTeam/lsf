@@ -8,4 +8,3 @@ with app.app_context():
     print("Sending")
     mail.send(msg)
     print("Sent")
-   
