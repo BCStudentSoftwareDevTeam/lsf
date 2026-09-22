@@ -610,4 +610,3 @@ emailtemps= [
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
 print(" * emailtemplates added")
-
