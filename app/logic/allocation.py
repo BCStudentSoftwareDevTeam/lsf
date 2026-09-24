@@ -104,7 +104,8 @@ def getAllocationWarning(dept, term):
         for fieldName, band in summary['allocationBands'].items()
         if band['used'] > band['allocated']
     ]
-    isPositionsOverAllocated = positionsRemaining < 0 or bool(overAllocatedBands)
+    isPositionsTotalOverAllocated = positionsRemaining < 0
+    isPositionsOverAllocated = isPositionsTotalOverAllocated or bool(overAllocatedBands)
     isBreakHoursOverAllocated = breakHoursRemaining < 0
 
     return {
@@ -113,6 +114,7 @@ def getAllocationWarning(dept, term):
         'totalPositionsUsed': summary['totalPositionsUsed'],
         'positionsRemaining': positionsRemaining,
         'isPositionsOverAllocated': isPositionsOverAllocated,
+        'isPositionsTotalOverAllocated': isPositionsTotalOverAllocated,
         'overAllocatedBands': overAllocatedBands,
         'breakHoursAllocated': summary['allocation'].breakHours,
         'breakHoursUsed': summary['breakHoursUsed'],

@@ -33,6 +33,7 @@ def test_getAllocationWarning_underAllocated():
         assert warning["positionsRemaining"] == 29
         assert warning["overAllocatedBands"] == []
         assert warning["isPositionsOverAllocated"] is False
+        assert warning["isPositionsTotalOverAllocated"] is False
         assert warning["isBreakHoursOverAllocated"] is False
         assert warning["isOverAllocated"] is False
 
@@ -58,6 +59,7 @@ def test_getAllocationWarning_overOnSingleBandOnlyIsStillFlagged():
         assert warning["positionsRemaining"] > 0  # fine in aggregate...
         assert warning["overAllocatedBands"] == [{"label": "10 Hour Primary", "used": 1, "allocated": 0}]
         assert warning["isPositionsOverAllocated"] is True  # ...but flagged for the one over band
+        assert warning["isPositionsTotalOverAllocated"] is False  # the aggregate itself is still fine
         assert warning["isOverAllocated"] is True
 
         transaction.rollback()
@@ -76,6 +78,7 @@ def test_getAllocationWarning_overOnAggregatePositions():
 
         assert warning["positionsRemaining"] == -1
         assert warning["isPositionsOverAllocated"] is True
+        assert warning["isPositionsTotalOverAllocated"] is True
         assert warning["isOverAllocated"] is True
 
         transaction.rollback()
