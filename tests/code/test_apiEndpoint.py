@@ -35,6 +35,7 @@ def test_getLaborInformation():
             response = getLaborInformation(orgCode = 2114, bNumber="B00841417")
 
             responseData = response.get_json()
+            print(responseData['B00841417'])
             assert responseData['B00841417'][0]['jobType'] == "Primary"
             assert responseData['B00841417'][0]['termName'] == "AY 2020-2021"
         

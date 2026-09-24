@@ -1,46 +1,44 @@
 import pytest
 from app.controllers.admin_routes.adminManagement import addAdmin, removeAdmin
 from app.models.user import User
+from app.models import mainDB
 from peewee import DoesNotExist
 
 @pytest.mark.integration
 def test_addAdmin():
-    newAdmin = "pearcej"
-    user = User.get(User.username == newAdmin)
+    with mainDB.atomic() as transaction:
+        newAdmin = "pearcej"
+        user = User.get(User.username == newAdmin)
 
-    # Before adding user as admin
-    assert not user.isLaborAdmin 
-    # Test adding labor admin
-    addAdmin(user, 'labor')
-    assert user.isLaborAdmin
+        # Before adding user as admin
+        assert not user.isLaborAdmin 
+        addAdmin(user, 'Labor')
+        user = User.get(User.username == newAdmin) # check if the db is actually changed
+        assert user.isLaborAdmin
 
-    assert not user.isFinancialAidAdmin
-    # Test adding financial aid admin
-    addAdmin(user, 'finAid')
-    assert user.isFinancialAidAdmin
+        assert not user.isFinancialAidAdmin
+        addAdmin(user, 'FinancialAid')
+        assert user.isFinancialAidAdmin
 
-    assert not user.isSaasAdmin
-    # Test adding saas admin
-    addAdmin(user, 'saas')
-    assert user.isSaasAdmin
+        assert not user.isSaasAdmin
+        addAdmin(user, 'Saas')
+        assert user.isSaasAdmin
 
 @pytest.mark.integration
 def test_removeAdmin():
-    oldAdmin = "pearcej"
-    user = User.get(User.username == oldAdmin)
+    with mainDB.atomic() as transaction:
+        oldAdmin = "pearcej"
+        user = User.get(User.username == oldAdmin)
 
-    # Before removing user as admin
-    assert user.isLaborAdmin
-    # Test removing labor admin
-    removeAdmin(user, 'labor')
-    assert not user.isLaborAdmin
+        assert user.isLaborAdmin
+        removeAdmin(user, 'Labor')
+        user = User.get(User.username == oldAdmin) # check if the db is actually changed
+        assert not user.isLaborAdmin
 
-    assert user.isFinancialAidAdmin
-    # Test removing financial aid admin
-    removeAdmin(user, 'finAid')
-    assert not user.isFinancialAidAdmin
+        assert user.isFinancialAidAdmin
+        removeAdmin(user, 'FinancialAid')
+        assert not user.isFinancialAidAdmin
 
-    assert user.isSaasAdmin
-    # Test removing saas admin
-    removeAdmin(user, 'saas')
-    assert not user.isSaasAdmin
+        assert user.isSaasAdmin
+        removeAdmin(user, 'Saas')
+        assert not user.isSaasAdmin
