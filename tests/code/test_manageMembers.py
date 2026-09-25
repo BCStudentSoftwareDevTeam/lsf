@@ -3,10 +3,7 @@ from datetime import date
 import pytest
 
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
-from app.logic.manageMembers import (
-    attachPositionCounts,
-    getActivePendingPositionCounts,
-)
+from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts
 from app.models import mainDB
 from app.models.department import Department
 from app.models.formHistory import FormHistory
