@@ -102,7 +102,7 @@ def searchMember(query=None):
     """Search supervisors by name or B-number."""
     currentUser = g.currentUser
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor ):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisors = (
@@ -132,9 +132,9 @@ def updateCoordinator():
     supervisorDeptRecord = None
 
     if currentUser.supervisor:
-        supervisorDeptRecord = SupervisorDepartment.get_or_none( (SupervisorDepartment.supervisor == currentUser.supervisor) & (SupervisorDepartment.department == departmentID))
+        supervisorDeptRecord = SupervisorDepartment.get_or_none((SupervisorDepartment.supervisor == currentUser.supervisor) & (SupervisorDepartment.department == departmentID))
 
-    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord ):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
         return render_template('errors/403.html'), 403
 
     member = SupervisorDepartment.get((SupervisorDepartment.supervisor == supervisorID) & (SupervisorDepartment.department == departmentID))
@@ -150,7 +150,7 @@ def updateEligibility():
     """Updates a supervisor's eligibility status."""
     currentUser = g.currentUser
 
-    if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
+    if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
     supervisorID = request.form.get("supervisorID")
