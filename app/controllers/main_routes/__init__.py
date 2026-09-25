@@ -14,6 +14,7 @@ def injectGlobalData():
             'lastStaticUpdate': lastStaticUpdate}
 
 from app.controllers.main_routes import main_routes
+from app.controllers.main_routes import departmentPortal
 from app.controllers.main_routes import laborStatusForm
 from app.controllers.main_routes import laborHistory
 from app.controllers.main_routes import alterLSF
