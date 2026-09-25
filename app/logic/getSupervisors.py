@@ -30,7 +30,7 @@ def buildSupervisorDisplay(supervisor):
 
 def getSupervisorDepartments(dept):
     """Return supervisor-department records for a department."""
-    if dept is None:
+    if not dept:
         return []
 
     return list(
@@ -49,7 +49,7 @@ def getSupervisors(dept):
     for supervisorDepartment in getSupervisorDepartments(dept):
         supervisor = supervisorDepartment.supervisor
 
-        if supervisor is None:
+        if not supervisor:
             continue
 
         supervisorDisplay = buildSupervisorDisplay(supervisor)
