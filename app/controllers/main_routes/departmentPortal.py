@@ -105,10 +105,7 @@ def searchMember(query=None):
     if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
-    supervisors = (
-        searchPerson(Supervisor, query)
-        .order_by(Supervisor.LAST_NAME.asc())
-        .limit(10)
+    supervisors = (searchPerson(Supervisor, query).order_by(Supervisor.LAST_NAME.asc()).limit(10)
     )
 
     supervisors = [buildSupervisorDisplay(supervisor) for supervisor in supervisors]
