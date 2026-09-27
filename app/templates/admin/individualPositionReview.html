@@ -41,8 +41,8 @@
 
     <h3>Description:</h3>
     <section class="position-description ">
-          {%- if sections %}
-            {%- for section in sections %}
+          {%- if new_position_desc  %}
+            {%- for section in new_position_desc  %}
               <div class="section-title">{{ section.sectionTitle |safe }}</div>
               <div id="editor_{{section.order}}" class="description-content editor">{{ section.sectionContent |safe }}</div>
             {%- endfor %}

@@ -149,9 +149,11 @@ def individualpositions(org=None, account=None,poscode=None):
         abort(404)
     
     positiondesc = getPositionDescriptionSections(pos)
+    new_requested_position = getToBeReviewedPosition(pos)
 
     return render_template('admin/individualPositionReview.html',
                             department = dept,
                             position= pos,
-                            sections = positiondesc
+                            sections = positiondesc,
+                            new_position_desc = new_requested_position
     )
