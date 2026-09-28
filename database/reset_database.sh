@@ -9,6 +9,21 @@ fi
 
 cd database;
 
+PRIVATE_DATA_REPO="git@github.com:BCStudentSoftwareDevTeam/prod-data.git"
+DATA_DEST_DIR="prod-data"
+APP="lsf"
+BACKUP_FILE="$DATA_DEST_DIR/$APP/prod-backup.sql"
+
+fetch_backup() {
+    if [ -d "$DATA_DEST_DIR/.git" ]; then
+        git -C "$DATA_DEST_DIR" fetch --quiet --depth 1 origin main &&
+        git -C "$DATA_DEST_DIR" reset --quiet --hard FETCH_HEAD
+    else
+        git clone --quiet --depth 1 --filter=blob:none --sparse "$PRIVATE_DATA_REPO" "$DATA_DEST_DIR" &&
+        git -C "$DATA_DEST_DIR" sparse-checkout set "$APP"
+    fi
+}
+
 PRODUCTION=0
 if [ "`hostname`" == 'lsf.berea.edu' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
@@ -35,10 +50,28 @@ rm -rf lsf_migrations
 rm -rf tracy_migrations
 rm -rf migrations.json
 
+
+if [ $BACKUP -eq 1 ]; then
+    echo "Retrieving latest backup"
+
+    if ! fetch_backup 2>/dev/null; then
+        if [ -f "$BACKUP_FILE" ]; then
+            echo "Warning: couldn't update backup from private repo; using existing local copy."
+        else
+            echo "Warning: couldn't access $PRIVATE_DATA_REPO (do you have access?)."
+            echo "Falling back to an empty database."
+            BACKUP=0
+        fi
+    fi
+fi
+
 echo "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo "  from backup"
-    mysql -u root -proot lsf < prod-backup.sql
+    mysql -u root -proot lsf < $BACKUP_FILE
+
+    echo "Running in-progress.sql"
+    mysql -u root -proot lsf < in-progress.sql
 else
     echo "  empty"
     ./migrate_db.sh
