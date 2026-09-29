@@ -85,6 +85,21 @@ bothStudents = [
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
                 },
+                {
+                "ID":"B00791326",
+                "PIDM":"10",
+                "FIRST_NAME":"Kafui",
+                "LAST_NAME":"Gle",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"glek@berea.edu",
+                "STU_CPO":"200",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
                 ]
 localStudents = [
                 {
