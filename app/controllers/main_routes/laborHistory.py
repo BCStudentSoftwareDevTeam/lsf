@@ -13,7 +13,7 @@ from app.models.formHistory import *
 from app.models.overloadForm import *
 from app.models.department import *
 from app.models.student import Student 
-from app.models.emailTracker import emailTracker
+from app.models.emailTracker import EmailTracker
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
 from app.logic.download import CSVMaker
@@ -232,7 +232,7 @@ def withdraw_form():
             if form.historyType.historyTypeName == "Labor Status Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
                 laborStatusFormToDelete = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == form.formID.laborStatusFormID)
-                emailTrackerToDelete = emailTracker.get(emailTracker.formID == form.formID.laborStatusFormID)
+                emailTrackerToDelete = EmailTracker.get(EmailTracker.formID == form.formID.laborStatusFormID)
                 historyFormToDelete.delete_instance()
                 laborStatusFormToDelete.delete_instance()
                 emailTrackerToDelete.delete_instance()
