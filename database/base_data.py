@@ -46,11 +46,11 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Student@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Status Form has been submitted for you by <strong>@@Creator@@</strong>. Below is the position information for which you have been hired. If you do not accept the terms of this form, you will have 24 hours to contact the supervisor or the Labor Program Office. If we do not hear from you within 24 hours of this notification, it will be determined that it is accepted and the forms will be processed as submitted.</p>
+                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Status Form has been submitted for you by <strong>@@Creator@@</strong>. Below is the position information for which you have been hired. If you do not accept the terms of this form, you will have 24 hours to contact the supervisor or Berea's Work College Program Office. If we do not hear from you within 24 hours of this notification, it will be determined that it is accepted and the forms will be processed as submitted.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, your job will be active to allow for time entry in 24 hours. If at that time, you cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, your job will be active to allow for time entry in 24 hours. If at that time, you cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -61,7 +61,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>''',
 
@@ -74,12 +74,12 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Supervisor@@</strong> and <strong>@@PrimarySupervisor@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is confirmation that the Labor Program Office has received a Labor Status Form for a secondary position by
+                            <p>This email is confirmation that Berea's Work College Program Office has received a Labor Status Form for a secondary position by
                             <strong>@@Supervisor@@</strong> for <strong>@@Student@@</strong>.Please take a moment to read carefully and review the information. Below is the position information for the student you have requested to hire.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -92,7 +92,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -105,12 +105,12 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Supervisor@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is confirmation that the Labor Program Office has received a Labor Status Form by
+                            <p>This email is confirmation that Berea's Work College Program Office has received a Labor Status Form by
                             <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information Below is the position information for the student you have requested to hire.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -123,7 +123,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -137,11 +137,11 @@ emailtemps= [
                 "subject":"Labor Status Form Approved",
                 "body":'''<p>Dear <strong>@@Student@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>A Labor This email is very important. Please take a moment to read carefully and review the information. A Labor Release Form previously submitted for you by <strong>@@Student@@</strong> has been <strong>Approved</strong>. You will no longer be able to record time in this position effective of the release date below. If you have concerns, please contact the supervisor or Labor Program Office immediately.</p>
+                            <p>A Labor This email is very important. Please take a moment to read carefully and review the information. A Labor Release Form previously submitted for you by <strong>@@Student@@</strong> has been <strong>Approved</strong>. You will no longer be able to record time in this position effective of the release date below. If you have concerns, please contact the supervisor or Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> Please allow 24 hours for the position to become active in Tracy (Ultratime). Students should not work until time can be recorded for the position. If at any time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> Please allow 24 hours for the position to become active in Tracy (Ultratime). Students should not work until time can be recorded for the position. If at any time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -154,7 +154,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -170,9 +170,9 @@ emailtemps= [
                             <p>A Labor Status Form previously submitted by you for
                             <strong>@@Student@@</strong> has been <strong>Approved</strong>. Below is the position information for the student that you have hired.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> Please allow 24 hours for the position to become active in Tracy (Ultratime). Students should not work until time can be recorded for the position. If at any time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> Please allow 24 hours for the position to become active in Tracy (Ultratime). Students should not work until time can be recorded for the position. If at any time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -185,7 +185,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -234,7 +234,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -296,9 +296,9 @@ emailtemps= [
                 "subject":"Labor Release Form Approved",
                 "body":'''<p>Dear <strong>@@Student@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Release Form previously submitted for you by <strong>@@Supervisor@@</strong> has been <strong>Approved</strong>. You will no longer be able to record time in this position effective of the release date below. If you have concerns, please contact the supervisor or Labor Program Office immediately.</p>
+                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Release Form previously submitted for you by <strong>@@Supervisor@@</strong> has been <strong>Approved</strong>. You will no longer be able to record time in this position effective of the release date below. If you have concerns, please contact the supervisor or Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -311,7 +311,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -422,14 +422,14 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Student@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Status Form has been submitted for you by <strong>@@Creator@@</strong>. Below is the position information for which you have been hired. If you do not accept the terms of this form, you will have 24 hours to contact the supervisor or the Labor Program Office. If we do not hear from you within 24 hours of this notification, it will be determined that it is accepted and the forms will be processed as submitted.</p>
+                            <p>This email is very important. Please take a moment to read carefully and review the information. A Labor Status Form has been submitted for you by <strong>@@Creator@@</strong>. Below is the position information for which you have been hired. If you do not accept the terms of this form, you will have 24 hours to contact the supervisor or Berea's Work College Program Office. If we do not hear from you within 24 hours of this notification, it will be determined that it is accepted and the forms will be processed as submitted.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, your job will be active to allow for time entry in 24 hours. If at that time, you cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, your job will be active to allow for time entry in 24 hours. If at that time, you cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
                             <p><strong>NOTICE:</strong> There is already another labor position submitted for you. (put position and x hrs/week???)
                              Please be aware that you are only allowed to work maximum of 40 hours per week if you are not taking any classes.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -440,7 +440,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>''',
                 "audience":"Student"
@@ -452,14 +452,14 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Supervisor@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is confirmation that the Labor Program Office has received a Labor Status Form for Break by
+                            <p>This email is confirmation that Berea's Work College Program Office has received a Labor Status Form for Break by
                             <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information Below is the position information for the student you have requested to hire.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
                             Please note that students are only allowed to work for a maximum of 40 hours per week.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -472,7 +472,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -519,15 +519,15 @@ emailtemps= [
                 "subject":"Labor Status Form Received",
                 "body":'''<p>Dear <strong>@@Supervisor@@</strong>,</p>
                             <p>&nbsp;</p>
-                            <p>This email is confirmation that the Labor Program Office has received a Labor Status Form for Break position by
+                            <p>This email is confirmation that Berea's Work College Program Office has received a Labor Status Form for Break position by
                             <strong>@@Creator@@</strong> for <strong>@@Student@@</strong>. Please take a moment to read carefully and review the information Below is the position information for the student you have requested to hire.</p>
                             <p>&nbsp;</p>
-                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact the Labor Program Office immediately.</p>
+                            <p><strong>NOTICE:</strong> This does not mean your position is active to begin work, only a status form has been submitted to await approval. Once this position has been approved, the student’s job will be active to allow for time entry in 24 hours. If at that time, the student cannot clock in, please contact Berea's Work College Program Office immediately.</p>
                             <p>&nbsp;</p>
                             <p><strong>NOTICE:</strong> <strong>@@Student@@</strong> is already working with <strong>@@PreviousSupervisor(s)@@</strong>.
                             Please note that students are only allowed to work for a maximum of 40 hours per week.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
@@ -540,7 +540,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
@@ -556,7 +556,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             Please note that students are only allowed to work for a maximum of 40 hours per week.</p>
                             <p>&nbsp;</p>
-                            <p>If you have any further questions or concerns, contact the Labor Program Office at ext. 3611.</p>
+                            <p>If you have any further questions or concerns, contact Berea's Work College Program Office at ext. 3611.</p>
                             <p>&nbsp;</p>
                             <p><strong>Labor Status Form Information:</strong></p>
                             <p>Student's Name and B-number: <strong>@@Student@@</strong>, <strong>@@StudB@@</strong></p>
@@ -568,7 +568,7 @@ emailtemps= [
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                             <p>Sincerely,</p>
-                            <p>Labor Program Office</p>
+                            <p>Berea's Work College Program Office</p>
                             <p>labor_program@berea.edu</p>
                             <p>859-985-3611</p>
                             ''',
