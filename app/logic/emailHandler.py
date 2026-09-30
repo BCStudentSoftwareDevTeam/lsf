@@ -91,7 +91,7 @@ class emailHandler():
             # is the 'AttributeError' error. We expect to get the 'AttributeError',
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
-                print (e)
+                print(e)
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
@@ -201,20 +201,18 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, newSupervisor=False):
-        self.checkRecipient("Labor Status Form Adjusted For Student",
-                      "Labor Status Form Adjusted For Supervisor")
+    def laborStatusFormAdjusted(self, link: str | None = None, newSupervisor: str | None = None):
+        self.link = link
         if newSupervisor:
             self.supervisorEmail = (Supervisor.get(Supervisor.ID == newSupervisor).EMAIL)
-            self.checkRecipient(False,
-                          "Labor Status Form Adjusted For Supervisor")
+        self.checkRecipient("Labor Status Form Adjusted For Student",
+                      "Labor Status Form Adjusted For Supervisor")
 
     def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
         self.adminName = adminName
         self.adminEmail = adminUserName + "@berea.edu"
         emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification") 
-        self.checkRecipient("Labor Release Form Submitted For Student",
-                      "Labor Release Form Submitted For Supervisor")
+        self.checkRecipient(False, "Labor Release Form Submitted For Supervisor")
         self.sendEmail(emailTemplate, "admin")
 
     def laborReleaseFormApproved(self):
@@ -401,7 +399,6 @@ class emailHandler():
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
-
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
         if self.laborStatusForm.weeklyHours != None:
@@ -430,3 +427,4 @@ class emailHandler():
         if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
             form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)
+ 
