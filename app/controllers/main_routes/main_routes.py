@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from peewee import DoesNotExist
 from functools import reduce
 import operator
 from app.models.department import Department
