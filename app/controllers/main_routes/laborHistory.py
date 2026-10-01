@@ -232,10 +232,10 @@ def withdraw_form():
             if form.historyType.historyTypeName == "Labor Status Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
                 laborStatusFormToDelete = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == form.formID.laborStatusFormID)
-                emailTrackerToDelete = EmailTracker.get(EmailTracker.formID == form.formID.laborStatusFormID)
+                emailTrackersToDelete = EmailTracker.delete().where(EmailTracker.formID == form.formID.laborStatusFormID)
                 historyFormToDelete.delete_instance()
                 laborStatusFormToDelete.delete_instance()
-                emailTrackerToDelete.delete_instance()
+                emailTrackersToDelete.execute()
             elif form.historyType.historyTypeName == "Labor Overload Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
                 overloadFormToDelete = OverloadForm.get(OverloadForm.overloadFormID == form.overloadForm.overloadFormID)
