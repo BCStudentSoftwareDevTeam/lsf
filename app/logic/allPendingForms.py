@@ -227,7 +227,6 @@ def modal_approval_and_denial_data(formHistoryIdList):
         weeklyHours = lsf.weeklyHours
         contractHours = lsf.contractHours
         dept = lsf.department
-        deptName = dept.DEPT_NAME
 
         if formHistory.adjustedForm:
             match formHistory.adjustedForm.fieldAdjusted:
@@ -243,9 +242,8 @@ def modal_approval_and_denial_data(formHistoryIdList):
                     contractHours = formHistory.adjustedForm.newValue
                 case "department":
                     dept = Department.get(Department.ORG==formHistory.adjustedForm.newValue)
-                    deptName = dept.DEPT_NAME
 
-        details_list.append([studentName, deptName, position, str(weeklyHours),str(contractHours), supervisorName])
+        details_list.append([studentName, dept.DEPT_NAME, position, str(weeklyHours),str(contractHours), supervisorName])
 
         if dept.departmentID not in allocationWarningsByDept:
             # Use the term the form was actually submitted for, not the currently open term.
