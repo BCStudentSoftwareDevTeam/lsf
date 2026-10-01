@@ -18,16 +18,13 @@ def generateAdjacentYears(academicYearTermCode=None):
     """
     Generates the current and the following academic years.
     """
-
     currentYear, nextYear = g.currentAY
-
     currentAYCode    = currentYear * 100
     nextAYCode       = nextYear * 100
 
     # Admins can only view the current positions and the requested positions for the incoming academic year
     if academicYearTermCode not in (None, currentAYCode, nextAYCode):
         abort(400)
-
 
     currentAY, _  = Term.get_or_create(
         termCode=currentAYCode,
@@ -40,6 +37,8 @@ def generateAdjacentYears(academicYearTermCode=None):
     )
 
     return (currentAY, nextAY)
+
+    
 def getUsedBreakHours(term):
     """
     Returns the total number of break hours used by each department for a given term.

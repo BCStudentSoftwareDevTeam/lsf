@@ -8,11 +8,7 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.emailTemplate import EmailTemplate
 from app.models.user import User
 from app.models.positionHistory import PositionHistory
-
-
 from app.logic.emailHandler import emailHandler
-
-
 
 
 @pytest.mark.integration

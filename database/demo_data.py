@@ -723,16 +723,14 @@ terms = [
         "adjustmentCutOff": "2026-10-01",
         "isBreak": 1,
     },
-
-
     {
         "termCode": "202602",
         "termName": "Christmas Break 2026",
         "termStart": "2026-08-01",
         "termEnd": "2027-05-01",
         "termState": 0,
-        "primaryCutOff": f"2027-09-01",
-        "adjustmentCutOff": f"2027-09-01",
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
         "isBreak": 1,
     },
     {
