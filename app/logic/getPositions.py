@@ -1,5 +1,6 @@
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
+from peewee import fn
 
 def getActivePositions(dept):
     """
@@ -59,7 +60,25 @@ def getPositionDescriptionSections(position):
 
 
 def getToBeReviewedPosition(dept):
-    return((PositionHistory.select()
-                                .where((PositionHistory.department == dept) &
-                                       (PositionHistory.status == "Requested"))
-                                .order_by(PositionHistory.positionTitle.asc())))
+    
+    """
+    This query first checks with the position history table and creates a copy
+    filtres out the ones that have active position
+
+    the second query checks the oens that have requested on and also the position code existes in has active that way we filter out the ones that have active position and now are requeted fro revision.
+    """
+
+    ActiveRow = PositionHistory.alias()
+
+    has_active = (ActiveRow
+                .select()
+                .where((ActiveRow.positionCode == PositionHistory.positionCode) &
+                        (ActiveRow.status == "Active")))
+
+    requested = (PositionHistory
+                .select()
+                .where((PositionHistory.department == dept) &
+                        (PositionHistory.status == "Requested") &
+                        fn.EXISTS(has_active)))
+
+    return requested
