@@ -59,7 +59,7 @@ $(document).ready(function() {
             success: function() {
                 if (isIneligible) {
                     banBadge.css("visibility", "visible");
-                    $("#flash_container").html("<div class=\"alert alert-warning\" role=\"alert\" id=\"flasher\">" + memberName + " is no longer eligible.</div>");
+                    $("#flash_container").html("<div class=\"alert alert-warning\" role=\"alert\" id=\"flasher\">You have made " + memberName + " is no longer eligible.</div>");
                 } else {
                     banBadge.css("visibility", "hidden");
                     $("#flash_container").html("<div class=\"alert alert-success\" role=\"alert\" id=\"flasher\">" + memberName + " is eligible now.</div>");
