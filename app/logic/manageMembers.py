@@ -8,10 +8,11 @@ from app.models.laborStatusForm import LaborStatusForm
 from app.models.term import Term
 
 
-def getActivePendingPositionCounts(dept, currentAY):
+def getActivePendingPositionCounts(dept, currentTerms):
     """Active/pending primary/secondary position counts for the selected academic year."""
     today = date.today().strftime("%Y-%m-%d")
     pendingStatuses = ["Pending", "Pre-Student Approval"]
+    validTerms = (currentTerms[0].termCode, currentTerms[1].termCode, currentTerms[2].termCode)
 
     releasedFormIds = (
         FormHistory
@@ -44,7 +45,7 @@ def getActivePendingPositionCounts(dept, currentAY):
         .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
         .where(
             (LaborStatusForm.department == dept) &
-            (Term.termCode == currentAY.termCode) &
+            (Term.termCode.in_(validTerms)) &
             (FormHistory.historyType == "Labor Status Form") &
             (FormHistory.status.in_(["Approved"] + pendingStatuses)) &
             (LaborStatusForm.laborStatusFormID.not_in(releasedFormIds))
