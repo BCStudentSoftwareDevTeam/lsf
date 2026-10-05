@@ -10,7 +10,7 @@ from app.models.term import Term
 
 def getActivePendingPositionCounts(dept, currentAY):
     """Active/pending primary/secondary position counts for the selected academic year."""
-    today = date.today()
+    today = date.today().strftime("%Y-%m-%d")
     pendingStatuses = ["Pending", "Pre-Student Approval"]
 
     releasedFormIds = (
