@@ -81,8 +81,8 @@ def departmentPortal(org=None,account=None):
     contracts = getContractedAllocations(currentSemester, dept)
 
 
-    positionsList, posURL = getActivePositions(dept)   
-    
+    positionsList, posURL = getActivePositions(dept)
+
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
