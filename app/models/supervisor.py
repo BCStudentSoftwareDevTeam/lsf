@@ -16,6 +16,7 @@ class Supervisor(baseModel):
     legal_name      = CharField(null=True)
     preferred_name  = CharField(null=True)
     isActive        = BooleanField(default=False)
+    isBanned        = BooleanField(default=False)
 
 
     @property

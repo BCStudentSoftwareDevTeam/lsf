@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{ super() }}
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/individualPositions.js') }}?u={{ lastStaticUpdate }}"></script> -->
+  <link rel="stylesheet" type="text/css" href="/static/css/individualPositions.css?u={{ lastStaticUpdate }}" />
+{% endblock %}
+
+{% block app_content %}
+  <div class="department-header-container">
+    <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/positions/{{ position.positionCode }}/download"
+       class="btn btn-success download-btn"
+       id="downloadDescription">
+      Download Description
+    </a>
+    <h1 class="department-header">{{ department.DEPT_NAME }}</h1>
+  </div>
+
+  <div class="container-fluid position-container">
+    <div class="row">
+      <div class="col-xs-12">
+
+        <div class="position-information">
+          <dl class="row">
+            <dt class="col-sm-3">Position Title:</dt>
+            <dd class="col-sm-9">{{ position.positionTitle }}</dd>
+
+            <dt class="col-sm-3">Position Code:</dt>
+            <dd class="col-sm-9">{{ position.positionCode }}</dd>
+
+            <dt class="col-sm-3">WLS Level:</dt>
+            <dd class="col-sm-9">{{ position.wls }}</dd>
+
+            <dt class="col-sm-3"><div>Status:</div></dt>
+            <dd class="col-sm-9">{{ position.status }}</dd>
+
+            <dt class="col-sm-3">Last Revision Date:</dt>
+            <dd class="col-sm-9">{{ position.revisionDate }}</dd>
+
+            <dt class="col-sm-3">Revised By:</dt>
+            <dd class="col-sm-9">{{ position.revisedBy }}</dd>
+          </dl>
+        </div>
+
+        <h2 class="description-header">Description:</h2>
+        <section class="position-description">
+          {%- if sections %}
+            {%- for section in sections %}
+              <div class="section-title">{{ section.sectionTitle |safe }}</div>
+              <div class="description-content">{{ section.sectionContent |safe }}</div>
+            {%- endfor %}
+          {%- else %}
+            <p class="text-muted">No description available.</p>
+          {%- endif %}
+        </section>
+
+        <div class="row">
+          <div class="col-xs-6 text-left">
+            <a href="javascript:history.back();" class="btn btn-default">
+              Back
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
