@@ -14,7 +14,6 @@ def injectGlobalData():
             'lastStaticUpdate': lastStaticUpdate}
 
 from app.controllers.main_routes import main_routes
-from app.controllers.main_routes import departmentPortal
 from app.controllers.main_routes import laborStatusForm
 from app.controllers.main_routes import laborHistory
 from app.controllers.main_routes import alterLSF
@@ -26,3 +25,4 @@ from app.controllers.main_routes import contributors
 from app.controllers.main_routes import studentLaborEvaluation
 from app.controllers.main_routes import search
 from app.controllers.main_routes import studentResponse
+from app.controllers.main_routes import departmentPortal

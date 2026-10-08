@@ -20,6 +20,7 @@ from app.models.notes import Notes
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
+from app.models.positionDescriptionSection import PositionDescriptionSection
  
 print("Inserting data for demo and testing purposes")
 
@@ -139,7 +140,20 @@ localStudents = [
                 {"ID": "B12345223", "legal_name": "Subaru Natsuki", "isActive": True, "PIDM": "10", "FIRST_NAME": "Subaru", "LAST_NAME": "Natsuki"},
                 {"ID": "B12345003", "legal_name": "Hatsune Miku", "isActive": True, "PIDM": "11", "FIRST_NAME": "Hatsune", "LAST_NAME": "Miku"},
                 {"ID": "B12345772", "legal_name": "Michael Jackson", "isActive": True, "PIDM": "12", "FIRST_NAME": "Michael", "LAST_NAME": "Jackson"},
-                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"}
+                {"ID": "B12345756", "legal_name": "Genji Overwatch", "isActive": True, "PIDM": "13", "FIRST_NAME": "Genji", "LAST_NAME": "Overwatch"},
+                {"ID": "B12345759", "legal_name": "Mister Marlowe", "isActive": True, "PIDM": "14", "FIRST_NAME": "Mister", "LAST_NAME": "Marlowe"},
+                {"ID": "B11231123", "legal_name": "Mister Thanksgiving", "isActive": True, "PIDM": "15", "FIRST_NAME": "Mister", "LAST_NAME": "Thanksgiving"},
+                {"ID": "B12345762", "legal_name": "Alex Carter",      "isActive": True, "PIDM": "16", "FIRST_NAME": "Alex",   "LAST_NAME": "Carter"},
+                {"ID": "B12345763", "legal_name": "Morgan Hayes",     "isActive": True, "PIDM": "17", "FIRST_NAME": "Morgan", "LAST_NAME": "Hayes"},
+                {"ID": "B12345764", "legal_name": "Jordan Brooks",    "isActive": True, "PIDM": "18", "FIRST_NAME": "Jordan", "LAST_NAME": "Brooks"},
+                {"ID": "B12345765", "legal_name": "Taylor Morgan",    "isActive": True, "PIDM": "19", "FIRST_NAME": "Taylor", "LAST_NAME": "Morgan"},
+                {"ID": "B12345766", "legal_name": "Casey Turner",     "isActive": True, "PIDM": "20", "FIRST_NAME": "Casey",  "LAST_NAME": "Turner"},
+                {"ID": "B12345767", "legal_name": "Jamie Foster",     "isActive": True, "PIDM": "21", "FIRST_NAME": "Jamie",  "LAST_NAME": "Foster"},
+                {"ID": "B12345768", "legal_name": "Riley Cooper",     "isActive": True, "PIDM": "22", "FIRST_NAME": "Riley",  "LAST_NAME": "Cooper"},
+                {"ID": "B12345769", "legal_name": "Drew Bennett",     "isActive": True, "PIDM": "23", "FIRST_NAME": "Drew",   "LAST_NAME": "Bennett"},
+                {"ID": "B12345770", "legal_name": "Logan Price",      "isActive": True, "PIDM": "24", "FIRST_NAME": "Logan",  "LAST_NAME": "Price"},
+                {"ID": "B12345771", "legal_name": "Avery Sullivan",   "isActive": True, "PIDM": "25", "FIRST_NAME": "Avery",  "LAST_NAME": "Sullivan"},
+
                 ]
 tracyStudents = [
                 {
@@ -366,6 +380,56 @@ staffs = [
             "CPO":"420",
             "ORG":"2114",
             "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00939230",
+            "PIDM":99,
+            "FIRST_NAME":"Wario",
+            "LAST_NAME" : "Nakazawa",
+            "EMAIL"  :"nakazawaw@berea.edu",
+            "CPO":"666",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00222888",
+            "PIDM":97,
+            "FIRST_NAME":"Test",
+            "LAST_NAME" : "Professor",
+            "EMAIL"  :"professort@berea.edu",
+            "CPO":"500",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00888222",
+            "PIDM":98,
+            "FIRST_NAME":"Demo",
+            "LAST_NAME" : "Z",
+            "EMAIL"  :"demoz@berea.edu",
+            "CPO":"999",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00123112",
+            "PIDM":92,
+            "FIRST_NAME":"Supervisor",
+            "LAST_NAME" : "Test",
+            "EMAIL"  :"tests@berea.edu",
+            "CPO":"888",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
+            },
+            {
+            "ID": "B00012213",
+            "PIDM":91,
+            "FIRST_NAME":"Sib",
+            "LAST_NAME" : "Ztest",
+            "EMAIL"  :"ztests@berea.edu",
+            "CPO":"222",
+            "ORG":"2114",
+            "DEPT_NAME": "Computer Science"
             }
         ]
 
@@ -560,58 +624,22 @@ print(" * departments added")
 
 terms = [
     {
-        "termCode": f"{2025}00",
-        "termName": f"AY {2025}-{2025+1}",
-        "termStart": f"{2025}-08-01",
-        "termEnd": f"{2025+1}-05-01",
+        "termCode": f"202000",
+        "termName": f"AY 2020-2021",
+        "termStart": f"2020-08-01",
+        "termEnd": f"2021-05-01",
         "termState": 0,
-        "primaryCutOff": f"{2025}-09-01",
-        "adjustmentCutOff": f"{2026}-10-01",
+        "primaryCutOff": f"2020-09-01",
+        "adjustmentCutOff": f"2020-10-01",
     },
     {
-        "termCode": f"{2025}00",
-        "termName": f"AY {2025}-{2025+1}",
-        "termStart": f"{2025}-08-01",
-        "termEnd": f"{2025+1}-05-01",
+        "termCode": f"202500",
+        "termName": f"AY 2025-2026",
+        "termStart": f"2025-08-01",
+        "termEnd": f"2026-05-01",
         "termState": 1,
-        "primaryCutOff": f"{2025}-09-01",
-        "adjustmentCutOff": f"{2025}-09-01",
-    },
-    {
-        "termCode": f"{2025-1}00",
-        "termName": f"AY {2025-1}-{2025}",
-        "termStart": f"{2025-1}-08-01",
-        "termEnd": f"{2025}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-1}-09-01",
-        "adjustmentCutOff": f"{2025-1}-09-01",
-    },
-    {
-        "termCode": f"{2025-2}00",
-        "termName": f"AY {2025-2}-{2025-1}",
-        "termStart": f"{2025-2}-08-01",
-        "termEnd": f"{2025-1}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-2}-09-01",
-        "adjustmentCutOff": f"{2025-2}-09-01",
-    },
-    {
-        "termCode": f"{2025-3}00",
-        "termName": f"AY {2025-3}-{2025-2}",
-        "termStart": f"{2025-3}-08-01",
-        "termEnd": f"{2025-2}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-3}-09-01",
-        "adjustmentCutOff": f"{2025-3}-09-01",
-    },
-    {
-        "termCode": f"{2025-4}00",
-        "termName": f"AY {2025-4}-{2025-3}",
-        "termStart": f"{2025-4}-08-01",
-        "termEnd": f"{2025-3}-05-01",
-        "termState": 1,
-        "primaryCutOff": f"{2025-4}-09-01",
-        "adjustmentCutOff": f"{2025-4}-09-01",
+        "primaryCutOff": f"2025-09-01",
+        "adjustmentCutOff": f"2025-09-01",
     },
     {
         "termCode": f"202501",
@@ -619,9 +647,86 @@ terms = [
         "termStart": f"2025-08-01",
         "termEnd": f"2026-05-01",
         "termState": 0,
-        "primaryCutOff": f"{2025}-09-01",
-        "adjustmentCutOff": f"{2025}-09-01",
+        "primaryCutOff": f"2025-09-01",
+        "adjustmentCutOff": f"2025-09-01",
         "isBreak": 1,
+    },
+    {
+        "termCode": "202600",
+        "termName": "AY 2026-2027",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+    },
+    {
+        "termCode": "202601",
+        "termName": "Thanksgiving Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202602",
+        "termName": "Christmas Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202603",
+        "termName": "Spring Break 2027",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202604",
+        "termName": "Fall Break 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+        "isBreak": 1,
+    },
+    {
+        "termCode": "202611",
+        "termName": "Fall 2026",
+        "termStart": "2026-08-01",
+        "termEnd": "2026-12-31",
+        "termState": 0,
+        "primaryCutOff": "2026-09-01",
+        "adjustmentCutOff": "2026-10-01",
+    },
+    {
+        "termCode": "202612",
+        "termName": "Spring 2027",
+        "termStart": "2027-01-01",
+        "termEnd": "2027-05-01",
+        "termState": 0,
+        "primaryCutOff": "2027-02-01",
+        "adjustmentCutOff": "2027-03-01",
+    },
+    {
+        "termCode": "202613",
+        "termName": "Summer 2027",
+        "termStart": "2027-05-02",
+        "termEnd": "2027-08-01",
+        "termState": 0,
+        "primaryCutOff": "2027-06-01",
+        "adjustmentCutOff": "2027-07-01",
+        "isSummer": 1,
     },
 ]
 
@@ -634,30 +739,27 @@ print(f" * terms for 2025-2026 added")
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 2,
-            "termCode_id": f"202500",
+            "termCode_id": f"202000",
             "studentName": "Alex Bryant",
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
-            "department_id": 2,
+            "department_id": 1,
             "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
             "weeklyHours": 10,
             "startDate": f"2020-04-01",
-            "endDate": f"2020-09-01",
-            "studentConfirmation": True
+            "endDate": f"2020-09-01"
         }]).on_conflict_replace().execute()
-
 FormHistory.insert([{
             "formHistoryID": 2,
             "formID_id": "2",
             "historyType_id": "Labor Status Form",
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
-            "status": "Pending"
+            "status_id": "Pending"
         }]).on_conflict_replace().execute()
-
 LaborStatusForm.insert([{
             "laborStatusFormID": 11,
             "termCode_id": f"202500",
@@ -775,7 +877,7 @@ FormHistory.insert([{
             "createdBy_id": 1,
             "createdDate": f"2025-04-14",
             "status": "Approved"
-        }]).on_conflict_replace().execute()    
+        }]).on_conflict_replace().execute()  
 
 LaborStatusForm.insert([{
             "laborStatusFormID": 3,
@@ -801,7 +903,6 @@ FormHistory.insert([{
             "createdDate": f"2025-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()  
-
 LaborStatusForm.insert([{
     
             "laborStatusFormID": 9,
@@ -817,10 +918,453 @@ LaborStatusForm.insert([{
             "contractHours": 15,
             "startDate": f"2025-04-01",
             "endDate": "2025-09-01"
-        
+
         }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 9,
+            "formID_id": "9",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute() 
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 60,
+            "termCode_id": f"202500",
+            "studentName": "Mister Marlowe",
+            "studentSupervisee_id": "B12345759",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Break Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 400,
+            "startDate": f"2025-04-01",
+            "endDate": "2025-09-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 60,
+            "formID_id": "60",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-04-14",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()  
+LaborStatusForm.insert([{
+
+            "laborStatusFormID": 61,
+            "termCode_id": f"202501",
+            "studentName": "Mister Thanksgiving",
+            "studentSupervisee_id": "B11231123",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 1,
+            "POSN_TITLE": "Thanksgiving Worker",
+            "POSN_CODE": "S61412",
+            "contractHours": 50,
+            "startDate": f"2025-11-23",
+            "endDate": "2025-12-01"
+
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 61,
+            "formID_id": "61",
+            "historyType_id": "Labor Status Form",
+            "createdBy_id": 1,
+            "createdDate": f"2025-11-01",
+            "status_id": "Approved"
+        }]).on_conflict_replace().execute()   
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 62,
+    "termCode_id": "202611",
+    "studentName": "Alex Carter",
+    "studentSupervisee_id": "B12345762",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Office Assistant",
+    "POSN_CODE": "S61413",
+    "weeklyHours": 10,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 62,
+    "formID_id": "62",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
 
 
+LaborStatusForm.insert([{
+    "laborStatusFormID": 63,
+    "termCode_id": "202611",
+    "studentName": "Morgan Hayes",
+    "studentSupervisee_id": "B12345763",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Computer Lab Assistant",
+    "POSN_CODE": "S61414",
+    "weeklyHours": 15,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 63,
+    "formID_id": "63",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 64,
+    "termCode_id": "202611",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Help Desk Assistant",
+    "POSN_CODE": "S61415",
+    "weeklyHours": 20,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 64,
+    "formID_id": "64",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 65,
+    "termCode_id": "202611",
+    "studentName": "Taylor Morgan",
+    "studentSupervisee_id": "B12345765",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Reception Assistant",
+    "POSN_CODE": "S61416",
+    "weeklyHours": 5,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 65,
+    "formID_id": "65",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 66,
+    "termCode_id": "202611",
+    "studentName": "Casey Turner",
+    "studentSupervisee_id": "B12345766",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Library Assistant",
+    "POSN_CODE": "S61417",
+    "weeklyHours": 10,
+    "startDate": "2026-08-15",
+    "endDate": "2026-12-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 66,
+    "formID_id": "66",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-08-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 72,
+    "termCode_id": "202612",
+    "studentName": "Alex Carter",
+    "studentSupervisee_id": "B12345762",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Office Assistant",
+    "POSN_CODE": "S61413",
+    "weeklyHours": 10,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 72,
+    "formID_id": "72",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 73,
+    "termCode_id": "202612",
+    "studentName": "Morgan Hayes",
+    "studentSupervisee_id": "B12345763",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Computer Lab Assistant",
+    "POSN_CODE": "S61414",
+    "weeklyHours": 15,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 73,
+    "formID_id": "73",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 74,
+    "termCode_id": "202612",
+    "studentName": "Taylor Morgan",
+    "studentSupervisee_id": "B12345765",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 0,
+    "POSN_TITLE": "Reception Assistant",
+    "POSN_CODE": "S61416",
+    "weeklyHours": 5,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 74,
+    "formID_id": "74",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+# Student had a Fall-only position and receives a new Spring assignment.
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 75,
+    "termCode_id": "202612",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Technology Assistant",
+    "POSN_CODE": "S61423",
+    "weeklyHours": 12,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 75,
+    "formID_id": "75",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 76,
+    "termCode_id": "202600",
+    "studentName": "Jordan Brooks",
+    "studentSupervisee_id": "B12345764",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Secondary",
+    "WLS": 1,
+    "POSN_TITLE": "Technology Assistant",
+    "POSN_CODE": "S61423",
+    "weeklyHours": 10,
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-15"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 76,
+    "formID_id": "76",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-01-05",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+
+# Break Positions
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 67,
+    "termCode_id": "202601",
+    "studentName": "Jamie Foster",
+    "studentSupervisee_id": "B12345767",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Thanksgiving Worker",
+    "POSN_CODE": "S61418",
+    "contractHours": 40,
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-29"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 68,
+    "termCode_id": "202602",
+    "studentName": "Riley Cooper",
+    "studentSupervisee_id": "B12345768",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Christmas Worker",
+    "POSN_CODE": "S61419",
+    "contractHours": 120,
+    "startDate": "2026-12-20",
+    "endDate": "2027-01-03"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 69,
+    "termCode_id": "202603",
+    "studentName": "Drew Bennett",
+    "studentSupervisee_id": "B12345769",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Spring Break Worker",
+    "POSN_CODE": "S61420",
+    "contractHours": 80,
+    "startDate": "2027-03-07",
+    "endDate": "2027-03-14"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 70,
+    "termCode_id": "202604",
+    "studentName": "Logan Price",
+    "studentSupervisee_id": "B12345770",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Fall Break Worker",
+    "POSN_CODE": "S61421",
+    "contractHours": 24,
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-18"
+}]).on_conflict_replace().execute()
+
+LaborStatusForm.insert([{
+    "laborStatusFormID": 71,
+    "termCode_id": "202613",
+    "studentName": "Avery Sullivan",
+    "studentSupervisee_id": "B12345771",
+    "supervisor_id": "B12361006",
+    "department_id": 1,
+    "jobType": "Primary",
+    "WLS": 1,
+    "POSN_TITLE": "Summer Worker",
+    "POSN_CODE": "S61422",
+    "contractHours": 320,
+    "startDate": "2027-05-15",
+    "endDate": "2027-08-01"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 67,
+    "formID_id": "67",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-11-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 68,
+    "formID_id": "68",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-12-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 69,
+    "formID_id": "69",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-02-20",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 70,
+    "formID_id": "70",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2026-10-01",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
+
+FormHistory.insert([{
+    "formHistoryID": 71,
+    "formID_id": "71",
+    "historyType_id": "Labor Status Form",
+    "createdBy_id": 1,
+    "createdDate": "2027-04-15",
+    "status_id": "Approved"
+}]).on_conflict_replace().execute()
 
 #############################
 # admin Notes
@@ -878,6 +1422,31 @@ supervisorDepartmentMembers = [
 
     {
         "supervisor": "B00841417",
+        "department": 1,
+        "isCoordinator": True
+    },
+    {
+        "supervisor": "B00939230",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00888222",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00222888",
+        "department": 1,
+        "isCoordinator": False
+    },
+    {
+        "supervisor": "B00123112",
+        "department": 1,
+        "isCoordinator": True
+    },
+    {
+        "supervisor": "B00012213",
         "department": 1,
         "isCoordinator": True
     }
@@ -966,11 +1535,438 @@ allocations = [
     "secondary_10":     1,
     "breakHours":       900,
     },
+    {
+    "termCode":         202600,
+    "department":       1,
+    "isFinal":          True,
+    "approvedOn":       None,
+    "approvedBy":       None,
+    "justification":    "Maintaining current staffing levels while allowing for moderate growth in student employment opportunities.",
+    "primary_10":       6,
+    "primary_12":       5,
+    "primary_15":       4,
+    "primary_20":       2,
+    "secondary_5":      6,
+    "secondary_10":     1,
+    "breakHours":       600,
+    },
                 
     ]
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
-print("Data insertion complete :)")
+print(" * allocation added")
+
+
+#############################
+# Position History
+#############################
+
+positionHistory = [
+    {
+        "positionTitle": "Student Programmer",
+        "positionCode": "S61407",
+        "status": "Active",
+        "wls": 1,
+        "revisionDate": f"2026-07-01",
+        "revisedBy": "Mario Nakazawa",
+        "department": 1
+    },
+    {
+        
+        "positionTitle": "Research Associate",
+        "positionCode": "S61408",
+        "status": "Active",
+        "wls": 2,
+        "revisionDate": f"2025-09-01",
+        "revisionDate": f"2026-09-01",
+        "revisedBy": "Deanna Wilborne",
+        "department": 1
+    },
+    {
+        "positionTitle": "Labor Workers",
+        "positionCode": "S61409",
+        "status": "Active",
+        "wls": 3,
+        "revisionDate": f"2026-07-01",
+        "revisedBy": "Jasmine Jones",
+        "department": 1
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61411",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-01",
+        "revisedBy": "Scott Heggen",
+        "department": 1
+
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Inactive",
+        "wls":2,
+        "revisionDate" : f"2026-01-01",
+        "revisedBy": "Brian Ramsay",
+        "department" : 3
+    },
+    {
+        "positionTitle": "Teaching Associate",
+        "positionCode": "S61410",
+        "status": "Active",
+        "wls":2,
+        "revisionDate" : f"2026-03-29",
+        "revisedBy": "Jan Pearce",
+        "department" : 3
+    },
+    {
+        "positionTitle": "DUMMY POSITION",
+        "positionCode": "S12345",
+        "status": "Active",
+        "wls":3,
+        "revisionDate" : f"2026-01-23",
+        "revisedBy": "Scott Heggen",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Junior Data Analyst",
+        "positionCode": "S39568",
+        "status": "Active",
+        "wls":4,
+        "revisionDate" : f"2026-01-31",
+        "revisedBy": "Jasmine Jones",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Student Manager",
+        "positionCode": "S74933",
+        "status": "Active",
+        "wls":5,
+        "revisionDate" : f"2026-04-01",
+        "revisedBy": "Deanna Wilborne",
+        "department" : 1
+    },
+    {
+        "positionTitle": "IT Technician",
+        "positionCode": "S94932",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "revisedBy": "Jan Pearce",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Human code generator",
+        "positionCode": "S22222",
+        "status": "Active",
+        "wls":1,
+        "revisionDate" : f"2026-05-03",
+        "revisedBy": "Jan Pearce",
+        "department" : 1
+    },
+    {
+        "positionTitle": "Senior Software Engineer",
+        "positionCode": "S00000",
+        "status": "Active",
+        "wls":6,
+        "revisionDate" : f"2026-05-03",
+        "revisedBy": "Brian Ramsay",
+        "department" : 1
+    }
+    
+]
+PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
+print(" * position history added")
+
+#############################
+# Position Description Sections
+#############################
+
+positionDescriptionSections = [
+    {
+        "position": 2,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>This position is assigned WLS 2 because it supports key research work with moderate technical complexity.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 2,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <p>Provide research assistance, coordinate data collection, and help prepare reports.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 2,
+        "sectionTitle": '<h4>Learning Opportunities</h4>',
+        "sectionContent": """
+            <p>Gain experience with research practices, data management, and academic collaboration.</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 2,
+        "sectionTitle": '<h4>Required Qualifications</h4>',
+        "sectionContent": """
+            <p>Strong communication skills, attention to detail, and ability to work independently.</p>
+        """,
+        "order": 4,
+    },
+    {
+        "position": 3,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 3,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Follow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.</p>
+
+            <h5>B. Communication</h5>
+            <p>Assist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>In collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Attend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>In collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.</p>
+
+            <h5>F. Connect Work Experience to Career and Academic Goals</h5>
+            <p>Train themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).</p>
+
+            <h5>G. Foster Creativity and Innovation in the Workplace</h5>
+            <p>Help high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 3,
+        "sectionTitle": "<h4>Learning Opportunities</h4>",
+        "sectionContent": """
+            <p>List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.</p>
+
+            <h5>A. Peer Instruction and Facilitation</h5>
+            <p>Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)</p>
+
+            <h5>B. Inventory and Resource Management</h5>
+            <p>Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)</p>
+
+            <h5>C. Problem Solving</h5>
+            <p>Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)</p>
+
+            <h5>D. Technical Competency</h5>
+            <p>Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)</p>
+
+            <h5>E. Communication</h5>
+            <p>Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 3,
+        "sectionTitle": "<h4>Required Qualifications</h4>",
+        "sectionContent": """
+            <p>List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.</p>
+
+            <h5>A. Independence</h5>
+            <p>Ability to function with a little more independence and complete tasks with assistance from team leader(s) and other student colleagues.</p>
+
+            <h5>B. Responsiveness to Feedback</h5>
+            <p>Ability to take advice and respond appropriately.</p>
+
+            <h5>C. Mentorship</h5>
+            <p>A desire to mentor and work with high school students.</p>
+
+            <h5>D. Patience</h5>
+            <p>Patience working with unskilled yet energetic high school students.</p>
+
+            <h5>E. Software Knowledge</h5>
+            <p>Some basic understanding of software and debugging.</p>
+        """,
+    "order": 4,
+    },
+    {
+        "position": 4,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 4,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Follow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.</p>
+
+            <h5>B. Communication</h5>
+            <p>Assist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>In collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Attend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>In collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.</p>
+
+            <h5>F. Connect Work Experience to Career and Academic Goals</h5>
+            <p>Train themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).</p>
+
+            <h5>G. Foster Creativity and Innovation in the Workplace</h5>
+            <p>Help high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 4,
+        "sectionTitle": "<h4>Learning Opportunities</h4>",
+        "sectionContent": """
+            <p>List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.</p>
+
+            <h5>A. Peer Instruction and Facilitation</h5>
+            <p>Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)</p>
+
+            <h5>B. Inventory and Resource Management</h5>
+            <p>Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)</p>
+
+            <h5>C. Problem Solving</h5>
+            <p>Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)</p>
+
+            <h5>D. Technical Competency</h5>
+            <p>Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)</p>
+
+            <h5>E. Communication</h5>
+            <p>Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 4,
+        "sectionTitle": "<h4>Required Qualifications</h4>",
+        "sectionContent": """
+            <p>List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.</p>
+
+            <h5>A. Independence</h5>
+            <p>Ability to function with a little more independence and complete tasks with assistance from team leader(s) and other student colleagues.</p>
+
+            <h5>B. Responsiveness to Feedback</h5>
+            <p>Ability to take advice and respond appropriately.</p>
+
+            <h5>C. Mentorship</h5>
+            <p>A desire to mentor and work with high school students.</p>
+
+            <h5>D. Patience</h5>
+            <p>Patience working with unskilled yet energetic high school students.</p>
+
+            <h5>E. Software Knowledge</h5>
+            <p>Some basic understanding of software and debugging.</p>
+        """,
+        "order": 4,
+    },
+    {
+        "position": 5,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes some previous experience on an FRC team or with software/programming. WLS Level 2 is appropriate for first-year students with some relevant experience or those new to Work-Learning-Service. It introduces students to professional habits, collaboration, and foundational technical tasks while providing structured guidance.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 5,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Follow team procedures for robot software development, daily check-ins, and documentation practices. Assist with organizing digital repositories and labeling source code for reuse and version control. Participate in sessions and preparations for outreach or competition in a timely and consistent manner.</p>
+
+            <h5>B. Communication</h5>
+            <p>Assist team leader(s) and student colleagues in planning lessons for FRC high school students, including researching materials and other investigations as assigned by team leader(s) with the goal of learning. Ask questions and provide updates on assigned coding or testing tasks.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>In collaboration with team leader(s), assist the team in supporting other student colleagues, generally overseeing high school students while working on and testing robot code.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Attend the annual FRC competition and assist the team in supporting high school students in explaining and refining their software work and problem-solving skills under pressure. Identify and troubleshoot errors in logic, syntax, or structure in robot software projects.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>In collaboration with team leader(s) and other student colleagues, assist high school students with projects and assignments related to the software of the robot.</p>
+
+            <h5>F. Connect Work Experience to Career and Academic Goals</h5>
+            <p>Train themselves with FIRST/Team resources in software to be competition-ready and prepare for the workforce (material provided by the supervisor).</p>
+
+            <h5>G. Foster Creativity and Innovation in the Workplace</h5>
+            <p>Help high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java) and during collaborative design reviews.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 5,
+        "sectionTitle": '<h4>Learning Opportunities</h4>',
+        "sectionContent": """
+            <p>List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.</p>
+
+            <h5>A. Peer Instruction and Facilitation</h5>
+            <p>Gain experience in tutoring, lab assistance, and student mentorship. (Aligned with: Goals 2, 3, and 6)</p>
+
+            <h5>B. Inventory and Resource Management</h5>
+            <p>Track and maintain computer equipment and supplies effectively (e.g. update software regularly and install new relevant software). (Aligned with: Goals 1 and 4)</p>
+
+            <h5>C. Problem Solving</h5>
+            <p>Debugging code and testing said code on relevant robots. (Aligned with: Goal 3)</p>
+
+            <h5>D. Technical Competency</h5>
+            <p>Advance their knowledge of skills in specific areas of interest, namely software. (Aligned with: Goals 4 and 5)</p>
+
+            <h5>E. Communication</h5>
+            <p>Interaction with faculty, student colleagues, high school students, and their parents in a professional manner. (Aligned with: Goal 2)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 5,
+        "sectionTitle": '<h4>Required Qualifications</h4>',
+        "sectionContent": """
+            <p>List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.</p>
+
+            <h5>A. Independence</h5>
+            <p>Ability to function with a little more independence and complete tasks with assistance from team leader(s) and other student colleagues.</p>
+
+            <h5>B. Responsiveness to Feedback</h5>
+            <p>Ability to take advice and respond appropriately.</p>
+
+            <h5>C. Mentorship</h5>
+            <p>A desire to mentor and work with high school students.</p>
+
+            <h5>D. Patience</h5>
+            <p>Patience working with unskilled yet energetic high school students.</p>
+
+            <h5>E. Software Knowledge</h5>
+            <p>Some basic understanding of software and debugging.</p>
+        """,
+        "order": 4,
+    },
+]
+
+PositionDescriptionSection.insert_many(
+    positionDescriptionSections
+).on_conflict_replace().execute()
+
+print(" * position description sections added")
+
+
 allocation =[
                 {
                     "termCode":f"{2025}00",
@@ -1007,129 +2003,9 @@ Allocation.insert_many(allocation).on_conflict_replace().execute()
 print(" * allocation added")
 
 
-#############################
-# Position History
-#############################
-
-positionHistory = [
-    {
-        "positionTitle": "Student Programmer",
-        "positionCode": "S61407",
-        "status": "Active",
-        "wls": 1,
-        "revisionDate": f"2026-07-01",
-        "description": "",
-        "department": 1
-    },
-    {
-        "positionTitle": "Research Associate",
-        "positionCode": "S61408",
-        "status": "Active",
-        "wls": 2,
-        "revisionDate": f"2026-09-01",
-        "description": "",
-        "department": 1
-    },
-    {
-        "positionTitle": "Labor Workers",
-        "positionCode": "S61409",
-        "status": "Active",
-        "wls": 3,
-        "revisionDate": f"2026-07-01",
-        "description": "",
-        "department": 1
-    },
-    {
-        "positionTitle": "Teaching Associate",
-        "positionCode": "S61411",
-        "status": "Active",
-        "wls":3,
-        "revisionDate" : f"2026-01-01",
-        "description": "",
-        "department" : 1
-
-    },
-    {
-        "positionTitle": "Teaching Associate",
-        "positionCode": "S61410",
-        "status": "Inactive",
-        "wls":2,
-        "revisionDate" : f"2026-01-01",
-        "description": "",
-        "department" : 3
-    },
-    {
-        "positionTitle": "Teaching Associate",
-        "positionCode": "S61410",
-        "status": "Active",
-        "wls":2,
-        "revisionDate" : f"2026-03-29",
-        "description": "",
-        "department" : 3
-    },
-    {
-        "positionTitle": "DUMMY POSITION",
-        "positionCode": "S12345",
-        "status": "Active",
-        "wls":3,
-        "revisionDate" : f"2026-01-23",
-        "description": "",
-        "department" : 1
-    },
-    {
-        "positionTitle": "Junior Data Analyst",
-        "positionCode": "S39568",
-        "status": "Active",
-        "wls":4,
-        "revisionDate" : f"2026-01-31",
-        "description": "",
-        "department" : 1
-    },
-    {
-        "positionTitle": "Student Manager",
-        "positionCode": "S74933",
-        "status": "Active",
-        "wls":5,
-        "revisionDate" : f"2026-04-01",
-        "description": "",
-        "department" : 1
-    },
-    {
-        "positionTitle": "IT Technician",
-        "positionCode": "S94932",
-        "status": "Active",
-        "wls":6,
-        "revisionDate" : f"2026-05-03",
-        "description": "",
-        "department" : 1
-    },
-    {
-        "positionTitle": "Human code generator",
-        "positionCode": "S22222",
-        "status": "Active",
-        "wls":1,
-        "revisionDate" : f"2026-05-03",
-        "description": "",
-        "department" : 1
-    },
-    {
-        "positionTitle": "Senior Software Engineer",
-        "positionCode": "S00000",
-        "status": "Active",
-        "wls":6,
-        "revisionDate" : f"2026-05-03",
-        "description": "",
-        "department" : 1
-    }
-    
-    
-
-]
-PositionHistory.insert_many(positionHistory).on_conflict_replace().execute()
-
 dummy_lsf = [
     {
-        "laborStatusFormID": 4,
+        "laborStatusFormID": 13,
             "termCode_id": f"202500",
             "studentName": "Chris Georgiev",
             "studentSupervisee_id": "B00811617",
@@ -1145,7 +2021,7 @@ dummy_lsf = [
     },
     {
         
-        "laborStatusFormID": 5,
+        "laborStatusFormID": 14,
             "termCode_id": f"202500",
             "studentName": "Julius Fritz",
             "studentSupervisee_id": "B00815474",
@@ -1160,7 +2036,7 @@ dummy_lsf = [
             "endDate": "2025-09-01"
     },
     {
-        "laborStatusFormID": 6,
+        "laborStatusFormID": 15,
             "termCode_id": f"202500",
             "studentName": "Subaru Natsuki",
             "studentSupervisee_id": "B12345223",
@@ -1175,7 +2051,7 @@ dummy_lsf = [
             "endDate": "2025-09-01"
     },
     {
-        "laborStatusFormID": 7,
+        "laborStatusFormID": 16,
             "termCode_id": f"202500",
             "studentName": "Hatsune Miku",
             "studentSupervisee_id": "B12345003",
@@ -1191,7 +2067,7 @@ dummy_lsf = [
 
         },
         {
-        "laborStatusFormID": 8,
+        "laborStatusFormID": 17,
             "termCode_id": f"202500",
             "studentName": "Michael Jackson",
             "studentSupervisee_id": "B12345772",
@@ -1207,4 +2083,3 @@ dummy_lsf = [
         }
 ]
 LaborStatusForm.insert_many(dummy_lsf).on_conflict_replace().execute()
-print(" * position history added")
