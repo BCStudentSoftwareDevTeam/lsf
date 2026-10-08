@@ -82,6 +82,7 @@ def departmentPortal(org=None,account=None):
 
 
     positionsList, posURL = getActivePositions(dept)   
+    
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
