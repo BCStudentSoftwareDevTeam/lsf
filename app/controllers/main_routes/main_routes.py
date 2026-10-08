@@ -81,72 +81,7 @@ def departmentPortal(org=None,account=None):
     contracts = getContractedAllocations(currentSemester, dept)
 
 
-    positionsList, posURL = getActivePositions(dept) 
-
-    return render_template('main/departmentPortal.html', 
-    pos = Tracy().getPositionsFromDepartment(org, account)
-    positions = []
-    if pos == []:
-        positions = ["No Positions for this Department"]
-    else:
-        for i in pos:
-            positions.append(i.POSN_TITLE + "" + "(" + i.WLS + ")")
-
-    staff = Tracy().getSupervisors()
-    supervisors = []
-
-    for i in staff:
-        if i.ORG == org:
-            supervisors.append(i.FIRST_NAME + " " + i.LAST_NAME + " (" + i.EMAIL + ")")
-
-    allocation = None
-    allocationBands = None
-    totalPositionsAllocated = None
-    totalPositionsUsed = None
-    breakHoursUsed = None
-    if dept and g.openTerm:
-        allocation = Allocation.get_or_none(Allocation.department == dept, Allocation.termCode == g.openTerm)
-        if allocation:
-            bandFields = [
-                ('primary_10', 'Primary', 10),
-                ('primary_12', 'Primary', 12),
-                ('primary_15', 'Primary', 15),
-                ('primary_20', 'Primary', 20),
-                ('secondary_5', 'Secondary', 5),
-                ('secondary_10', 'Secondary', 10),
-            ]
-            allocationBands = {}
-            for fieldName, jobType, hours in bandFields:
-                used = (LaborStatusForm
-                        .select()
-                        .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                        .where(LaborStatusForm.department == dept,
-                               LaborStatusForm.termCode == g.openTerm,
-                               LaborStatusForm.jobType == jobType,
-                               LaborStatusForm.weeklyHours == hours,
-                               FormHistory.historyType == "Labor Status Form",
-                               ~(FormHistory.status % "Denied%"))
-                        .distinct()
-                        .count())
-                allocationBands[fieldName] = {'used': used, 'allocated': getattr(allocation, fieldName)}
-
-            totalPositionsAllocated = sum(band['allocated'] for band in allocationBands.values())
-            totalPositionsUsed = sum(band['used'] for band in allocationBands.values())
-
-            # Break hours are tracked on separate break-term rows (e.g. Thanksgiving Break)
-            # that share the same academic year prefix as the open AY term.
-            yearPrefix = str(g.openTerm.termCode)[:-2]
-            breakTermCodes = [t.termCode for t in Term.select().where(Term.isBreak == True)
-                              if str(t.termCode).startswith(yearPrefix)]
-            breakHoursUsed = (LaborStatusForm
-                              .select(fn.SUM(LaborStatusForm.contractHours))
-                              .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                              .where(LaborStatusForm.department == dept,
-                                     LaborStatusForm.termCode.in_(breakTermCodes),
-                                     FormHistory.historyType == "Labor Status Form",
-                                     ~(FormHistory.status % "Denied%"))
-                              .scalar()) or 0
-
+    positionsList, posURL = getActivePositions(dept)   
     return render_template('main/departmentPortal.html',
                            departments = departments,
                            department = dept,
@@ -158,12 +93,6 @@ def departmentPortal(org=None,account=None):
                            currentUser=currentUser,
                            positions = positionsList,
                            posURL = posURL)
-                           allocation = allocation,
-                           allocationBands = allocationBands,
-                           totalPositionsAllocated = totalPositionsAllocated,
-                           totalPositionsUsed = totalPositionsUsed,
-                           breakHoursUsed = breakHoursUsed,
-                           currentTerm = g.openTerm)
 
 @main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
 def allocationTable(org=None, account=None):
