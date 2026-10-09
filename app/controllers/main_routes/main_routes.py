@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn
+from peewee import DoesNotExist
 from functools import reduce
 import operator
 
@@ -7,10 +7,7 @@ from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
-from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
-from app.models.term import Term
-from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
@@ -26,6 +23,7 @@ from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
 from app.logic.getTerms import getTerms, getCurrentSemester
 
+from app.logic.allocation import getAllocationSummary
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -82,6 +80,8 @@ def departmentPortal(org=None,account=None):
 
 
     positionsList, posURL = getActivePositions(dept) 
+    allocationSummary = getAllocationSummary(dept, g.openTerm);
+
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
@@ -93,7 +93,13 @@ def departmentPortal(org=None,account=None):
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,
                            positions = positionsList,
-                           posURL = posURL)
+                           posURL = posURL,
+                           allocations = allocationSummary['allocation'],
+                           allocationBands = allocationSummary['allocationBands'],
+                           totalPositionsAllocated = allocationSummary['totalPositionsAllocated'],
+                           totalPositionsUsed = allocationSummary['totalPositionsUsed'],
+                           breakHoursUsed = allocationSummary['breakHoursUsed'],
+                           currentTerm = g.openTerm)
 
 @main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
 def allocationTable(org=None, account=None):
