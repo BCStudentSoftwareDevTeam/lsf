@@ -18,8 +18,10 @@ class Test_Tracy:
     def test_getStudents(self, tracy):
         with app.app_context():
             students = tracy.getStudents()
-            assert ['Elaheh','Guillermo','Jeremiah','Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
-            assert ['718','300','420','420', '883', '700', '420'] == [s.STU_CPO for s in students]
+            for s in students:
+                assert ['Antonia','Barbara','Elaheh','Guillermo','Jeremiah','Kat', 'Oluwagbayi', 'Test', 'Tyler'] == [s.FIRST_NAME for s in students]
+                assert ['777','118','718','300','420','420', '883', '700', '420'] == [s.STU_CPO for s in students]
+
 
     @pytest.mark.integration
     def test_getStudentFromBNumber(self, tracy):
@@ -57,8 +59,8 @@ class Test_Tracy:
             supervisors = tracy.getSupervisors()
 
             for s in supervisors:
-                assert s.FIRST_NAME in ['Alex','Brian','Jan','Jasmine','Mario','Megan','Scott','Madina']
-                assert s.CPO in ['420','6305','6301','6301','6302','6303','6300']
+                assert s.FIRST_NAME in ['Alex','Brian','Jan','Jasmine','Mario','Wario','Megan','Scott','Madina','Demo','Sib','Supervisor','Test']
+                assert s.CPO in ['666','999','420','6305','6301','6301','6302','6303','6300','222','888','500']
 
     @pytest.mark.integration
     def test_getSupervisorFromID(self, tracy):
