@@ -132,8 +132,7 @@ def populateModal(statusKey):
         if not currentUser:                    # Not logged in
             return render_template('errors/403.html'), 403
 
-        forms = (FormHistory.select().join(LaborReleaseForm, join_type=JOIN.LEFT_OUTER)
-                            .where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
+        forms = (FormHistory.select().where(FormHistory.formID == statusKey).order_by(FormHistory.createdDate.desc(), FormHistory.formHistoryID.desc()))
         # Find the FormHistory entry that has an overloadForm (same as overload modal behavior)
         overload_history = None
         for f in forms:
@@ -141,9 +140,6 @@ def populateModal(statusKey):
                 overload_history = f
                 break
         statusForm = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == statusKey)
-        student = Student.get(Student.ID == statusForm.studentSupervisee)
-        currentDate = date.today()
-        pendingformType = None
         first = True  # temp variable to determine if this is the newest form
         for form in forms:
             if first:
@@ -182,10 +178,6 @@ def populateModal(statusKey):
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
-
-            # Pending release or adjustment forms need the historyType known
-            if (form.releaseForm != None or form.adjustedForm != None) and form.status.statusName == "Pending":
-                pendingformType = form.historyType.historyTypeName
            
         try:
             currentPendingForm = FormHistory.select().where(
@@ -202,8 +194,6 @@ def populateModal(statusKey):
                                             forms = forms,
                                             currentUser = currentUser,
                                             statusForm = statusForm,
-                                            currentDate = currentDate,
-                                            pendingformType = pendingformType,
                                             buttonState = buttonState,
                                             status = status,
                                             overload_history = overload_history,
