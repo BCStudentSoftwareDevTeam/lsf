@@ -16,8 +16,12 @@ BACKUP_FILE="$DATA_DEST_DIR/$APP/prod-backup.sql"
 
 fetch_backup() {
     if [ -d "$DATA_DEST_DIR/.git" ]; then
-        git -C "$DATA_DEST_DIR" fetch --quiet --depth 1 origin main &&
-        git -C "$DATA_DEST_DIR" reset --quiet --hard FETCH_HEAD
+        if [ -d "$DATA_DEST_DIR/$APP" ]; then
+            git -C "$DATA_DEST_DIR" fetch --quiet --depth 1 origin main &&
+            git -C "$DATA_DEST_DIR" reset --quiet --hard FETCH_HEAD
+        else
+            git -C "$DATA_DEST_DIR" sparse-checkout set "$APP"
+        fi
     else
         git clone --quiet --depth 1 --filter=blob:none --sparse "$PRIVATE_DATA_REPO" "$DATA_DEST_DIR" &&
         git -C "$DATA_DEST_DIR" sparse-checkout set "$APP"
