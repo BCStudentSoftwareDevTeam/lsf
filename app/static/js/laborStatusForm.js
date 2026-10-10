@@ -253,7 +253,7 @@ function getDepartment(object, stopSelectRefresh="") { // get department from se
        $("#warningModalText").html("Student with WLS Level 5 or 6 must have at least a 15 hour contract. " +
                                 "These positions require special authorization as specified at " +
                                 "<a href=\"http://catalog.berea.edu/2014-2015/Tools/Work-Learning-Service-Levels-WLS\""+
-                                "target=\"_blank\">The Labor Program Website.</a>");
+                                "target=\"_blank\">Berea's Work College Program Website.</a>");
        $("#warningModal").modal("show");
    }
  }
