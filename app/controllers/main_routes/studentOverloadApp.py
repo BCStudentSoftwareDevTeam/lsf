@@ -144,8 +144,8 @@ def withdrawRequest(formHistoryId):
     # send a withdrawal notification to student and supervisor
     email = emailHandler(formHistory.formHistoryID)
     email.LaborOverloadFormWithdrawn()
-    # TODO should we email financial aid?
-    formHistory.adjustedForm.delete_instance()
+    if formHistory.adjustedForm:
+        formHistory.adjustedForm.delete_instance()
     formHistory.formID.delete_instance()
     #formHistory.delete_instance()
     flash("Overload Request Withdrawn", "success")
