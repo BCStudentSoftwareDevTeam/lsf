@@ -606,7 +606,29 @@ emailtemps= [
                 "subject":"Labor Overload Form Student Reason",
                 "body":'',
                 "audience":"Labor Office"
-                }
+                },
+                {"purpose": "Labor Overload Form Withdrawn For Student",
+                "formType": "Labor Overload Form",
+                "action": "Withdrawn",
+                "subject": "Labor Overload Form Withdrawn",
+                "body": '''<p>Hello&nbsp;<strong>@@Student@@,</strong></p><p>&nbsp;</p>
+                            <p>An overload form previously submitted for you&nbsp;for a position under the supervisrion of <strong>@@Supervisor@@,&nbsp;</strong>has been withdrawn.&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <p>Student Name and B number:&nbsp;<strong>@@Student@@ @@StudB@@</strong></p><p>Position Code:&nbsp;<strong>@@Position@@</strong></p>
+                            <p>WLS:&nbsp;<strong>@@WLS@@</strong></p><p>Department:&nbsp;<strong>@@Department@@</strong></p>
+                            <p>Supervisor:&nbsp;<strong>@@Supervisor@@</strong></p>
+                            <p>Hours:&nbsp;<strong>@@Hours@@</strong></p><p>&nbsp;</p>
+                            <p>If you have any further questions or concerns, contact our Labor Program Office at labor_program@berea.edu or call us at&nbsp;ext. 3611.</p>
+                            <p>Sincerely,&nbsp;</p>
+                            <p>Labor Program Office</p>
+                            <p>labor_program@berea.edu</p>
+                            <p>859-985-3611</p><p>&nbsp;</p>
+                            ''',
+                "audience": "Student"
+                },
+                # {
+
+                # }
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
 print(" * emailtemplates added")
