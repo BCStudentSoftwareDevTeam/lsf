@@ -139,7 +139,7 @@ def studentOverloadApp(formHistoryId):
 @main_bp.route('/studentOverloadApp/withdraw/<formHistoryId>', methods=['POST'])
 def withdrawRequest(formHistoryId):
     formHistory = FormHistory.get_by_id(formHistoryId)
-    if formHistory.historyType_id != "Labor Adjustment Form":
+    if formHistory.historyType_id != "Labor Overload Form":
         abort(500)
     # send a withdrawal notification to student and supervisor
     email = emailHandler(formHistory.formHistoryID)
