@@ -626,9 +626,13 @@ emailtemps= [
                             ''',
                 "audience": "Student"
                 },
-                # {
-
-                # }
+                {"purpose": "Labor Overload Form Withdrawn For Supervisor",
+                "formType": "Labor Overload Form",
+                "action": "Withdrawn",
+                "subject": "Labor Overload Form Withdrawn",
+                "body":'',
+                "audience": "Supervisor"
+                }
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
 print(" * emailtemplates added")
