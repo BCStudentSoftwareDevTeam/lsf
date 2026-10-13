@@ -17,26 +17,14 @@ from app.models.overloadForm import *
 @main_bp.route('/studentOverloadApp/<formHistoryId>', methods=['GET'])
 def studentOverloadApp(formHistoryId):
     currentUser = require_login()
-    #  always load the clicked history entry
-    currentHistory = FormHistory.get_by_id(formHistoryId)
-
-    # STEP 2 — find the real FormHistory row that holds the overloadForm (reason)
-    overloadReasonHistory = (
-        FormHistory
-        .select()
-        .where(
-            (FormHistory.formID == currentHistory.formID) &
-            (FormHistory.overloadForm.is_null(False))
-        )
-        .order_by(FormHistory.createdDate.desc())
-        .first()
+    # Gets the overloadform based on the overload formHistoryId
+    overloadHistory = FormHistory.get_or_none(
+        (FormHistory.formHistoryID == formHistoryId) &
+        (FormHistory.overloadForm.is_null(False))
     )
 
-    # STEP 3 — use whichever record has the overloadForm, fallback to clicked one
-    if overloadReasonHistory:
-        overloadHistory = overloadReasonHistory
-    else:
-        overloadHistory = currentHistory
+    if not overloadHistory: # If no form exists return an error
+        return render_template('errors/404.html'), 404
     if not currentUser.isLaborAdmin:
         if not currentUser:        # Not logged in
             return render_template('errors/403.html'), 403
