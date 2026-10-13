@@ -5,10 +5,10 @@ class PositionHistory(baseModel):
     positionTitle      = CharField()
     positionCode       = CharField()
     department         = ForeignKeyField(Department)
-    status             = CharField() # Active, Inactive, Requested
+    status             = CharField()
     wls                = IntegerField()
     revisionDate       = DateField()
-    revisedBy          = CharField()
+    description        = TextField(default=None)
 
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
