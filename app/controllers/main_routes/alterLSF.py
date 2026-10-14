@@ -159,11 +159,10 @@ def submitAlteredLSF(laborStatusKey):
             for formHistory in formHistoryIDs:
                 try:
                     email = emailHandler(formHistory)
-                    link = makeThirdPartyLink("studentAdjustment", request.host, formHistory)
                     if "supervisor" in fieldsChanged:
-                        email.laborStatusFormAdjusted(link, newSupervisor=fieldsChanged["supervisor"]["newValue"])
+                        email.laborStatusFormAdjusted(fieldsChanged["supervisor"]["newValue"])
                     else:
-                        email.laborStatusFormAdjusted(link)
+                        email.laborStatusFormAdjusted()
                 except Exception as e:
                     print("An error occured while attempting to send adjustment form emails: ", e)
         else:

@@ -201,8 +201,7 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, link: str | None = None, newSupervisor: str | None = None):
-        self.link = link
+    def laborStatusFormAdjusted(self,newSupervisor: str | None = None):
         if newSupervisor:
             self.supervisorEmail = (Supervisor.get(Supervisor.ID == newSupervisor).EMAIL)
         self.checkRecipient("Labor Status Form Adjusted For Student",

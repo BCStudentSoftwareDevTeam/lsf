@@ -259,7 +259,6 @@ emailtemps= [
                     <p>Dear <strong>@@Student@@</strong>,</p>
                     <p>&nbsp;</p>
                     <p>An adjustment has been made to your Labor Status Form by @@Creator@@.</p>
-                    <p>Please follow the attached link to verify information needed for the approval of an adjusted form: <a href="@@link@@">@@link@@</a></p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>Sincerely,</p>
