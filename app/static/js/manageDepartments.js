@@ -1,18 +1,31 @@
 // Opens collapse menu for this page
 $("#admin").collapse("show");
 
+
+
 $(document).ready( function(){
     activeDepartmentsTable = $('#activeDepartmentsTable');
     activeDepartmentsTable.DataTable({
-        pageLength: 25
+        columnDefs: [{
+            targets: '.noSorting',
+            orderable: false  // hiding the sort icon only on the third, fifth and sixth columns 
+        }], 
+      pageLength: 25,
+      language: {
+        lengthMenu: " _MENU_ entries per page"
+      }
     });
 
     
     inactiveDepartmentsTable = $('#inactiveDepartmentsTable');
     inactiveDepartmentsTable.DataTable({
-      pageLength: 25
+      pageLength: 25,
+      language: {
+        lengthMenu: " _MENU_ entries per page"
+      }
     });
     $("#inactiveTable").hide();
+
 
     $("#activeTab").on("click", function() {
       $("#activeTab").addClass("active");
@@ -21,6 +34,7 @@ $(document).ready( function(){
       $("#inactiveTable").hide();
     })
 
+
     $("#inactiveTab").on("click", function() {
       $("#activeTab").removeClass("active");
       $("#activeTable").hide();
@@ -28,14 +42,18 @@ $(document).ready( function(){
       $("#inactiveTable").show();
     })
     
+
     attachModalToDepartment()
     $('.deptTable').on('draw.dt', function() {
       attachModalToDepartment()
     })
+
+    
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
       clearDropdowns()
     })
 });
+
 
 
 function attachModalToDepartment() {
@@ -50,6 +68,7 @@ function attachModalToDepartment() {
 }
 
 
+
 $("#supervisorModalSelect").on('change', function() {
   let supervisorID = $('#supervisorModalSelect :selected').val()
   let departmentID = $('#departmentModalSelect').data('department-id')
@@ -58,52 +77,6 @@ $("#supervisorModalSelect").on('change', function() {
 })
 
   
-
-function showSupervisorsInDepartment(departmentID) {
-    $.ajax({
-    method: "GET",
-    url: `/admin/manageDepartments/${departmentID}`,
-    success: function(supervisors) {   
-      let supervisorContent = '<div class="changing-content">'
-      for (let i=0; i<supervisors.length; i++) {
-        let supervisorFirstName = supervisors[i]['preferred_name'] ? supervisors[i]['preferred_name'] : supervisors[i]['legal_name']
-        supervisorContent += (`<span class="row">
-                                <div class="col-xs-10">${supervisors[i]['ID']} ${supervisorFirstName} ${supervisors[i]['LAST_NAME']}</div>
-                                <div class='btn btn-danger col-auto removeSupervisorFromDepartment' 
-                                  data-supervisor="${supervisors[i]['ID']}" 
-                                  data-department="${departmentID}" 
-                                  id="${supervisors[i]['ID']}-${departmentID}">Remove</div>
-                               </span>`)}
-      supervisorContent += ("</div>")
-      $('#manageSupervisorContent .modal-body .changing-content').replaceWith(supervisorContent)
-      
-      $('#manageDepartmentSupervisorModal').modal('show')
-      $('.removeSupervisorFromDepartment').on('click', removeSupervisorFromDepartment)
-    }
-    })
-  }
-
-function removeSupervisorFromDepartment () {
-  let departmentID = $(`#${this.id}`).data('department')
-  let supervisorID = $(`#${this.id}`).data('supervisor')
-  let data = {"supervisorID": supervisorID, "departmentID": departmentID}
-  $.ajax({
-    method: "POST",
-    url: "/admin/manageDepartments/removeSupervisorFromDepartment",
-    data: data,
-    success: function(response) {
-        if (response == "True") {
-          msgFlash("Supervisor has been removed from department.", 'success')
-          showSupervisorsInDepartment(departmentID)
-        } else {
-          msgFlash("Supervisor is not a member of this department.", "warning")
-        }
-    },
-    error: function() {
-    msgFlash("Failed to remove supervisor, please try again.", "fail")
-    },
-})
-}
 
 function status(department, dept_name) {
 /*
