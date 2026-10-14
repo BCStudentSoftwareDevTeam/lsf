@@ -14,7 +14,7 @@ ALLOCATION_BAND_FIELDS = [
     ('secondary_10', 'Secondary', 10),
 ]
 
-BAND_LABELS = {fieldName: f"{hours} Hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
+BAND_LABELS = {fieldName: f"{hours} hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
 
 
 def getAllocationSummary(dept, term):
