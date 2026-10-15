@@ -347,11 +347,11 @@ class emailHandler():
 
     # Depending on the parameter 'sendTo', this method will send the email either to the Primary, Secondary, or the Student
     def sendEmail(self, template, sendTo):
+        
         formTemplate = template.body
         formTemplate = self.replaceText(formTemplate)
         if sendTo == "student":
-            message = Message(template.subject,
-                recipients=[self.studentEmail])
+            message = Message(template.subject, recipients = [self.studentEmail])
             recipient = 'Student'
         elif sendTo == "secondary":
             if self.term.isBreak:
@@ -363,8 +363,7 @@ class emailHandler():
                     recipients=supervisorEmails)
                 recipient = 'Secondary Supervisor'
             else:
-                message = Message(template.subject,
-                    recipients=[self.supervisorEmail, self.primaryEmail])
+                message = Message(template.subject, recipients=[self.supervisorEmail, self.primaryEmail])
                 recipient = 'Primary Supervisor'
         elif sendTo == "Labor Office":
             message = Message(template.subject,
@@ -375,18 +374,18 @@ class emailHandler():
                 recipients=[self.supervisorEmail])
             recipient = 'Primary Supervisor'
         elif sendTo == "admin":
-            message = Message(template.subject,
-                recipients=[self.adminEmail])
+            message = Message(template.subject, recipients=[self.adminEmail])
             recipient = 'Admin'
         message.html = formTemplate
-
+        
         newEmailTracker = EmailTracker.create(
                         formID = self.laborStatusForm.laborStatusFormID,
                         date = datetime.today().strftime('%Y-%m-%d'),
                         recipient = recipient,
-                        subject = template.subject
+                        template = template.emailTemplateID,
+                        recipientEmails = ",".join(message.recipients),
+                        body = formTemplate,
                         )
-
         self.send(message)
 
     # This method is responsible for replacing the keyword form the templates in the database with the data in the laborStatusForm

@@ -13,6 +13,7 @@ from app.models.formHistory import *
 from app.models.overloadForm import *
 from app.models.department import *
 from app.models.student import Student 
+from app.models.emailTracker import EmailTracker
 from app.controllers.errors_routes.handlers import *
 from app.login_manager import require_login
 from app.logic.download import CSVMaker
@@ -20,7 +21,6 @@ from app.logic.buttonStatus import ButtonStatus
 from app.logic.tracy import Tracy
 from app.models.supervisor import Supervisor
 from app.models.department import Department
-from app.models.studentLaborEvaluation import StudentLaborEvaluation
 from app.models.formHistory import FormHistory
 from app.logic.tracy import Tracy
 from app.logic.userInsertFunctions import getOrCreateStudentRecord
@@ -117,9 +117,8 @@ def downloadFormHistory():
         formSearchResults.searchType,
         requestedLSFs=formHistories, 
         additionalSpreadsheetFields=[],
-        includeEvals=False
     )
-    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, attachment_filename=excel.relativePath.split('/').pop())
+    return send_file(excel.relativePath, mimetype='text/csv', as_attachment=True, download_name=excel.relativePath.split('/').pop())
 
 @main_bp.route('/laborHistory/modal/<statusKey>', methods=['GET'])
 def populateModal(statusKey):
@@ -233,8 +232,10 @@ def withdraw_form():
             if form.historyType.historyTypeName == "Labor Status Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
                 laborStatusFormToDelete = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == form.formID.laborStatusFormID)
+                emailTrackersToDelete = EmailTracker.delete().where(EmailTracker.formID == form.formID.laborStatusFormID)
                 historyFormToDelete.delete_instance()
                 laborStatusFormToDelete.delete_instance()
+                emailTrackersToDelete.execute()
             elif form.historyType.historyTypeName == "Labor Overload Form":
                 historyFormToDelete = FormHistory.get(FormHistory.formHistoryID == form.formHistoryID)
                 overloadFormToDelete = OverloadForm.get(OverloadForm.overloadFormID == form.overloadForm.overloadFormID)

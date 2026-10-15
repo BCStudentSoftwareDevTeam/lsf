@@ -17,6 +17,7 @@ from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.notes import Notes
+from app.models.emailTracker import EmailTracker
 
 print("Inserting data for demo and testing purposes")
 
@@ -82,6 +83,21 @@ bothStudents = [
                 "ADVISOR":"Jan Pearce",
                 "STU_EMAIL":"makindeo@berea.edu",
                 "STU_CPO":"883",
+                "LAST_POSN":"TA",
+                "LAST_SUP_PIDM":"7"
+                },
+                {
+                "ID":"B00791326",
+                "PIDM":"10",
+                "FIRST_NAME":"Kafui",
+                "LAST_NAME":"Gle",
+                "CLASS_LEVEL":"Junior",
+                "ACADEMIC_FOCUS":"Computer Science",
+                "MAJOR":"Computer Science",
+                "PROBATION":"0",
+                "ADVISOR":"Jan Pearce",
+                "STU_EMAIL":"glek@berea.edu",
+                "STU_CPO":"200",
                 "LAST_POSN":"TA",
                 "LAST_SUP_PIDM":"7"
                 },
@@ -609,3 +625,18 @@ notes = [
        ]
 Notes.insert_many(notes).on_conflict_replace().execute()
 print(" * laborOfficeNotes added")
+
+
+#############################
+# Creates an emailTracker
+#############################
+EmailTracker.insert([{
+            "emailTrackerID": 1000000,
+            "formID": 2,
+            "date": "2026-06-18",
+            "recipient": "Julius Fritz",
+            "subject": "Labor Status Form Approved",
+            "template": 4,
+            "recipientEmails": "fritzj2@berea.edu",
+            "body": "super secret text that you cant read"
+        }]).on_conflict_replace().execute()

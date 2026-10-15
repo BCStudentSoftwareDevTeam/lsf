@@ -6,5 +6,6 @@ venv/
 *.swp
 *.swo
 old/
+database/prod-data
 secret_config.yaml
 geckodriver.log
