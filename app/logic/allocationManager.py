@@ -15,7 +15,7 @@ ALLOCATION_BAND_FIELDS = [
     ('secondary_10', 'Secondary', 10),
 ]
 
-BAND_LABELS = {fieldName: f"{hours} hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
+band_labels = {fieldName: f"{hours} hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
 
 
 def getAllocation(termCode: int, dept: int, isFinal = True):
@@ -240,7 +240,7 @@ def getAllocationWarning(dept, term):
     # one specific hour-band (e.g. over on 10-hour Primary but under on others),
     # so each band needs to be checked individually, not just the aggregate total.
     overAllocatedBands = [
-        {'label': BAND_LABELS[fieldName], 'used': band['used'], 'allocated': band['allocated']}
+        {'label': band_labels[fieldName], 'used': band['used'], 'allocated': band['allocated']}
         for fieldName, band in summary['allocationBands'].items()
         if band['used'] > band['allocated']
     ]
