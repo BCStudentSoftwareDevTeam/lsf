@@ -20,7 +20,7 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
-from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations, getAllocationSummary
+from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
 from app.logic.getTerms import getTerms, getCurrentSemester
 
 
@@ -78,8 +78,7 @@ def departmentPortal(org=None,account=None):
     contracts = getContractedAllocations(currentSemester, dept)
 
 
-    positionsList, posURL = getActivePositions(dept) 
-    allocationSummary = getAllocationSummary(dept, g.openTerm);
+    positionsList, posURL = getActivePositions(dept)
 
 
     return render_template('main/departmentPortal.html', 
@@ -92,13 +91,7 @@ def departmentPortal(org=None,account=None):
                            laborCoordinators=laborCoordinators,
                            currentUser=currentUser,
                            positions = positionsList,
-                           posURL = posURL,
-                           allocations = allocationSummary['allocation'],
-                           allocationBands = allocationSummary['allocationBands'],
-                           totalPositionsAllocated = allocationSummary['totalPositionsAllocated'],
-                           totalPositionsUsed = allocationSummary['totalPositionsUsed'],
-                           breakHoursUsed = allocationSummary['breakHoursUsed'],
-                           currentTerm = g.openTerm)
+                           posURL = posURL)
 
 @main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
 def allocationTable(org=None, account=None):

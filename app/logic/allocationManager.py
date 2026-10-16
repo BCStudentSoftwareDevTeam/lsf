@@ -1,5 +1,3 @@
-from peewee import JOIN
-
 from app.models.allocation import Allocation
 from app.models.laborStatusForm import * 
 from app.models.department import *
@@ -14,8 +12,6 @@ ALLOCATION_BAND_FIELDS = [
     ('secondary_5', 'Secondary', 5),
     ('secondary_10', 'Secondary', 10),
 ]
-
-band_labels = {fieldName: f"{hours} hour {jobType}" for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
 
 
 def getAllocation(termCode: int, dept: int, isFinal = True):
@@ -127,12 +123,12 @@ def getContractedAllocations(termCode: int, dept: int):
 
     # dictionary definition:
     usedPositions = {
-    "used_10": countContracts("Primary", "10", termCode, dept),
-    "used_12": countContracts("Primary", "12", termCode, dept),
-    "used_15": countContracts("Primary", "15", termCode, dept),
-    "used_20": countContracts("Primary", "20", termCode, dept),
-    "used_5_sec": countContracts("Secondary", "5", termCode, dept),
-    "used_10_sec": countContracts("Secondary", "10", termCode, dept),
+    "used_10": countContracts("Primary", 10, termCode, dept),
+    "used_12": countContracts("Primary", 12, termCode, dept),
+    "used_15": countContracts("Primary", 15, termCode, dept),
+    "used_20": countContracts("Primary", 20, termCode, dept),
+    "used_5_sec": countContracts("Secondary", 5, termCode, dept),
+    "used_10_sec": countContracts("Secondary", 10, termCode, dept),
     "used_primaries": 0,
     "used_secondaries": 0,
     "used_total": 0,  # all contracts with weekly hours, i.e. primaries + secondaries (not break contracts)
@@ -157,7 +153,12 @@ def getBreakContracts(termCode, dept):
     else:
         return 0
 
-def getAllocationSummary(dept, term):
+def getAllocationSummary(termCode, dept):
+    '''
+    This function returns the department's final allocation for the given term (or that
+    term's academic year) alongside how much of it is used: the positions contracted in
+    each hour-band and the break hours contracted across the academic year's break terms.
+    '''
     summary = {
         'allocation': None,
         'allocationBands': None,
@@ -166,84 +167,70 @@ def getAllocationSummary(dept, term):
         'breakHoursUsed': None,
     }
 
-    if not (dept and term):
-        return summary
-
-    # A department can have both a draft and a final allocation for a term; prefer the final one.
-    allocation = (Allocation.select()
-                  .where(Allocation.department == dept, Allocation.termCode == term)
-                  .order_by(Allocation.isFinal.desc())
-                  .first())
-    summary['allocation'] = allocation
+    allocation = getAllocation(termCode, dept) if (dept and termCode) else None
     if not allocation:
         return summary
+    summary['allocation'] = allocation
 
-    allocationBands = {}
-    for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS:
-        used = (LaborStatusForm
-                .select()
-                .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                .where(LaborStatusForm.department == dept,
-                       LaborStatusForm.termCode == term,
-                       LaborStatusForm.jobType == jobType,
-                       LaborStatusForm.weeklyHours == hours,
-                       FormHistory.historyType == "Labor Status Form",
-                       ~(FormHistory.status % "Denied%"))
-                .distinct()
-                .count())
-        allocationBands[fieldName] = {'used': used, 'allocated': getattr(allocation, fieldName)}
-
+    allocationBands = {fieldName: {'used': countContracts(jobType, hours, termCode, dept),
+                                   'allocated': allocation[fieldName]}
+                       for fieldName, jobType, hours in ALLOCATION_BAND_FIELDS}
     summary['allocationBands'] = allocationBands
     summary['totalPositionsAllocated'] = sum(band['allocated'] for band in allocationBands.values())
     summary['totalPositionsUsed'] = sum(band['used'] for band in allocationBands.values())
 
-    # Break hours are tracked on separate break-term rows (e.g. Thanksgiving Break)
-    # that share the same academic year prefix as the given AY term.
-    yearPrefix = str(term.termCode)[:-2]
-    breakTermCodes = [t.termCode for t in Term.select().where(Term.isBreak == True)
-                      if str(t.termCode).startswith(yearPrefix)]
-    summary['breakHoursUsed'] = (LaborStatusForm
-                                 .select(fn.SUM(LaborStatusForm.contractHours))
-                                 .join(FormHistory, on=(FormHistory.formID == LaborStatusForm.laborStatusFormID))
-                                 .where(LaborStatusForm.department == dept,
-                                        LaborStatusForm.termCode.in_(breakTermCodes),
-                                        FormHistory.historyType == "Labor Status Form",
-                                        ~(FormHistory.status % "Denied%"))
-                                 .scalar()) or 0
+    # Break hours are contracted on separate break terms (e.g. 202401 Thanksgiving Break)
+    # that share the academic year's prefix.
+    academicYearPrefix = str(termCode)[:4]
+    breakTermCodes = [term.termCode for term in Term.select().where(Term.isBreak == True)
+                      if str(term.termCode).startswith(academicYearPrefix)]
+    summary['breakHoursUsed'] = sum(getBreakContracts(breakTermCode, dept) for breakTermCode in breakTermCodes)
 
     return summary
 
 
-def getAllocationWarningForTermCode(dept, termCode):
-    """ Allocations are stored on the academic-year term (ending in 00), so terms like
-    Fall, Spring, or a break term fall back to their academic year's allocation. """
-    if not (dept and termCode):
-        return None
-    ayTermCode = str(termCode)[:-2] + '00'
-    for code in (str(termCode), ayTermCode):
-        term = Term.get_or_none(Term.termCode == code)
-        warning = getAllocationWarning(dept, term) if term else None
-        if warning:
-            return warning
-    return None
+def getOverAllocatedBands(allocationBands):
+    '''
+    A lower-hour contract can fill any unused higher-hour slot of the same job type (a 10 hour
+    Primary can use a 12, 15 or 20 hour Primary slot, a 5 hour Secondary can use a 10 hour
+    Secondary slot), but a higher-hour contract can never use a lower-hour slot, and Primary
+    and Secondary never share slots. So working down from each job type's highest band, a band
+    is over when the contracts at its hours or above outnumber the slots at its hours or above.
+    A band is only reported when it adds to the shortage already reported above it, so one
+    missing 20 hour slot isn't repeated as 15+, 12+ and 10+ as well.
+    '''
+    overAllocatedBands = []
+    usedAtOrAbove = {}
+    allocatedAtOrAbove = {}
+    reportedShortage = {}
+    for fieldName, jobType, hours in reversed(ALLOCATION_BAND_FIELDS):
+        usedAtOrAbove[jobType] = usedAtOrAbove.get(jobType, 0) + allocationBands[fieldName]['used']
+        allocatedAtOrAbove[jobType] = allocatedAtOrAbove.get(jobType, 0) + allocationBands[fieldName]['allocated']
+        shortage = usedAtOrAbove[jobType] - allocatedAtOrAbove[jobType]
+        if shortage > reportedShortage.get(jobType, 0):
+            reportedShortage[jobType] = shortage
+            overAllocatedBands.append({'label': f"{hours}+ Hour {jobType}",
+                                       'used': usedAtOrAbove[jobType],
+                                       'allocated': allocatedAtOrAbove[jobType]})
+    return overAllocatedBands[::-1]
 
 
-def getAllocationWarning(dept, term):
-    summary = getAllocationSummary(dept, term)
-    if not summary['allocation']:
+def getAllocationWarning(termCode, dept):
+    '''
+    This function returns the department's allocation usage for the given term and whether
+    it is over on positions or break hours, or None if the department has no final allocation.
+    '''
+    summary = getAllocationSummary(termCode, dept)
+    allocation = summary['allocation']
+    if not allocation:
         return None
 
     positionsRemaining = summary['totalPositionsAllocated'] - summary['totalPositionsUsed']
-    breakHoursRemaining = summary['allocation'].breakHours - summary['breakHoursUsed']
+    breakHoursRemaining = allocation['breakHours'] - summary['breakHoursUsed']
 
-    # A department can be within its total position count while still exceeding
-    # one specific hour-band (e.g. over on 10-hour Primary but under on others),
-    # so each band needs to be checked individually, not just the aggregate total.
-    overAllocatedBands = [
-        {'label': band_labels[fieldName], 'used': band['used'], 'allocated': band['allocated']}
-        for fieldName, band in summary['allocationBands'].items()
-        if band['used'] > band['allocated']
-    ]
+    # A department can be within its total position count while still being over in
+    # one hour-band, so the bands need to be checked as well as the aggregate total.
+    overAllocatedBands = getOverAllocatedBands(summary['allocationBands'])
     isPositionsTotalOverAllocated = positionsRemaining < 0
     isPositionsOverAllocated = isPositionsTotalOverAllocated or bool(overAllocatedBands)
     isBreakHoursOverAllocated = breakHoursRemaining < 0
@@ -256,11 +243,9 @@ def getAllocationWarning(dept, term):
         'isPositionsOverAllocated': isPositionsOverAllocated,
         'isPositionsTotalOverAllocated': isPositionsTotalOverAllocated,
         'overAllocatedBands': overAllocatedBands,
-        'breakHoursAllocated': summary['allocation'].breakHours,
+        'breakHoursAllocated': allocation['breakHours'],
         'breakHoursUsed': summary['breakHoursUsed'],
         'breakHoursRemaining': breakHoursRemaining,
         'isBreakHoursOverAllocated': isBreakHoursOverAllocated,
         'isOverAllocated': isPositionsOverAllocated or isBreakHoursOverAllocated,
     }
-
-

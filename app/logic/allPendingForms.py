@@ -14,7 +14,7 @@ from app.logic.tracy import Tracy
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.login_manager import DoesNotExist, render_template
-from app.logic.allocationManager import getAllocationWarning, getAllocationWarningForTermCode
+from app.logic.allocationManager import getAllocationWarning
 
 
 def saveStatus(new_status, formHistoryIds, currentUser):
@@ -90,7 +90,7 @@ def saveStatus(new_status, formHistoryIds, currentUser):
     # approval into an error response.
     for dept in approvedDepartments.values():
         try:
-            warning = getAllocationWarning(dept, g.openTerm)
+            warning = getAllocationWarning(g.openTerm.termCode, dept)
             if warning and warning['isOverAllocated']:
                 messageParts = [f"{b['label']} ({b['used']}/{b['allocated']})" for b in warning['overAllocatedBands']]
                 if warning['isBreakHoursOverAllocated']:
@@ -247,7 +247,7 @@ def modal_approval_and_denial_data(formHistoryIdList):
 
         if dept.departmentID not in allocationWarningsByDept:
             # Use the term the form was actually submitted for, not the currently open term.
-            warning = getAllocationWarningForTermCode(dept, lsf.termCode.termCode)
+            warning = getAllocationWarning(lsf.termCode.termCode, dept)
             if warning:
                 allocationWarningsByDept[dept.departmentID] = warning
 

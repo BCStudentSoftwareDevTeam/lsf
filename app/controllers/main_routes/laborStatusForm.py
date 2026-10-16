@@ -22,7 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
-from app.logic.allocationManager import getAllocationWarningForTermCode
+from app.logic.allocationManager import getAllocationWarning
 
 
 @main_bp.route('/laborstatusform', methods=['GET'])
@@ -152,7 +152,7 @@ def getAllocationWarningForForm(departmentOrg, departmentAcct, termCode):
     their submission before it goes to the Labor Office for approval. """
     require_login()
     dept = Department.get_or_none(Department.ORG == departmentOrg, Department.ACCOUNT == departmentAcct)
-    return jsonify(getAllocationWarningForTermCode(dept, termCode))
+    return jsonify(getAllocationWarning(termCode, dept))
 
 @main_bp.route("/laborstatusform/checktotalhours/<termCode>/<student>/<hours>", methods=["GET"])
 def checkTotalHours(termCode, student, hours):
