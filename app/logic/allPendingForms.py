@@ -14,7 +14,7 @@ from app.logic.tracy import Tracy
 from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.login_manager import DoesNotExist, render_template
-from app.logic.allocation import getAllocationWarning, getAllocationWarningForTermCode
+from app.logic.allocationManager import getAllocationWarning, getAllocationWarningForTermCode
 
 
 def saveStatus(new_status, formHistoryIds, currentUser):

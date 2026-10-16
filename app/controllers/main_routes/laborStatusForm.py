@@ -22,7 +22,7 @@ from app.logic.tracy import Tracy
 from app.controllers.main_routes.laborReleaseForm import createLaborReleaseForm
 from app.logic.allPendingForms import saveStatus
 from app.logic.statusFormFunctions import *
-from app.logic.allocation import getAllocationWarningForTermCode
+from app.logic.allocationManager import getAllocationWarningForTermCode
 
 
 @main_bp.route('/laborstatusform', methods=['GET'])

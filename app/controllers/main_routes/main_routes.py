@@ -20,10 +20,9 @@ from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
 from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
-from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
+from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations, getAllocationSummary
 from app.logic.getTerms import getTerms, getCurrentSemester
 
-from app.logic.allocation import getAllocationSummary
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():

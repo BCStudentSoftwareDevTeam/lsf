@@ -4,7 +4,7 @@ from app.models.term import Term
 from app.models.department import Department
 from app.models.allocation import Allocation
 from app.models.formHistory import FormHistory
-from app.logic.allocation import getAllocationWarning
+from app.logic.allocationManager import getAllocationWarning
 
 
 @pytest.mark.integration
