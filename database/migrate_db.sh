@@ -30,7 +30,9 @@ pem add app.models.supervisor.Supervisor
 pem add app.models.supervisorDepartment.SupervisorDepartment
 pem add app.models.studentLaborEvaluation.StudentLaborEvaluation
 pem add app.models.formSearchResult.FormSearchResult
+pem add app.models.positionHistory.PositionHistory
 pem add app.models.allocation.Allocation
+pem add app.models.positionDescriptionSection.PositionDescriptionSection
 
 pem watch
 pem migrate

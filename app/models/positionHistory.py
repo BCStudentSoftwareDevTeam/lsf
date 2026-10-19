@@ -2,9 +2,14 @@ from app.models import *
 from app.models.department import Department
 
 class PositionHistory(baseModel):
-    positioncode       = PrimaryKeyField()
-    status             = CharField()
-    WLS                = IntegerField()
-    revisiondate       = DateField()
-    Description        = TextField()
-    Department         = ForeignKeyField(Department)               
+    positionTitle      = CharField()
+    positionCode       = CharField()
+    department         = ForeignKeyField(Department)
+    status             = CharField() # Active, Inactive, Requested
+    wls                = IntegerField()
+    revisionDate       = DateField()
+    revisedBy          = CharField()
+
+    class Meta:
+        indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
+

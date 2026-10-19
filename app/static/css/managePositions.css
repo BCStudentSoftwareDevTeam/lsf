@@ -1,0 +1,11 @@
+.position-management .width-12 {
+    width: 12%;
+}
+
+.position-management h1 {
+    margin-top: 10px;
+}
+
+#positionTable td {
+    text-align: center;
+}

@@ -1208,3 +1208,17 @@ ALTER TABLE `laborreleaseform`
 
 
 alter table student add isActive boolean;
+alter table supervisor add isBanned boolean;
+alter table supervisordepartment add `isCoordinator` BOOL NOT NULL default false;
+
+CREATE TABLE `positionhistory` (`id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY, `positionCode` VARCHAR(255) NOT NULL, `department_id` INTEGER NOT NULL, `status` VARCHAR(255) NOT NULL, `wls` INTEGER NOT NULL, `revisionDate` DATE NOT NULL, `description` TEXT NOT NULL, FOREIGN KEY (`department_id`) REFERENCES `department` (`departmentID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE INDEX `positionhistory_department_id` ON `positionhistory` (`department_id`);
+CREATE UNIQUE INDEX `positionhistory_positionCode_revisionDate_status` ON `positionhistory` (`positionCode`, `revisionDate`, `status`);
+
+CREATE TABLE `allocation` (`id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY, `termCode_id` INTEGER NOT NULL, `department_id` INTEGER NOT NULL, `isFinal` BOOL NOT NULL, `approvedOn` DATE, `approvedBy_id` VARCHAR(255), `justification` TEXT NOT NULL, `primary_10` INTEGER NOT NULL, `primary_12` INTEGER NOT NULL, `primary_15` INTEGER NOT NULL, `primary_20` INTEGER NOT NULL, `secondary_5` INTEGER NOT NULL, `secondary_10` INTEGER NOT NULL, `breakHours` INTEGER NOT NULL, FOREIGN KEY (`termCode_id`) REFERENCES `term` (`termCode`), FOREIGN KEY (`department_id`) REFERENCES `department` (`departmentID`), FOREIGN KEY (`approvedBy_id`) REFERENCES `supervisor` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE UNIQUE INDEX `allocation_termCode_id_department_id_isFinal` ON `allocation` (`termCode_id`, `department_id`, `isFinal`);

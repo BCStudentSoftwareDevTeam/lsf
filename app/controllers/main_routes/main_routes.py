@@ -1,7 +1,8 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, fn
 from functools import reduce
 import operator
+
 from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
@@ -9,13 +10,22 @@ from app.models.student import Student
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
 from app.models.term import Term
+from app.models.allocation import Allocation
+from app.models.positionHistory import PositionHistory
+
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
 from app.controllers.main_routes import main_bp
-from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult
+
+from app.logic.download import CSVMaker, saveFormSearchResult, retrieveFormSearchResult, makePositionDescriptionPDF
 from app.logic.search import getDepartmentsForSupervisor, searchPerson, searchSupervisorPortal
 from app.login_manager import require_login, logout
 from app.logic.getTableData import getDatatableData
 from app.logic.banner import Banner
+from app.logic.getSupervisors import getSupervisors
+from app.logic.getPositions import getActivePositions
+from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
+from app.logic.getTerms import getTerms, getCurrentSemester
+
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
@@ -51,37 +61,76 @@ def supervisorPortal():
 @main_bp.route('/department/<org>', methods=['GET'])
 @main_bp.route('/department/<org>/<account>', methods=['GET'])
 def departmentPortal(org=None,account=None):
+    currentUser = g.currentUser
     try:
         dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
     except (NameError, DoesNotExist):
         dept = None
 
-
-
-    if g.currentUser.isLaborAdmin:
+    if currentUser.isLaborAdmin:
         departments = list(Department.select().order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
     else:
-        departments = list(getDepartmentsForSupervisor(g.currentUser).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+        departments = list(Department.select().join(SupervisorDepartment).where(SupervisorDepartment.supervisor == currentUser.supervisor).order_by(Department.isActive.desc(), Department.DEPT_NAME.asc()))
+    
+    supervisors, laborCoordinators = getSupervisors(dept)
+
+
+    currentAY, fallTerm, springTerm = getTerms()
+    allocationDict = getTotalAllocations(currentAY, dept)
+    currentSemester = getCurrentSemester()
+    contracts = getContractedAllocations(currentSemester, dept)
+
+
+    positionsList, posURL = getActivePositions(dept) 
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
-                           department = dept)
+                           department = dept,
+                           contracts = contracts,
+                           allocation = allocationDict,
+                           currentSemester = currentSemester.termName,
+                           supervisors = supervisors,
+                           laborCoordinators=laborCoordinators,
+                           currentUser=currentUser,
+                           positions = positionsList,
+                           posURL = posURL)
 
-@main_bp.route('/supervisorPortal/addUserToDept', methods=['GET', 'POST'])
-def addUserToDept():
-    userDeptData = request.form
-    supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = userDeptData['supervisorID'], department = userDeptData['departmentID'])
+@main_bp.route('/department/<org>/<account>/allocations', methods=['GET'])
+def allocationTable(org=None, account=None):
+    currentUser = g.currentUser
     try:
-        if supervisorDeptRecord:
-            return "False"
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        return render_template('errors/404.html'), 404
+        
+    if not currentUser.isLaborAdmin:
+        allowedDepartmentIds = [d.departmentID for d in getDepartmentsForSupervisor(currentUser)]
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template('errors/403.html'), 403
 
-        else:
-            SupervisorDepartment.create(supervisor=userDeptData['supervisorID'], department=userDeptData['departmentID'])
-            return "True"
-    
-    except Exception as e:
-        print(f'Could not add user to department: {e}')
-        return "", 500
+    currentAY, fallTerm, springTerm = getTerms()
+
+    allocationDict = getTotalAllocations(currentAY.termCode, dept)
+    fallContracts = getContractedAllocations(fallTerm.termCode, dept)
+    springContracts = getContractedAllocations(springTerm.termCode, dept)
+
+    breakContracts = {
+        "total": 0,
+        "thanksgiving":getBreakContracts(currentAY.termCode + 1, dept),
+        "winter": getBreakContracts(currentAY.termCode + 2, dept),
+        "spring": getBreakContracts(currentAY.termCode + 3, dept),
+        "fall":getBreakContracts(currentAY.termCode + 4, dept),
+        "summer": getBreakContracts(currentAY.termCode + 13, dept)
+        }
+    breakContracts["total"] = sum(breakContracts.values())
+    return render_template('main/allocationTable.html',
+                           department = dept,
+                           currentAY = currentAY,
+                           allocations = allocationDict,
+                           fallContracts = fallContracts,
+                           springContracts = springContracts,
+                           breakContracts = breakContracts)
+                           
 
 @main_bp.route('/supervisorPortal/download', methods=['POST'])
 def downloadSupervisorPortalResults():
