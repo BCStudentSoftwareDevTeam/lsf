@@ -1970,6 +1970,8 @@ PositionDescriptionSection.insert_many(
 
 print(" * position description sections added")
 
+pearceJID = User.get(User.supervisor == "B12365892").userID
+ramsayBID = User.get(User.supervisor == "B00763721").userID
 
 allocation =[
                 {
@@ -1977,7 +1979,7 @@ allocation =[
                     "department": 3,
                     "isFinal": True,
                     "approvedOn": f"{2025}-06-30",
-                    "approvedBy": "B12365892",
+                    "approvedBy": pearceJID,
                     "justification": "We just want it for fun", 
                     "primary_10": 2,
                     "primary_12": 3,
@@ -1992,7 +1994,7 @@ allocation =[
                     "department": 2,
                     "isFinal": False,
                     "approvedOn": f"{2025}-06-20",
-                    "approvedBy": "B00763721",
+                    "approvedBy": ramsayBID,
                     "justification": "We need it to lower the amount of allocations we have", 
                     "primary_10": 1,
                     "primary_12": 2,
