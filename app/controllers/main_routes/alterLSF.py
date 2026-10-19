@@ -137,7 +137,6 @@ def submitAlteredLSF(laborStatusKey):
         currentUser = require_login()
         if not currentUser:        # Not logged in
             return render_template("errors/403.html")
-        currentDate = datetime.now().strftime("%Y-%m-%d")
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
