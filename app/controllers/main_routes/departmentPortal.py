@@ -105,12 +105,11 @@ def searchMember(query=None):
     if not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or currentUser.supervisor):
         return render_template('errors/403.html'), 403
 
-    supervisors = (searchPerson(Supervisor, query).order_by(Supervisor.LAST_NAME.asc()).limit(10))
+    supervisorsList = (searchPerson(Supervisor, query).order_by(Supervisor.LAST_NAME.asc()).limit(10))
+    supervisorsBuild = [buildSupervisorDisplay(supervisor) for supervisor in supervisorsList]
+    supervisorsDisplay = [supervisor for supervisor in supervisorsBuild if supervisor is not None]
 
-    supervisors = [buildSupervisorDisplay(supervisor) for supervisor in supervisors]
-    supervisors = [supervisor for supervisor in supervisors if supervisor is not None]
-
-    return jsonify(supervisors)
+    return jsonify(supervisorsDisplay)
 
 
 @main_bp.route('/members/update_coordinator', methods=['POST'])
