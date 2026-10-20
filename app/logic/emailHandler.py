@@ -19,7 +19,7 @@ from datetime import datetime, date
 from app.models.department import Department
 from app.models.term import Term
 from app.logic.getSupervisors import getSupervisors
-from app.logic.getPositions import markActivePositionsReviewed
+from app.logic.getPositions import getPositionsPendingReview, markPositionsReviewRequested
 
 
 class emailHandler():
@@ -124,11 +124,14 @@ class emailHandler():
         else:
             print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
 
-    def sendAnnualPositionReviewRequests(self, requestingUser):
+    def sendAnnualPositionReviewRequests(self):
         """
         Sends an Annual Position Review request email to every active department's
-        Labor Coordinators and supervisors, and records that the request was made
-        for this handler's academic year (self.term).
+        Labor Coordinators and supervisors, then flags the department's active
+        positions as review-requested.
+
+        A department is skipped when none of its active positions are still
+        waiting on a request, so calling this twice never emails a department twice.
         """
         template = EmailTemplate.get_or_none(EmailTemplate.purpose == "Annual Position Review Request")
         if template is None:
@@ -138,12 +141,12 @@ class emailHandler():
 
         sentCount = 0
         failedDepartments = []
+        alreadyRequestedDepartments = []
         for department in departments:
-            # A review is considered "requested" for every active position in this
-            # department as soon as this runs, whether or not there's currently
-            # anyone to email - a department with no supervisors/coordinators
-            # assigned is itself worth surfacing, not silently skipping.
-            markActivePositionsReviewed(department, self.term, requestingUser)
+            pendingPositions = getPositionsPendingReview(department)
+            if not pendingPositions:
+                alreadyRequestedDepartments.append(department.DEPT_NAME)
+                continue
 
             supervisors, laborCoordinators = getSupervisors(department)
             recipients = {person["email"] for person in supervisors + laborCoordinators if person["email"]}
@@ -157,18 +160,18 @@ class emailHandler():
                 message = Message(subject, recipients=list(recipients))
                 message.html = body
                 self.send(message)
-            except Exception as error:
+            except Exception:
                 failedDepartments.append(department.DEPT_NAME)
-                print("Failed to send Annual Position Review request for department {}: {}".format(department.DEPT_NAME, error))
                 continue
 
+            # Only flagged after the email goes out, so a failed send can be retried.
+            markPositionsReviewRequested(pendingPositions)
             sentCount += 1
-            print("Sent Annual Position Review request to {} for department {}.".format(", ".join(recipients), department.DEPT_NAME))
-            print("{} Annual Position Review requests sent for academic year {}.".format(sentCount, self.term.termName))
         return {
             "sentCount": sentCount,
             "departmentCount": departments.count(),
-            "failedDepartments": failedDepartments
+            "failedDepartments": failedDepartments,
+            "alreadyRequestedDepartments": alreadyRequestedDepartments
         }
 
     # The methods of this class each handle a different email situation. Some of the methods need to handle

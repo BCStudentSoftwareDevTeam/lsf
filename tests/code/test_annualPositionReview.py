@@ -6,7 +6,6 @@ from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.emailTemplate import EmailTemplate
-from app.models.user import User
 from app.models.positionHistory import PositionHistory
 from app.logic.emailHandler import emailHandler
 
@@ -33,8 +32,7 @@ def test_sendAnnualPositionReviewRequests():
                 defaults={"isActive": True}
             )
 
-            # "Test Department" has one active position that should get marked
-            # reviewed, and one inactive position that should be left alone.
+            # "Test Department" has one active position that should get flagged, and one inactive position that should be left alone.
             activePosition = PositionHistory.create(
                 positionTitle="Lab Assistant", positionCode="TESTPOS1", department=department,
                 status="Active", revisionDate="2020-01-01"
@@ -44,9 +42,7 @@ def test_sendAnnualPositionReviewRequests():
                 status="Inactive", revisionDate="2020-01-01"
             )
 
-            # "Empty Department" has no supervisors/coordinators, but does have an
-            # active position - it should still get marked reviewed even though no
-            # email goes out for it.
+            # "Empty Department" has no supervisors/coordinators, so no email goes out for it.
             emptyDeptPosition = PositionHistory.create(
                 positionTitle="Office Assistant", positionCode="TESTPOS3", department=emptyDepartment,
                 status="Active", revisionDate="2020-01-01"
@@ -77,47 +73,46 @@ def test_sendAnnualPositionReviewRequests():
             )
 
 
-            admin, wasCreated = User.get_or_create(username="test_position_review_admin", defaults={"isLaborAdmin": True})
-
-
             ################ SENDING REQUESTS ################
             handler = emailHandler(termCodeUnderReview=term.termCode)
-            result = handler.sendAnnualPositionReviewRequests(admin)
+            result = handler.sendAnnualPositionReviewRequests()
 
 
             # Only "Test Department" has supervisors/coordinators, so only it gets an email.
             assert result["sentCount"] == 1
             assert result["departmentCount"] == 2
-
+            assert result["failedDepartments"] == []
+            assert result["alreadyRequestedDepartments"] == []
 
             activePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS1")
-            assert activePosition.academicYear == term
-            assert activePosition.requestedBy.userID == admin.userID
-            firstRequestedOn = activePosition.requestedOn
+            assert activePosition.reviewRequested is True
 
-            # The inactive position is left untouched - reviewing only stamps active ones.
+            # The inactive position is left untouched - only active ones are flagged.
             inactivePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS2")
-            assert inactivePosition.requestedBy is None
+            assert inactivePosition.reviewRequested is False
 
-
-            # The active position in "Empty Department" is still marked (the request
-            # was made), it just doesn't count toward sentCount since no email went out.
+            # No email went out for "Empty Department" (nobody to send to), so its
+            # position stays unflagged and it can still be requested once someone is assigned.
             emptyDeptPosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS3")
-            assert emptyDeptPosition.requestedBy.userID == admin.userID
+            assert emptyDeptPosition.reviewRequested is False
 
 
-            ################ RE-SENDING SHOULD UPDATE, NOT DUPLICATE ################
-            handler.sendAnnualPositionReviewRequests(admin)
+            ################ RE-SENDING SHOULD NOT EMAIL AGAIN ################
+            result = handler.sendAnnualPositionReviewRequests()
+
+            assert result["sentCount"] == 0
+            assert result["alreadyRequestedDepartments"] == ["Test Department"]
 
 
-            positions = PositionHistory.select().where(
-                PositionHistory.department == department,
-                PositionHistory.status == "Active"
+            ################ A NEW POSITION MAKES THE DEPARTMENT ELIGIBLE AGAIN ################
+            PositionHistory.create(
+                positionTitle="New Role", positionCode="TESTPOS4", department=department,
+                status="Active", revisionDate="2020-01-01"
             )
-            assert positions.count() == 1
-            assert positions.get().requestedOn >= firstRequestedOn
+            result = handler.sendAnnualPositionReviewRequests()
+
+            assert result["sentCount"] == 1
+            assert PositionHistory.get(PositionHistory.positionCode == "TESTPOS4").reviewRequested is True
 
 
             transaction.rollback()
-
-

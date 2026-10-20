@@ -108,7 +108,7 @@ def annualPositionReviewRequest():
 
     try:
         positionReviewEmail = emailHandler(termCodeUnderReview=currentAY.termCode)
-        result = positionReviewEmail.sendAnnualPositionReviewRequests(currentUser)
+        result = positionReviewEmail.sendAnnualPositionReviewRequests()
         if result["failedDepartments"]:
             result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
                 result["sentCount"], result["departmentCount"], ", ".join(result["failedDepartments"])

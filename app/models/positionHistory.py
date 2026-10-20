@@ -1,7 +1,5 @@
 from app.models import *
 from app.models.department import Department
-from app.models.term import Term
-from app.models.user import User
 
 class PositionHistory(baseModel):
     positionTitle      = CharField(null=True)
@@ -12,9 +10,12 @@ class PositionHistory(baseModel):
     revisionDate       = DateField(null=True)
     revisedBy          = CharField(null=True)
     description        = TextField(default=None)
-    academicYear       = ForeignKeyField(Term, null=True)
-    requestedOn        = DateTimeField(null=True)
-    requestedBy        = ForeignKeyField(User, null=True)
+    # True once an Annual Position Review request has gone out for this position.
+    # Nothing resets it yet, so a position is only ever requested once - the Labor
+    # Office's review workflow isn't defined. Possible later additions: a reset
+    # function (per department or all) for the Labor Office to trigger, or an
+    # automatic reset when a new academic year starts.
+    reviewRequested    = BooleanField(default=False)
 
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )

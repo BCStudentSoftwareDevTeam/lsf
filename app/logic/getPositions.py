@@ -1,4 +1,3 @@
-from datetime import datetime
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
 
@@ -46,15 +45,23 @@ def getPositions(dept):
                                        (PositionHistory.status == "Active"))
                                 .order_by(PositionHistory.positionTitle.asc())))
 
-def markActivePositionsReviewed(department, term, requestingUser):
+def getPositionsPendingReview(department):
     """
-    Records that an Annual Position Review was requested for every active
-    position in a department during a given academic year. Departments with
-    no active positions have nothing to mark.
+    Returns the active positions in a department that haven't had an Annual
+    Position Review requested yet.
+    """
+    return list(PositionHistory.select()
+                .where(PositionHistory.department == department,
+                       PositionHistory.status == "Active",
+                       PositionHistory.reviewRequested == False))
+
+def markPositionsReviewRequested(positions):
+    """
+    Records that an Annual Position Review was requested for the given positions.
     """
     return (PositionHistory
-            .update(academicYear=term, requestedOn=datetime.now(), requestedBy=requestingUser)
-            .where(PositionHistory.department == department, PositionHistory.status == "Active")
+            .update(reviewRequested=True)
+            .where(PositionHistory.id.in_([position.id for position in positions]))
             .execute())
 
 def getPositionDescriptionSections(position):
