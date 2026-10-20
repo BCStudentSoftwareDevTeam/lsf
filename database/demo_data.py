@@ -1465,9 +1465,9 @@ print(f"termCode_id being used: {202500!r}")
 ###########################
 allocations = [ 
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       3,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -1480,7 +1480,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":        202500,
+    "termCode":        202600,
     "department":       2,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1495,9 +1495,9 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       1,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -1510,9 +1510,9 @@ allocations = [
     "breakHours":       550,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       4,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -1525,7 +1525,7 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       5,
     "isFinal":          False,
     "approvedOn":       None,
