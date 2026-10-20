@@ -6,10 +6,10 @@ function submitAnnualPositionReview(button) {
 
  RETURNS: None
 */
-  // Disable immediately so a double-click can't fire this request twice -
-  // PositionHistory dedupes the request record, but the emails would still go out
-  // more than once. Re-enabled in complete regardless of outcome so a retry
-  // after a failure is possible without reloading the page.
+  // Disable immediately so a double-click can't fire this request twice.
+  // The server also skips departments that were already sent a request.
+  // Re-enabled in complete regardless of outcome so a retry after a failure
+  // is possible without reloading the page.
   $(button).prop("disabled", true);
 
   $.ajax({
@@ -19,7 +19,9 @@ function submitAnnualPositionReview(button) {
     success: function(response) {
       $("#annualPositionModal").modal("hide");
 
-      if (response["Success"]) {
+      if (response["Success"] && response["sentCount"] === 0 && response["alreadyRequestedDepartments"].length > 0) {
+        msgFlash("Position review requests were already sent to every department.", "info");
+      } else if (response["Success"]) {
         msgFlash("Position review requests sent to " + response["sentCount"] + " of " + response["departmentCount"] + " departments.", "success");
       } else {
         var msg = response["message"] || ("Requests sent to " + response["sentCount"] + " of " + response["departmentCount"] + " departments, but some requests failed.");
