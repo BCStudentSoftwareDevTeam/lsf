@@ -581,28 +581,32 @@ departments = [
               "DEPT_NAME": "Computer Science",
               "ACCOUNT": "6740",
               "ORG": "2114",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":2,
               "DEPT_NAME": "Technology and Applied Design",
               "ACCOUNT": "6740",
               "ORG": "2147",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":3,
               "DEPT_NAME": "Mathematics",
               "ACCOUNT": "6740",
               "ORG": "2150",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":4,
               "DEPT_NAME": "Biology",
               "ACCOUNT": "6740",
               "ORG": "2107",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             }, 
             {
               "departmentID":5,
@@ -744,7 +748,7 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
             "department_id": 1,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
@@ -886,7 +890,7 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
             "department_id": 5,
-            "jobType": "Primary",
+            "jobType": "Secondary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
@@ -1461,9 +1465,9 @@ print(f"termCode_id being used: {202500!r}")
 ###########################
 allocations = [ 
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       3,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -1476,7 +1480,7 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":        202500,
+    "termCode":        202600,
     "department":       2,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1491,9 +1495,9 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       1,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -1506,9 +1510,9 @@ allocations = [
     "breakHours":       550,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       4,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -1521,7 +1525,7 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       5,
     "isFinal":          False,
     "approvedOn":       None,
@@ -1966,6 +1970,8 @@ PositionDescriptionSection.insert_many(
 
 print(" * position description sections added")
 
+pearceJID = User.get(User.supervisor == "B12365892").userID
+ramsayBID = User.get(User.supervisor == "B00763721").userID
 
 allocation =[
                 {
@@ -1973,7 +1979,7 @@ allocation =[
                     "department": 3,
                     "isFinal": True,
                     "approvedOn": f"{2025}-06-30",
-                    "approvedBy": "B12365892",
+                    "approvedBy": pearceJID,
                     "justification": "We just want it for fun", 
                     "primary_10": 2,
                     "primary_12": 3,
@@ -1988,7 +1994,7 @@ allocation =[
                     "department": 2,
                     "isFinal": False,
                     "approvedOn": f"{2025}-06-20",
-                    "approvedBy": "B00763721",
+                    "approvedBy": ramsayBID,
                     "justification": "We need it to lower the amount of allocations we have", 
                     "primary_10": 1,
                     "primary_12": 2,

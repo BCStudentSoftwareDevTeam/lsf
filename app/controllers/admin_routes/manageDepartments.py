@@ -43,10 +43,7 @@ def manageDepartments():
     activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
     inactiveDepartments = Department.select().where(Department.isActive == False)  
     
-    allocationStatus = {
-        department.departmentID: getAllocationStatus(chosenAY, department)
-        for department in activeDepartments
-    }
+    allocationStatus = {allocation.department.departmentID: getAllocationStatus(chosenAY, allocation.department) for allocation in activeDepartments}
     activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
     allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
 
