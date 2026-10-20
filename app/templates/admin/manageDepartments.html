@@ -46,7 +46,10 @@
                 <a> Inactive Departments </a>
               </li>
             </ul>
-            <button type="button" class="btn btn-primary">Allocation Download</button>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-toggle="modal"
+                    data-target="#allocationDownloadModal">Allocation Download</button>
           </div>
           <br>
           <div class="deptTable" id='activeTable'>
@@ -95,6 +98,17 @@
         </div>
         <div class="col-md-2"></div>
     </div>
+</div>
+<div class="modal fade" id="allocationDownloadModal" tabindex="-1" role="dialog" aria-label="Allocation Download" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal" id="manageDepartmentSupervisorModal" tabindex="-1" role="dialogue" >
   <div class="modal-dialog" role="document">

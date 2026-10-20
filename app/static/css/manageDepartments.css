@@ -24,6 +24,15 @@ h1 {
   margin-bottom: 0;
 }
 
+#allocationDownloadModal.in {
+  display: flex;
+  flex-direction: column;
+}
+
+#allocationDownloadModal .modal-dialog {
+  margin: auto;
+}
+
 #exampleButton:hover {
   background-color: #5cb85c;
   border-color: #4cae4c;
