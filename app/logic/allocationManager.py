@@ -145,3 +145,9 @@ def getBreakContracts(termCode, dept):
         return break_allocation
     else:
         return 0
+
+def allocationExists(termCode: int, dept: int, isFinal: bool):
+    """
+    Checks if there is an allocation that matches certain criteria. 
+    """
+    return bool(Allocation.get_or_none(Allocation.termCode == termCode, Allocation.department == dept, Allocation.isFinal == isFinal))
