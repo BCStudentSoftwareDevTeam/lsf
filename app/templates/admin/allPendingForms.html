@@ -120,7 +120,7 @@
                   </td>
                 {% else %}
                   <td> {# APPROVE #}
-                    {% if allForms.formID.studentSupervisee.isActive and allForms.formID.supervisor.isActive %}<input class="approveCheckbox" type='checkbox' id='chk_{{allForms.formHistoryID}}' value="{{allForms.formHistoryID}}" name="check[]" autocomplete="off" /> {%endif%}
+                    <input class="approveCheckbox" type='checkbox' id='chk_{{allForms.formHistoryID}}' value="{{allForms.formHistoryID}}" name="check[]" autocomplete="off" />
                   </td>
                 {% endif %}
               {% endif %}
@@ -309,6 +309,7 @@
           </button>
         {% include "snips/pendingApprovalModal.html" %}
         </div>
+        <div id="pageAllocationWarnings" style="clear:both;"></div>
         {% endif %}
       </div>
     </div>
