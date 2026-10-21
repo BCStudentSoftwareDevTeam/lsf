@@ -20,8 +20,6 @@ from app.logic.emailHandler import emailHandler
 from app.logic.allocationManager import allocationExists
 from app.logic.academicYearManager import getCurrentAndNextAY
 
-
-
 @admin.route('/admin/manageDepartments/', methods=['GET'])
 @admin.route('/admin/manageDepartments/<academicYear>', methods=['GET'])
 def manageDepartments(academicYear = None):
@@ -29,7 +27,6 @@ def manageDepartments(academicYear = None):
     Returns the Manage Departments page, which allows the admin to view all the departments
     and their allocations.  
     """
-
     # Checking Admin Rights
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
@@ -57,21 +54,19 @@ def manageDepartments(academicYear = None):
         department.departmentID: getAllocationStatus(chosenAY, department)
         for department in activeDepartments
     }
-
+    activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
     allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
 
     return render_template( 'admin/manageDepartments.html',
-                            activeDepartments = activeDepartments,
+                            activeDepartmentsAllocations = activeDepartmentsAllocations,
                             inactiveDepartments = inactiveDepartments,
-                            allSupervisors = allSupervisors,
+                            allSupervisors = allSupervisors,                 
                             currentAY = currentAY,
                             nextAY = nextAY,
                             chosenAY = chosenAY,
                             academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
-                            allocationStatus = allocationStatus
                             )
-
 
 
 @admin.route('/admin/complianceStatus', methods=['POST'])

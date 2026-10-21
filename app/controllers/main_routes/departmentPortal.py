@@ -4,8 +4,8 @@ from flask import g, render_template, request, send_file, redirect, flash
 from peewee import DoesNotExist
 from app.login_manager import require_login
 from app.controllers.main_routes import main_bp
-from app.logic.download import makePositionDescriptionPDF
-from app.logic.getPositions import getPosition, getPositions, getPositionDescriptionSections
+from app.logic.getPositions import getPositions
+from peewee import DoesNotExist
 from app.models.department import Department
 from app.models.positionHistory import PositionHistory
 from app.models.allocation import Allocation
