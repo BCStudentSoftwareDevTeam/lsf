@@ -1,0 +1,45 @@
+function submitAnnualPositionReview(button) {
+/*
+ POSTs the Annual Position Review request for the current academic year.
+ Sends a review request email to every active department's Labor Coordinators and
+ supervisors, then shows a success/failure flash message.
+
+ RETURNS: None
+*/
+  // Disable immediately so a double-click can't fire this request twice.
+  // The server also skips departments that were already sent a request.
+  // Re-enabled in complete regardless of outcome so a retry after a failure
+  // is possible without reloading the page.
+  $(button).prop("disabled", true);
+
+  $.ajax({
+    method: "POST",
+    url: "/admin/manageDepartments/annualPositionReview",
+    dataType: "json",
+    success: function(response) {
+      $("#annualPositionModal").modal("hide");
+
+      if (response["Success"] && response["sentCount"] === 0 && response["alreadyRequestedDepartments"].length > 0) {
+        msgFlash("Position review requests were already sent to every department.", "info");
+      } else if (response["Success"]) {
+        msgFlash("Position review requests sent to " + response["sentCount"] + " of " + response["departmentCount"] + " departments.", "success");
+      } else {
+        var msg = response["message"] || ("Requests sent to " + response["sentCount"] + " of " + response["departmentCount"] + " departments, but some requests failed.");
+        msgFlash(msg, "fail");
+      }
+    },
+    error: function(jqXHR) {
+      // Covers cases success: never sees - a 403 (not a labor admin), a 500,
+      // or the request failing outright. Leaves the modal open so the admin
+      // can retry instead of silently doing nothing.
+      var payload = jqXHR.responseJSON || {};
+      var msg = jqXHR.status === 403
+        ? "You don't have permission to send Annual Position Review requests."
+        : (payload["message"] || "Something went wrong sending the Annual Position Review requests.");
+      msgFlash(msg, "fail");
+    },
+    complete: function() {
+      $(button).prop("disabled", false);
+    }
+  })
+}

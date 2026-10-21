@@ -7,6 +7,8 @@
   src="{{url_for('static', filename='js/manageDepartments.js') }}?u={{lastStaticUpdate}}"></script>
 <script type="text/javascript"
   src="{{url_for('static', filename='js/addSupervisorsToDepartment.js') }}?u={{lastStaticUpdate}}"></script>
+<script type="text/javascript"
+  src="{{url_for('static', filename='js/annualPositionReview.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %} {% block app_content %}
 <div align="center">
   <a class="skipContent" href="#manageDep" tabindex="1">Click to Skip</a>
@@ -45,26 +47,25 @@
 
   <br />
   <div class="row mb-2" style="display: flex; justify-content: space-between;">
-    <div class="col-md-6" align="left" style="margin-bottom: 1px">
+    <div class="col-md-4" align="left" style="margin-bottom: 1px">
       {% include "snips/uploadAllocations.html" %}
-      <button class="btn btn-success me-2" type="button" data-toggle="modal" data-target="#uploadAllocationsModal"
-        style="width: 200px; margin-bottom: 5px;">
+      <button class="btn btn-success me-2" type="button" data-toggle="modal" data-target="#uploadAllocationsModal" style="width: 200px; margin-bottom: 5px;">
         Upload Allocations
       </button>
       <button class="btn btn-success me-2" type="button" style="width: 200px; margin-bottom: 5px;">
         Download Allocation History
       </button>
     </div>
-
-    <div class="col-md-6" align="right" style="margin-bottom: 1px;">
+    
+    <div class="col-md-4" align="right" style="margin-bottom: 1px;">
       {% include "snips/annualAllocationReview.html" %}
-      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal"
-        style="width: 200px; margin-bottom: 5px;">
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualAllocationModal" style="width: 200px; margin-bottom: 5px;">
         Annual Allocation Review
       </button>
       {% include "snips/annualPositionReview.html" %}
-      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal"
-        style="width: 200px; margin-bottom: 5px;">
+      {# Disabled on purpose: the modal, JS, route and email logic are in place, but the Labor
+         Office's position review workflow isn't defined yet. Remove "disabled" to turn it back on. #}
+      <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#annualPositionModal" style="width: 200px; margin-bottom: 5px;" disabled title="Not available yet – the Labor Office review process is still being defined">
         Annual Position Review
       </button>
     </div>
@@ -92,6 +93,9 @@
             <tr>
               <th>Department</th>
               <th>Status</th>
+              <th class="noSorting">Positions</th>
+              <th>Allocation Status <br>({{ academicYear }})</th>
+              <th class="noSorting">Break Hours <br> (Used/Given)</th>
               <th>Current Allocations <br>({{ currentAY.termName }})</th>
               <th>Requested Allocations <br>({{ nextAY.termName }})</th>
               <th class="noSorting">Actions</th>
@@ -141,6 +145,20 @@
                 {% endif %}
 
               </td>
+              <td style="text-align: center; vertical-align: middle">
+
+                <button
+                  class="btn status-btn btn-sm {% if allocationStatus.get(department.departmentID) %}btn-success{% else %}btn-warning{% endif %}"
+                  style="pointer-events: none; cursor: default; width: 70px;">
+                  {{ "Approved" if allocationStatus.get(department.departmentID) else "Pending" }}
+                </button>
+
+              </td>
+
+              <td scope="row">
+                {{ breakHoursByDepartment.get(department.departmentID, 0) }} / {{ department.allocation.breakHours }}
+              </td>
+
 
               
               <td style="white-space: nowrap">
@@ -172,17 +190,10 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/allocations">Show
-                        Allocation
-                        History</a></li>
-                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/members">Manage Dept
-                        Members</a>
-                    </li>
-                    <li><a href="/department/{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/positions">View
-                        Positions</a>
-                    </li>
-                    <li><a href="{{entry.department.ORG}}/{{entry.department.ACCOUNT}}/allocationReview">Review
-                        Allocation</a></li>
+                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations">Show Allocation History</a></li>
+                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/members">Manage Dept Members</a></li>
+                    <li><a href="/department/{{department.ORG}}/{{department.ACCOUNT}}/positions">View Positions</a></li>
+                    <li><a href="{{department.ORG}}/{{department.ACCOUNT}}/allocationReview">Review Allocation</a></li>
                   </ul>
 
 

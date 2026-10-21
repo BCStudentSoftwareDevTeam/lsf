@@ -25,3 +25,34 @@ def getPositions(dept):
                                 .where((PositionHistory.department == dept) &
                                        (PositionHistory.status == "Active"))
                                 .order_by(PositionHistory.positionTitle.asc())))
+
+def getPositionsPendingReview(department):
+    """
+    Returns the active positions in a department that haven't had an Annual
+    Position Review requested yet.
+    """
+    return list(PositionHistory.select()
+                .where(PositionHistory.department == department,
+                       PositionHistory.status == "Active",
+                       PositionHistory.reviewRequested == False))
+
+def markPositionsReviewRequested(positions):
+    """
+    Records that an Annual Position Review was requested for the given positions.
+    """
+    return (PositionHistory
+            .update(reviewRequested=True)
+            .where(PositionHistory.id.in_([position.id for position in positions]))
+            .execute())
+
+def getPositionDescriptionSections(position):
+    """
+    Returns the description sections for a given position, ordered for display.
+    """
+    positionDescriptionSections = list(PositionDescriptionSection.select()
+                                       .where(PositionDescriptionSection.position == position)
+                                       .order_by(PositionDescriptionSection.order.asc()))
+    
+    return positionDescriptionSections
+
+
