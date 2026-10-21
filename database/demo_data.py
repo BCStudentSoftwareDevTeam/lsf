@@ -2604,6 +2604,90 @@ positionDescriptionSections = [
         """,
         "order": 4,
     },
+    {
+        "position": 24,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>Refer to the WLS Level definitions to describe why this level is appropriate for the role. Highlight supervision level, skill requirements, and scope of responsibility. This position assumes at least one year of experience on an FRC team or in a software/programming role. WLS Level 3 is appropriate for students who can work with moderate supervision, take ownership of defined portions of the robot codebase, and begin guiding newer team members. It builds on foundational habits by adding responsibility for planning, code review, and mentoring.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 24,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Follow and help maintain team procedures for robot software development, daily check-ins, and documentation practices. Own the organization of digital repositories, including branch naming and version control conventions. Lead preparation for at least one outreach event or competition each semester.</p>
+
+            <h5>B. Communication</h5>
+            <p>Plan and deliver short lessons for FRC high school students with guidance from team leader(s). Provide weekly written progress updates on assigned coding and testing tasks and raise blockers early.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>Coordinate small groups of high school students while they write and test robot code, and review their pull requests before they are merged.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Attend the annual FRC competition and act as a point of contact for software issues in the pit. Diagnose and resolve errors in logic, syntax, or structure in robot software projects, and document the fixes for the team.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>Independently support high school students with software projects, and introduce at least one new tool or library (e.g., path planning or vision processing) to the team each season.</p>
+
+            <h5>F. Connect Work Experience to Career and Academic Goals</h5>
+            <p>Complete FIRST/Team software training modules and help update training materials for incoming team members.</p>
+
+            <h5>G. Foster Creativity and Innovation in the Workplace</h5>
+            <p>Help high school students stay engaged and safe while working with software tools (e.g., WPILib, VS Code, Git, GitHub, and Java), and facilitate collaborative design reviews.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 24,
+        "sectionTitle": '<h4>Learning Opportunities</h4>',
+        "sectionContent": """
+            <p>List how this position will support student learning through daily responsibilities and intentional reflection. Supervisors are encouraged to reference specific Learning Goals (1–7) and describe how these goals show up in the work.</p>
+
+            <h5>A. Peer Instruction and Facilitation</h5>
+            <p>Lead tutoring sessions and lab activities, and mentor newer student colleagues. (Aligned with: Goals 2, 3, and 6)</p>
+
+            <h5>B. Inventory and Resource Management</h5>
+            <p>Manage the team's computer equipment and software licenses, and schedule regular updates and installs. (Aligned with: Goals 1 and 4)</p>
+
+            <h5>C. Problem Solving</h5>
+            <p>Debug, test, and review code on competition and practice robots, and write short post-mortems for major issues. (Aligned with: Goal 3)</p>
+
+            <h5>D. Technical Competency</h5>
+            <p>Deepen skills in a chosen software specialty such as autonomous routines, vision, or controls. (Aligned with: Goals 4 and 5)</p>
+
+            <h5>E. Communication</h5>
+            <p>Interact professionally with faculty, student colleagues, high school students, parents, and event volunteers. (Aligned with: Goal 2)</p>
+
+            <h5>F. Leadership</h5>
+            <p>Practice delegating tasks and giving constructive feedback to peers. (Aligned with: Goals 6 and 7)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 24,
+        "sectionTitle": '<h4>Required Qualifications</h4>',
+        "sectionContent": """
+            <p>List the baseline skills or attributes a student should have to be successful in this role, while ensuring equity and accessibility.</p>
+
+            <h5>A. Independence</h5>
+            <p>Ability to complete multi-step tasks independently with occasional check-ins from team leader(s).</p>
+
+            <h5>B. Responsiveness to Feedback</h5>
+            <p>Ability to take advice, respond appropriately, and give constructive feedback to others.</p>
+
+            <h5>C. Mentorship</h5>
+            <p>Prior experience or a strong desire to mentor and lead high school students.</p>
+
+            <h5>D. Patience</h5>
+            <p>Patience working with unskilled yet energetic high school students.</p>
+
+            <h5>E. Software Knowledge</h5>
+            <p>Working knowledge of Java and Git, and comfort debugging robot code.</p>
+        """,
+        "order": 4,
+    },
 ]
 
 PositionDescriptionSection.insert_many(

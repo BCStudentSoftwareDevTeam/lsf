@@ -10,20 +10,20 @@
 {% endblock %} {% block app_content %}
 
 <h3>
-  Revision of {{position.positionTitle}} position
+  Revision of {{newRequestedPos.positionTitle}} position
 </h3>
 
 <div class="positions p-10">
   <div class="old_position">
     <h1>Previous Position Description</h1>
-    <h3>Title: {{position.positionTitle}}</h3>
-    <h3>WLS Level (1-6): {{position.wls}}</h3>
-    <h3>Position Code: {{position.positionCode}}</h3>
+    <h3>Title: {{prePosition.positionTitle}}</h3>
+    <h3>WLS Level (1-6): {{prePosition.wls}}</h3>
+    <h3>Position Code: {{prePosition.positionCode}}</h3>
 
     <h3>Description:</h3>
     <section class="position-description ">
-          {%- if sections %}
-            {%- for section in sections %}
+          {%- if prevPosSections %}
+            {%- for section in prevPosSections %}
               <div class="section-title">{{ section.sectionTitle |safe }}</div>
               <div class="description-content">{{ section.sectionContent |safe }}</div>
             {%- endfor %}
@@ -35,14 +35,14 @@
   </div>
   <div class="new_position">
     <h1>New Position Description</h1>
-    <h3>Title: {{position.positionTitle}}</h3>
-    <h3>WLS Level (1-6): {{position.wls}}</h3>
-    <h3>Position Code: <span class="text-muted">{{position.positionCode}}</span></h3>
+    <h3>Title: {{newRequestedPos.positionTitle}}</h3>
+    <h3>WLS Level (1-6): {{newRequestedPos.wls}}</h3>
+    <h3>Position Code: <span class="text-muted">{{newRequestedPos.positionCode}}</span></h3>
 
     <h3>Description:</h3>
     <section class="position-description ">
-          {%- if new_position_desc  %}
-            {%- for section in new_position_desc  %}
+          {%- if newPosSections  %}
+            {%- for section in newPosSections  %}
               <div class="section-title">{{ section.sectionTitle |safe }}</div>
               <div id="editor_{{section.order}}" class="description-content editor">{{ section.sectionContent |safe }}</div>
             {%- endfor %}
