@@ -35,11 +35,13 @@ def manage_departments():
         activeDepartments = Department.select().where(Department.isActive == True)
         inactiveDepartments = Department.select().where(Department.isActive == False)
         allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
+        academicYears = Term.select().where(Term.isAcademicYear == True).order_by(Term.termCode.desc())
         return render_template( 'admin/manageDepartments.html',
                                 title = ("Manage Departments"),
                                 activeDepartments = activeDepartments,
                                 inactiveDepartments = inactiveDepartments,
-                                allSupervisors = allSupervisors
+                                allSupervisors = allSupervisors,
+                                academicYears = academicYears
                                 )
     except Exception as e:
         print("Error Loading all Departments", e)
