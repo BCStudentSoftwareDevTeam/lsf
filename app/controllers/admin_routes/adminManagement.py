@@ -84,8 +84,4 @@ def removeAdmin(user, adminType):
 
 def flashMessage(user, action, adminType):
     message = "{} has been {} as a {} Admin".format(user.fullName, action, adminType)
-
-    if action == 'added':
-        flash(message, "success")
-    elif action == 'removed':
-        flash(message, "danger")
+    flash(message, "success")
