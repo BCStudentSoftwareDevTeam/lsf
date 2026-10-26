@@ -15,16 +15,21 @@ from app.models.department import *
 from app.models.allocation import *
 from app.models.laborStatusForm import *
 
-from app.logic.manageDepartments import * 
+from app.logic.manageDepartments import *
+from app.logic.emailHandler import emailHandler
 from app.logic.allocationManager import allocationExists
 from app.logic.academicYearManager import getCurrentAndNextAY
 
+
+
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-def manageDepartments():
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET'])
+def manageDepartments(academicYear = None):
     """
     Returns the Manage Departments page, which allows the admin to view all the departments
     and their allocations.  
     """
+
     # Checking Admin Rights
     currentUser = require_login()
     if not currentUser:                    # If the current user is not logged in
@@ -35,27 +40,33 @@ def manageDepartments():
         elif currentUser.supervisor:
             return render_template('errors/403.html'), 403
 
-    currentAY, nextAY = getCurrentAndNextAY()
-    chosenAY = Term.get(Term.termCode == currentAY.termCode)
+
+    # The condition below may be deleted if the routing to the Manage Departments page is changed.
+    academicYear = g.currentAY[0] * 100 if academicYear is None else int(academicYear)
+
+
+    currentAY, nextAY = generateAdjacentYears(academicYear)
+    chosenAY = Term.get(Term.termCode == academicYear)
 
     breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
-
     activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
     inactiveDepartments = Department.select().where(Department.isActive == False)  
-    
     allocationStatus = {allocation.department.departmentID: getAllocationStatus(chosenAY, allocation.department) for allocation in activeDepartments}
     activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
     allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
 
+
     return render_template( 'admin/manageDepartments.html',
                             activeDepartmentsAllocations = activeDepartmentsAllocations,
                             inactiveDepartments = inactiveDepartments,
-                            allSupervisors = allSupervisors,                 
+                            allSupervisors = allSupervisors,
                             currentAY = currentAY,
                             nextAY = nextAY,
+                            chosenAY = chosenAY,
+                            academicYear = chosenAY.termName,
                             breakHoursByDepartment = breakHoursByDepartment,
+                            allocationStatus = allocationStatus
                             )
-
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
@@ -75,6 +86,31 @@ def complianceStatusCheck():
         return jsonify({"Success": False})
 
 
+
+@admin.route('/admin/manageDepartments/annualPositionReview', methods=['POST'])
+def annualPositionReviewRequest():
+    """
+    Sends an Annual Position Review request email to every active department's
+    Labor Coordinators and supervisors for the current academic year, and
+    records the request. Triggered from the Manage Departments page.
+    """
+    currentUser = require_login()
+    if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+        return render_template('errors/403.html'), 403
+
+    currentAY, _ = getCurrentAndNextAY()
+
+    try:
+        positionReviewEmail = emailHandler(termCodeUnderReview=currentAY.termCode)
+        result = positionReviewEmail.sendAnnualPositionReviewRequests()
+        if result["failedDepartments"]:
+            result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
+                result["sentCount"], result["departmentCount"], ", ".join(result["failedDepartments"])
+            )
+            return jsonify({"Success": False, **result})
+        return jsonify({"Success": True, **result})
+    except Exception:
+        return jsonify({"Success": False})
 
 @admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
 def allocationReview(org=None, account=None):
@@ -107,12 +143,12 @@ def allocationReview(org=None, account=None):
 
 
     # checking if the allocation has already been approved
-    if allocationExists(nextAY.termCode, dept, isFinal=True): 
+    if allocationExists(nextAY.termCode, dept, isFinal=True):
         flash("You cannot reapprove an allocation request.", "info")
         return redirect('/admin/manageDepartments/')
 
-    
-    # checking if the department has requested any allocation review 
+
+    # checking if the department has requested any allocation review
     if not allocationExists(nextAY.termCode, dept, isFinal=False):
         flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "info")
         return redirect('/admin/manageDepartments/')
@@ -124,7 +160,7 @@ def allocationReview(org=None, account=None):
 
 
     return render_template('admin/allocationReview.html',
-                            department = dept, 
+                            department = dept,
                             nextAY = nextAY,
                             currentAlloc = currentAlloc,
                             requestedAlloc = requestedAlloc
@@ -134,7 +170,7 @@ def allocationReview(org=None, account=None):
 
 @admin.route('/admin/allocationReview/approve', methods=['POST'])
 def approveAllocationReview():
-    
+
     # Retrieving the current and following academic years
     currentAY, nextAY = getCurrentAndNextAY()
 
@@ -145,8 +181,8 @@ def approveAllocationReview():
     requester = request.form.get("requester", type=int, default=None)
 
     # saving the newly approved allocation
-    newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode, 
-                                        department      = requester, 
+    newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode,
+                                        department      = requester,
                                         isFinal         = True,
                                         approvedBy      = approverID,
                                         approvedOn      = date.today(),

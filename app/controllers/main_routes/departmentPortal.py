@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import abort, g, jsonify, redirect, render_template, request, send_file, url_for, flash
 from peewee import DoesNotExist
-
+from app.login_manager import require_login
 from app.controllers.main_routes import main_bp
 
 from app.models.department import Department

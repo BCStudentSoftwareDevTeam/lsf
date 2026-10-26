@@ -4,6 +4,12 @@ from peewee import fn
 from app.controllers.main_routes import departmentPortal
 from app.controllers.admin_routes.termManagement import createTerms
 
+from flask import g, abort
+from peewee import fn
+
+from app.controllers.main_routes import departmentPortal
+from app.controllers.admin_routes.termManagement import createTerms
+
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.allocation import *
@@ -17,8 +23,7 @@ def generateAdjacentYears(academicYearTermCode=None):
     """
     Generates the current, and the following academic years. 
     """
-    currentYear      = g.openTerm.termCode // 100
-    nextYear         = currentYear + 1
+    currentYear, nextYear = g.currentAY
 
     currentAYCode    = currentYear * 100
     nextAYCode       = nextYear * 100
@@ -39,14 +44,7 @@ def generateAdjacentYears(academicYearTermCode=None):
     )
 
     return (currentAY, nextAY)
-
-
-
-
-####################################################################################################################################
-# Everything below this line will eventually be deleted  
-
-
+    
 def getUsedBreakHours(term):
     """
     Returns the total number of break hours used by each department for a given term.
@@ -167,6 +165,69 @@ def getActiveDepartmentsAllocations(term,nextTerm):
         "requestedAllocation": reqAllocByDeptId.get(dept.departmentID),  # None if no requested allocation
     }
     return activeDepartmentsAllocations
+
+
+def getAllocationStatus(term, department):
+    """
+    Returns the allocation status for a given department during a given term.
+    """
+    allocation = Allocation.get(
+        (Allocation.termCode == term) &
+        (Allocation.department == department)
+    )
+    return allocation.isFinal
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountPrimaries(currentTerm, department):
+    """
+    Returns the count of primary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == department.departmentID).count()
+    return lsfCountPrimaries
+
+
+
+# USED IN THE getActiveDepartmentsWithAllocation() FUNCTION
+def getLSFCountSecondaries(currentTerm, department):
+    """
+    Returns the count of secondary LSFs for a given department during a given term. (WIP)
+    """
+    lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == department.departmentID).count()
+    return lsfCountSecondaries
+
+
+
+def getActiveDepartmentsWithAllocation(term, isFinal = True):
+    """
+    Returns a list of active departments with allocations for the given term.
+    """
+
+    # This was left just incase anything went wrong. Delete this if everything works as expected. Not necessary in current implementation.
+    # activeDepartments = Department.select().where(Department.isActive == True)
+    # allAllocations = Allocation.select().where(Allocation.termCode == currentAY)
+
+
+    activeDepartments = (Allocation
+                        .select(Department, Allocation)
+                        .join(Department)
+                        .where(
+                            Department.isActive == True,
+                            Allocation.termCode == term.termCode,
+                            Allocation.isFinal == isFinal,
+                            )
+                    )
+    
+    for allocation in activeDepartments:
+        allocation.totalPrimaries = (allocation.primary_10 + allocation.primary_12 + allocation.primary_15 + allocation.primary_20)
+        allocation.totalSecondaries = (allocation.secondary_5 + allocation.secondary_10)
+
+        if isFinal:            # do not need to count them for requested allocations
+            allocation.lsfCountPrimaries = getLSFCountPrimaries(term, allocation.department)
+            allocation.lsfCountSecondaries = getLSFCountSecondaries(term, allocation.department)
+  
+    return activeDepartments
+
 
 
 def getAllocationStatus(term, department):
