@@ -49,19 +49,15 @@ def manageDepartments(academicYear = None):
     chosenAY = Term.get(Term.termCode == academicYear)
 
     breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
-
     activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
     inactiveDepartments = Department.select().where(Department.isActive == False)  
-    
-    allocationStatus = {
-        department.departmentID: getAllocationStatus(chosenAY, department)
-        for department in activeDepartments
-    }
-
+    allocationStatus = {allocation.department.departmentID: getAllocationStatus(chosenAY, allocation.department) for allocation in activeDepartments}
+    activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
     allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
 
+
     return render_template( 'admin/manageDepartments.html',
-                            activeDepartments = activeDepartments,
+                            activeDepartmentsAllocations = activeDepartmentsAllocations,
                             inactiveDepartments = inactiveDepartments,
                             allSupervisors = allSupervisors,
                             currentAY = currentAY,
@@ -71,8 +67,6 @@ def manageDepartments(academicYear = None):
                             breakHoursByDepartment = breakHoursByDepartment,
                             allocationStatus = allocationStatus
                             )
-
-
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
