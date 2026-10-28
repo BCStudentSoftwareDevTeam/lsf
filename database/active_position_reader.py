@@ -97,20 +97,27 @@ def create_record(row):
         
 def print_banner_row(row):
     print(labor_data.loc[row,:])
-    
+
+
+
 ###########################################################################################
 ### BEGIN ###
 ###########################################################################################
 labor_data = pd.read_csv("active_jobs.csv")
+
 secondary_indexes = {} # store the secondary position indexes for each B# 
 primary_indexes = {}  # store the primary position indexes for each B# 
 supervisor_cache = {}
 print("Updating departments...")
 
 get_all_departments()
+
 # initial pass, ensuring supervisors and students are in our database and collating student records
 print("Initial pass through the data...")
+
+
 for row in range(len(labor_data)):
+
     # clean some data. try not to repeat queries
     try:
         supervisor_cache[labor_data.loc[row, "Supervisor B#"]]
