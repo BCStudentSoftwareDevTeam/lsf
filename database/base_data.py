@@ -260,10 +260,7 @@ emailtemps= [
                     <p>&nbsp;</p>
                     <p>An adjustment has been made to your Labor Status Form by @@Creator@@.</p>
                     <p>&nbsp;</p>
-                    <p><strong>Adjustment details:</strong></p>
-                    <p>Field changed: <strong>@@AdjustmentField@@</strong></p>
-                    <p>Changed from: <strong>@@CurrentAdjustmentField@@</strong></p>
-                    <p>Changed to: <strong>@@NewAdjustmentField@@</strong></p>
+                    @@AdjustmentDetails@@
                     <p>&nbsp;</p>
                     <p>Sincerely,</p>
                     <p>Labor Program Office</p>
@@ -282,6 +279,7 @@ emailtemps= [
                     <p>&nbsp;</p>
                     <p>This is to infrom you that an adjustment has been made to your labor supervisee by @@Creator@@.</p>
                     <p>&nbsp;</p>
+                    @@AdjustmentDetails@@
                     <p>&nbsp;</p>
                     <p>Sincerely,</p>
                     <p>Labor Program Office</p>

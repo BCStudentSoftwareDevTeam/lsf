@@ -155,9 +155,9 @@ def submitAlteredLSF(laborStatusKey):
                 message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
             elif "supervisorNotes" in fieldsChanged:
                 message = "Supervisor note for {0} {1} has been recorded.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
-            for formHistory in formHistoryIDs:
+            if formHistoryIDs:
                 try:
-                    email = emailHandler(formHistory)
+                    email = emailHandler(formHistoryIDs[0], formHistoryIDs)
                     if "supervisor" in fieldsChanged:
                         email.laborStatusFormAdjusted(fieldsChanged["supervisor"]["newValue"])
                     else:
@@ -176,5 +176,4 @@ def submitAlteredLSF(laborStatusKey):
         flash(message, "danger")
         print("An error occured during form submission:", e)
         return jsonify({"Success": False}), 500
-
 
