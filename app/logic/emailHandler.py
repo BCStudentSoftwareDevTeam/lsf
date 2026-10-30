@@ -94,6 +94,28 @@ class emailHandler():
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
                 print (e)
+                
+                
+    def getAdvisorEmail(self):
+        
+        advisorName = self.student.ADVISOR 
+        
+        # check if the student has an assigned advisor 
+        if not advisorName:
+            return None
+        
+        advisorName = advisorName.strip()
+        # combine the supervisor's first and last name to find a match
+        advisor = Supervisor.select().where(
+            fn.TRIM(
+                fn.CONCAT(
+                Supervisor.legal_name," ",Supervisor.LAST_NAME)
+        ) == advisorName
+    ).first()
+        if advisor:
+            return advisor.EMAIL
+
+        return None
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
