@@ -29,6 +29,8 @@ class emailHandler():
         self.studentEmail = self.student.STU_EMAIL
         self.creatorEmail = self.formHistory.createdBy.email
         self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
+        self.advisorEmail =  self.student.ADVISOR
+        print ("self.advisorEmail: ", self.advisorEmail)
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
@@ -92,10 +94,33 @@ class emailHandler():
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
                 print (e)
+                
+                
+    def getAdvisorEmail(self):
+        
+        advisorName = self.student.ADVISOR 
+        
+        # check if the student has an assigned advisor 
+        if not advisorName:
+            return None
+        
+        advisorName = advisorName.strip()
+        # combine the supervisor's first and last name to find a match
+        advisor = Supervisor.select().where(
+            fn.TRIM(
+                fn.CONCAT(
+                Supervisor.legal_name," ",Supervisor.LAST_NAME)
+        ) == advisorName
+    ).first()
+        if advisor:
+            return advisor.EMAIL
+
+        return None
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
-
+            print("LOOKING AT MESSAGE")
+            print(message.html)
             # If we have set an override address
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
@@ -174,7 +199,8 @@ class emailHandler():
         self.checkRecipient(
             studentEmailPurpose=studentTemplate.purpose,
             emailPurpose=supervisorTemplate.purpose,
-            secondaryEmailPurpose=None
+            secondaryEmailPurpose=None,
+            advisorEmailPurpose=None
         )
 
     def laborStatusFormApproved(self):
@@ -256,7 +282,8 @@ class emailHandler():
     def LaborOverLoadFormApproved(self):
         self.checkRecipient("Labor Overload Form Approved For Student",
                       "Labor Overload Form Approved For Supervisor",
-                      "Labor Overload Form Approved For Financial Aid")
+                      "Labor Overload Form Approved For Financial Aid",
+                      "Labor Overload Form Approved For Academic Advisor")
 
     def LaborOverLoadFormRejected(self):
         self.checkRecipient("Labor Overload Form Rejected For Student",
@@ -321,7 +348,7 @@ class emailHandler():
     #
     #     self.send(message)
 
-    def checkRecipient(self, studentEmailPurpose=False, emailPurpose=False, secondaryEmailPurpose=False):
+    def checkRecipient(self, studentEmailPurpose=False, emailPurpose=False, secondaryEmailPurpose=False, advisorEmailPurpose=False):
         """
         This method will take in two to three inputs of email purposes. An email to the student is always sent.
         The method then checks whether to send the email to only the primary or both the primary and secondary supervisors.
@@ -344,7 +371,9 @@ class emailHandler():
                     self.sendEmail(primaryEmail, "Labor Office")
                 else:
                     self.sendEmail(primaryEmail, "supervisor")
-
+        if advisorEmailPurpose:
+            advisorEmail = EmailTemplate.get(EmailTemplate.purpose == advisorEmailPurpose)
+            self.sendEmail(advisorEmail, "Academic Advisor")
     # Depending on the parameter 'sendTo', this method will send the email either to the Primary, Secondary, or the Student
     def sendEmail(self, template, sendTo):
         
@@ -376,6 +405,9 @@ class emailHandler():
         elif sendTo == "admin":
             message = Message(template.subject, recipients=[self.adminEmail])
             recipient = 'Admin'
+        elif sendTo == "Academic Advisor":
+            message = Message(template.subject, recipients=[self.advisorEmail])
+            recipient = 'Academic Advisor'
         message.html = formTemplate
         
         newEmailTracker = EmailTracker.create(
@@ -400,6 +432,7 @@ class emailHandler():
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
+        form = form.replace("@@Academic Advisor@@", self.advisorEmail)
 
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)

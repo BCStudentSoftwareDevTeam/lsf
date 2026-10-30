@@ -16,6 +16,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
+from app.models.overloadForm import OverloadForm
 from app.models.notes import Notes
 from app.models.emailTracker import EmailTracker
 
@@ -599,6 +600,34 @@ FormHistory.insert([{
             "createdDate": f"{current_year}-04-14",
             "status_id": "Approved"
         }]).on_conflict_replace().execute()    
+
+LaborStatusForm.insert([{
+            "laborStatusFormID": 4,
+            "termCode_id": f"{current_year}00",
+            "studentName": "Jamali Elaheh",
+            "studentSupervisee_id": "B00730361",
+            "supervisor_id": "B12361006",
+            "department_id": 1,
+            "jobType": "Primary",
+            "WLS": 3,
+            "POSN_TITLE": "Student Programmer",
+            "POSN_CODE": "S61407",
+            "weeklyHours": 12,
+            "startDate": f"{current_year}-04-01",
+            "endDate": f"{current_year}-09-01"
+        }]).on_conflict_replace().execute()
+OverloadForm.insert([{
+            "overloadFormID": 1
+        }]).on_conflict_replace().execute()
+FormHistory.insert([{
+            "formHistoryID": 4,
+            "formID_id": "4",
+            "historyType_id": "Labor Overload Form",
+            "overloadForm": 1,
+            "createdBy_id": 1,
+            "createdDate": f"{current_year}-04-24",
+            "status_id": "Pending"
+        }]).on_conflict_replace().execute()
 
 
 
