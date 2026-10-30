@@ -14,7 +14,7 @@ from app.models.notes import Notes
 from app.models.supervisor import Supervisor
 from app.login_manager import require_login
 from app.logic.alterLSF import modifyLSF, adjustLSF
-
+from app.logic.utils import makeThirdPartyLink
 
 @main_bp.route("/alterLSF/<laborStatusKey>", methods=["GET"])
 def alterLSF(laborStatusKey):
@@ -137,7 +137,6 @@ def submitAlteredLSF(laborStatusKey):
         currentUser = require_login()
         if not currentUser:        # Not logged in
             return render_template("errors/403.html")
-        currentDate = datetime.now().strftime("%Y-%m-%d")
         fieldsChanged = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
         fieldsChanged = dict(fieldsChanged)
         student = LaborStatusForm.get(LaborStatusForm.laborStatusFormID == laborStatusKey)
@@ -152,6 +151,10 @@ def submitAlteredLSF(laborStatusKey):
                 if changedForm:
                     formHistoryIDs.append(changedForm)
         if formStatus == "Approved":
+            if formHistoryIDs:
+                message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
+            elif "supervisorNotes" in fieldsChanged:
+                message = "Supervisor note for {0} {1} has been recorded.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
             for formHistory in formHistoryIDs:
                 try:
                     email = emailHandler(formHistory)
@@ -161,7 +164,6 @@ def submitAlteredLSF(laborStatusKey):
                         email.laborStatusFormAdjusted()
                 except Exception as e:
                     print("An error occured while attempting to send adjustment form emails: ", e)
-                message = "Your labor adjustment form(s) for {0} {1} have been submitted.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
         else:
             message = "Your labor status form for {0} {1} has been modified.".format(student.studentSupervisee.FIRST_NAME, student.studentSupervisee.LAST_NAME)
         flash(message, "success")

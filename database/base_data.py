@@ -256,6 +256,19 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                    <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>An adjustment has been made to your Labor Status Form by @@Creator@@.</p>
+                    <p>&nbsp;</p>
+                    <p><strong>Adjustment details:</strong></p>
+                    <p>Field changed: <strong>@@AdjustmentField@@</strong></p>
+                    <p>Changed from: <strong>@@CurrentAdjustmentField@@</strong></p>
+                    <p>Changed to: <strong>@@NewAdjustmentField@@</strong></p>
+                    <p>&nbsp;</p>
+                    <p>Sincerely,</p>
+                    <p>Labor Program Office</p>
+                    <p>labor_program@berea.edu</p>
+                    <p>859-985-3611</p>
                             ''',
                 "audience":"Student"
                 },
@@ -265,6 +278,15 @@ emailtemps= [
                 "action":"Adjusted",
                 "subject":"Labor Status Form Adjusted",
                 "body":'''
+                    <p>Dear <strong>@@Supervisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p>This is to infrom you that an adjustment has been made to your labor supervisee by @@Creator@@.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>Sincerely,</p>
+                    <p>Labor Program Office</p>
+                    <p>labor_program@berea.edu</p>
+                    <p>859-985-3611</p>
                             ''',
                 "audience":"Supervisor"
                 },
@@ -587,6 +609,32 @@ emailtemps= [
                 "subject":"Labor Overload Form Student Reason",
                 "body":'',
                 "audience":"Labor Office"
+                },
+                {"purpose": "Labor Overload Form Withdrawn For Student",
+                "formType": "Labor Overload Form",
+                "action": "Withdrawn",
+                "subject": "Labor Overload Form Withdrawn",
+                "body": '''<p>Hello&nbsp;<strong>@@Student@@,</strong></p><p>&nbsp;</p>
+                            <p>An overload form previously submitted for you&nbsp;for a position under the supervisrion of <strong>@@Supervisor@@,&nbsp;</strong>has been withdrawn.&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <p>Student Name and B number:&nbsp;<strong>@@Student@@ @@StudB@@</strong></p><p>Position Code:&nbsp;<strong>@@Position@@</strong></p>
+                            <p>WLS:&nbsp;<strong>@@WLS@@</strong></p><p>Department:&nbsp;<strong>@@Department@@</strong></p>
+                            <p>Supervisor:&nbsp;<strong>@@Supervisor@@</strong></p>
+                            <p>Hours:&nbsp;<strong>@@Hours@@</strong></p><p>&nbsp;</p>
+                            <p>If you have any further questions or concerns, contact our Labor Program Office at labor_program@berea.edu or call us at&nbsp;ext. 3611.</p>
+                            <p>Sincerely,&nbsp;</p>
+                            <p>Labor Program Office</p>
+                            <p>labor_program@berea.edu</p>
+                            <p>859-985-3611</p><p>&nbsp;</p>
+                            ''',
+                "audience": "Student"
+                },
+                {"purpose": "Labor Overload Form Withdrawn For Supervisor",
+                "formType": "Labor Overload Form",
+                "action": "Withdrawn",
+                "subject": "Labor Overload Form Withdrawn",
+                "body":'',
+                "audience": "Supervisor"
                 }
             ]
 EmailTemplate.insert_many(emailtemps).on_conflict_replace().execute()
