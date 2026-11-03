@@ -29,7 +29,7 @@ class emailHandler():
         self.studentEmail = self.student.STU_EMAIL
         self.creatorEmail = self.formHistory.createdBy.email
         self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
-        self.advisorEmail =  self.student.ADVISOR
+        self.advisorEmail =  self.getAdvisorEmail()
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
         self.contractHours = str(self.laborStatusForm.contractHours)
@@ -93,25 +93,34 @@ class emailHandler():
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
                 print (e)
-                
-                
+                    
     def getAdvisorEmail(self):
-        
+        """
+        Retrieves the email of the advisor. 
+        If it already exists in the database, returns the email directly. 
+        Otherwise, tries to retrieve it based on the advisor's name.
+        """
+
+        # check if the email already exists
+        advisorEmail = self.student.advisor_email
+        if advisorEmail: 
+            return advisorEmail
+
+        # if the email does not exist, check whether the student has an assigned advisor 
         advisorName = self.student.ADVISOR 
-        
-        # check if the student has an assigned advisor 
         if not advisorName:
             return None
-        
-        advisorName = advisorName.strip()
+
         # combine the supervisor's first and last name to find a match
+        advisorName = advisorName.strip()
         advisor = Supervisor.select().where(
-            fn.TRIM(
-                fn.CONCAT(
-                Supervisor.legal_name," ",Supervisor.LAST_NAME)
-        ) == advisorName
-    ).first()
+            fn.TRIM(fn.CONCAT(Supervisor.legal_name," ",Supervisor.LAST_NAME)) == advisorName
+        ).first()
         if advisor:
+            # save the successful retrieval to the database 
+            self.student.advisor_email = advisor.EMAIL
+            self.student.save()
+
             return advisor.EMAIL
 
         return None
