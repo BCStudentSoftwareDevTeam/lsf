@@ -14,6 +14,7 @@ class STUDATA(db.Model):
     MAJOR                   = db.Column(db.String(128))
     PROBATION               = db.Column(db.String(128))
     ADVISOR                 = db.Column(db.String(128))
+    ADVISOR_EMAIL           = db.Column(db.String(128))
     STU_EMAIL               = db.Column(db.String(128))
     STU_CPO                 = db.Column(db.String(128))
     LAST_POSN               = db.Column(db.String(128))

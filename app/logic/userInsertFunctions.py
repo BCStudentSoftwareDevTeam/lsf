@@ -86,6 +86,7 @@ def updateStudentRecord(student):
     student.MAJOR = tracyUser.MAJOR
     student.PROBATION = tracyUser.PROBATION
     student.ADVISOR = tracyUser.ADVISOR
+    student.ADVISOR_EMAIL = tracyUser.ADVISOR_EMAIL
     student.STU_EMAIL = tracyUser.STU_EMAIL
     student.STU_CPO = tracyUser.STU_CPO
     student.LAST_POSN = tracyUser.LAST_POSN
@@ -188,6 +189,7 @@ def createStudentFromTracy(username=None, bnumber=None):
                             MAJOR = tracyStudent.MAJOR,
                             PROBATION = tracyStudent.PROBATION,
                             ADVISOR = tracyStudent.ADVISOR,
+                            ADVISOR_EMAIL = tracyStudent.ADVISOR_EMAIL,
                             STU_EMAIL = tracyStudent.STU_EMAIL,
                             STU_CPO = tracyStudent.STU_CPO,
                             LAST_POSN = tracyStudent.LAST_POSN,

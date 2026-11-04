@@ -11,6 +11,7 @@ class Student(baseModel):
     MAJOR           = CharField(null=True)
     PROBATION       = CharField(null=True)
     ADVISOR         = CharField(null=True)
+    ADVISOR_EMAIL   = CharField(null=True)
     STU_EMAIL       = CharField(null=True)
     STU_CPO         = CharField(null=True)
     LAST_POSN     	= CharField(null=True)
