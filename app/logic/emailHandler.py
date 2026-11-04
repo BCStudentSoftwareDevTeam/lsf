@@ -29,6 +29,7 @@ class emailHandler():
         self.studentEmail = self.student.STU_EMAIL
         self.creatorEmail = self.formHistory.createdBy.email
         self.supervisorEmail = self.laborStatusForm.supervisor.EMAIL
+        self.advisor = self.student.ADVISOR
         self.advisorEmail =  self.getAdvisorEmail()
         self.date = self.laborStatusForm.startDate.strftime("%m/%d/%Y")
         self.weeklyHours = str(self.laborStatusForm.weeklyHours)
@@ -438,7 +439,8 @@ class emailHandler():
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
-        form = form.replace("@@Academic Advisor@@", self.advisorEmail)
+        form = form.replace("@@AcademicAdvisor@@", self.advisor)
+        form = form.replace("@@AcademicAdvisorEmail@@", self.advisorEmail)
 
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)

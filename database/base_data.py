@@ -373,8 +373,10 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":'''
-                <p> [STUDENT!] An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved. </p>
-                            ''',
+                    <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> Your overload request has been approved. </p>
+                    ''',
                 "audience":"Student"
                 },
                 {
@@ -383,8 +385,10 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":'''
-                <p> [SUPERVISOR!] An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved. </p>
-                            ''',
+                    <p>Dear <strong>@@Supervisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> An overload for your supervisee, <strong>@@Student@@</strong> (<strong>@@StudB@@</strong>), has been approved. </p>
+                    ''',
                 "audience":"Supervisor"
                 },
                 {
@@ -393,8 +397,10 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":''' 
-                <p> [ADVISOR!] An overload for <strong>@@Student@@</strong>, <strong>@@StudB@@</strong> has been approved. </p>
-                            ''',
+                    <p>Dear <strong>@@AcademicAdvisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> An overload for your advisee, <strong>@@Student@@</strong> (<strong>@@StudB@@</strong>), has been approved. </p>
+                    ''',
                 "audience":"Academic Advisor"
                 },
                 {
