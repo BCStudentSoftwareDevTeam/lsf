@@ -120,7 +120,7 @@
               {% endif %}
 
             {% else %}
-              <p>None assigned. <a href="#" >Add one?</a> </p> 
+              <p>None assigned. <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/members" >Add one?</a> </p> 
 
             {% endif %}
               
@@ -147,11 +147,11 @@
                   {% endif %}
 
             {% else  %}
-              <p> None assigned. {% if currentUser.isLaborAdmin %} <a href="#">Add one?</a> {% endif %}</p>
+              <p> None assigned. {% if currentUser.isLaborAdmin %} <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/members">Add one?</a> {% endif %}</p>
             {% endif %}
           </div>
           <div class="card-footer text-center">
-            <a href="#" class="btn btn-primary">View Members
+            <a href="/department/{{ department.ORG }}/{{ department.ACCOUNT }}/members" class="btn btn-primary">View Members
               <span class="glyphicon glyphicon-chevron-right"></span>
             </a>
           </div>

@@ -25,10 +25,6 @@ $(document).ready(function () {
     $('#sortOptions').show();
   });
 
-  $('#addUserToDept').on('click', function () {
-    $("#addSupervisorToDeptModal").modal("show");
-    $('#addUser').prop('disabled', true)
-  })
   $("#sortByButton").on('click', function () {
     var isDisabled = $('#fieldPicker').prop('disabled');
     if (!isDisabled && $('#fieldPicker').val() == '') {
@@ -42,16 +38,6 @@ $(document).ready(function () {
     $('#fieldPicker').prop('disabled', true)
     $('.selectpicker').selectpicker('refresh')
   }
-
-  $('#addUser').on('click', function () {
-    let supervisorID = $('#supervisorModalSelect :selected').val()
-    let departmentID = $('#departmentModalSelect :selected').val()
-
-    addSupervisorToDepartment(supervisorID, departmentID)
-  })
-
-  $('#departmentModalSelect').on('change', disableButtonHandler)
-  $('#supervisorModalSelect').on('change', disableButtonHandler)
 
   $('#clearSelectionsButton').on('click', function () {
     $("input:checkbox").removeAttr("checked");
