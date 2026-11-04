@@ -12,4 +12,3 @@ class PositionHistory(baseModel):
 
     class Meta:
         indexes = ( (('positionCode', 'revisionDate', 'status'), True), )
-
