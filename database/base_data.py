@@ -373,7 +373,10 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":'''
-                            ''',
+                    <p>Dear <strong>@@Student@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> Your overload request has been approved. </p>
+                    ''',
                 "audience":"Student"
                 },
                 {
@@ -382,8 +385,23 @@ emailtemps= [
                 "action":"Approved",
                 "subject":"Labor Overload Form Approved",
                 "body":'''
-                            ''',
+                    <p>Dear <strong>@@Supervisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> An overload for your supervisee, <strong>@@Student@@</strong> (<strong>@@StudB@@</strong>), has been approved. </p>
+                    ''',
                 "audience":"Supervisor"
+                },
+                {
+                "purpose":"Labor Overload Form Approved For Academic Advisor",
+                "formType":"Labor Overload Form",
+                "action":"Approved",
+                "subject":"Labor Overload Form Approved",
+                "body":''' 
+                    <p>Dear <strong>@@AcademicAdvisor@@</strong>,</p>
+                    <p>&nbsp;</p>
+                    <p> An overload for your advisee, <strong>@@Student@@</strong> (<strong>@@StudB@@</strong>), has been approved. </p>
+                    ''',
+                "audience":"Academic Advisor"
                 },
                 {
                 "purpose":"Labor Overload Form Rejected For Student",

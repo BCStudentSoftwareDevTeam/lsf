@@ -11,6 +11,7 @@ class Student(baseModel):
     MAJOR           = CharField(null=True)
     PROBATION       = CharField(null=True)
     ADVISOR         = CharField(null=True)
+    ADVISOR_EMAIL   = CharField(null=True)
     STU_EMAIL       = CharField(null=True)
     STU_CPO         = CharField(null=True)
     LAST_POSN     	= CharField(null=True)
@@ -19,6 +20,7 @@ class Student(baseModel):
     legal_name      = CharField(null=True)
     preferred_name  = CharField(null=True)
     isActive        = BooleanField(default=False)
+    advisor_email   = CharField(null=True)
 
     def __str__(self):
         return str(self.__dict__)
