@@ -117,7 +117,7 @@ def formApproval(status):
             selectedOverload.save()
         # email = emailHandler(rsp["formHistoryID"]) ## sending email to Labor Admin on any submission
         # email.verifiedOverloadNotification()
-        return jsonify({'success':True}), 200
+        # return jsonify({'success':True}), 200
 
     except Exception as e:
         print("Unable to Deny the OverloadForm",type(e).__name__ + ":", e)

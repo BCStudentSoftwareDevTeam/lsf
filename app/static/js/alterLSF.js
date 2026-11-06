@@ -184,7 +184,7 @@ function checkForChange(){
     finalDict["department"] = {"oldValue": oldDepartment, "newValue": newDepartment, "date": date}
   }
 
-  if (JSON.stringify(finalDict) == "{}" || (Object.keys(finalDict).length == 1 && Object.keys(finalDict) == "supervisorNotes")){
+  if (Object.keys(finalDict).length === 0){
     $("#NochangeModal").modal("show");
   }
   else if (newNotes == '') {
