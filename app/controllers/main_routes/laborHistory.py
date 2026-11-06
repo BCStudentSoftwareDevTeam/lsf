@@ -4,11 +4,11 @@ import types
 from fpdf import FPDF
 from urllib.parse import urlparse
 
-from app.models import status
 from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
 from app.models.user import *
+from app.models import status
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.overloadForm import *
