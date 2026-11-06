@@ -190,7 +190,6 @@ def allPendingForms(formType):
 
 @admin.route('/admin/pendingForms/download', methods=['POST'])
 def downloadAllPendingForms():
-    currentUser = require_login()
     searchResult = retrieveFormSearchResult(request.form.get('downloadId'))
     if not searchResult:
         print(f"[ERROR] Missing or invalid download id was provided by the user.")
@@ -560,7 +559,6 @@ def sendEmail():
                 link = makeThirdPartyLink("student", request.host, rsp['formHistoryID'])
                 email.LaborOverloadFormStudentReminder(link)
             
-
             else:
                 if rsp['emailRecipient'] == 'SAASEmail':
                     recipient = 'SAAS'
