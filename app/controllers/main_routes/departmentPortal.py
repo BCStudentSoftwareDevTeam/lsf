@@ -160,6 +160,11 @@ def searchMember(query=None):
 
     return jsonify(supervisorsDisplay)
 
+@main_bp.route('/members/timeState', methods=['GET'])
+def timeState():
+    termState = request.args.get("timeState")
+    print("yeeehawwww", termState)
+    return ""
 
 @main_bp.route('/members/update_coordinator', methods=['POST'])
 def updateCoordinator():

@@ -41,7 +41,7 @@ $(document).ready( function(){
       $("#inactiveTab").addClass("active");
       $("#inactiveTable").show();
     })
-    
+  
 
     attachModalToDepartment()
     $('.deptTable').on('draw.dt', function() {

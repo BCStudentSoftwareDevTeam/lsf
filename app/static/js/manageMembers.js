@@ -74,6 +74,19 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on("click", "#termYearToggle", function(){
+        let timeState = $(this).data("value");
+        console.log("jeez", timeState)
+        $.ajax({
+            url: "/members/timeState",
+            data: { timeState: timeState },
+            type: "GET",
+            success: function(){
+                console.log("good")
+            }
+        })
+    })
+
     $(document).on("click", ".remove-member", function() {
 
         let redButton = $(this);
