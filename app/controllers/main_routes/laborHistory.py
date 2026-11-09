@@ -179,6 +179,7 @@ def populateModal(statusKey):
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
+        approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
            
         try:
             currentPendingForm = FormHistory.select().where(
@@ -196,6 +197,7 @@ def populateModal(statusKey):
                                             currentUser = currentUser,
                                             statusForm = statusForm,
                                             buttonState = buttonState,
+                                            approveLink = approveLink,
                                             status = status,
                                             overload_history = overload_history,
                                             ))
