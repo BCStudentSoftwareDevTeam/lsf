@@ -323,7 +323,7 @@ class emailHandler():
                         formID = self.laborStatusForm.laborStatusFormID,
                         date = datetime.today().strftime('%Y-%m-%d'),
                         recipient = dept,
-                        subject = emailTemplateID.subject
+                        template = emailTemplateID,
                         )
         message.html = self.replaceText(emailTemplateID.body)
 
