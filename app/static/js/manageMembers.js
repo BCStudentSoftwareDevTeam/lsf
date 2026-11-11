@@ -99,7 +99,7 @@ $(document).ready(function() {
                 button
                     .data("value", nextState)
                     .attr("data-value", nextState)
-                    .text(nextState === "year" ? "Year Allocation" : "Term Allocation");
+                    .text(nextState === "year" ? "Year Contract" : "Term Contract");
                 superviseeHeader.text(
                     nextState === "term" ? "Current Academic Year Supervisees" : "Current Term Supervisees"
                 );
