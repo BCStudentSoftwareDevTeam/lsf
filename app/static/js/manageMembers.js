@@ -74,18 +74,41 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on("click", "#termYearToggle", function(){
-        let timeState = $(this).data("value");
-        console.log("jeez", timeState)
+    $(document).on("click", "#termYearToggle", function () {
+        const button = $(this);
+        const timeState = button.data("value");
+        const departmentAccount = button.data("account");
+        const departmentOrg = button.data("org");    
         $.ajax({
-            url: "/members/timeState",
+            url: `/department/${departmentOrg}/${departmentAccount}/members`,
             data: { timeState: timeState },
             type: "GET",
-            success: function(){
-                console.log("good")
+            success: function (html) {
+                const updatedCells = $(html).find("td.contract-count");
+                $("td.contract-count").each(function () {
+                    const supervisorId = $(this).data("supervisor");
+                    const match = updatedCells.filter(function () {
+                        return $(this).data("supervisor") === supervisorId;
+                    });
+                    if (supervisorId != null && match.length === 1) {
+                        $(this).html(match.html());
+                    }
+                });
+                const superviseeHeader = $("#superviseeHeader")
+                const nextState = timeState === "term" ? "year" : "term";
+                button
+                    .data("value", nextState)
+                    .attr("data-value", nextState)
+                    .text(nextState === "year" ? "Year Allocation" : "Term Allocation");
+                superviseeHeader.text(
+                    nextState === "term" ? "Current Academic Year Supervisees" : "Current Term Supervisees"
+                );
+            },
+            complete: function () {
+                button.prop("disabled", false);
             }
-        })
-    })
+        });
+    });
 
     $(document).on("click", ".remove-member", function() {
 

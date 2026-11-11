@@ -27,7 +27,7 @@
 <div class="container-fluid">
     <div class="clearfix">
         <div class="pull-left">
-            <button data-value="term" id="termYearToggle">Term Allocation</button>
+            <button data-value="term" class="btn btn-success me-2" data-account="{{department.ACCOUNT}}" data-org="{{department.ORG}}" id="termYearToggle">Term Allocation</button>
         </div>
         <div class="pull-right">
             <a class="skipContent" href="#search" tabindex="1">Click to Skip</a>
@@ -51,7 +51,7 @@
             <thead class="tableHeaders">
                 <tr>
                     <th>Name</th>
-                    <th class="no-sorting">Supervisees</th>
+                    <th class="no-sorting" id="superviseeHeader">Current Academic Year Supervisees</th>
                     <th class="no-sorting text-center">Assign Coordinator</th>
                     {% if  currentUser.isLaborAdmin %}
                     <th class="no-sorting text-center">
@@ -95,7 +95,7 @@
                         </span>
                     </td>
 
-                    <td>
+                    <td class="contract-count" data-supervisor="{{ member.supervisor.ID }}">
                         {% if (member.active_primary_positions == 0 and member.active_secondary_positions == 0) and (member.pending_primary_positions == 0 and member.pending_secondary_positions == 0) %}
                             None
                         {% else %}
