@@ -4,11 +4,11 @@ import types
 from fpdf import FPDF
 from urllib.parse import urlparse
 
-from app.models import status
 from flask import render_template , flash, redirect, url_for, request, g, session, jsonify, current_app, send_file, json, make_response
 from flask_login import current_user, login_required
 from app.controllers.main_routes import *
 from app.models.user import *
+from app.models import status
 from app.models.laborStatusForm import *
 from app.models.formHistory import *
 from app.models.overloadForm import *
@@ -179,6 +179,7 @@ def populateModal(statusKey):
 
                 # Convert the field adjusted value out of camelcase into a more readable format
                 form.adjustedForm.fieldAdjusted = re.sub(r"(\w)([A-Z])", r"\1 \2", form.adjustedForm.fieldAdjusted).title()
+        approveLink = f"{request.host_url}studentResponse/confirm?token={statusForm.confirmationToken}"
            
         try:
             currentPendingForm = FormHistory.select().where(
@@ -196,6 +197,7 @@ def populateModal(statusKey):
                                             currentUser = currentUser,
                                             statusForm = statusForm,
                                             buttonState = buttonState,
+                                            approveLink = approveLink,
                                             status = status,
                                             overload_history = overload_history,
                                             ))
