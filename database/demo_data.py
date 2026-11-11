@@ -2688,6 +2688,138 @@ positionDescriptionSections = [
         """,
         "order": 4,
     },
+
+        # ---------- S39568 Junior Data Analyst: ACTIVE (WLS 4) ----------
+    {
+        "position": 8,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>Students work largely on their own on defined analysis tasks. They are responsible for the accuracy of the reports they produce and help train newer student workers. That level of independence and accountability makes WLS Level 4 appropriate.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 8,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Maintain the department's datasets (enrollment, course, and labor data) and follow data privacy (FERPA) procedures.</p>
+
+            <h5>B. Communication</h5>
+            <p>Present findings to faculty in clear written summaries and simple charts.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>Work with student programmers to get the data needed for reports, and show new student workers how to use the team's spreadsheets and scripts.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Clean and validate raw data, find inconsistencies, and document how each dataset was prepared.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>Use Excel/Google Sheets, SQL queries, and Python (pandas) to produce recurring reports.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 8,
+        "sectionTitle": '<h4>Learning Opportunities</h4>',
+        "sectionContent": """
+            <h5>A. Data Literacy</h5>
+            <p>Learn to judge data quality and draw conclusions the data actually supports. (Aligned with: Goals 3 and 4)</p>
+
+            <h5>B. Professional Communication</h5>
+            <p>Practice turning technical results into summaries that non-technical readers can use. (Aligned with: Goal 2)</p>
+
+            <h5>C. Mentorship</h5>
+            <p>Gain experience training peers. (Aligned with: Goal 6)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 8,
+        "sectionTitle": '<h4>Required Qualifications</h4>',
+        "sectionContent": """
+            <h5>A. Coursework</h5>
+            <p>Completion of an introductory statistics course and an introductory programming course.</p>
+
+            <h5>B. Technical Skills</h5>
+            <p>Working knowledge of spreadsheets and basic SQL.</p>
+
+            <h5>C. Attention to Detail</h5>
+            <p>Careful, accurate work, and the ability to keep sensitive data confidential.</p>
+        """,
+        "order": 4,
+    },
+
+    # ---------- S39568 Junior Data Analyst: REQUESTED revision (WLS 5) ----------
+    {
+        "position": 23,
+        "sectionTitle": '<h4>WLS Level Justification</h4>',
+        "sectionContent": """
+            <p>The revised role makes the student the lead on the department's reporting work. They plan analysis projects, decide on methods, supervise a small team of student analysts, and present directly to department leadership. This added supervisory and decision-making responsibility moves the position to WLS Level 5.</p>
+        """,
+        "order": 1,
+    },
+    {
+        "position": 23,
+        "sectionTitle": '<h4>Description of Duties</h4>',
+        "sectionContent": """
+            <h5>A. Workplace Responsibility</h5>
+            <p>Own the department's reporting calendar, set priorities for the analyst team, and make sure every report is delivered on time and checked for accuracy.</p>
+
+            <h5>B. Communication</h5>
+            <p>Present results at department meetings, and work with faculty to turn their questions into analysis plans.</p>
+
+            <h5>C. Teamwork &amp; Collaboration</h5>
+            <p>Supervise two to three student analysts: assign work, review their output, and give regular feedback.</p>
+
+            <h5>D. Apply Critical Thinking and Problem Solving in Workplace Tasks</h5>
+            <p>Design analyses from start to finish, choose the right statistical methods, and explain each method's limitations to stakeholders.</p>
+
+            <h5>E. Utilize Technology Effectively in the Workplace</h5>
+            <p>Build and maintain automated pipelines and dashboards (Python, SQL, and a BI tool such as Tableau or Power BI) in place of manual reports.</p>
+
+            <h5>F. Connect Work Experience to Career and Academic Goals</h5>
+            <p>Document processes and write handoff guides so that the next lead can continue the work.</p>
+        """,
+        "order": 2,
+    },
+    {
+        "position": 23,
+        "sectionTitle": '<h4>Learning Opportunities</h4>',
+        "sectionContent": """
+            <h5>A. Leadership</h5>
+            <p>Practice delegating, reviewing others' work, and holding a team to quality standards. (Aligned with: Goals 6 and 7)</p>
+
+            <h5>B. Project Management</h5>
+            <p>Plan and scope analysis projects and manage stakeholders' expectations. (Aligned with: Goals 1 and 3)</p>
+
+            <h5>C. Advanced Technical Skills</h5>
+            <p>Gain experience with automation, data pipelines, and dashboard design. (Aligned with: Goals 4 and 5)</p>
+
+            <h5>D. Communication</h5>
+            <p>Present to leadership and defend analytical decisions. (Aligned with: Goal 2)</p>
+        """,
+        "order": 3,
+    },
+    {
+        "position": 23,
+        "sectionTitle": '<h4>Required Qualifications</h4>',
+        "sectionContent": """
+            <h5>A. Experience</h5>
+            <p>At least two semesters as a Junior Data Analyst, or equivalent analytics experience.</p>
+
+            <h5>B. Technical Skills</h5>
+            <p>Strong SQL and Python (pandas), and experience building visualizations.</p>
+
+            <h5>C. Leadership</h5>
+            <p>Ability to guide and support peers, and to give constructive feedback.</p>
+
+            <h5>D. Judgment</h5>
+            <p>Ability to make independent decisions about methods and priorities, and to handle sensitive data responsibly.</p>
+        """,
+        "order": 4,
+    },
+
 ]
 
 PositionDescriptionSection.insert_many(

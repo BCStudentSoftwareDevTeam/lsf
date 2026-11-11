@@ -22,7 +22,7 @@ def getActivePositions(dept):
 
     return positionsList, posURL
 
-def getPosition(dept, positionCode, revisionDate=None):
+def getPosition(dept, positionCode, revisionDate=None,status="Active"):
     """
     Returns a single position for a given department, position code, and optional revision date. 
     If no revision date is provided, the most recent revision is returned.
@@ -34,6 +34,9 @@ def getPosition(dept, positionCode, revisionDate=None):
 
     if revisionDate:
         positionQuery = positionQuery.where(PositionHistory.revisionDate == revisionDate)
+    
+    if status:
+        positionQuery = positionQuery.where(PositionHistory.status == status)
 
     return positionQuery.order_by(PositionHistory.revisionDate.desc()).first()
 

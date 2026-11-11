@@ -148,11 +148,17 @@ def individualpositions(org=None, account=None,poscode=None):
     except (NameError, DoesNotExist):
         abort(404)
     
-    previous_pos = getPosition(dept,poscode)
-    Previous_position_desc = getPositionDescriptionSections(pos)
-
+    previous_pos = getPosition(dept,poscode,status='Active')
     new_requested_position = getRequestedPosition(dept,poscode)
-    new_position_desc = getPositionDescriptionSections(pos)
+
+    if not previous_pos or not new_requested_position:
+        abort(404)
+
+
+    Previous_position_desc = getPositionDescriptionSections(previous_pos)
+    new_position_desc = getPositionDescriptionSections(new_requested_position)
+    
+
 
     return render_template('admin/individualPositionReview.html',
                             department = dept,
