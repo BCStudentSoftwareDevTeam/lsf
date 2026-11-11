@@ -40,8 +40,8 @@ $(document).ready( function(){
       $("#activeTable").hide();
       $("#inactiveTab").addClass("active");
       $("#inactiveTable").show();
-    })
 
+      
     attachModalToDepartment()
     $('.deptTable').on('draw.dt', function() {
       attachModalToDepartment()
