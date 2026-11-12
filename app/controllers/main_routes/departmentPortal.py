@@ -15,11 +15,11 @@ from app.logic.getPositions import getPosition, getPositions, getPositionDescrip
 from app.logic.getSupervisors import buildSupervisorDisplay, getSupervisorDepartments
 from app.logic.manageMembers import attachPositionCounts, getActivePendingPositionCounts
 from app.logic.search import searchPerson
-from app.logic.getTerms import getTerms
+from app.logic.getTerms import getTerms, getCurrentSemester
 from app.login_manager import require_login
 from app.models.allocation import Allocation
 from app.logic.allocationRequest import getOrUpdateRequestedAllocation
-from app.logic.allocationManager import allocationExists
+from app.logic.allocationManager import allocationExists, getContractedAllocations
 from app.logic.academicYearManager import getCurrentAndNextAY
 
 @main_bp.route('/department/<org>/<account>/positions/<positionCode>', methods=['GET'])
@@ -267,29 +267,28 @@ def addUserToDept():
             success=False,
             message="Could not add supervisor to department."
         ), 500
-        
+
 @main_bp.route('/department/<org>/<account>/members', methods=['GET'])
 def manageMembers(org=None, account=None):
     """Generates the Manage Members page."""
     currentUser = g.currentUser
-
+    currentTerms = getTerms()
+    
     if not currentUser.supervisor:
         return redirect(url_for('main.laborhistory', id=currentUser.student.ID))
 
     dept = Department.get_or_none(Department.ORG == org, Department.ACCOUNT == account)
-
     if not dept:
         abort(404)
 
     departmentMembers = getSupervisorDepartments(dept)
     supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor=currentUser.supervisor, department=dept)
-
     if not ( currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent or supervisorDeptRecord):
         return render_template('errors/403.html'), 403
 
-    currentTerms = getTerms()
+    terms = ((getCurrentSemester(),) if request.args.get("timeState") == "term" else currentTerms)
 
-    activePendingPositionCounts = getActivePendingPositionCounts(dept, currentTerms)
+    activePendingPositionCounts = getActivePendingPositionCounts(dept, terms)
     departmentMembers = attachPositionCounts(departmentMembers, activePendingPositionCounts)
 
     return render_template(
