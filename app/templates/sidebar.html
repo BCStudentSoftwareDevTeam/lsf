@@ -107,6 +107,8 @@
                     <a href="/admin/manageDepartments"><li class="panel-heading {% if request.path =="/admin/manageDepartments" %} active{% endif %}" tabindex="13"><h4>Manage Departments</h4></li></a>
                     <a href="/admin/adminManagement"><li class="panel-heading {% if request.path =="/admin/adminManagement" %} active{% endif %}" tabindex="14"><h4>Manage Administrators</h4></li></a>
                     <a href="/admin/emailTemplates"><li class="panel-heading {% if request.path =="/admin/emailTemplates" %} active{% endif %}" tabindex="15"><h4>Manage Email Templates</h4></li></a>
+                    <a href="{{ url_for('admin.positionImportPage') }}"><li class="panel-heading {% if request.endpoint == 'admin.positionImportPage' %}active{% endif %}" tabindex="15"><h4>Manage Position Migration</h4></li>
+                  </a>
                   </ul>
                   {% endif %}
                   {% if (currentUser.isFinancialAidAdmin or currentUser.isSaasAdmin) and not currentUser.isLaborAdmin %}

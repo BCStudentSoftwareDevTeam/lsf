@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{ super() }}
+<script
+    type="text/javascript"
+    src="{{ url_for('static', filename='js/positionimport.js') }}?u={{ lastStaticUpdate }}"
+></script>
+{% endblock %}
+
+{% block app_content %}
+<div class="text-center">
+    <h2>
+        Import Position Descriptions
+        <span
+            class="glyphicon glyphicon-bookmark"
+            data-toggle="tooltip"
+            data-tooltip="true"
+            title="Import position descriptions from Box using optional department, WLS, and revision year filters."
+            data-placement="right"
+        ></span>
+    </h2>
+
+    <p>
+        Existing records with the same position code, revision date,
+        and status will be skipped.
+    </p>
+</div>
+
+<form
+    id="positionImportForm"
+    action="{{ url_for('admin.importPositions') }}"
+    method="post"
+>
+    {% if csrf_token is defined %}
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
+    {% endif %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Box Connection</h3>
+
+                <div class="form-group">
+                    <label for="boxClientID">Box Client ID:</label>
+                    <input
+                        type="text"
+                        id="boxClientID"
+                        class="form-control"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="boxClientSecret">
+                        Box Client Secret:
+                    </label>
+                    <input
+                        type="password"
+                        id="boxClientSecret"
+                        class="form-control"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="boxAccessToken">
+                        Box Access Token:
+                    </label>
+                    <input
+                        type="password"
+                        id="boxAccessToken"
+                        class="form-control"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="boxFolderID">Box Folder ID:</label>
+                    <input
+                        type="text"
+                        id="boxFolderID"
+                        class="form-control"
+                        value="405069205932"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <h3>Import Filters</h3>
+
+                <p class="help-block">
+                    Leave filters blank to include all available
+                    departments, WLS levels, and revision years.
+                </p>
+
+                <div class="form-group">
+                    <label for="importDepartment">Department:</label>
+                    <select
+                        id="importDepartment"
+                        name="departmentID"
+                        class="form-control"
+                    >
+                        <option value="">All departments</option>
+
+                        {% for department in departments %}
+                            <option value="{{ department.departmentID }}">
+                                {{ department.DEPT_NAME }}
+                                — {{ department.ORG or 'No ORG' }}
+                                {% if department.ACCOUNT %}
+                                    / {{ department.ACCOUNT }}
+                                {% endif %}
+                                {% if not department.isActive %}
+                                    (Inactive)
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="importWls">WLS Level:</label>
+                    <select
+                        id="importWls"
+                        name="wls"
+                        class="form-control"
+                    >
+                        <option value="">All WLS levels</option>
+
+                        {% for level in range(1, 7) %}
+                            <option value="{{ level }}">
+                                WLS {{ level }}
+                            </option>
+                        {% endfor %}
+
+                        <option value="7">Special</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="importRevisionStart">Revision Date From:</label>
+                    <input
+                        type="date"
+                        id="importRevisionStart"
+                        name="revisionStart"
+                        class="form-control"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="importRevisionEnd">Revision Date To:</label>
+                    <input
+                        type="date"
+                        id="importRevisionEnd"
+                        name="revisionEnd"
+                        class="form-control"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="form-group">
+                    <button
+                        type="submit"
+                        id="importSelectedButton"
+                        class="btn btn-primary"
+                    >
+                        Import Matching Documents
+                    </button>
+
+                    <button
+                        type="button"
+                        id="importAllButton"
+                        class="btn btn-default"
+                    >
+                        Import All Documents
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div
+                    id="importResult"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

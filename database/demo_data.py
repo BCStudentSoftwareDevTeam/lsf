@@ -575,6 +575,9 @@ print(" * users added")
 #############################
 # Department
 #############################
+#############################
+# Active Departments
+#############################
 departments = [
             {
               "departmentID":1,
@@ -615,8 +618,51 @@ departments = [
               "ORG": "4022",
               "departmentCompliance": 1,
               "isActive": 1
+            },
+#############################
+# Inactive Departments
+#############################
+            
+            {
+              "departmentID":6,
+              "DEPT_NAME": "Agriculture and Natural Resources",
+              "ACCOUNT": "6740",
+              "ORG": "1441",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":7,
+              "DEPT_NAME": "Art and Art History",
+              "ACCOUNT": "6740",
+              "ORG": "2004",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":8,
+              "DEPT_NAME": "Asian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "9801",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":9,
+              "DEPT_NAME": "Appalachian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "8787",
+              "departmentCompliance": 1,
+              "isActive": 0
+            }, 
+            {
+              "departmentID":10,
+              "DEPT_NAME": "Music",
+              "ACCOUNT": "6740",
+              "ORG": "4805",
+              "departmentCompliance": 1,
+              "isActive": 0
             }
-
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
 print(" * departments added")
@@ -661,8 +707,9 @@ terms = [
         "termStart": "2026-08-01",
         "termEnd": "2027-05-01",
         "termState": 0,
-        "primaryCutOff": "2026-09-01",
-        "adjustmentCutOff": "2026-10-01",
+        "primaryCutOff": f"2026-09-01",
+        "adjustmentCutOff": f"2026-09-01",
+        "isAcademicYear": 1,
     },
     {
         "termCode": "202601",
@@ -732,6 +779,15 @@ terms = [
         "adjustmentCutOff": "2027-07-01",
         "isSummer": 1,
     },
+    {
+        "termCode": "202700",
+        "termName": "AY 2027-2028",
+        "termStart": "2027-08-01",
+        "termEnd": "2028-05-01",
+        "termState": 0,
+        "primaryCutOff": "2027-09-01",
+        "adjustmentCutOff": "2027-10-01",
+    },
 ]
 
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -748,7 +804,7 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B00841417",
             "supervisor_id": "B12361006",
             "department_id": 1,
-            "jobType": "Secondary",
+            "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Student Programmer",
             "POSN_CODE": "S61407",
@@ -890,7 +946,7 @@ LaborStatusForm.insert([{
             "studentSupervisee_id": "B12345773",
             "supervisor_id": "B12361006",
             "department_id": 5,
-            "jobType": "Secondary",
+            "jobType": "Primary",
             "WLS": 1,
             "POSN_TITLE": "Labor Workers",
             "POSN_CODE": "S61409",
@@ -1482,7 +1538,7 @@ allocations = [
     {
     "termCode":        202600,
     "department":       2,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -1527,7 +1583,7 @@ allocations = [
     {
     "termCode":         202600,
     "department":       5,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -1539,8 +1595,9 @@ allocations = [
     "secondary_10":     1,
     "breakHours":       900,
     },
+
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       1,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1556,6 +1613,7 @@ allocations = [
     },
                 
     ]
+print("hehe")
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print(" * allocation added")
@@ -1603,7 +1661,6 @@ positionHistory = [
         "revisionDate" : f"2026-01-01",
         "revisedBy": "Scott Heggen",
         "department": 1
-
     },
     {
         "positionTitle": "Teaching Associate",
