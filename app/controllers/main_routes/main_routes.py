@@ -25,12 +25,82 @@ from app.logic.getSupervisors import getSupervisors
 from app.logic.getPositions import getActivePositions
 from app.logic.allocationManager import getBreakContracts, getContractedAllocations, getTotalAllocations
 from app.logic.getTerms import getTerms, getCurrentSemester
-
+from app.logic.allocationDownload import AllocationExcelMaker, getAllocationPageData
 
 @main_bp.route('/logout', methods=['GET'])
 def triggerLogout():
     return redirect(logout())
 
+@main_bp.route(
+    "/department/<org>/<account>/allocations/download",
+    methods=["GET"],
+)
+def downloadCurrentAllocation(org, account):
+    currentUser = g.currentUser
+
+    try:
+        dept = Department.get(
+            Department.ORG == org,
+            Department.ACCOUNT == account,
+        )
+    except DoesNotExist:
+        return render_template("errors/404.html"), 404
+
+    # Use the same department access rules as the allocation page.
+    if not currentUser.isLaborAdmin:
+        if not currentUser.supervisor:
+            return render_template("errors/403.html"), 403
+
+        allowedDepartmentIds = [
+            department.departmentID
+            for department in getDepartmentsForSupervisor(currentUser)
+        ]
+
+        if dept.departmentID not in allowedDepartmentIds:
+            return render_template("errors/403.html"), 403
+
+    academicYear = request.args.get("academicYear", "").strip()
+
+    # Expected academic-year term code, for example: 202600.
+    if academicYear and (
+        len(academicYear) != 6
+        or not academicYear.isdigit()
+        or not academicYear.endswith("00")
+    ):
+        return "Invalid academic year.", 400
+
+    try:
+        allocationData = getAllocationPageData(
+            department=dept,
+            academicYear=academicYear or None,
+        )
+    except (DoesNotExist, ValueError):
+        return "Academic year not found.", 400
+
+    excel = AllocationExcelMaker(
+        department=dept,
+        allocationData=allocationData,
+    )
+
+    currentAY = allocationData["currentAY"]
+
+    response = send_file(
+        excel.makeExcel(),
+        mimetype=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+        as_attachment=True,
+        download_name=(
+            f"department_{dept.departmentID}_"
+            f"allocation_{currentAY.termCode}.xlsx"
+        ),
+    )
+
+    response.headers["Cache-Control"] = "private, no-store"
+
+    return response
+    
 @main_bp.route('/', methods=['GET', 'POST'])
 def supervisorPortal():
     '''
