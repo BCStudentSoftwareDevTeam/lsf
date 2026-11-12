@@ -18,7 +18,35 @@
 
 <div class ="button-container">
   <h3 class="termDisplay">Current Term: {{currentAY.termName}}</h3>
-  <a id="download" class="btn btn-success" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/download">Download Allocation History</a>
+  <div class="dropdown">
+      <button
+          class="btn btn-success dropdown-toggle"
+          type="button"
+          id="allocationExportDropdown"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+      >
+          Export
+          <span class="caret"></span>
+      </button>
+
+      <ul
+          class="dropdown-menu"
+          aria-labelledby="allocationExportDropdown"
+      >
+          <li>
+              <a href="{{ url_for(
+                  'main.downloadCurrentAllocation',
+                  org=department.ORG,
+                  account=department.ACCOUNT,
+                  academicYear=currentAY.termCode
+              ) }}">
+                  Current Allocation (.xlsx)
+              </a>
+          </li>
+      </ul>
+  </div>
   <a id="request" class="btn btn-info" href="/department/{{department.ORG}}/{{department.ACCOUNT}}/allocations/request">Request Allocation</a>
 </div>
  
