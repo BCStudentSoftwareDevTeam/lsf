@@ -1,5 +1,5 @@
 from flask import render_template, request, json, redirect, url_for, send_file, g, flash, jsonify
-from peewee import JOIN, DoesNotExist, fn
+from peewee import DoesNotExist
 from functools import reduce
 import operator
 
@@ -7,10 +7,7 @@ from app.models.department import Department
 from app.models.supervisor import Supervisor
 from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.student import Student
-from app.models.laborStatusForm import LaborStatusForm
 from app.models.formHistory import FormHistory
-from app.models.term import Term
-from app.models.allocation import Allocation
 from app.models.positionHistory import PositionHistory
 
 from app.controllers.admin_routes.allPendingForms import checkAdjustment
@@ -81,7 +78,8 @@ def departmentPortal(org=None,account=None):
     contracts = getContractedAllocations(currentSemester, dept)
 
 
-    positionsList, posURL = getActivePositions(dept) 
+    positionsList, posURL = getActivePositions(dept)
+
 
     return render_template('main/departmentPortal.html', 
                            departments = departments,
