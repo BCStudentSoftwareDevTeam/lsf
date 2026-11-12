@@ -9,17 +9,20 @@ from app.models.supervisor import*
 from app.models.user import*
 from app.models.status import*
 from app.models.student import*
+from app.models.department import Department
 from datetime import datetime
 from app.models.emailTracker import *
 from app.logic.tracy import Tracy
 import string
+import re
+from html import escape
 from app import app
 import os
 from datetime import datetime, date
 
 
 class emailHandler():
-    def __init__(self, formHistoryKey):
+    def __init__(self, formHistoryKey, adjustmentHistoryKeys=None):
         self.mail = Mail(app)
 
         self.formHistory = FormHistory.get(FormHistory.formHistoryID == formHistoryKey)
@@ -58,8 +61,10 @@ class emailHandler():
         self.link = ""
         self.releaseReason = ""
         self.releaseDate = ""
+        self.adjustmentField = ""
         self.newAdjustmentField = ""
         self.oldAdjustmentField = ""
+        self.adjustmentDetails = []
 
         # generating a confirmation link for student approval
         self.confirmationLink = ""
@@ -67,20 +72,66 @@ class emailHandler():
             self.confirmationLink = f"{request.host_url}studentResponse/confirm?token={self.laborStatusForm.confirmationToken}"
 
 
-        if self.formHistory.adjustedForm:
-            if self.formHistory.adjustedForm.fieldAdjusted == "supervisor":
+        if adjustmentHistoryKeys:
+            adjustment_histories = [
+                FormHistory.get(FormHistory.formHistoryID == history_key)
+                for history_key in adjustmentHistoryKeys
+            ]
+        else:
+            adjustment_histories = [self.formHistory]
+
+        field_labels = {
+            "supervisor": "Supervisor",
+            "department": "Department",
+            "position": "Position",
+            "weeklyHours": "Weekly hours",
+            "contractHours": "Contract hours",
+            "startDate": "Start date",
+            "endDate": "End date",
+        }
+        for history in adjustment_histories:
+            adjustment = history.adjustedForm
+            if not adjustment:
+                continue
+
+            fieldAdjusted = adjustment.fieldAdjusted
+            label = field_labels.get(fieldAdjusted, fieldAdjusted)
+            old_value = str(adjustment.oldValue)
+            new_value = str(adjustment.newValue)
+
+            if fieldAdjusted == "supervisor":
                 from app.logic.userInsertFunctions import createSupervisorFromTracy
-                newSupervisor = createSupervisorFromTracy(bnumber=self.formHistory.adjustedForm.newValue)
-                self.newAdjustmentField = "Pending new Supervisor: {0} {1}".format(newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME)
-                self.oldAdjustmentField = "Current Supervisor: {0} {1}".format(self.formHistory.formID.supervisor.FIRST_NAME, self.formHistory.formID.supervisor.LAST_NAME)
-            elif self.formHistory.adjustedForm.fieldAdjusted == "position":
-                currentPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.oldValue)
-                newPosition = Tracy().getPositionFromCode(self.formHistory.adjustedForm.newValue)
-                self.oldAdjustmentField = "Current Position: {0} ({1})".format(currentPosition.POSN_TITLE, currentPosition.WLS)
-                self.newAdjustmentField = "Pending new Position: {0} ({1})".format(newPosition.POSN_TITLE, newPosition.WLS)
-            else:
-                self.oldAdjustmentField = "Current Hours: {0}".format(self.formHistory.adjustedForm.oldValue)
-                self.newAdjustmentField = "Pending new Hours: {0}".format(self.formHistory.adjustedForm.newValue)
+                newSupervisor = createSupervisorFromTracy(bnumber=adjustment.newValue)
+                old_supervisor = history.formID.supervisor
+                old_value = "{} {}".format(
+                    old_supervisor.FIRST_NAME, old_supervisor.LAST_NAME
+                )
+                new_value = "{} {}".format(
+                    newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME
+                )
+            elif fieldAdjusted == "position":
+                current_position = Tracy().getPositionFromCode(adjustment.oldValue)
+                new_position = Tracy().getPositionFromCode(adjustment.newValue)
+                old_value = "{} ({})".format(
+                    current_position.POSN_TITLE, current_position.WLS
+                )
+                new_value = "{} ({})".format(
+                    new_position.POSN_TITLE, new_position.WLS
+                )
+            elif fieldAdjusted == "department":
+                old_value = Department.get(
+                    Department.ORG == adjustment.oldValue
+                ).DEPT_NAME
+                new_value = Department.get(
+                    Department.ORG == adjustment.newValue
+                ).DEPT_NAME
+
+            self.adjustmentDetails.append((label, old_value, new_value))
+
+        if self.adjustmentDetails:
+            self.adjustmentField, self.oldAdjustmentField, self.newAdjustmentField = (
+                self.adjustmentDetails[0]
+            )
 
         try:
             self.releaseDate = self.formHistory.releaseForm.releaseDate.strftime("%m/%d/%Y")
@@ -91,7 +142,7 @@ class emailHandler():
             # is the 'AttributeError' error. We expect to get the 'AttributeError',
             # but if we get anything else then we want to print the error
             if e.__class__.__name__ != "AttributeError":
-                print (e)
+                print(e)
 
     def send(self, message: Message):
         if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
@@ -201,20 +252,53 @@ class emailHandler():
             self.checkRecipient("Labor Status Form Rejected For Student",
                           "Primary Position Labor Status Form Rejected")
 
-    def laborStatusFormAdjusted(self, newSupervisor=False):
-        self.checkRecipient("Labor Status Form Adjusted For Student",
-                      "Labor Status Form Adjusted For Supervisor")
+    def laborStatusFormAdjusted(self,newSupervisor: str | None = None):
         if newSupervisor:
             self.supervisorEmail = (Supervisor.get(Supervisor.ID == newSupervisor).EMAIL)
-            self.checkRecipient(False,
-                          "Labor Status Form Adjusted For Supervisor")
+        self.checkRecipient("Labor Status Form Adjusted For Student",
+                      "Labor Status Form Adjusted For Supervisor")
+
+    def _renderAdjustmentDetails(self):
+        details = "".join(
+            "<p><strong>{}:</strong> {} &rarr; {}</p>".format(
+                escape(label), escape(old), escape(new)
+            )
+            for label, old, new in self.adjustmentDetails
+        )
+        return "<p><strong>Adjustment details:</strong></p>" + details
+
+    def _replaceMultipleAdjustmentDetails(self, form):
+        details = self._renderAdjustmentDetails()
+        if "@@AdjustmentDetails@@" in form:
+            return form.replace("@@AdjustmentDetails@@", details)
+
+        legacy_section = re.compile(
+            r"<p><strong>Adjustment details:</strong></p>\s*"
+            r"<p>Field changed:.*?</p>\s*"
+            r"<p>Changed from:.*?</p>\s*"
+            r"<p>Changed to:.*?</p>",
+            re.DOTALL,
+        )
+        form, section_count = legacy_section.subn(details, form, count=1)
+        if section_count:
+            return form
+
+        form = re.sub(
+            r"<p>.*?@@(?:AdjustmentField|CurrentAdjustmentField|NewAdjustmentField)@@.*?</p>",
+            "",
+            form,
+            flags=re.DOTALL,
+        )
+        signoff = "<p>Sincerely,</p>"
+        if signoff in form:
+            return form.replace(signoff, details + signoff, 1)
+        return form + details
 
     def laborReleaseFormSubmitted(self, adminUserName=None, adminName=None):
         self.adminName = adminName
         self.adminEmail = adminUserName + "@berea.edu"
         emailTemplate = EmailTemplate.get(EmailTemplate.purpose == "Labor Release Form Admin Notification") 
-        self.checkRecipient("Labor Release Form Submitted For Student",
-                      "Labor Release Form Submitted For Supervisor")
+        self.checkRecipient(False, "Labor Release Form Submitted For Supervisor")
         self.sendEmail(emailTemplate, "admin")
 
     def laborReleaseFormApproved(self):
@@ -294,7 +378,7 @@ class emailHandler():
                         formID = self.laborStatusForm.laborStatusFormID,
                         date = datetime.today().strftime('%Y-%m-%d'),
                         recipient = dept,
-                        subject = emailTemplateID.subject
+                        template = emailTemplateID,
                         )
         message.html = self.replaceText(emailTemplateID.body)
 
@@ -400,7 +484,6 @@ class emailHandler():
         form = form.replace("@@WLS@@", self.laborStatusForm.WLS)
         form = form.replace("@@Term@@", self.term.termName)
         form = form.replace("@@Admin@@", self.adminName)
-
         if self.formHistory.rejectReason:
             form = form.replace("@@RejectReason@@", self.formHistory.rejectReason)
         if self.laborStatusForm.weeklyHours != None:
@@ -417,9 +500,47 @@ class emailHandler():
             # 'Primary Supervisor' is the primary supervisor of the student who's laborStatusForm is passed in the initializer
             form = form.replace("@@PrimarySupervisor@@", self.primaryForm.formID.supervisor.FIRST_NAME + " " + self.primaryForm.formID.supervisor.LAST_NAME)
 
-        if self.formHistory.adjustedForm:
+        has_adjustment_details_placeholder = "@@AdjustmentDetails@@" in form
+        if self.adjustmentDetails:
+            if len(self.adjustmentDetails) > 1:
+                form = self._replaceMultipleAdjustmentDetails(form)
+            elif has_adjustment_details_placeholder:
+                form = form.replace(
+                    "@@AdjustmentDetails@@", self._renderAdjustmentDetails()
+                )
+
+        if (
+            self.formHistory.adjustedForm
+            and len(self.adjustmentDetails) <= 1
+            and not has_adjustment_details_placeholder
+        ):
+            adjustment_placeholders = (
+                "@@AdjustmentField@@",
+                "@@CurrentAdjustmentField@@",
+                "@@NewAdjustmentField@@",
+            )
+            has_adjustment_placeholders = all(
+                placeholder in form for placeholder in adjustment_placeholders
+            )
+            form = form.replace("@@AdjustmentField@@", self.adjustmentField)
             form = form.replace("@@NewAdjustmentField@@", self.newAdjustmentField)
             form = form.replace("@@CurrentAdjustmentField@@", self.oldAdjustmentField)
+            if not has_adjustment_placeholders:
+                adjustment_details = (
+                    "<p><strong>Adjustment details:</strong></p>"
+                    "<p>Field changed: <strong>{}</strong></p>"
+                    "<p>Changed from: <strong>{}</strong></p>"
+                    "<p>Changed to: <strong>{}</strong></p>"
+                ).format(
+                    self.adjustmentField,
+                    self.oldAdjustmentField,
+                    self.newAdjustmentField,
+                )
+                signoff = "<p>Sincerely,</p>"
+                if signoff in form:
+                    form = form.replace(signoff, adjustment_details + signoff, 1)
+                else:
+                    form += adjustment_details
         form = form.replace("@@SupervisorEmail@@", self.supervisorEmail)
         form = form.replace("@@Date@@", self.date)
         form = form.replace("@@ReleaseReason@@", self.releaseReason)
@@ -429,3 +550,4 @@ class emailHandler():
         if self.laborStatusForm.studentExpirationDate: # handle old cases where we might not have a date
             form = form.replace("@@StudentConfirmationExpiration@@", self.laborStatusForm.studentExpirationDate.strftime("%B %d, %Y"))
         return(form)
+ 
