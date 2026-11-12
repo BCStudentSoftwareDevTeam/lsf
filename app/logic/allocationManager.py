@@ -190,15 +190,7 @@ def getAllocationSummary(termCode, dept):
 
 
 def getOverAllocatedBands(allocationBands):
-    '''
-    A lower-hour contract can fill any unused higher-hour slot of the same job type (a 10 hour
-    Primary can use a 12, 15 or 20 hour Primary slot, a 5 hour Secondary can use a 10 hour
-    Secondary slot), but a higher-hour contract can never use a lower-hour slot, and Primary
-    and Secondary never share slots. So working down from each job type's highest band, a band
-    is over when the contracts at its hours or above outnumber the slots at its hours or above.
-    A band is only reported when it adds to the shortage already reported above it, so one
-    missing 20 hour slot isn't repeated as 15+, 12+ and 10+ as well.
-    '''
+"""Identify over-allocated Primary and Secondary hour bands based on contract and slot counts."""
     overAllocatedBands = []
     usedAtOrAbove = {}
     allocatedAtOrAbove = {}
