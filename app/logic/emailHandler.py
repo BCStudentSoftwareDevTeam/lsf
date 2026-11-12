@@ -94,22 +94,22 @@ class emailHandler():
             if not adjustment:
                 continue
 
-            field_adjusted = adjustment.fieldAdjusted
-            label = field_labels.get(field_adjusted, field_adjusted)
+            fieldAdjusted = adjustment.fieldAdjusted
+            label = field_labels.get(fieldAdjusted, fieldAdjusted)
             old_value = str(adjustment.oldValue)
             new_value = str(adjustment.newValue)
 
-            if field_adjusted == "supervisor":
+            if fieldAdjusted == "supervisor":
                 from app.logic.userInsertFunctions import createSupervisorFromTracy
-                new_supervisor = createSupervisorFromTracy(bnumber=adjustment.newValue)
+                newSupervisor = createSupervisorFromTracy(bnumber=adjustment.newValue)
                 old_supervisor = history.formID.supervisor
                 old_value = "{} {}".format(
                     old_supervisor.FIRST_NAME, old_supervisor.LAST_NAME
                 )
                 new_value = "{} {}".format(
-                    new_supervisor.FIRST_NAME, new_supervisor.LAST_NAME
+                    newSupervisor.FIRST_NAME, newSupervisor.LAST_NAME
                 )
-            elif field_adjusted == "position":
+            elif fieldAdjusted == "position":
                 current_position = Tracy().getPositionFromCode(adjustment.oldValue)
                 new_position = Tracy().getPositionFromCode(adjustment.newValue)
                 old_value = "{} ({})".format(
@@ -118,7 +118,7 @@ class emailHandler():
                 new_value = "{} ({})".format(
                     new_position.POSN_TITLE, new_position.WLS
                 )
-            elif field_adjusted == "department":
+            elif fieldAdjusted == "department":
                 old_value = Department.get(
                     Department.ORG == adjustment.oldValue
                 ).DEPT_NAME
