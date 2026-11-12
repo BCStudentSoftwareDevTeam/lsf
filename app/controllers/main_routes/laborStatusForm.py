@@ -190,7 +190,7 @@ def releaseAndRehire():
         tomorrowDate = datetime.now()+timedelta(1)
         createLaborReleaseForm(currentUser, previousPrimaryPosition.formID, tomorrowDate, "Satisfactory", "Released by labor admin.", "Approved", todayDate, currentUser)
 
-        # Create new labor status form
+        # Create new status form
         student = getOrCreateStudentRecord(bnumber=studentDict['stuBNumber'])
         supervisor = createSupervisorFromTracy(bnumber=studentDict['stuSupervisorID'])
         department, created = Department.get_or_create(DEPT_NAME = studentDict['stuDepartment'])
@@ -199,7 +199,7 @@ def releaseAndRehire():
         newLaborStatusForm = createLaborStatusForm(student, supervisor.ID, department.departmentID, term, studentDict)
         formHistory = createOverloadFormAndFormHistory(studentDict, newLaborStatusForm, currentUser, host=request.host)
 
-        # Mark the newly created labor status form as approved in both our system and Banner
+        # Mark the newly created status form as approved in both our system and Banner
         saveStatus("Approved", [str(formHistory.formHistoryID)], currentUser)
 
         flash("Form has been successfully released and submitted.", "success")

@@ -79,7 +79,7 @@ def alterLSF(laborStatusKey):
     notes = Notes.select().where(Notes.formID == laborStatusKey, Notes.noteType == "Supervisor Note") # Gets labor department notes from the laborofficenotes table
 
     return render_template( "main/alterLSF.html",
-				            title=("Adjust Labor Status Form" if formStatus == "Approved" else "Labor Status Correction Form"),
+				            title=("Adjust Status Form" if formStatus == "Approved" else "Status Correction Form"),
                             username = currentUser,
                             superviser_id = superviser_id,
                             prefillstudent = prefillstudent,

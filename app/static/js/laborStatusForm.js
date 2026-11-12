@@ -253,7 +253,7 @@ function getDepartment(object, stopSelectRefresh="") { // get department from se
        $("#warningModalText").html("Student with WLS Level 5 or 6 must have at least a 15 hour contract. " +
                                 "These positions require special authorization as specified at " +
                                 "<a href=\"http://catalog.berea.edu/2014-2015/Tools/Work-Learning-Service-Levels-WLS\""+
-                                "target=\"_blank\">The Labor Program Website.</a>");
+                                "target=\"_blank\">Berea's Work College Program Website.</a>");
        $("#warningModal").modal("show");
    }
  }
@@ -317,7 +317,7 @@ function checkCompliance(obj) {
           if(response.Department["Department Compliance"] == false){
             $("#warningModal").modal("show");
             $("#warningModalTitle").html("Warning");
-            $("#warningModalText").html("The "+ department +" Department is out of compliance. Please contact the Labor Office.");
+            $("#warningModalText").html("The "+ department +" Department is out of compliance. Please contact Berea's Work College Office.");
             $(".disable").prop("disabled", true);
             $("#addMoreStudent").prop("disabled", true);
             $("#selectedTerm").selectpicker("refresh");
@@ -671,7 +671,7 @@ function checkTotalHours(studentDict) {
 }
 
 
-//Triggered when summer labor is clicked when making a New Labor Status Form
+//Triggered when summer labor is clicked when making a New Status Form
 function summerLaborWarning(){
   var isBreak = $("#selectedTerm").find("option:selected").data("termbreak");
   var isSummer = $("#selectedTerm").find("option:selected").data("termsummer");
@@ -730,10 +730,10 @@ function createModalContent() { // Populates Submit Modal with Student informati
                       globalArrayOfStudents[i].stuContractHours + " hours";
       modalList.push(bigString);
     }
-    $("#SubmitModalText").html("Labor status form(s) will be submitted for:<br><br>" +
+    $("#SubmitModalText").html("Status form(s) will be submitted for:<br><br>" +
                                                             "<ul style=\"display:inline-block;text-align:left;\">" +
                                                             modalList.join("</li>")+"</ul>"+
-                                                            "<br><br>The labor status form will be eligible for approval in one business day.");
+                                                            "<br><br>The status form will be eligible for approval in one business day.");
     $("#SubmitModal").modal("show");
   }
   else {
@@ -742,10 +742,10 @@ function createModalContent() { // Populates Submit Modal with Student informati
                       " | " + globalArrayOfStudents[i].stuJobType + " | " + globalArrayOfStudents[i].stuWeeklyHours + " hours";
       modalList.push(bigString);
     }
-    $("#SubmitModalText").html("Labor status form(s) will be submitted for:<br><br>" +
+    $("#SubmitModalText").html("Status form(s) will be submitted for:<br><br>" +
                                "<ul style=\"display: inline-block;text-align:left;\">" +
                                modalList.join("</li>")+"</ul>"+
-                               "<br><br>The labor status form will be eligible for approval in one business day.");
+                               "<br><br>The status form will be eligible for approval in one business day.");
     $("#SubmitModal").modal("show");
   }
 }
@@ -792,11 +792,11 @@ function userInsert(){
             }
             let message = "";
             if (!hasFailure) {
-              message = "Labor Status Form(s) succeeded:<br><br>";
+              message = "Status Form(s) succeeded:<br><br>";
             } else if (hasFailure && hasSuccess) {
-              message = "Some of your submitted Labor Status Form(s) did not succeed:<br><br>";
+              message = "Some of your submitted Status Form(s) did not succeed:<br><br>";
             } else {
-              message = "All Labor Status Form(s) failed:<br><br>";
+              message = "All Status Form(s) failed:<br><br>";
             }
             $("#SubmitModalText").html(
               message +

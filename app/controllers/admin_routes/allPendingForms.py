@@ -72,7 +72,7 @@ def allPendingForms(formType):
         if formType == "pendingLabor":
             historyType = "Labor Status Form"
             approvalTarget = "denyLaborStatusFormsModal"
-            pageTitle = "Pending Labor Status Forms"
+            pageTitle = "Pending Status Forms"
 
         elif formType == "pendingAdjustment":
             historyType = "Labor Adjustment Form"
