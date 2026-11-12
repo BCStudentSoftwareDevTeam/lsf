@@ -1,167 +1,81 @@
+from datetime import date
+
+from flask import g, request, redirect, jsonify, abort, flash
+
 from app.controllers.admin_routes import *
-from app.models import term
-from app.models.formHistory import FormHistory
-from app.models.user import *
-from app.models.supervisorDepartment import SupervisorDepartment
 from app.login_manager import require_login
-from app.logic.search import getSupervisorsForDepartment
+
 from app.controllers.admin_routes import admin
 from app.controllers.errors_routes.handlers import *
-#from app.models.manageDepartments import *
+
+from app.models.formHistory import FormHistory
+from app.models.user import *
 from app.models.term import *
-from flask_bootstrap import bootstrap_find_resource
 from app.models.department import *
 from app.models.allocation import *
-from app.models.laborStatusForm import * #Do we need to import all?
-from flask import request, redirect
-from flask import jsonify
-from playhouse.shortcuts import model_to_dict
-from app.logic.tracy import Tracy
-from datetime import date
-from app.logic.manageDepartments import getUsedBreakHours
-from app.logic.manageDepartments import getAllocationStatus
+from app.models.laborStatusForm import *
+
+from app.logic.manageDepartments import *
+from app.logic.emailHandler import emailHandler
+from app.logic.allocationManager import allocationExists
+from app.logic.academicYearManager import getCurrentAndNextAY
+
 
 
 @admin.route('/admin/manageDepartments/', methods=['GET'])
-@admin.route('/admin/manageDepartments/<academic_year>', methods=['GET'])
-# @login_required
-def manage_departments(academic_year = 202500):     # FIXME
+@admin.route('/admin/manageDepartments/<academicYear>', methods=['GET'])
+def manageDepartments(academicYear = None):
     """
-    Updates the Labor Status Forms database with any new departments in the Tracy database on page load.
-    Returns the departments to be used in the HTML for the manage departments page.
+    Returns the Manage Departments page, which allows the admin to view all the departments
+    and their allocations.  
     """
-    print("******************1")
-    try:
-        currentUser = require_login()
-        if not currentUser:                    # Not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
-        print("******************2")
 
-        currentTerm = Term.get(Term.termCode == academic_year)
+    # Checking Admin Rights
+    currentUser = require_login()
+    if not currentUser:                    # If the current user is not logged in
+        return render_template('errors/403.html')
+    if not currentUser.isLaborAdmin:   
+        if currentUser.student:
+            return redirect('/laborHistory/' + currentUser.student.ID)
+        elif currentUser.supervisor:
+            return render_template('errors/403.html'), 403
 
-        totalBreakSum = getUsedBreakHours(currentTerm)
-        print("******************3")
-        # print("Something\n\n")
 
-        
-        # for row in totalBreakSum:
-        #     print(row['department'],int(row['totalHours']),row['termCode'])
-        #     print(totalBreakSum)
+    # The condition below may be deleted if the routing to the Manage Departments page is changed.
+    academicYear = g.currentAY[0] * 100 if academicYear is None else int(academicYear)
 
-        breakHoursByDepartment = {
-                                row["department"]: str(row["totalHours"] if row["totalHours"] is not None else 0)
-                                for row in getUsedBreakHours(currentTerm)
-                            }
-        # print(breakHoursByDepartment)
 
-        # print("\n\nSomething")
+    currentAY, nextAY = generateAdjacentYears(academicYear)
+    chosenAY = Term.get(Term.termCode == academicYear)
 
-        # activeDepartments = Department.select().where(Department.isActive == True)
-        # allAllocations = Allocation.select().where(Allocation.termCode == currentTerm)
-        inactiveDepartments = Department.select().where(Department.isActive == False)
-        print("******************4")
-        
-        activeDepartments = (Department
-                                        .select(Department, Allocation)
-                                        .join(Allocation)
-                                        .where(
-                                            Department.isActive == True,
-                                            Allocation.termCode == currentTerm.termCode
-                                        )
+    breakHoursByDepartment = {row["department"]: str(row["totalHours"] or 0) for row in getUsedBreakHours(chosenAY)}
+    activeDepartments = getActiveDepartmentsWithAllocation(chosenAY)
+    inactiveDepartments = Department.select().where(Department.isActive == False)  
+    allocationStatus = {allocation.department.departmentID: getAllocationStatus(chosenAY, allocation.department) for allocation in activeDepartments}
+    activeDepartmentsAllocations = getActiveDepartmentsAllocations(currentAY,nextAY)                       
+    allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
+
+
+    return render_template( 'admin/manageDepartments.html',
+                            activeDepartmentsAllocations = activeDepartmentsAllocations,
+                            inactiveDepartments = inactiveDepartments,
+                            allSupervisors = allSupervisors,
+                            currentAY = currentAY,
+                            nextAY = nextAY,
+                            chosenAY = chosenAY,
+                            academicYear = chosenAY.termName,
+                            breakHoursByDepartment = breakHoursByDepartment,
+                            allocationStatus = allocationStatus
                             )
-        print("******************5")
-        for dept in activeDepartments:
-            dept.totalPrimaries = (dept.allocation.primary_10 + dept.allocation.primary_12 + dept.allocation.primary_15 + dept.allocation.primary_20)
-            dept.totalSecondaries = (dept.allocation.secondary_5 + dept.allocation.secondary_10)
-            
-            lsfCountPrimaries = FormHistory.select().join(LaborStatusForm).join(Department).where(LaborStatusForm.studentConfirmation, LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Primary", Department.departmentID == dept.departmentID).count()
-            lsfCountSecondaries = FormHistory.select().join(LaborStatusForm).join(Department).where(FormHistory.status == "Approved", LaborStatusForm.termCode == currentTerm.termCode, LaborStatusForm.jobType == "Secondary", Department.departmentID == dept.departmentID).count()
-            dept.lsfCountPrimaries = lsfCountPrimaries
-            dept.lsfCountSecondaries = lsfCountSecondaries
-        # print("######################")
-        # print(f"COUNTS: {lsfCountSecondaries} ")
-        # print([lsf.formID for lsf in lsfCountPrimaries])
-        # print([lsf.formID for lsf in lsfCountSecondaries])
-        print("******************6")
-        allocationStatus = {
-            department.departmentID: getAllocationStatus(currentTerm, department)
-            for department in activeDepartments
-        }
-
-        # print("Pizza\n\n\n\n")
-        # print ("Allocation Status:", allocationStatus)
-        # print("\n\n\n\nPotato")
-        print("******************7")
-        allSupervisors= Supervisor.select().order_by(Supervisor.LAST_NAME)
-        return render_template( 'admin/manageDepartments.html',
-                                title = ("Manage Departments"),
-                                activeDepartments = activeDepartments,
-                                inactiveDepartments = inactiveDepartments,
-                                allSupervisors = allSupervisors,
-                                currentTerm = currentTerm,
-                                academicYear = currentTerm.termName,
-                                # totalBreakSum = totalBreakSum
-                                breakHoursByDepartment = breakHoursByDepartment,
-                                allocationStatus = allocationStatus
-                                )
-    except Exception as e:
-        print("Error Loading all Departments", e)
-        return render_template('errors/500.html'), 500
-
-
-
-@admin.route("/admin/manageDepartments/<departmentID>", methods=['GET'])
-def getSupervisorsInDepartment(departmentID):
-        currentUser = require_login()
-        if not currentUser:                    # Not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
-        
-        supervisors = getSupervisorsForDepartment(departmentID)
-        supervisors = [model_to_dict(supervisor) for supervisor in supervisors]
-        return jsonify(supervisors)
-    
-@admin.route('/admin/manageDepartments/removeSupervisorFromDepartment', methods=['POST'])
-def removeSupervisorFromDepartment():
-    try:
-        currentUser = require_login()
-        if not currentUser:                    # Not logged in
-            return render_template('errors/403.html')
-        if not currentUser.isLaborAdmin:       # Not an admin
-            if currentUser.student: # logged in as a student
-                return redirect('/laborHistory/' + currentUser.student.ID)
-            elif currentUser.supervisor:
-                return render_template('errors/403.html'), 403
-        
-        formData = request.form
-        supervisorDeptRecord = SupervisorDepartment.get_or_none(supervisor = formData['supervisorID'], department = formData['departmentID'])
-    
-        if supervisorDeptRecord:
-            supervisorDeptRecord.delete_instance()
-            return "True"
-        else:
-            return "False"
-    
-    except Exception as e:
-        print(f'Could not remove user from department: {e}')
-        return "", 500
 
 @admin.route('/admin/complianceStatus', methods=['POST'])
 def complianceStatusCheck():
     """
-    This function changes the compliance status in the database for labor status forms.  It works in collaboration with the ajax call in manageDepartments.js
+    This function changes the compliance status in the database for labor status forms.  
+    It works in collaboration with the ajax call in manageDepartments.js
     """
     try:
-        rsp = eval(request.data.decode("utf-8")) # This fixes byte indices must be intergers or slices error
+        rsp = request.get_json()
         if rsp:
             department = Department.get(int(rsp['deptName']))
             department.departmentCompliance = not department.departmentCompliance
@@ -170,3 +84,116 @@ def complianceStatusCheck():
     except Exception as e:
         print(e)
         return jsonify({"Success": False})
+
+
+
+@admin.route('/admin/manageDepartments/annualPositionReview', methods=['POST'])
+def annualPositionReviewRequest():
+    """
+    Sends an Annual Position Review request email to every active department's
+    Labor Coordinators and supervisors for the current academic year, and
+    records the request. Triggered from the Manage Departments page.
+    """
+    currentUser = require_login()
+    if not currentUser or not (currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent):
+        return render_template('errors/403.html'), 403
+
+    currentAY, _ = getCurrentAndNextAY()
+
+    try:
+        positionReviewEmail = emailHandler(termCodeUnderReview=currentAY.termCode)
+        result = positionReviewEmail.sendAnnualPositionReviewRequests()
+        if result["failedDepartments"]:
+            result["message"] = "Requests sent to {} of {} departments. Failed departments: {}.".format(
+                result["sentCount"], result["departmentCount"], ", ".join(result["failedDepartments"])
+            )
+            return jsonify({"Success": False, **result})
+        return jsonify({"Success": True, **result})
+    except Exception:
+        return jsonify({"Success": False})
+
+@admin.route('/admin/manageDepartments/<org>/<account>/allocationReview', methods=['GET'])
+def allocationReview(org=None, account=None):
+    """
+    Returns the Allocation Review page/form, which can only be accessed through
+    the Manage Departments page.  
+    """
+
+
+    # getting the name of the currently chosen department (based on the org and account numbers)
+    try:
+        dept = Department.get(Department.ORG == org, Department.ACCOUNT == account)
+    except (NameError, DoesNotExist):
+        abort(404)
+    
+
+    # Checking admin rights
+    currentUser = require_login()
+    if not currentUser:                    # If the current user is not logged in
+        return render_template('errors/403.html')
+    if not currentUser.isLaborAdmin: 
+        if currentUser.student:
+            return redirect('/laborHistory/' + currentUser.student.ID)
+        elif currentUser.supervisor:
+            return render_template('errors/403.html'), 403
+
+
+    # Retrieving the current and following academic years
+    currentAY, nextAY = getCurrentAndNextAY()
+
+
+    # checking if the allocation has already been approved
+    if allocationExists(nextAY.termCode, dept, isFinal=True):
+        flash("You cannot reapprove an allocation request.", "info")
+        return redirect('/admin/manageDepartments/')
+
+
+    # checking if the department has requested any allocation review
+    if not allocationExists(nextAY.termCode, dept, isFinal=False):
+        flash(f"The {dept.DEPT_NAME} department has not requested an allocation review yet.", "info")
+        return redirect('/admin/manageDepartments/')
+
+
+    # getting the current and the requested allocations
+    currentAlloc = Allocation.get_or_none(Allocation.termCode == currentAY.termCode, Allocation.department == dept, Allocation.isFinal == True)
+    requestedAlloc = Allocation.get(Allocation.termCode == nextAY.termCode, Allocation.department == dept, Allocation.isFinal == False)
+
+
+    return render_template('admin/allocationReview.html',
+                            department = dept,
+                            nextAY = nextAY,
+                            currentAlloc = currentAlloc,
+                            requestedAlloc = requestedAlloc
+                            )
+
+
+
+@admin.route('/admin/allocationReview/approve', methods=['POST'])
+def approveAllocationReview():
+
+    # Retrieving the current and following academic years
+    currentAY, nextAY = getCurrentAndNextAY()
+
+    # getting the ID of the user who approves the request
+    approverID = g.currentUser.userID
+
+    # getting the name of the requesting department
+    requester = request.form.get("requester", type=int, default=None)
+
+    # saving the newly approved allocation
+    newApprovedAlloc = Allocation.create(termCode       = nextAY.termCode,
+                                        department      = requester,
+                                        isFinal         = True,
+                                        approvedBy      = approverID,
+                                        approvedOn      = date.today(),
+                                        primary_10      = request.form.get("primary_10", type=int, default=None),
+                                        primary_12      = request.form.get("primary_12", type=int, default=None),
+                                        primary_15      = request.form.get("primary_15", type=int, default=None),
+                                        primary_20      = request.form.get("primary_20", type=int, default=None),
+                                        secondary_5     = request.form.get("secondary_5", type=int, default=None),
+                                        secondary_10    = request.form.get("secondary_10", type=int, default=None),
+                                        breakHours      = request.form.get("breakHours", type=int, default=None)
+                                        )
+    newApprovedAlloc.save()
+
+    return redirect("/admin/manageDepartments")

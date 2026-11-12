@@ -1211,7 +1211,7 @@ alter table student add isActive boolean;
 alter table supervisor add isBanned boolean;
 alter table supervisordepartment add `isCoordinator` BOOL NOT NULL default false;
 
-CREATE TABLE `positionhistory` (`id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY, `positionCode` VARCHAR(255) NOT NULL, `department_id` INTEGER NOT NULL, `status` VARCHAR(255) NOT NULL, `wls` INTEGER NOT NULL, `revisionDate` DATE NOT NULL, `description` TEXT NOT NULL, FOREIGN KEY (`department_id`) REFERENCES `department` (`departmentID`)
+CREATE TABLE `positionhistory` (`id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY, `positionTitle` VARCHAR(255) NULL, `positionCode` VARCHAR(255) NULL, `department_id` INTEGER NOT NULL, `status` VARCHAR(255) NULL, `wls` INTEGER NULL, `revisionDate` DATE NULL, `description` TEXT NULL, `reviewRequested` BOOL NOT NULL DEFAULT false, FOREIGN KEY (`department_id`) REFERENCES `department` (`departmentID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE INDEX `positionhistory_department_id` ON `positionhistory` (`department_id`);
