@@ -154,12 +154,17 @@
                 </span>
                 <br>
                 <span>
-                  <strong>Secondary:</strong>
+                  <strong>Secondary: </strong>
                   {{entry.requestedAllocation.totalSecondaries}}
                 </span>
                 <br>
                 <span>
-                  <strong>Break:</strong> {{ entry.requestedAllocation.breakHours }} hours
+                  <strong>Break: </strong> {{ entry.requestedAllocation.breakHours }} hours
+                </span>
+                <br>
+                <span>
+                  <strong>Status: </strong> 
+                    {{ entry.status }}
                 </span>
                 {% else %}
                 <span class="text-muted">No current allocation</span>

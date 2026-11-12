@@ -15,6 +15,8 @@ from app.models.formHistory import *
 from app.models.allocation import *
 from app.models.department import *
 from app.models.term import *
+from app.logic.allocationManager import allocationExists
+from app.logic.academicYearManager import getCurrentAndNextAY
 
 from app.login_manager import require_login
 
@@ -157,13 +159,21 @@ def getActiveDepartmentsAllocations(term,nextTerm):
 
     # build combined dictionary for active departments
     activeDepartmentsAllocations = {}
+    currentAY, nextAY = getCurrentAndNextAY()
 
     for dept in activeDepartments:
+        if not allocationExists(nextAY.termCode, dept, isFinal=False) and reqAllocByDeptId.get(dept.departmentID) is None:
+            status = "Allocation not requested yet"
+        else:
+            status = "Allocation request is reviewed" if allocationExists(nextAY.termCode, dept, isFinal=True) else "Allocation request is received"
+        
         activeDepartmentsAllocations[dept.departmentID] = {
         "department": dept,
         "allocation": allocByDeptId.get(dept.departmentID),  # None if no allocation
-        "requestedAllocation": reqAllocByDeptId.get(dept.departmentID),  # None if no requested allocation
+        "requestedAllocation": reqAllocByDeptId.get(dept.departmentID),  # None if no requested allocation'
+        "status": status,
     }
+    
     return activeDepartmentsAllocations
 
 
