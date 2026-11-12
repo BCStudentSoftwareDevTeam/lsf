@@ -744,6 +744,10 @@ function fetchAllocationWarning() {
     },
     error: function(xhr, status, error) {
       console.error("Could not load allocation warning:", xhr.status, error);
+      // Let the user know the allocation status is missing, without blocking submission.
+      $('#allocationWarnings').html('<div class="alert alert-info" role="alert">' +
+        'Allocation information could not be loaded right now. You can still submit your form(s).' +
+        '</div>');
     }
   });
 }
