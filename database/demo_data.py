@@ -575,34 +575,41 @@ print(" * users added")
 #############################
 # Department
 #############################
+#############################
+# Active Departments
+#############################
 departments = [
             {
               "departmentID":1,
               "DEPT_NAME": "Computer Science",
               "ACCOUNT": "6740",
               "ORG": "2114",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":2,
               "DEPT_NAME": "Technology and Applied Design",
               "ACCOUNT": "6740",
               "ORG": "2147",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":3,
               "DEPT_NAME": "Mathematics",
               "ACCOUNT": "6740",
               "ORG": "2150",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             },
             {
               "departmentID":4,
               "DEPT_NAME": "Biology",
               "ACCOUNT": "6740",
               "ORG": "2107",
-              "departmentCompliance": 1
+              "departmentCompliance": 1,
+              "isActive": 1
             }, 
             {
               "departmentID":5,
@@ -611,8 +618,51 @@ departments = [
               "ORG": "4022",
               "departmentCompliance": 1,
               "isActive": 1
+            },
+#############################
+# Inactive Departments
+#############################
+            
+            {
+              "departmentID":6,
+              "DEPT_NAME": "Agriculture and Natural Resources",
+              "ACCOUNT": "6740",
+              "ORG": "1441",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":7,
+              "DEPT_NAME": "Art and Art History",
+              "ACCOUNT": "6740",
+              "ORG": "2004",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":8,
+              "DEPT_NAME": "Asian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "9801",
+              "departmentCompliance": 1,
+              "isActive": 0
+            },
+            {
+              "departmentID":9,
+              "DEPT_NAME": "Appalachian Studies",
+              "ACCOUNT": "6740",
+              "ORG": "8787",
+              "departmentCompliance": 1,
+              "isActive": 0
+            }, 
+            {
+              "departmentID":10,
+              "DEPT_NAME": "Music",
+              "ACCOUNT": "6740",
+              "ORG": "4805",
+              "departmentCompliance": 1,
+              "isActive": 0
             }
-
         ]
 Department.insert_many(departments).on_conflict_replace().execute()
 print(" * departments added")
@@ -657,8 +707,9 @@ terms = [
         "termStart": "2026-08-01",
         "termEnd": "2027-05-01",
         "termState": 0,
-        "primaryCutOff": "2026-09-01",
-        "adjustmentCutOff": "2026-10-01",
+        "primaryCutOff": f"2026-09-01",
+        "adjustmentCutOff": f"2026-09-01",
+        "isAcademicYear": 1,
     },
     {
         "termCode": "202601",
@@ -727,6 +778,15 @@ terms = [
         "primaryCutOff": "2027-06-01",
         "adjustmentCutOff": "2027-07-01",
         "isSummer": 1,
+    },
+    {
+        "termCode": "202700",
+        "termName": "AY 2027-2028",
+        "termStart": "2027-08-01",
+        "termEnd": "2028-05-01",
+        "termState": 0,
+        "primaryCutOff": "2027-09-01",
+        "adjustmentCutOff": "2027-10-01",
     },
 ]
 
@@ -1461,9 +1521,9 @@ print(f"termCode_id being used: {202500!r}")
 ###########################
 allocations = [ 
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       3,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling due to decrease in student enrollment caused by current economic conditions",
@@ -1476,9 +1536,9 @@ allocations = [
     "breakHours":       260,
     },
     {
-    "termCode":        202500,
+    "termCode":        202600,
     "department":       2,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Increase in student enrollment due to exodous from CS department",
@@ -1491,9 +1551,9 @@ allocations = [
     "breakHours":       750,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       1,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "We are hiring more students to help with the increased workload in the department",
@@ -1506,9 +1566,9 @@ allocations = [
     "breakHours":       550,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       4,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Downscaling the number of students in the department due to budget cuts",
@@ -1521,9 +1581,9 @@ allocations = [
     "breakHours":       300,
     },
     {
-    "termCode":         202500,
+    "termCode":         202600,
     "department":       5,
-    "isFinal":          False,
+    "isFinal":          True,
     "approvedOn":       None,
     "approvedBy":       None,
     "justification":    "Due to rapid department growth, we need to hire more students to help with the increased workload",
@@ -1535,8 +1595,9 @@ allocations = [
     "secondary_10":     1,
     "breakHours":       900,
     },
+
     {
-    "termCode":         202600,
+    "termCode":         f"202600",
     "department":       1,
     "isFinal":          True,
     "approvedOn":       None,
@@ -1552,6 +1613,7 @@ allocations = [
     },
                 
     ]
+print("hehe")
 Allocation.insert_many(allocations).on_conflict_replace().execute()
 
 print(" * allocation added")
@@ -1599,7 +1661,6 @@ positionHistory = [
         "revisionDate" : f"2026-01-01",
         "revisedBy": "Scott Heggen",
         "department": 1
-
     },
     {
         "positionTitle": "Teaching Associate",
@@ -1966,6 +2027,8 @@ PositionDescriptionSection.insert_many(
 
 print(" * position description sections added")
 
+pearceJID = User.get(User.supervisor == "B12365892").userID
+ramsayBID = User.get(User.supervisor == "B00763721").userID
 
 allocation =[
                 {
@@ -1973,7 +2036,7 @@ allocation =[
                     "department": 3,
                     "isFinal": True,
                     "approvedOn": f"{2025}-06-30",
-                    "approvedBy": "B12365892",
+                    "approvedBy": pearceJID,
                     "justification": "We just want it for fun", 
                     "primary_10": 2,
                     "primary_12": 3,
@@ -1988,7 +2051,7 @@ allocation =[
                     "department": 2,
                     "isFinal": False,
                     "approvedOn": f"{2025}-06-20",
-                    "approvedBy": "B00763721",
+                    "approvedBy": ramsayBID,
                     "justification": "We need it to lower the amount of allocations we have", 
                     "primary_10": 1,
                     "primary_12": 2,

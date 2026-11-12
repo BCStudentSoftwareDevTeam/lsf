@@ -12,7 +12,10 @@ def getActivePendingPositionCounts(dept, currentTerms):
     """Active/pending primary/secondary position counts for the selected academic year."""
     today = date.today().strftime("%Y-%m-%d")
     pendingStatuses = ["Pending", "Pre-Student Approval"]
-    validTerms = (currentTerms[0].termCode, currentTerms[1].termCode, currentTerms[2].termCode)
+    if len(currentTerms) > 1:
+        validTerms = (currentTerms[0].termCode, currentTerms[1].termCode, currentTerms[2].termCode)
+    else:
+        validTerms = currentTerms
 
     releasedFormIds = (
         FormHistory
