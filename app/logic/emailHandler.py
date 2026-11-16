@@ -126,12 +126,12 @@ class emailHandler():
 
     def sendAnnualPositionReviewRequests(self):
         """
-        Sends an Annual Position Review request email to every active department's
-        Labor Coordinators and supervisors, then flags the department's active
-        positions as review-requested.
+        Sends a Position Review request email to the Labor Coordinators and
+        supervisors of every active department that has positions due for review
+        (see getPositionsPendingReview), then flags those positions as review-requested.
 
-        A department is skipped when none of its active positions are still
-        waiting on a request, so calling this twice never emails a department twice.
+        A department is skipped when none of its positions are due, so calling this
+        twice never emails a department twice.
         """
         template = EmailTemplate.get_or_none(EmailTemplate.purpose == "Annual Position Review Request")
         if template is None:
@@ -141,11 +141,11 @@ class emailHandler():
 
         sentCount = 0
         failedDepartments = []
-        alreadyRequestedDepartments = []
+        noReviewDueDepartments = []
         for department in departments:
             pendingPositions = getPositionsPendingReview(department)
             if not pendingPositions:
-                alreadyRequestedDepartments.append(department.DEPT_NAME)
+                noReviewDueDepartments.append(department.DEPT_NAME)
                 continue
 
             supervisors, laborCoordinators = getSupervisors(department)
@@ -171,7 +171,7 @@ class emailHandler():
             "sentCount": sentCount,
             "departmentCount": departments.count(),
             "failedDepartments": failedDepartments,
-            "alreadyRequestedDepartments": alreadyRequestedDepartments
+            "noReviewDueDepartments": noReviewDueDepartments
         }
 
     # The methods of this class each handle a different email situation. Some of the methods need to handle

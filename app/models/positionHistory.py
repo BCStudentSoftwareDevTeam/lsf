@@ -10,11 +10,9 @@ class PositionHistory(baseModel):
     revisionDate       = DateField(null=True)
     revisedBy          = CharField(null=True)
     description        = TextField(default=None)
-    # True once an Annual Position Review request has gone out for this position.
-    # Nothing resets it yet, so a position is only ever requested once - the Labor
-    # Office's review workflow isn't defined. Possible later additions: a reset
-    # function (per department or all) for the Labor Office to trigger, or an
-    # automatic reset when a new academic year starts.
+    # True once a Position Review request has gone out for this revision. A revision
+    # gets a new row with this unset, so it can be requested again once that revision
+    # is old enough (see getPositionsPendingReview).
     reviewRequested    = BooleanField(default=False)
 
     class Meta:
