@@ -8,10 +8,10 @@ function addSupervisorToDepartment(supervisorID, departmentID, supervisorFirstNa
       data: {"supervisorID": supervisorID, "departmentID": departmentID},
       success: function(response) {
         if (response == "True") {
-          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} (${supervisorID}) has been added to the department.`, "success")
+          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} has been added to the department.`, "success")
           clearDropdowns()
         } else {
-          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} (${supervisorID}) is already a member of this department.`, "warning")
+          msgFlash(`Supervisor ${supervisorFirstName} ${supervisorLastName} is already a member of this department.`, "warning")
           clearDropdowns()
         }
         if (callback){
