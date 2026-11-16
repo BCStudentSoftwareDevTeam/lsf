@@ -7,7 +7,7 @@ function submitAnnualPositionReview(button) {
  RETURNS: None
 */
   // Disable immediately so a double-click can't fire this request twice.
-  // The server also skips departments that were already sent a request.
+  // The server also skips departments with no positions due for review.
   // Re-enabled in complete regardless of outcome so a retry after a failure
   // is possible without reloading the page.
   $(button).prop("disabled", true);
@@ -19,8 +19,8 @@ function submitAnnualPositionReview(button) {
     success: function(response) {
       $("#annualPositionModal").modal("hide");
 
-      if (response["Success"] && response["sentCount"] === 0 && response["alreadyRequestedDepartments"].length > 0) {
-        msgFlash("Position review requests were already sent to every department.", "info");
+      if (response["Success"] && response["sentCount"] === 0 && response["noReviewDueDepartments"].length > 0) {
+        msgFlash("No departments have positions due for review.", "info");
       } else if (response["Success"]) {
         msgFlash("Position review requests sent to " + response["sentCount"] + " of " + response["departmentCount"] + " departments.", "success");
       } else {
