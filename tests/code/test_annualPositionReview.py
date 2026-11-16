@@ -1,4 +1,5 @@
 import pytest
+from datetime import date
 from app import app
 from app.models import mainDB
 from app.models.term import Term
@@ -8,6 +9,7 @@ from app.models.supervisorDepartment import SupervisorDepartment
 from app.models.emailTemplate import EmailTemplate
 from app.models.positionHistory import PositionHistory
 from app.logic.emailHandler import emailHandler
+from app.logic.getPositions import getPositionReviewCutoff
 
 
 @pytest.mark.integration
@@ -73,6 +75,13 @@ def test_sendAnnualPositionReviewRequests():
             )
 
 
+            # Revised recently, so it isn't due for review yet.
+            recentPosition = PositionHistory.create(
+                positionTitle="Recently Revised Role", positionCode="TESTPOS5", department=department,
+                status="Active", revisionDate=date.today()
+            )
+
+
             ################ SENDING REQUESTS ################
             handler = emailHandler(termCodeUnderReview=term.termCode)
             result = handler.sendAnnualPositionReviewRequests()
@@ -82,14 +91,19 @@ def test_sendAnnualPositionReviewRequests():
             assert result["sentCount"] == 1
             assert result["departmentCount"] == 2
             assert result["failedDepartments"] == []
-            assert result["alreadyRequestedDepartments"] == []
+            assert result["noReviewDueDepartments"] == []
 
+            # Revised over 5 years ago, so it's due and gets flagged.
             activePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS1")
             assert activePosition.reviewRequested is True
 
             # The inactive position is left untouched - only active ones are flagged.
             inactivePosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS2")
             assert inactivePosition.reviewRequested is False
+
+            # Revised within the last 5 years, so it isn't part of the request.
+            recentPosition = PositionHistory.get(PositionHistory.positionCode == "TESTPOS5")
+            assert recentPosition.reviewRequested is False
 
             # No email went out for "Empty Department" (nobody to send to), so its
             # position stays unflagged and it can still be requested once someone is assigned.
@@ -101,12 +115,12 @@ def test_sendAnnualPositionReviewRequests():
             result = handler.sendAnnualPositionReviewRequests()
 
             assert result["sentCount"] == 0
-            assert result["alreadyRequestedDepartments"] == ["Test Department"]
+            assert result["noReviewDueDepartments"] == ["Test Department"]
 
 
-            ################ A NEW POSITION MAKES THE DEPARTMENT ELIGIBLE AGAIN ################
+            ################ ANOTHER OUTDATED POSITION MAKES THE DEPARTMENT DUE AGAIN ################
             PositionHistory.create(
-                positionTitle="New Role", positionCode="TESTPOS4", department=department,
+                positionTitle="Old Role", positionCode="TESTPOS4", department=department,
                 status="Active", revisionDate="2020-01-01"
             )
             result = handler.sendAnnualPositionReviewRequests()
@@ -116,3 +130,10 @@ def test_sendAnnualPositionReviewRequests():
 
 
             transaction.rollback()
+
+
+@pytest.mark.unit
+def test_getPositionReviewCutoff():
+    assert getPositionReviewCutoff(date(2026, 11, 16)) == date(2021, 11, 16)
+    # Feb 29 has no counterpart 5 years earlier, so it falls back to Feb 28.
+    assert getPositionReviewCutoff(date(2028, 2, 29)) == date(2023, 2, 28)
