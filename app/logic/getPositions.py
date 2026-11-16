@@ -1,3 +1,4 @@
+from datetime import date
 from app.models.positionHistory import PositionHistory
 from app.models.positionDescriptionSection import PositionDescriptionSection
 
@@ -44,6 +45,45 @@ def getPositions(dept):
                                 .where((PositionHistory.department == dept) &
                                        (PositionHistory.status == "Active"))
                                 .order_by(PositionHistory.positionTitle.asc())))
+
+# Labor Office policy: a position is due for review once it's gone this long without a revision.
+POSITION_REVIEW_INTERVAL_YEARS = 5
+
+def getPositionReviewCutoff(today=None):
+    """
+    Returns the date a position's revisionDate must be on or before to be due for review.
+    """
+    today = today or date.today()
+    try:
+        return today.replace(year=today.year - POSITION_REVIEW_INTERVAL_YEARS)
+    except ValueError:
+        # Feb 29 in a year whose counterpart isn't a leap year
+        return today.replace(year=today.year - POSITION_REVIEW_INTERVAL_YEARS, day=28)
+
+def getPositionsPendingReview(department):
+    """
+    Returns the active positions in a department that are due for a Position
+    Review: not revised in the last POSITION_REVIEW_INTERVAL_YEARS years (or never
+    given a revisionDate), and not already sent a review request.
+
+    A revision creates a new PositionHistory row with a fresh revisionDate and
+    reviewRequested unset, so a revised position isn't due again for another
+    POSITION_REVIEW_INTERVAL_YEARS years.
+    """
+    return list(PositionHistory.select()
+                .where(PositionHistory.department == department,
+                       PositionHistory.status == "Active",
+                       PositionHistory.reviewRequested == False,
+                       (PositionHistory.revisionDate.is_null()) | (PositionHistory.revisionDate <= getPositionReviewCutoff())))
+
+def markPositionsReviewRequested(positions):
+    """
+    Records that an Annual Position Review was requested for the given positions.
+    """
+    return (PositionHistory
+            .update(reviewRequested=True)
+            .where(PositionHistory.id.in_([position.id for position in positions]))
+            .execute())
 
 def getPositionDescriptionSections(position):
     """
