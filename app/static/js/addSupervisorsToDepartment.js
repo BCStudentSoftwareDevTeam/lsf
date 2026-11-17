@@ -1,6 +1,6 @@
 function addSupervisorToDepartment(supervisorID, departmentID, supervisorFirstNameData, supervisorLastNameData, callback=() => {}) {
-  let supervisorFirstName = supervisorFirstNameData
-  let supervisorLastName = supervisorLastNameData
+  let supervisorFirstName = supervisorFirstNameData ??  ''
+  let supervisorLastName = supervisorLastNameData ?? ''
 
     return $.ajax({
       method: "POST",
