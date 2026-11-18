@@ -24,7 +24,7 @@
     <ul class="nav nav-tabs" style='text-align: center;'>
       {% if currentUser.isLaborAdmin or currentUser.isLaborDepartmentStudent%}
         <li id='laborTab' {% if formType == "pendingLabor" %} class="active" {% endif %}>
-          <a id="pendingLabor" href="{{url_for('admin.allPendingForms', formType = 'pendingLabor')}}"> Pending Labor Status Forms <strong>({{ laborStatusFormCounter }})</strong></a>
+          <a id="pendingLabor" href="{{url_for('admin.allPendingForms', formType = 'pendingLabor')}}"> Pending Status Forms <strong>({{ laborStatusFormCounter }})</strong></a>
         </li>
         <li id='adjustedTab' {% if formType == "pendingAdjustment" %} class="active" {% endif %}>
           <a href="{{url_for('admin.allPendingForms', formType = 'pendingAdjustment')}}">Pending Adjustment Forms <strong>({{ adjustedFormCounter }})</strong></a>

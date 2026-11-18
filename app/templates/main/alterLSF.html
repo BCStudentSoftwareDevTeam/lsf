@@ -88,7 +88,7 @@
          <input hidden id="termBreak" data-termBreak="{{prefillterm.isBreak|lower}}"> </input>
        </div>
      </div>
-     {% if title == "Labor Status Correction Form" and currentUser.isLaborAdmin %}
+     {% if title == "Status Correction Form" and currentUser.isLaborAdmin %}
      <div class="form-group col-xs-12" id="datePickerDiv">
          <div  class="form-group col-xs-6" id="startDateStyle">
            <!--datePicker for start date-->
@@ -149,7 +149,7 @@
         </div>
 
     <!-- This conditional will add the datetime picker for Adjust LSF instances -->
-    {% if title == "Adjust Labor Status Form" %}
+    {% if title == "Adjust Status Form" %}
     <div class="form-group" id= "dateDiv">
     <label for="datetimepicker" class="required-asterisk"><span class="tooltip-right" data-tooltip="Required">Date Needed<span class="required-mark"> *</span></span></label>
       <div class="input-group date"  class="change">

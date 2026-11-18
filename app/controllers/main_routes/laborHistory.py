@@ -87,7 +87,7 @@ def laborhistory(id):
                 form.displayStatus = "Release Pending" if str(related.status) == "Pending" else "Released"
 
         return render_template('main/formHistory.html',
-    				            title=('Labor History'),
+    				            title=('History'),
                                 student = student,
                                 username=currentUser.username,
                                 laborStatusFormList = laborStatusFormList,
