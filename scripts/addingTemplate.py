@@ -45,7 +45,7 @@ emailTemplates = {
             '<p>This email is to notify that the Labor Status Form submitted by <strong>@@Creator@@</strong> for you has expired.</p>'
             '<p>&nbsp;</p>'
             '<p>Please notify your supervisor <strong>@@Supervisor@@</strong> to resubmit the form.</p>'
-            '<p>Sincerely,<br>Berea\'s Work College Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
+            '<p>Sincerely,<br>Berea's Work College Program Office<br>labor_program@berea.edu<br>859-985-3611</p>'
         ), 
         "audience":"Student",
     }
