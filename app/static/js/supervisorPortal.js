@@ -47,7 +47,7 @@ $(document).ready(function () {
     let supervisorID = $('#supervisorModalSelect :selected').val()
     let departmentID = $('#departmentModalSelect :selected').val()
 
-    addSupervisorToDepartment(supervisorID, departmentID)
+    addSupervisorToDepartment(supervisorID, departmentID, null, null)
   })
 
   $('#departmentModalSelect').on('change', disableButtonHandler)
