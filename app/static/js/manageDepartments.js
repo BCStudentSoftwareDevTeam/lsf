@@ -35,7 +35,93 @@ $(document).ready( function(){
     $('#manageDepartmentSupervisorModal').on('hidden.bs.modal', function() {
       clearDropdowns()
     })
+
+    $('#allocationPreviewButton').on('click', loadAllocationDownloadPreview)
+    $('#allocationAcademicYear').on('change', function() {
+      $('#allocationDownloadError').prop('hidden', true).text('')
+    })
+    $('#confirmAllocationDownload').on('click', function() {
+      const academicYearCode = $(this).data('academic-year-code')
+      if (academicYearCode) {
+        window.location.href = `/admin/manageDepartments/allocations/download/${academicYearCode}`
+      }
+    })
 });
+
+function loadAllocationDownloadPreview() {
+  const academicYearCode = $('#allocationAcademicYear').val()
+  const errorMessage = $('#allocationDownloadError')
+
+  if (!academicYearCode) {
+    errorMessage.text('Select an academic year to preview its allocation download.').prop('hidden', false)
+    return
+  }
+
+  const previewButton = $('#allocationPreviewButton')
+  previewButton.prop('disabled', true).text('Loading...')
+  errorMessage.prop('hidden', true).text('')
+
+  $.ajax({
+    method: 'GET',
+    url: `/admin/manageDepartments/allocations/${academicYearCode}`,
+    dataType: 'json',
+    success: function(response) {
+      const rows = $('#allocationDownloadPreviewRows').empty()
+      const totals = {
+        primary_10: 0,
+        primary_12: 0,
+        primary_15: 0,
+        primary_20: 0,
+        secondary_5: 0,
+        secondary_10: 0,
+        break_hours: 0
+      }
+
+      response.allocations.forEach(function(allocation) {
+        const values = [
+          allocation.department,
+          allocation.primary_10,
+          allocation.primary_12,
+          allocation.primary_15,
+          allocation.primary_20,
+          allocation.secondary_5,
+          allocation.secondary_10,
+          allocation.break_hours
+        ]
+        const row = $('<tr>')
+        values.forEach(function(value) {
+          row.append($('<td>').text(value))
+        })
+        rows.append(row)
+
+        Object.keys(totals).forEach(function(key) {
+          totals[key] += Number(allocation[key]) || 0
+        })
+      })
+
+      const totalPrimaries = totals.primary_10 + totals.primary_12 + totals.primary_15 + totals.primary_20
+      const totalSecondaries = totals.secondary_5 + totals.secondary_10
+      $('#allocationDownloadSummary').text(
+        `${response.academicYear}: ${response.allocations.length} department allocation(s), ` +
+        `${totalPrimaries} primary positions, ${totalSecondaries} secondary positions, and ` +
+        `${totals.break_hours} break hours. Preview the stored final allocations below.`
+      )
+      $('#confirmAllocationDownload').data('academic-year-code', academicYearCode)
+      $('#allocationDownloadModal').one('hidden.bs.modal', function() {
+        $('#allocationDownloadPreviewModal').modal('show')
+      }).modal('hide')
+    },
+    error: function(xhr) {
+      const message = xhr.responseJSON && xhr.responseJSON.error
+        ? xhr.responseJSON.error
+        : 'Unable to load the allocation preview. Please try again.'
+      errorMessage.text(message).prop('hidden', false)
+    },
+    complete: function() {
+      previewButton.prop('disabled', false).text('Preview Download')
+    }
+  })
+}
 
 
 function attachModalToDepartment() {
